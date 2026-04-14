@@ -33,6 +33,7 @@ function SearchResultsContent() {
 
   const [searchTerm, setSearchTerm] = useState(query);
   const [results, setResults] = useState<UserProfile[]>([]);
+  const [suggestions, setSuggestions] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,6 +43,16 @@ function SearchResultsContent() {
         const location = city && state ? { city, state } : undefined;
         const data = await UserService.searchProviders(query, location);
         setResults(data);
+
+        // If no results, fetch suggestions from the same location
+        if (data.length === 0 && location) {
+          const suggestedData = await UserService.searchProviders('', location);
+          setSuggestions(suggestedData.slice(0, 3));
+        } else if (data.length === 0) {
+          // If no location, fetch any featured providers
+          const featured = await UserService.getProviders(3);
+          setSuggestions(featured);
+        }
       } catch (error) {
         console.error('Error searching:', error);
       } finally {
@@ -203,13 +214,61 @@ function SearchResultsContent() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-slate-200">
-                  <Briefcase className="mx-auto h-16 w-16 text-slate-200 mb-6" />
-                  <h4 className="text-2xl font-bold text-slate-900 mb-2">Nenhum resultado encontrado</h4>
-                  <p className="text-slate-500 mb-8 max-w-md mx-auto">Não encontramos profissionais para &quot;{query}&quot;. Tente usar termos mais genéricos ou verifique a localização.</p>
-                  <Button onClick={() => router.push('/')} variant="outline" className="rounded-xl px-8">
-                    Limpar Busca
-                  </Button>
+                <div className="space-y-12">
+                  <div className="text-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-slate-200">
+                    <Briefcase className="mx-auto h-16 w-16 text-slate-200 mb-6" />
+                    <h4 className="text-2xl font-bold text-slate-900 mb-2">Nenhum resultado exato encontrado</h4>
+                    <p className="text-slate-500 mb-8 max-w-md mx-auto">
+                      Não encontramos profissionais para &quot;{query}&quot;{city ? ` em ${city}` : ''}. 
+                      Tente termos mais genéricos ou veja as sugestões abaixo.
+                    </p>
+                    <Button onClick={() => {
+                      setSearchTerm('');
+                      const params = new URLSearchParams(searchParams.toString());
+                      params.delete('q');
+                      router.push(`/search?${params.toString()}`);
+                    }} variant="outline" className="rounded-xl px-8">
+                      Limpar Filtro de Busca
+                    </Button>
+                  </div>
+
+                  {suggestions.length > 0 && (
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-4">
+                        <div className="h-px flex-grow bg-slate-200" />
+                        <h3 className="text-lg font-bold text-slate-400 uppercase tracking-widest shrink-0">
+                          {city ? `Membros em ${city}` : 'Membros em Destaque'}
+                        </h3>
+                        <div className="h-px flex-grow bg-slate-200" />
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-4">
+                        {suggestions.map((p) => (
+                          <Link href={`/profile/${p.uid}`} key={p.uid}>
+                            <Card className="group p-6 rounded-[2rem] border-slate-200 hover:border-primary/20 hover:shadow-lg transition-all bg-white cursor-pointer flex items-center gap-6">
+                              <Avatar className="w-16 h-16 border-2 border-slate-50">
+                                <AvatarImage src={p.photoURL} />
+                                <AvatarFallback className="bg-primary/5 text-primary font-bold">{p.name[0]}</AvatarFallback>
+                              </Avatar>
+                              <div className="flex-grow">
+                                <h4 className="font-bold text-slate-900 group-hover:text-primary transition-colors">{p.name}</h4>
+                                <p className="text-sm text-primary font-medium">{p.serviceType || p.category}</p>
+                                <div className="flex items-center gap-3 mt-1">
+                                  <div className="flex items-center gap-1 text-highlight font-bold text-xs">
+                                    <Star size={12} fill="currentColor" /> {p.rating || '0.0'}
+                                  </div>
+                                  <div className="text-[10px] text-slate-400 flex items-center gap-1">
+                                    <MapPin size={10} /> {p.location}
+                                  </div>
+                                </div>
+                              </div>
+                              <ChevronRight size={20} className="text-slate-300 group-hover:text-primary transition-all" />
+                            </Card>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </AnimatePresence>
