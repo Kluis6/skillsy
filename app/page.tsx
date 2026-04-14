@@ -1,87 +1,58 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import { db } from '@/lib/firebase';
-import { collection, query, getDocs, where, limit } from 'firebase/firestore';
+import { useSearchController } from '@/hooks/use-search-controller';
+import { useContactsController } from '@/hooks/use-contacts-controller';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, LogIn, User as UserIcon, Briefcase, MapPin, MessageSquare, Star, UserPlus, UserMinus, Users, ShieldCheck } from 'lucide-react';
+import { Search, User as UserIcon, Briefcase, MapPin, Star, UserPlus, UserMinus, Users, ShieldCheck, Menu, Settings, LogOut, CreditCard, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AuthModal } from '@/components/auth-modal';
+import { CepFilter } from '@/components/cep-filter';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 export default function Home() {
+  const router = useRouter();
   const { user, profile, logout, loading, toggleContact } = useAuth();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [providers, setProviders] = useState<any[]>([]);
-  const [searching, setSearching] = useState(false);
   const [activeTab, setActiveTab] = useState<'explore' | 'contacts'>('explore');
-  const [savedContacts, setSavedContacts] = useState<any[]>([]);
 
-  const fetchInitialProviders = useCallback(async () => {
-    try {
-      const q = query(collection(db, 'users'), where('isProvider', '==', true), limit(6));
-      const querySnapshot = await getDocs(q);
-      const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setProviders(data);
-    } catch (error) {
-      console.error('Error fetching providers:', error);
-    }
-  }, []);
+  // Controllers
+  const {
+    searchTerm,
+    setSearchTerm,
+    locationFilter,
+    setLocationFilter,
+    providers,
+    searching
+  } = useSearchController();
 
-  const fetchSavedContacts = useCallback(async () => {
-    if (!profile?.contacts || profile.contacts.length === 0) {
-      setSavedContacts([]);
-      return;
-    }
-
-    try {
-      // Firestore 'in' query is limited to 10 items, but for a simple contact list it's fine for now
-      const q = query(collection(db, 'users'), where('uid', 'in', profile.contacts.slice(0, 10)));
-      const querySnapshot = await getDocs(q);
-      const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setSavedContacts(data);
-    } catch (error) {
-      console.error('Error fetching contacts:', error);
-    }
-  }, [profile?.contacts]);
-
-  useEffect(() => {
-    fetchInitialProviders();
-  }, [fetchInitialProviders]);
-
-  useEffect(() => {
-    if (activeTab === 'contacts' && profile?.contacts?.length > 0) {
-      fetchSavedContacts();
-    }
-  }, [activeTab, profile?.contacts, fetchSavedContacts]);
-
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchTerm.trim()) return;
-    
-    setSearching(true);
-    try {
-      const q = query(collection(db, 'users'), where('isProvider', '==', true));
-      const querySnapshot = await getDocs(q);
-      const allProviders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      
-      const filtered = allProviders.filter((p: any) => 
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        p.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.bio?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      
-      setProviders(filtered);
-    } catch (error) {
-      console.error('Error searching:', error);
-    } finally {
-      setSearching(false);
+    const params = new URLSearchParams();
+    if (searchTerm) params.set('q', searchTerm);
+    if (locationFilter) {
+      params.set('city', locationFilter.city);
+      params.set('state', locationFilter.state);
     }
+    router.push(`/search?${params.toString()}`);
   };
+
+  const { savedContacts } = useContactsController(profile, activeTab);
 
   if (loading) {
     return (
@@ -94,54 +65,170 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background font-sans text-text-main">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-border-subtle px-10 py-6">
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border-subtle px-6 md:px-10 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-1">
-            <h1 className="text-2xl font-extrabold tracking-tighter text-primary">
-              SKILLS<span className="text-accent">Y</span>
-            </h1>
+          <div className="flex items-center gap-4">
+            <Sheet>
+              <SheetTrigger
+                render={
+                  <Button variant="ghost" size="icon" className="text-text-main hover:bg-surface rounded-full">
+                    <Menu size={24} />
+                  </Button>
+                }
+              />
+              <SheetContent side="left" className="w-[300px] sm:w-[400px] bg-white p-0 border-r border-border-subtle">
+                <div className="flex flex-col h-full">
+                  <SheetHeader className="p-8 text-left bg-surface/30">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                        <span className="text-white font-bold text-2xl">S</span>
+                      </div>
+                      <SheetTitle className="text-2xl font-bold text-text-main">Skillsy</SheetTitle>
+                    </div>
+                    <SheetDescription className="text-text-muted font-medium">
+                      Sua rede de confiança e talentos.
+                    </SheetDescription>
+                  </SheetHeader>
+
+                  <div className="flex-1 overflow-y-auto py-6">
+                    {user ? (
+                      <div className="px-6 mb-8">
+                        <div className="flex items-center gap-4 p-4 bg-surface rounded-2xl border border-primary/5">
+                          <Avatar className="w-12 h-12 border-2 border-white shadow-sm">
+                            <AvatarImage src={user.photoURL || ''} />
+                            <AvatarFallback className="bg-primary text-white font-bold">{profile?.name?.[0]}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col">
+                            <span className="font-bold text-text-main">{profile?.name}</span>
+                            <span className="text-xs text-text-muted">{user.email}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="px-6 mb-8">
+                        <AuthModal>
+                          <Button className="w-full bg-primary text-white font-bold h-12 rounded-xl shadow-lg shadow-primary/10">
+                            Entrar na Conta
+                          </Button>
+                        </AuthModal>
+                      </div>
+                    )}
+
+                    <div className="px-4 space-y-1">
+                      <h4 className="px-4 text-[10px] font-bold uppercase tracking-widest text-text-muted/60 mb-2">Navegação</h4>
+                      <Button 
+                        variant="ghost" 
+                        className={`w-full justify-start gap-3 h-12 rounded-xl font-semibold ${activeTab === 'explore' ? 'bg-surface text-primary' : 'text-text-muted hover:text-primary hover:bg-surface/50'}`}
+                        onClick={() => setActiveTab('explore')}
+                      >
+                        <Search size={18} /> Explorar Membros
+                      </Button>
+                      
+                      {user && (
+                        <Link href="/contacts">
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-start gap-3 h-12 rounded-xl font-semibold text-text-muted hover:text-primary hover:bg-surface/50"
+                          >
+                            <Users size={18} /> Meus Contatos
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+
+                    <Separator className="my-6 mx-8 w-auto bg-border-subtle/50" />
+
+                    <div className="px-4 space-y-1">
+                      <h4 className="px-4 text-[10px] font-bold uppercase tracking-widest text-text-muted/60 mb-2">Conta</h4>
+                      {profile?.role === 'admin' && (
+                        <Link href="/admin">
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-start gap-3 h-12 rounded-xl font-bold text-primary bg-primary/5 hover:bg-primary/10 border border-primary/10 mb-2"
+                          >
+                            <ShieldCheck size={18} /> Painel Admin
+                          </Button>
+                        </Link>
+                      )}
+                      <Link href="/profile">
+                        <Button 
+                          variant="ghost" 
+                          className="w-full justify-start gap-3 h-12 rounded-xl font-semibold text-text-muted hover:text-primary hover:bg-surface/50"
+                        >
+                          <Settings size={18} /> Configurações do Perfil
+                        </Button>
+                      </Link>
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start gap-3 h-12 rounded-xl font-semibold text-text-muted hover:text-primary hover:bg-surface/50"
+                        onClick={() => toast.info('Funcionalidade de Doação', {
+                          description: 'Esta plataforma é sem fins lucrativos. Em breve você poderá apoiar a manutenção do projeto.'
+                        })}
+                      >
+                        <Heart size={18} className="text-red-500" /> Doar para o Projeto
+                      </Button>
+                    </div>
+                  </div>
+
+                  {user && (
+                    <div className="p-6 border-t border-border-subtle bg-surface/10">
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start gap-3 h-12 rounded-xl font-bold text-red-500 hover:text-red-600 hover:bg-red-50"
+                        onClick={logout}
+                      >
+                        <LogOut size={18} /> Sair da Conta
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
+
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl">S</span>
+              </div>
+              <h1 className="text-xl font-bold tracking-tight text-text-main">
+                Skillsy
+              </h1>
+            </div>
           </div>
-          
           <div className="flex items-center gap-8">
-            <ul className="hidden md:flex items-center gap-6 text-sm font-medium text-text-muted">
+            <ul className="hidden md:flex items-center gap-8 text-sm font-semibold text-text-muted">
               <li 
                 onClick={() => setActiveTab('explore')}
-                className={`cursor-pointer pb-1 transition-all ${activeTab === 'explore' ? 'text-primary border-b-2 border-accent' : 'hover:text-primary'}`}
+                className={`cursor-pointer transition-all ${activeTab === 'explore' ? 'text-primary' : 'hover:text-primary'}`}
               >
                 Explorar
               </li>
               {user && (
                 <li 
                   onClick={() => setActiveTab('contacts')}
-                  className={`cursor-pointer pb-1 transition-all ${activeTab === 'contacts' ? 'text-primary border-b-2 border-accent' : 'hover:text-primary'}`}
+                  className={`cursor-pointer transition-all ${activeTab === 'contacts' ? 'text-primary' : 'hover:text-primary'}`}
                 >
-                  Meus Contatos
-                </li>
-              )}
-              {profile?.role === 'admin' && (
-                <li className="flex items-center gap-1 text-accent font-bold hover:opacity-80 cursor-pointer">
-                  <ShieldCheck size={16} /> Painel Admin
+                  Contatos
                 </li>
               )}
             </ul>
 
             {user ? (
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col items-end mr-2">
-                  <span className="text-xs font-bold text-primary">{profile?.name}</span>
-                  {profile?.role === 'admin' && <span className="text-[10px] text-accent font-bold uppercase tracking-tighter">Administrador</span>}
+              <div className="flex items-center gap-4">
+                <div className="hidden sm:flex flex-col items-end">
+                  <span className="text-xs font-bold text-text-main">{profile?.name}</span>
+                  {profile?.role === 'admin' && <span className="text-[10px] text-accent font-bold uppercase">Admin</span>}
                 </div>
                 <Avatar className="w-9 h-9 border border-border-subtle">
                   <AvatarImage src={user.photoURL || ''} />
                   <AvatarFallback><UserIcon size={18} /></AvatarFallback>
                 </Avatar>
-                <Button variant="ghost" size="sm" onClick={logout} className="text-text-muted hover:text-primary">
+                <Button variant="ghost" size="sm" onClick={logout} className="text-text-muted hover:text-primary font-bold">
                   Sair
                 </Button>
               </div>
             ) : (
               <AuthModal>
-                <Button className="bg-primary text-white hover:bg-primary/90 rounded-full px-6 font-semibold">
+                <Button className="bg-primary text-white hover:bg-primary/90 rounded-full px-6 font-bold shadow-lg shadow-primary/20">
                   Entrar
                 </Button>
               </AuthModal>
@@ -151,176 +238,205 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="py-20 px-10">
+      <section className="relative py-24 px-6 md:px-10 overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_45%_at_50%_50%,var(--color-surface)_0%,white_100%)]" />
         <div className="max-w-4xl mx-auto text-center">
-          <motion.h2 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold tracking-tight text-primary mb-4"
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 bg-surface px-4 py-1.5 rounded-full mb-8 border border-primary/10"
           >
-            Fortaleça nossa comunidade.
+            <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+            <span className="text-xs font-bold text-primary uppercase tracking-wider">Comunidade Ativa</span>
+          </motion.div>
+          
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-5xl md:text-6xl font-extrabold tracking-tight text-text-main mb-6 leading-[1.1]"
+          >
+            Soluções em <span className="text-primary">Uma Só Plataforma.</span>
           </motion.h2>
           <motion.p 
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-lg md:text-xl text-text-muted mb-10 max-w-2xl mx-auto leading-relaxed"
+            className="text-lg md:text-xl text-text-muted mb-12 max-w-2xl mx-auto leading-relaxed"
           >
-            Conectando membros que oferecem serviços e negócios com excelência e valores compartilhados.
+            Conectando talentos da comunidade SUD em uma plataforma <span className="text-primary font-bold">100% sem fins lucrativos</span>. 
+            Desenvolvido para impulsionar o apoio mútuo e o crescimento da nossa rede.
           </motion.p>
 
           <motion.form 
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             onSubmit={handleSearch}
-            className="flex flex-col md:flex-row gap-3 max-w-2xl mx-auto bg-white p-2 rounded-full shadow-sm border border-border-subtle"
+            className="flex flex-col md:flex-row gap-3 max-w-3xl mx-auto bg-white p-2 rounded-2xl md:rounded-full shadow-xl shadow-primary/5 border border-border-subtle"
           >
             <div className="relative flex-1">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
               <Input 
-                placeholder="Qual serviço você procura hoje? (ex: Pintor, Professor, TI)" 
-                className="pl-12 border-none bg-transparent focus-visible:ring-0 text-base h-12"
+                placeholder="O que você precisa hoje?" 
+                className="pl-12 border-none bg-transparent focus-visible:ring-0 text-base h-12 font-medium"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button type="submit" className="bg-primary text-white h-12 px-8 rounded-full hover:bg-primary/90 transition-all font-semibold">
-              {searching ? 'Buscando...' : 'Buscar'}
+            <div className="h-10 w-px bg-border-subtle hidden md:block self-center" />
+            <CepFilter onLocationChange={setLocationFilter} />
+            <Button type="submit" className="bg-primary text-white h-12 px-8 rounded-xl md:rounded-full hover:bg-primary/90 transition-all font-bold">
+              {searching ? 'Buscando...' : 'Buscar Agora'}
             </Button>
           </motion.form>
         </div>
       </section>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-10 pb-20">
+      <main className="max-w-7xl mx-auto px-6 md:px-10 pb-24">
         <AnimatePresence mode="wait">
           {activeTab === 'explore' ? (
             <motion.div
               key="explore"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
             >
-              <div className="mb-8">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-text-muted mb-6">Membros em Destaque</h3>
+              <div className="text-center mb-16">
+                <h3 className="text-3xl font-bold text-text-main mb-4">Membros em Destaque</h3>
+                <p className="text-text-muted">Conheça os profissionais mais bem avaliados da nossa rede.</p>
               </div>
 
               {providers.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {providers.map((p, idx) => (
                     <motion.div
-                      key={p.id}
-                      initial={{ opacity: 0, y: 10 }}
+                      key={p.uid}
+                      initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.05 }}
                     >
-                      <Card className="group h-full flex flex-col hover:border-accent transition-all duration-200 border-border-subtle bg-white rounded-2xl p-6 shadow-none relative">
-                        {user && p.uid !== user.uid && (
+                      <Card className="group h-full flex flex-col hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 border-border-subtle bg-white rounded-3xl p-8 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-surface rounded-bl-full -mr-12 -mt-12 transition-all group-hover:bg-primary/10" />
+                        
+                        {p.uid !== user?.uid && (
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="absolute top-4 right-4 text-text-muted hover:text-accent hover:bg-accent/10 rounded-full"
-                            onClick={() => toggleContact(p.uid)}
+                            className="absolute top-4 right-4 text-text-muted hover:text-primary hover:bg-primary/5 rounded-full z-10"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!user) {
+                                toast.error('Login necessário', {
+                                  description: 'Você precisa estar logado para adicionar contatos.'
+                                });
+                                return;
+                              }
+                              toggleContact(p.uid);
+                            }}
                           >
-                            {profile?.contacts?.includes(p.uid) ? <UserMinus size={18} /> : <UserPlus size={18} />}
+                            {profile?.contacts?.includes(p.uid) ? <UserMinus size={20} /> : <UserPlus size={20} />}
                           </Button>
                         )}
                         
-                        <div className="mb-4">
-                          <Badge className="bg-blue-50 text-accent border-none font-bold text-[10px] uppercase px-2 py-1 rounded">
-                            {p.category || 'Serviços'}
+                        <div className="mb-6">
+                          <Badge className="bg-surface text-primary border-none font-bold text-[10px] uppercase px-3 py-1 rounded-full">
+                            {p.category || 'Geral'}
                           </Badge>
                         </div>
                         
-                        <div className="flex items-center gap-3 mb-4">
-                          <Avatar className="w-10 h-10 border border-border-subtle">
+                        <div className="flex items-center gap-4 mb-6">
+                          <Avatar className="w-14 h-14 border-2 border-surface">
                             <AvatarImage src={p.photoURL} />
-                            <AvatarFallback>{p.name[0]}</AvatarFallback>
+                            <AvatarFallback className="bg-surface text-primary font-bold text-xl">{p.name[0]}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <CardTitle className="text-lg font-semibold text-primary">{p.name}</CardTitle>
+                            <CardTitle className="text-xl font-bold text-text-main">{p.name}</CardTitle>
+                            <div className="flex items-center gap-1 text-xs text-text-muted mt-1">
+                              <MapPin size={12} /> {p.location || 'Brasil'}
+                            </div>
                           </div>
                         </div>
 
-                        <CardContent className="p-0 flex-grow mb-6">
+                        <CardContent className="p-0 flex-grow mb-8">
                           <p className="text-text-muted text-sm leading-relaxed line-clamp-3">
-                            {p.bio || 'Membro da comunidade SUD oferecendo serviços de qualidade com integridade e confiança.'}
+                            {p.bio || 'Membro dedicado da comunidade oferecendo serviços com excelência e valores compartilhados.'}
                           </p>
                         </CardContent>
 
-                        <div className="pt-4 border-t border-border-subtle flex justify-between items-center">
-                          <div className="flex items-center gap-1 text-xs text-text-muted">
-                            <MapPin size={12} /> {p.location || 'Brasil'}
+                        <div className="pt-6 border-t border-border-subtle flex justify-between items-center">
+                          <div className="flex items-center gap-1 text-sm font-bold text-highlight">
+                            <Star size={16} fill="currentColor" /> {p.rating || '0.0'}
                           </div>
-                          <div className="flex items-center gap-1 text-sm font-bold text-amber-500">
-                            <Star size={14} fill="currentColor" /> 5.0
-                          </div>
+                          <Link href={`/profile/${p.uid}`}>
+                            <Button variant="link" className="text-primary font-bold p-0 h-auto">Ver Detalhes</Button>
+                          </Link>
                         </div>
                       </Card>
                     </motion.div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-20 bg-white rounded-2xl border border-border-subtle shadow-sm">
-                  <Briefcase className="mx-auto h-10 w-10 text-text-muted/30 mb-4" />
-                  <h4 className="text-lg font-medium text-text-muted">Nenhum profissional encontrado</h4>
-                  <p className="text-sm text-text-muted/60">Tente buscar por outra categoria ou nome</p>
+                <div className="text-center py-24 bg-surface/30 rounded-3xl border-2 border-dashed border-border-subtle">
+                  <Briefcase className="mx-auto h-12 w-12 text-text-muted/20 mb-4" />
+                  <h4 className="text-xl font-bold text-text-main">Nenhum resultado</h4>
+                  <p className="text-sm text-text-muted">Tente ajustar seus filtros de busca.</p>
                 </div>
               )}
             </motion.div>
           ) : (
             <motion.div
               key="contacts"
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
             >
-              <div className="mb-8">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-text-muted mb-6">Meus Contatos Salvos</h3>
+              <div className="text-center mb-16">
+                <h3 className="text-3xl font-bold text-text-main mb-4">Seus Contatos</h3>
+                <p className="text-text-muted">Mantenha sua rede de confiança sempre por perto.</p>
               </div>
 
               {savedContacts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {savedContacts.map((p, idx) => (
                     <motion.div
-                      key={p.id}
-                      initial={{ opacity: 0, y: 10 }}
+                      key={p.uid}
+                      initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.05 }}
                     >
-                      <Card className="group h-full flex flex-col hover:border-accent transition-all duration-200 border-border-subtle bg-white rounded-2xl p-6 shadow-none relative">
+                      <Card className="group h-full flex flex-col hover:shadow-2xl transition-all duration-300 border-border-subtle bg-white rounded-3xl p-8 relative">
                         <Button 
                           variant="ghost" 
                           size="icon" 
-                          className="absolute top-4 right-4 text-accent hover:bg-accent/10 rounded-full"
+                          className="absolute top-4 right-4 text-primary hover:bg-primary/5 rounded-full"
                           onClick={() => toggleContact(p.uid)}
                         >
-                          <UserMinus size={18} />
+                          <UserMinus size={20} />
                         </Button>
                         
-                        <div className="flex items-center gap-3 mb-4">
-                          <Avatar className="w-12 h-12 border border-border-subtle">
+                        <div className="flex items-center gap-4 mb-6">
+                          <Avatar className="w-16 h-16 border-2 border-surface">
                             <AvatarImage src={p.photoURL} />
-                            <AvatarFallback>{p.name[0]}</AvatarFallback>
+                            <AvatarFallback className="bg-surface text-primary font-bold text-2xl">{p.name[0]}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <CardTitle className="text-lg font-semibold text-primary">{p.name}</CardTitle>
-                            <p className="text-xs text-text-muted">{p.category || 'Membro'}</p>
+                            <CardTitle className="text-xl font-bold text-text-main">{p.name}</CardTitle>
+                            <Badge variant="outline" className="mt-1 border-primary/20 text-primary text-[10px] font-bold uppercase">{p.category || 'Membro'}</Badge>
                           </div>
                         </div>
 
-                        <CardContent className="p-0 flex-grow mb-6">
+                        <CardContent className="p-0 flex-grow mb-8">
                           <p className="text-text-muted text-sm leading-relaxed line-clamp-2">
                             {p.bio || 'Sem descrição disponível.'}
                           </p>
                         </CardContent>
 
-                        <div className="pt-4 border-t border-border-subtle flex gap-2">
-                          <Button className="flex-1 bg-primary text-white hover:bg-primary/90 rounded-xl h-10 text-xs font-bold">
+                        <div className="pt-6 border-t border-border-subtle flex gap-3">
+                          <Button className="flex-1 bg-primary text-white hover:bg-primary/90 rounded-2xl h-11 text-sm font-bold">
                             Ver Perfil
                           </Button>
-                          <Button variant="outline" className="flex-1 border-border-subtle hover:bg-background rounded-xl h-10 text-xs font-bold">
+                          <Button variant="outline" className="flex-1 border-border-subtle hover:bg-surface rounded-2xl h-11 text-sm font-bold">
                             Mensagem
                           </Button>
                         </div>
@@ -329,22 +445,62 @@ export default function Home() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-20 bg-white rounded-2xl border border-border-subtle shadow-sm">
-                  <Users className="mx-auto h-10 w-10 text-text-muted/30 mb-4" />
-                  <h4 className="text-lg font-medium text-text-muted">Sua lista de contatos está vazia</h4>
-                  <p className="text-sm text-text-muted/60">Adicione membros interessantes para facilitar o contato futuro.</p>
+                <div className="text-center py-24 bg-surface/30 rounded-3xl border-2 border-dashed border-border-subtle">
+                  <Users className="mx-auto h-12 w-12 text-text-muted/20 mb-4" />
+                  <h4 className="text-xl font-bold text-text-main">Lista vazia</h4>
+                  <p className="text-sm text-text-muted mb-8">Você ainda não salvou nenhum contato.</p>
                   <Button 
-                    variant="outline" 
-                    className="mt-6 rounded-full border-accent text-accent hover:bg-accent/5"
+                    className="rounded-full bg-primary text-white font-bold px-8"
                     onClick={() => setActiveTab('explore')}
                   >
-                    Explorar Membros
+                    Explorar Agora
                   </Button>
                 </div>
               )}
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* CTA Section - Blue Background like the image */}
+        <section className="mt-24 bg-primary rounded-[2.5rem] p-12 md:p-20 text-white relative overflow-hidden shadow-2xl shadow-primary/30">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent/20 rounded-full -ml-32 -mb-32 blur-3xl" />
+          
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+            <div className="max-w-xl text-center md:text-left">
+              <h3 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">Dúvidas ou Sugestões?</h3>
+              <p className="text-white/80 text-lg mb-8">
+                Estamos aqui para ajudar você a encontrar o melhor serviço ou a divulgar o seu talento. 
+                Faça parte da nossa rede de excelência.
+              </p>
+              <div className="flex flex-wrap justify-center md:justify-start gap-4">
+                <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/20">
+                  <ShieldCheck size={18} className="text-accent" />
+                  <span className="text-sm font-bold">Seguro & Confiável</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/20">
+                  <Star size={18} className="text-highlight" />
+                  <span className="text-sm font-bold">Qualidade SUD</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl">
+              <h4 className="text-text-main text-xl font-bold mb-6 text-center">Fale Conosco</h4>
+              <div className="space-y-4">
+                <Input placeholder="Seu Nome" className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" />
+                <Input placeholder="Seu Email" className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" />
+                <textarea 
+                  placeholder="Sua Mensagem" 
+                  className="w-full bg-surface border-none rounded-xl p-4 text-text-main placeholder:text-text-muted/50 h-32 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                />
+                <Button className="w-full bg-primary text-white h-12 rounded-xl font-bold hover:bg-primary/90 shadow-lg shadow-primary/20">
+                  Enviar Mensagem
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <div className="mt-16 text-center text-sm text-text-muted">
           Possui uma empresa ou presta serviços? {' '}
@@ -354,20 +510,26 @@ export default function Home() {
             )
           ) : (
             <AuthModal>
-              <strong className="text-accent cursor-pointer hover:underline">Cadastre sua Skill agora</strong>
+              <button className="text-accent font-bold cursor-pointer hover:underline bg-transparent border-none p-0">
+                Cadastre sua Skill agora
+              </button>
             </AuthModal>
           )}
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-border-subtle py-12 px-10">
+      <footer className="bg-white border-t border-border-subtle py-12 px-6 md:px-10">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-sm">
-          <div className="flex items-center gap-1">
-            <span className="font-extrabold text-primary tracking-tighter">SKILLS<span className="text-accent">Y</span></span>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
+              <span className="text-white font-bold text-sm">S</span>
+            </div>
+            <span className="font-bold text-text-main tracking-tight">Skillsy</span>
           </div>
-          <p className="text-text-muted">
-            © 2026 Skillsy. Criado para fortalecer a comunidade SUD.
+          <p className="text-text-muted text-center md:text-left">
+            © 2026 Skillsy. Criado para fortalecer a comunidade SUD. <br className="md:hidden" />
+            <span className="text-primary font-bold">Plataforma 100% sem fins lucrativos.</span>
           </p>
           <div className="flex gap-6 text-text-muted">
             <a href="#" className="hover:text-primary transition-colors">Termos</a>

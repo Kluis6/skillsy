@@ -27,7 +27,11 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
       setOpen(false);
       toast.success('Bem-vindo ao Skillsy!');
     } catch (error: any) {
-      toast.error('Erro ao entrar com Google');
+      console.error('Login error:', error);
+      const message = error.code === 'auth/unauthorized-domain' 
+        ? 'Domínio não autorizado no Firebase Console.' 
+        : 'Erro ao entrar com Google. Tente novamente.';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -63,7 +67,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={children} />
+      <DialogTrigger render={children} nativeButton={false} />
       <DialogContent className="sm:max-w-[400px] rounded-2xl border-border-subtle bg-white shadow-xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-extrabold tracking-tighter text-primary">

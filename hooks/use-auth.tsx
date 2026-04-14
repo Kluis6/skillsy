@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { 
   onAuthStateChanged, 
   User, 
@@ -11,12 +12,13 @@ import {
   signInWithEmailAndPassword,
   updateProfile
 } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, serverTimestamp } from 'firebase/firestore';
+import { auth } from '@/lib/firebase';
+import { UserService } from '@/services/user-service';
+import { UserProfile } from '@/models/types';
 
 interface AuthContextType {
   user: User | null;
-  profile: any | null;
+  profile: UserProfile | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signUpWithEmail: (email: string, pass: string, name: string) => Promise<void>;
@@ -29,31 +31,39 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<any | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        const docRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          setProfile(docSnap.data());
-        } else {
-          const newProfile = {
-            uid: user.uid,
-            name: user.displayName || 'Membro Skillsy',
-            email: user.email || '',
-            photoURL: user.photoURL || '',
-            isProvider: false,
-            role: 'user',
-            contacts: [],
-            createdAt: serverTimestamp(),
-          };
-          await setDoc(docRef, newProfile);
-          setProfile(newProfile);
+        try {
+          let userProfile = await UserService.getProfile(user.uid);
+          
+          if (!userProfile) {
+            const newProfile: Partial<UserProfile> = {
+              uid: user.uid,
+              name: user.displayName || 'Membro Skillsy',
+              email: user.email || '',
+              photoURL: user.photoURL || '',
+              isProvider: false,
+              role: 'user',
+              contacts: [],
+            };
+            await UserService.createProfile(newProfile);
+            userProfile = await UserService.getProfile(user.uid);
+          }
+          setProfile(userProfile);
+
+          // Blocked user redirection
+          if (userProfile?.isBlocked && pathname !== '/blocked') {
+            router.push('/blocked');
+          }
+        } catch (error) {
+          console.error('Error loading profile:', error);
         }
       } else {
         setProfile(null);
@@ -62,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [pathname, router]);
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
@@ -79,8 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const res = await createUserWithEmailAndPassword(auth, email, pass);
       await updateProfile(res.user, { displayName: name });
       
-      const docRef = doc(db, 'users', res.user.uid);
-      const newProfile = {
+      const newProfile: Partial<UserProfile> = {
         uid: res.user.uid,
         name: name,
         email: email,
@@ -88,10 +97,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isProvider: false,
         role: 'user',
         contacts: [],
-        createdAt: serverTimestamp(),
       };
-      await setDoc(docRef, newProfile);
-      setProfile(newProfile);
+      await UserService.createProfile(newProfile);
+      const userProfile = await UserService.getProfile(res.user.uid);
+      setProfile(userProfile);
     } catch (error) {
       console.error('Error signing up with email:', error);
       throw error;
@@ -110,13 +119,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const toggleContact = async (contactId: string) => {
     if (!user || !profile) return;
     
-    const docRef = doc(db, 'users', user.uid);
     const isContact = profile.contacts?.includes(contactId);
     
     try {
-      await updateDoc(docRef, {
-        contacts: isContact ? arrayRemove(contactId) : arrayUnion(contactId)
-      });
+      await UserService.toggleContact(user.uid, contactId, !isContact);
       
       // Update local profile state
       setProfile((prev: any) => ({
