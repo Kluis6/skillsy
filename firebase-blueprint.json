@@ -1,0 +1,47 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Perfil do usuário/membro da comunidade",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "ID único do Firebase Auth" },
+        "name": { "type": "string", "description": "Nome completo" },
+        "email": { "type": "string", "description": "E-mail de contato" },
+        "photoURL": { "type": "string", "description": "URL da foto de perfil" },
+        "bio": { "type": "string", "description": "Breve biografia ou descrição da empresa" },
+        "category": { "type": "string", "description": "Categoria do serviço prestado" },
+        "isProvider": { "type": "boolean", "description": "Se o usuário é um prestador de serviço" },
+        "role": { "type": "string", "enum": ["admin", "user"], "description": "Papel do usuário no sistema" },
+        "contacts": { "type": "array", "items": { "type": "string" }, "description": "Lista de UIDs de contatos salvos" },
+        "whatsapp": { "type": "string", "description": "Número de contato WhatsApp" },
+        "location": { "type": "string", "description": "Cidade/Estado" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Data de criação do perfil" }
+      },
+      "required": ["uid", "name", "email", "isProvider"]
+    },
+    "Service": {
+      "title": "Service",
+      "description": "Detalhes do serviço oferecido",
+      "type": "object",
+      "properties": {
+        "providerId": { "type": "string", "description": "UID do prestador" },
+        "title": { "type": "string", "description": "Título do serviço" },
+        "description": { "type": "string", "description": "Descrição detalhada" },
+        "category": { "type": "string", "description": "Categoria" },
+        "price": { "type": "string", "description": "Preço ou faixa de preço (opcional)" }
+      },
+      "required": ["providerId", "title", "description", "category"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Coleção de perfis de usuários"
+    },
+    "/services/{serviceId}": {
+      "schema": "Service",
+      "description": "Coleção de serviços oferecidos"
+    }
+  }
+}
