@@ -12,8 +12,16 @@ import { motion } from 'motion/react';
 import Link from 'next/link';
 
 export default function ContactsPage() {
-  const { user } = useAuth();
-  const { savedContacts, toggleContact, loading } = useContactsController();
+  const { user, profile, toggleContact, loading: authLoading } = useAuth();
+  const { savedContacts, loading: contactsLoading } = useContactsController(profile, 'contacts');
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-text-muted">Carregando...</p>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -50,7 +58,7 @@ export default function ContactsPage() {
           <p className="text-text-muted text-lg">Mantenha os profissionais que você confia sempre ao seu alcance.</p>
         </div>
 
-        {loading ? (
+        {contactsLoading ? (
           <div className="text-center py-24">
             <p className="text-text-muted">Carregando seus contatos...</p>
           </div>

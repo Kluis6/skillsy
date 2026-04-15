@@ -4,6 +4,7 @@ import { UserProfile } from '@/models/types';
 
 export function useContactsController(profile: UserProfile | null, activeTab: string) {
   const [savedContacts, setSavedContacts] = useState<UserProfile[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -11,11 +12,14 @@ export function useContactsController(profile: UserProfile | null, activeTab: st
 
     if (activeTab === 'contacts' && contactsLength > 0) {
       const fetch = async () => {
+        setLoading(true);
         try {
           const data = await UserService.getContacts(profile!.contacts);
           if (isMounted) setSavedContacts(data);
         } catch (error) {
           console.error('Error fetching contacts:', error);
+        } finally {
+          if (isMounted) setLoading(false);
         }
       };
       fetch();
@@ -30,6 +34,7 @@ export function useContactsController(profile: UserProfile | null, activeTab: st
   }, [activeTab, profile]);
 
   return {
-    savedContacts
+    savedContacts,
+    loading
   };
 }
