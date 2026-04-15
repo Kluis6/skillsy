@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 import { UserService } from '@/services/user-service';
 import { UserProfile } from '@/models/types';
 import { Button } from '@/components/ui/button';
@@ -15,11 +16,14 @@ import {
   Star, 
   ShieldCheck,
   ChevronRight,
-  SlidersHorizontal
+  SlidersHorizontal,
+  UserPlus,
+  UserMinus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { CepFilter } from '@/components/cep-filter';
+import { toast } from 'sonner';
 
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -32,6 +36,7 @@ import {
 import { ThemeToggle } from '@/components/theme-toggle';
 
 function SearchResultsContent() {
+  const { profile, toggleContact } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const query = searchParams.get('q') || '';
@@ -96,17 +101,6 @@ function SearchResultsContent() {
               placeholder="O que você procura hoje?"
               className="border-none bg-transparent focus-visible:ring-0 text-text-main h-12 font-semibold placeholder:text-text-muted/30"
             />
-            <div className="h-6 w-px bg-border-subtle mx-2 hidden sm:block opacity-50" />
-            <div className="hidden sm:block">
-               <CepFilter onLocationChange={(loc) => {
-                 if (loc) {
-                   const params = new URLSearchParams(searchParams.toString());
-                   params.set('city', loc.city);
-                   params.set('state', loc.state);
-                   router.push(`/search?${params.toString()}`);
-                 }
-               }} />
-            </div>
             <Button type="submit" size="sm" className="rounded-xl bg-primary hover:bg-primary/90 text-white px-8 h-10 font-bold hidden sm:flex shadow-lg shadow-primary/10 active:scale-95 transition-all">
               Buscar
             </Button>
@@ -114,6 +108,29 @@ function SearchResultsContent() {
           <ThemeToggle />
         </div>
       </header>
+
+      <div className="bg-card border-b border-border-subtle py-4 px-4 md:px-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-6">
+            <CepFilter onLocationChange={(loc) => {
+              const params = new URLSearchParams(searchParams.toString());
+              if (loc) {
+                params.set('city', loc.city);
+                params.set('state', loc.state);
+              } else {
+                params.delete('city');
+                params.delete('state');
+              }
+              router.push(`/search?${params.toString()}`);
+            }} />
+          </div>
+          <div className="hidden md:block">
+            <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
+              Filtrando por: <span className="text-primary">{city && state ? `${city}, ${state}` : 'Todo o Brasil'}</span>
+            </p>
+          </div>
+        </div>
+      </div>
 
       <main className="max-w-7xl mx-auto px-4 md:px-8 py-10">
         <div className="flex flex-col lg:flex-row gap-10">
@@ -129,7 +146,7 @@ function SearchResultsContent() {
                 <div>
                   <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4">Categorias</p>
                   <div className="space-y-3">
-                    {['Tecnologia', 'Manutenção', 'Saúde', 'Educação', 'Eventos'].map(cat => (
+                    {['Tecnologia', 'Design', 'Marketing', 'Consultoria', 'Cozinha', 'Limpeza', 'Manutenção', 'Saúde', 'Educação', 'Eventos'].map(cat => (
                       <label key={cat} className="flex items-center gap-3 text-sm font-medium text-text-muted hover:text-primary cursor-pointer transition-colors group">
                         <div className="w-5 h-5 rounded-lg border-2 border-border-subtle group-hover:border-primary/30 transition-all flex items-center justify-center">
                           <input type="checkbox" className="hidden" />
@@ -191,7 +208,8 @@ function SearchResultsContent() {
                                   </CardTitle>
                                   {p.verifiedMember && <ShieldCheck size={20} className="text-primary" />}
                                 </div>
-                                <p className="text-sm font-bold text-primary mt-1 uppercase tracking-wider">
+                                <p className="text-sm font-bold text-primary mt-1 uppercase tracking-wider flex items-center gap-2">
+                                  {p.companyName && <span className="text-text-main/60 normal-case font-medium">{p.companyName} • </span>}
                                   {p.serviceType || p.category || 'Profissional'}
                                 </p>
                               </div>
@@ -211,6 +229,24 @@ function SearchResultsContent() {
                               <Badge className="bg-surface text-text-muted hover:bg-primary/5 hover:text-primary border-none rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors">
                                 Atendimento Local
                               </Badge>
+                              <div className="flex-grow" />
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="h-8 rounded-lg text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/5"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  toggleContact(p.uid);
+                                  toast.success('Lista de contatos atualizada');
+                                }}
+                              >
+                                {profile?.contacts?.includes(p.uid) ? (
+                                  <><UserMinus size={14} className="mr-1.5" /> Remover</>
+                                ) : (
+                                  <><UserPlus size={14} className="mr-1.5" /> Adicionar</>
+                                )}
+                              </Button>
                             </div>
                           </div>
 
@@ -263,7 +299,10 @@ function SearchResultsContent() {
                               </Avatar>
                               <div className="flex-grow">
                                 <h4 className="font-bold text-slate-900 group-hover:text-primary transition-colors">{p.name}</h4>
-                                <p className="text-sm text-primary font-medium">{p.serviceType || p.category}</p>
+                                <p className="text-sm text-primary font-medium">
+                                  {p.companyName && <span className="text-slate-500 font-normal">{p.companyName} • </span>}
+                                  {p.serviceType || p.category}
+                                </p>
                                 <div className="flex items-center gap-3 mt-1">
                                   <div className="flex items-center gap-1 text-highlight font-bold text-xs">
                                     <Star size={12} fill="currentColor" /> {p.rating || '0.0'}

@@ -303,7 +303,7 @@ export function HomeClient() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             onSubmit={handleSearch}
-            className="flex flex-col md:flex-row gap-3 max-w-3xl mx-auto bg-card p-2 rounded-3xl md:rounded-full shadow-2xl shadow-primary/10 border border-border-subtle ring-1 ring-black/[0.02]"
+            className="flex flex-col md:flex-row gap-3 max-w-3xl mx-auto bg-card p-2 rounded-3xl md:rounded-full shadow-2xl shadow-primary/10 border border-border-subtle ring-1 ring-black/[0.02] mb-6"
           >
             <div className="relative flex-1">
               <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-muted/50" size={20} />
@@ -314,12 +314,22 @@ export function HomeClient() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="h-10 w-px bg-border-subtle hidden md:block self-center opacity-50" />
-            <CepFilter onLocationChange={setLocationFilter} />
             <Button type="submit" className="bg-primary text-white h-14 px-10 rounded-2xl md:rounded-full hover:bg-primary/90 transition-all font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95">
               {searching ? 'Buscando...' : 'Buscar'}
             </Button>
           </motion.form>
+
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-col items-center gap-4"
+          >
+            <CepFilter onLocationChange={setLocationFilter} />
+            <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
+              Localização atual: <span className="text-primary">{locationFilter ? `${locationFilter.city}, ${locationFilter.state}` : 'Todo o Brasil'}</span>
+            </p>
+          </motion.div>
         </div>
       </section>
 
@@ -389,6 +399,11 @@ export function HomeClient() {
                           </Avatar>
                           <div>
                             <CardTitle className="text-xl font-bold text-text-main">{p.name}</CardTitle>
+                            {p.companyName && (
+                              <p className="text-[10px] font-bold text-primary uppercase tracking-wider mt-0.5">
+                                {p.companyName}
+                              </p>
+                            )}
                             <div className="flex items-center gap-1 text-xs text-text-muted mt-1">
                               <MapPin size={12} /> {p.location || 'Brasil'}
                             </div>
@@ -459,6 +474,11 @@ export function HomeClient() {
                           </Avatar>
                           <div>
                             <CardTitle className="text-xl font-bold text-text-main">{p.name}</CardTitle>
+                            {p.companyName && (
+                              <p className="text-[10px] font-bold text-primary uppercase tracking-wider mt-0.5">
+                                {p.companyName}
+                              </p>
+                            )}
                             <Badge variant="outline" className="mt-1 border-primary/20 text-primary text-[10px] font-bold uppercase">{p.category || 'Membro'}</Badge>
                           </div>
                         </div>

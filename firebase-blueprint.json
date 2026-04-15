@@ -9,6 +9,7 @@
         "name": { "type": "string", "description": "Nome completo" },
         "email": { "type": "string", "description": "E-mail de contato" },
         "photoURL": { "type": "string", "description": "URL da foto de perfil" },
+        "bannerURL": { "type": "string", "description": "URL da foto do banner do perfil" },
         "bio": { "type": "string", "description": "Breve biografia ou descrição da empresa" },
         "category": { "type": "string", "description": "Categoria do serviço prestado" },
         "isProvider": { "type": "boolean", "description": "Se o usuário é um prestador de serviço" },

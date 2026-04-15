@@ -353,6 +353,13 @@ export function AdminClient() {
                               {u.role === 'admin' && <Badge variant="secondary" className="text-[8px] h-4 px-1 bg-red-50 text-red-500 border-red-100">Admin</Badge>}
                             </span>
                             <span className="text-xs text-text-muted flex items-center gap-1"><Mail size={10} /> {u.email}</span>
+                            {(u.companyName || u.category) && (
+                              <span className="text-[10px] text-primary font-bold mt-0.5">
+                                {u.companyName && <span>{u.companyName}</span>}
+                                {u.companyName && u.category && <span> • </span>}
+                                {u.category && <span>{u.category}</span>}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </TableCell>

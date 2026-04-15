@@ -45,6 +45,8 @@ export function ProfileSettingsClient() {
     location: '',
     ward: '',
     serviceType: '',
+    category: '',
+    companyName: '',
     experienceYears: 0,
     isProvider: false,
     whatsapp: '',
@@ -53,6 +55,7 @@ export function ProfileSettingsClient() {
     linkedin: '',
     website: '',
     photoURL: '',
+    bannerURL: '',
     gallery: [] as string[]
   });
 
@@ -64,6 +67,8 @@ export function ProfileSettingsClient() {
         location: profile.location || '',
         ward: profile.ward || '',
         serviceType: profile.serviceType || '',
+        category: profile.category || '',
+        companyName: profile.companyName || '',
         experienceYears: profile.experienceYears || 0,
         isProvider: profile.isProvider || false,
         whatsapp: profile.whatsapp || '',
@@ -72,6 +77,7 @@ export function ProfileSettingsClient() {
         linkedin: profile.linkedin || '',
         website: profile.website || '',
         photoURL: profile.photoURL || '',
+        bannerURL: profile.bannerURL || '',
         gallery: profile.gallery || []
       });
     }
@@ -178,7 +184,28 @@ export function ProfileSettingsClient() {
           {/* Left Column: Avatar & Basic Info */}
           <div className="space-y-8">
             <Card className="rounded-[2.5rem] border-none shadow-sm bg-card overflow-hidden">
-              <CardContent className="pt-10 pb-8 flex flex-col items-center">
+              <div className="relative h-32 bg-gradient-to-r from-primary/10 to-accent/10">
+                {formData.bannerURL && (
+                  <Image 
+                    src={formData.bannerURL} 
+                    alt="Banner" 
+                    fill 
+                    className="object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
+                <button 
+                  onClick={() => {
+                    const url = prompt('URL da nova foto do banner:');
+                    if (url) setFormData({ ...formData, bannerURL: url });
+                  }}
+                  className="absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white p-2 rounded-xl hover:bg-white/30 transition-colors"
+                  title="Alterar Banner"
+                >
+                  <Camera size={18} />
+                </button>
+              </div>
+              <CardContent className="pt-10 pb-8 flex flex-col items-center -mt-16">
                 <div className="relative group mb-6">
                   <Avatar className="w-32 h-32 border-4 border-surface shadow-xl">
                     <AvatarImage src={formData.photoURL} />
@@ -211,8 +238,8 @@ export function ProfileSettingsClient() {
               <div className="space-y-6">
                 <div className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-primary/5">
                   <div className="space-y-0.5">
-                    <Label className="text-sm font-bold">Sou Prestador</Label>
-                    <p className="text-[10px] text-text-muted">Aparecer nas buscas de serviços</p>
+                    <Label className="text-sm font-bold">Quero Anunciar</Label>
+                    <p className="text-[10px] text-text-muted">Aparecer nos resultados das buscas de serviços</p>
                   </div>
                   <Switch 
                     checked={formData.isProvider}
@@ -223,11 +250,44 @@ export function ProfileSettingsClient() {
                 {formData.isProvider && (
                   <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                     <div className="space-y-2">
-                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Especialidade Principal</Label>
+                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome da Empresa (Opcional)</Label>
+                      <Input 
+                        value={formData.companyName}
+                        onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                        placeholder="Ex: Silva Construções"
+                        className="bg-surface border-none rounded-2xl h-12"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Categoria do Serviço</Label>
+                      <select 
+                        value={formData.category}
+                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                        className="w-full bg-surface border-none rounded-2xl h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none"
+                      >
+                        <option value="">Selecione uma categoria</option>
+                        <option value="Tecnologia">Tecnologia</option>
+                        <option value="Design">Design</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Consultoria">Consultoria</option>
+                        <option value="Cozinha">Cozinha</option>
+                        <option value="Limpeza">Limpeza</option>
+                        <option value="Manutenção">Manutenção</option>
+                        <option value="Beleza">Beleza</option>
+                        <option value="Educação">Educação</option>
+                        <option value="Saúde">Saúde</option>
+                        <option value="Eventos">Eventos</option>
+                        <option value="Jurídico">Jurídico</option>
+                        <option value="Financeiro">Financeiro</option>
+                        <option value="Outros">Outros</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Especialidade Detalhada</Label>
                       <Input 
                         value={formData.serviceType}
                         onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
-                        placeholder="Ex: Eletricista, Professor, etc."
+                        placeholder="Ex: Eletricista, Professor de Inglês, etc."
                         className="bg-surface border-none rounded-2xl h-12"
                       />
                     </div>

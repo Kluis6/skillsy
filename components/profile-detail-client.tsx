@@ -25,7 +25,9 @@ import {
   Facebook,
   Linkedin,
   Globe,
-  Phone
+  Phone,
+  Church,
+  Users
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -37,6 +39,7 @@ interface ProfileDetailClientProps {
   id: string;
 }
 
+import Image from 'next/image';
 import { Skeleton } from "@/components/ui/skeleton";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import {
@@ -189,36 +192,68 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-8"
         >
-          {/* Hero Profile Card */}
-          <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 overflow-hidden bg-card">
-            <div className="h-32 bg-gradient-to-r from-primary/10 to-accent/10" />
-            <CardContent className="px-8 pb-10 -mt-16">
-              <div className="flex flex-col md:flex-row items-center md:items-end gap-6 mb-8">
-                <Avatar className="w-32 h-32 border-4 border-white shadow-xl">
+          {/* Hero Profile Card (LinkedIn Style) */}
+          <Card className="rounded-[2.5rem] border-none shadow-2xl shadow-primary/5 overflow-hidden bg-card">
+            <div className="relative h-48 md:h-64 bg-gradient-to-r from-primary/20 to-accent/20">
+              {targetProfile.bannerURL && (
+                <Image 
+                  src={targetProfile.bannerURL} 
+                  alt="Banner" 
+                  fill 
+                  className="object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              )}
+            </div>
+            <CardContent className="px-8 pb-10">
+              <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6 -mt-20 md:-mt-24 mb-6">
+                <Avatar className="w-40 h-40 md:w-48 md:h-48 border-[6px] border-card shadow-xl">
                   <AvatarImage src={targetProfile.photoURL} />
-                  <AvatarFallback className="bg-surface text-primary font-bold text-4xl">
+                  <AvatarFallback className="bg-surface text-primary font-bold text-5xl">
                     {targetProfile.name[0]}
                   </AvatarFallback>
                 </Avatar>
                 
-                <div className="flex-grow text-center md:text-left mb-2">
+                <div className="flex-grow text-center md:text-left pb-2">
                   <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                    <h2 className="text-3xl font-bold text-text-main font-heading">{targetProfile.name}</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold text-text-main font-heading tracking-tight">{targetProfile.name}</h2>
                     {targetProfile.verifiedMember && (
-                      <ShieldCheck size={24} className="text-primary" />
+                      <ShieldCheck size={28} className="text-primary" />
                     )}
                   </div>
-                  <p className="text-text-muted flex items-center justify-center md:justify-start gap-2">
-                    <MapPin size={16} /> {targetProfile.location || 'Localização não informada'}
-                  </p>
+                  
+                  <div className="flex flex-col gap-1">
+                    <p className="text-lg md:text-xl font-medium text-text-main/80">
+                      {targetProfile.serviceType || targetProfile.category || 'Membro da Comunidade'}
+                    </p>
+                    {targetProfile.companyName && (
+                      <p className="text-primary font-bold flex items-center justify-center md:justify-start gap-2">
+                        <Building2 size={18} /> {targetProfile.companyName}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-3 text-sm text-text-muted">
+                    <p className="flex items-center gap-1.5">
+                      <MapPin size={16} /> {targetProfile.location || 'Localização não informada'}
+                    </p>
+                    {targetProfile.ward && (
+                      <p className="flex items-center gap-1.5">
+                        <Church size={16} /> {targetProfile.ward}
+                      </p>
+                    )}
+                    <p className="flex items-center gap-1.5 text-primary font-bold">
+                      <Users size={16} /> {targetProfile.contacts?.length || 0} conexões
+                    </p>
+                  </div>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex flex-wrap justify-center gap-3 mt-4 md:mt-0">
                   {user?.uid !== targetProfile.uid && (
                     <Button 
                       onClick={handleToggleContact}
                       variant={isContact ? "outline" : "default"}
-                      className={`rounded-2xl h-12 px-6 font-bold transition-all ${
+                      className={`rounded-full h-12 px-8 font-bold transition-all ${
                         isContact 
                           ? 'border-primary text-primary hover:bg-primary/5' 
                           : 'bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20'
@@ -231,30 +266,30 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
                       )}
                     </Button>
                   )}
-                  <Button className="rounded-2xl h-12 px-6 bg-green-500 text-white hover:bg-green-600 font-bold shadow-lg shadow-green-200">
+                  <Button className="rounded-full h-12 px-8 bg-green-500 text-white hover:bg-green-600 font-bold shadow-lg shadow-green-200">
                     <MessageCircle size={20} className="mr-2" /> WhatsApp
                   </Button>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-border-subtle">
-                <div className="text-center md:text-left">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Especialidade</p>
-                  <p className="font-bold text-primary truncate">{targetProfile.serviceType || targetProfile.category || 'Membro'}</p>
-                </div>
-                <div className="text-center md:text-left">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Experiência</p>
-                  <p className="font-bold text-text-main">{targetProfile.experienceYears || 0} anos</p>
-                </div>
-                <div className="text-center md:text-left">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Avaliação</p>
-                  <div className="flex items-center justify-center md:justify-start gap-1 font-bold text-highlight">
-                    <Star size={16} fill="currentColor" /> {targetProfile.rating || '0.0'}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-border-subtle w-full">
+                  <div className="text-center md:text-left">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Especialidade</p>
+                    <p className="font-bold text-primary truncate">{targetProfile.serviceType || targetProfile.category || 'Membro'}</p>
                   </div>
-                </div>
-                <div className="text-center md:text-left">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Localização</p>
-                  <p className="font-bold text-text-main truncate">{targetProfile.ward || 'Geral'}</p>
+                  <div className="text-center md:text-left">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Experiência</p>
+                    <p className="font-bold text-text-main">{targetProfile.experienceYears || 0} anos</p>
+                  </div>
+                  <div className="text-center md:text-left">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Avaliação</p>
+                    <div className="flex items-center justify-center md:justify-start gap-1 font-bold text-highlight">
+                      <Star size={16} fill="currentColor" /> {targetProfile.rating || '0.0'}
+                    </div>
+                  </div>
+                  <div className="text-center md:text-left">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Localização</p>
+                    <p className="font-bold text-text-main truncate">{targetProfile.ward || 'Geral'}</p>
+                  </div>
                 </div>
               </div>
             </CardContent>

@@ -3,6 +3,7 @@ export interface UserProfile {
   name: string;
   email: string;
   photoURL?: string;
+  bannerURL?: string;
   bio?: string;
   category?: string;
   isProvider: boolean;

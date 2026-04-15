@@ -92,6 +92,8 @@ service cloud.firestore {
              data.isProvider is bool &&
              data.role in ['admin', 'user'] &&
              data.createdAt is timestamp &&
+             (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 500)) &&
+             (!('bannerURL' in data) || (data.bannerURL is string && data.bannerURL.size() <= 500)) &&
              (!('bio' in data) || (data.bio is string && data.bio.size() <= 1000)) &&
              (!('contacts' in data) || data.contacts is list) &&
              (!('whatsapp' in data) || (data.whatsapp is string && data.whatsapp.size() <= 20)) &&
