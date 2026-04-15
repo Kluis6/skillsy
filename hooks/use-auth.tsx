@@ -10,7 +10,7 @@ import {
   signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  updateProfile
+  updateProfile as firebaseUpdateProfile
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { UserService } from '@/services/user-service';
@@ -24,6 +24,7 @@ interface AuthContextType {
   signUpWithEmail: (email: string, pass: string, name: string) => Promise<void>;
   signInWithEmail: (email: string, pass: string) => Promise<void>;
   toggleContact: (contactId: string) => Promise<void>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -87,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUpWithEmail = async (email: string, pass: string, name: string) => {
     try {
       const res = await createUserWithEmailAndPassword(auth, email, pass);
-      await updateProfile(res.user, { displayName: name });
+      await firebaseUpdateProfile(res.user, { displayName: name });
       
       const newProfile: Partial<UserProfile> = {
         uid: res.user.uid,
@@ -137,6 +138,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateProfile = async (data: Partial<UserProfile>) => {
+    if (!user) return;
+    try {
+      await UserService.updateProfile(user.uid, data);
+      setProfile((prev: any) => ({ ...prev, ...data }));
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await signOut(auth);
@@ -146,7 +158,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, signUpWithEmail, signInWithEmail, toggleContact, logout }}>
+    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, signUpWithEmail, signInWithEmail, toggleContact, updateProfile, logout }}>
       {children}
     </AuthContext.Provider>
   );

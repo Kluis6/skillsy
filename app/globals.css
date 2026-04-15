@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #0066FF;
-  --color-accent: #00A3FF;
-  --color-highlight: #FFB800;
-  --color-background: #FFFFFF;
-  --color-surface: #F0F7FF;
-  --color-text-main: #001A41;
-  --color-text-muted: #4B5563;
-  --color-card-bg: #FFFFFF;
-  --color-border-subtle: #E5E7EB;
+  --color-primary: var(--primary-custom);
+  --color-accent: var(--accent-custom);
+  --color-highlight: var(--highlight-custom);
+  --color-background: var(--background-custom);
+  --color-surface: var(--surface-custom);
+  --color-text-main: var(--text-main-custom);
+  --color-text-muted: var(--text-muted-custom);
+  --color-card-bg: var(--card-bg-custom);
+  --color-border-subtle: var(--border-subtle-custom);
 }
 
 @layer base {
@@ -99,6 +99,16 @@
     --sidebar-accent-foreground: oklch(0.15 0.05 264);
     --sidebar-border: oklch(0.92 0.005 264);
     --sidebar-ring: oklch(0.511 0.262 264.052);
+
+    --primary-custom: #0066FF;
+    --accent-custom: #00A3FF;
+    --highlight-custom: #FFB800;
+    --background-custom: #FFFFFF;
+    --surface-custom: #F0F7FF;
+    --text-main-custom: #001A41;
+    --text-muted-custom: #4B5563;
+    --card-bg-custom: #FFFFFF;
+    --border-subtle-custom: #E5E7EB;
 }
 
 .dark {
@@ -133,6 +143,16 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+
+    --primary-custom: #3B82F6;
+    --accent-custom: #60A5FA;
+    --highlight-custom: #FBBF24;
+    --background-custom: #0F172A;
+    --surface-custom: #1E293B;
+    --text-main-custom: #F8FAFC;
+    --text-muted-custom: #94A3B8;
+    --card-bg-custom: #1E293B;
+    --border-subtle-custom: #334155;
 }
 
 @layer base {

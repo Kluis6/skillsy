@@ -10,16 +10,14 @@ export interface UserProfile {
   contacts: string[];
   location?: string;
   whatsapp?: string;
+  instagram?: string;
+  facebook?: string;
+  linkedin?: string;
+  website?: string;
   serviceType?: string;
   phones?: string[];
   ward?: string;
   companyName?: string;
-  socialLinks?: {
-    instagram?: string;
-    facebook?: string;
-    linkedin?: string;
-    website?: string;
-  };
   gallery?: string[];
   rating?: number;
   reviewCount?: number;

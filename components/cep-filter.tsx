@@ -53,13 +53,13 @@ export function CepFilter({ onLocationChange }: CepFilterProps) {
 
   return (
     <div className="flex flex-col gap-2 w-full md:w-auto">
-      <div className="relative flex items-center">
-        <MapPin className="absolute left-3 text-text-muted" size={16} />
+      <div className="relative flex items-center group">
+        <MapPin className="absolute left-3 text-text-muted/40 group-focus-within:text-primary transition-colors" size={16} />
         <Input
           placeholder="Filtrar por CEP"
           value={cep}
           onChange={handleCepChange}
-          className="pl-10 pr-10 border-none bg-transparent h-12 w-full md:w-40 text-sm focus-visible:ring-0 font-medium"
+          className="pl-10 pr-10 border-none bg-transparent h-12 w-full md:w-40 text-sm focus-visible:ring-0 font-bold placeholder:text-text-muted/30 placeholder:font-medium"
           maxLength={8}
         />
         {loading && (
@@ -68,14 +68,14 @@ export function CepFilter({ onLocationChange }: CepFilterProps) {
         {!loading && location && (
           <button 
             onClick={clearLocation}
-            className="absolute right-3 text-text-muted hover:text-primary transition-colors"
+            className="absolute right-3 text-text-muted/40 hover:text-primary transition-colors"
           >
             <X size={16} />
           </button>
         )}
       </div>
       {location && (
-        <div className="px-3 py-1 bg-surface text-primary text-[10px] font-bold rounded-full flex items-center gap-1 animate-in fade-in slide-in-from-top-1 border border-primary/10">
+        <div className="px-3 py-1 bg-primary/5 text-primary text-[10px] font-bold rounded-full flex items-center gap-1 animate-in fade-in slide-in-from-top-1 border border-primary/10 absolute -bottom-8 left-0 whitespace-nowrap">
           <MapPin size={10} />
           {location.city} - {location.state}
         </div>
