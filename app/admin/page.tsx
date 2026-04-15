@@ -67,16 +67,6 @@ export default function AdminPanel() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editFormData, setEditFormData] = useState<Partial<UserProfile>>({});
 
-  useEffect(() => {
-    if (profile?.role === 'admin') {
-      fetchUsers();
-    }
-  }, [profile]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [applyFilters]);
-
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -124,6 +114,16 @@ export default function AdminPanel() {
 
     setFilteredUsers(result);
   }, [users, searchTerm, filterWard, filterState, filterHasServices, filterRecent]);
+
+  useEffect(() => {
+    if (profile?.role === 'admin') {
+      fetchUsers();
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
 
   const handleEditClick = (user: UserProfile) => {
     setEditingUser(user);
