@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { toast } from 'sonner';
 
 export function Footer() {
   return (
@@ -17,8 +18,18 @@ export function Footer() {
           <span className="text-primary font-bold">Plataforma 100% sem fins lucrativos.</span>
         </p>
         <div className="flex gap-6 text-text-muted">
-          <a href="#" className="hover:text-primary transition-colors">Termos</a>
-          <a href="#" className="hover:text-primary transition-colors">Privacidade</a>
+          <button 
+            onClick={() => toast.info('Em breve', { description: 'A página de Termos de Uso está sendo elaborada.' })}
+            className="hover:text-primary transition-colors bg-transparent border-none cursor-pointer text-sm"
+          >
+            Termos
+          </button>
+          <button 
+            onClick={() => toast.info('Em breve', { description: 'A página de Política de Privacidade está sendo elaborada.' })}
+            className="hover:text-primary transition-colors bg-transparent border-none cursor-pointer text-sm"
+          >
+            Privacidade
+          </button>
         </div>
       </div>
     </footer>

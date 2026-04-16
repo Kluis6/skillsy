@@ -98,6 +98,23 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
     }
   };
 
+  const formatUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `https://${url}`;
+  };
+
+  const handleWhatsApp = () => {
+    if (!targetProfile?.whatsapp) {
+      toast.error('WhatsApp não informado', {
+        description: 'Este profissional ainda não cadastrou um número de contato.'
+      });
+      return;
+    }
+    const phone = targetProfile.whatsapp.replace(/\D/g, '');
+    window.open(`https://wa.me/${phone.startsWith('55') ? phone : `55${phone}`}`, '_blank');
+  };
+
   const handleRate = async (score: number) => {
     if (!user) {
       toast.error('Login necessário', {
@@ -266,7 +283,10 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
                       )}
                     </Button>
                   )}
-                  <Button className="rounded-full h-12 px-8 bg-green-500 text-white hover:bg-green-600 font-bold shadow-lg shadow-green-200">
+                  <Button 
+                    onClick={handleWhatsApp}
+                    className="rounded-full h-12 px-8 bg-green-500 text-white hover:bg-green-600 font-bold shadow-lg shadow-green-200"
+                  >
                     <MessageCircle size={20} className="mr-2" /> WhatsApp
                   </Button>
                 </div>
@@ -407,28 +427,28 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
                 <h4 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4">Redes Sociais</h4>
                 <div className="flex gap-2">
                   {targetProfile.instagram && (
-                    <a href={targetProfile.instagram} target="_blank" rel="noopener noreferrer">
+                    <a href={formatUrl(targetProfile.instagram)} target="_blank" rel="noopener noreferrer">
                       <Button variant="ghost" size="icon" className="rounded-xl hover:bg-surface text-text-muted hover:text-primary">
                         <Instagram size={20} />
                       </Button>
                     </a>
                   )}
                   {targetProfile.facebook && (
-                    <a href={targetProfile.facebook} target="_blank" rel="noopener noreferrer">
+                    <a href={formatUrl(targetProfile.facebook)} target="_blank" rel="noopener noreferrer">
                       <Button variant="ghost" size="icon" className="rounded-xl hover:bg-surface text-text-muted hover:text-primary">
                         <Facebook size={20} />
                       </Button>
                     </a>
                   )}
                   {targetProfile.linkedin && (
-                    <a href={targetProfile.linkedin} target="_blank" rel="noopener noreferrer">
+                    <a href={formatUrl(targetProfile.linkedin)} target="_blank" rel="noopener noreferrer">
                       <Button variant="ghost" size="icon" className="rounded-xl hover:bg-surface text-text-muted hover:text-primary">
                         <Linkedin size={20} />
                       </Button>
                     </a>
                   )}
                   {targetProfile.website && (
-                    <a href={targetProfile.website} target="_blank" rel="noopener noreferrer">
+                    <a href={formatUrl(targetProfile.website)} target="_blank" rel="noopener noreferrer">
                       <Button variant="ghost" size="icon" className="rounded-xl hover:bg-surface text-text-muted hover:text-primary">
                         <Globe size={20} />
                       </Button>
