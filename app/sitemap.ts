@@ -21,7 +21,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const providers = await UserService.getAllProviders();
     const profileRoutes = providers.map((provider) => ({
       url: `${baseUrl}/profile/${provider.uid}`,
-      lastModified: provider.updatedAt ? new Date(provider.updatedAt) : new Date(),
+      lastModified: provider.createdAt?.seconds 
+        ? new Date(provider.createdAt.seconds * 1000) 
+        : new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.6,
     }));
