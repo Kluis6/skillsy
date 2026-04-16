@@ -90,7 +90,7 @@ service cloud.firestore {
         'category', 'isProvider', 'role', 'contacts', 'whatsapp', 
         'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 
         'phones', 'location', 'ward', 'companyName', 'gallery', 
-        'rating', 'reviewCount', 'verifiedMember', 
+        'rating', 'reviewCount', 'verifiedMember', 'experienceYears',
         'isBlocked', 'createdAt'
       ];
       
@@ -102,8 +102,8 @@ service cloud.firestore {
              data.isProvider is bool &&
              data.role in ['admin', 'user'] &&
              data.createdAt is timestamp &&
-             (!('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 300000)) &&
-             (!('bannerURL' in data) || data.bannerURL == null || (data.bannerURL is string && data.bannerURL.size() <= 300000)) &&
+             (!('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 1000000)) &&
+             (!('bannerURL' in data) || data.bannerURL == null || (data.bannerURL is string && data.bannerURL.size() <= 1000000)) &&
              (!('bio' in data) || data.bio == null || (data.bio is string && data.bio.size() <= 2000)) &&
              (!('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100)) &&
              (!('contacts' in data) || data.contacts == null || data.contacts is list) &&
@@ -120,6 +120,7 @@ service cloud.firestore {
              (!('gallery' in data) || data.gallery == null || (data.gallery is list && data.gallery.size() <= 5)) &&
              (!('rating' in data) || data.rating is number) &&
              (!('reviewCount' in data) || data.reviewCount is number) &&
+             (!('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
              (!('verifiedMember' in data) || data.verifiedMember is bool) &&
              (!('isBlocked' in data) || data.isBlocked is bool);
     }
