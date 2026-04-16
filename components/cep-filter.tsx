@@ -9,13 +9,23 @@ import { toast } from 'sonner';
 
 interface CepFilterProps {
   onLocationChange: (location: { city: string; state: string } | null) => void;
+  initialLocation?: { city: string; state: string } | null;
 }
 
-export function CepFilter({ onLocationChange }: CepFilterProps) {
+export function CepFilter({ onLocationChange, initialLocation }: CepFilterProps) {
   const [cep, setCep] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [location, setLocation] = useState<{ city: string; state: string } | null>(null);
+  const [location, setLocation] = useState<{ city: string; state: string } | null>(initialLocation || null);
+
+  useEffect(() => {
+    if (initialLocation) {
+      setLocation(initialLocation);
+    } else {
+      setLocation(null);
+      setCep('');
+    }
+  }, [initialLocation]);
 
   const handleCepChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 8);

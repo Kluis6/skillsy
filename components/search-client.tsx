@@ -16,9 +16,13 @@ import {
   Star, 
   ShieldCheck,
   ChevronRight,
+  X,
   SlidersHorizontal,
   UserPlus,
-  UserMinus
+  UserMinus,
+  ChevronLeft,
+  ChevronsLeft,
+  ChevronsRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
@@ -48,8 +52,11 @@ function SearchResultsContent() {
   const [results, setResults] = useState<UserProfile[]>([]);
   const [suggestions, setSuggestions] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   useEffect(() => {
+    setCurrentPage(1); // Reset pagination on filter change
     const fetchResults = async () => {
       setLoading(true);
       try {
@@ -121,22 +128,49 @@ function SearchResultsContent() {
       <div className="bg-card border-b border-border-subtle py-4 px-4 md:px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <CepFilter onLocationChange={(loc) => {
-              const params = new URLSearchParams(searchParams.toString());
-              if (loc) {
-                params.set('city', loc.city);
-                params.set('state', loc.state);
-              } else {
-                params.delete('city');
-                params.delete('state');
-              }
-              router.push(`/search?${params.toString()}`);
-            }} />
+            <CepFilter 
+              initialLocation={city && state ? { city, state } : null}
+              onLocationChange={(loc) => {
+                const params = new URLSearchParams(searchParams.toString());
+                if (loc) {
+                  params.set('city', loc.city);
+                  params.set('state', loc.state);
+                } else {
+                  params.delete('city');
+                  params.delete('state');
+                }
+                router.push(`/search?${params.toString()}`);
+              }} 
+            />
           </div>
-          <div className="hidden md:block">
+          <div className="hidden lg:flex items-center gap-4 border-l border-border-subtle pl-6 py-1">
             <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
               Filtrando por: <span className="text-primary">{city && state ? `${city}, ${state}` : 'Todo o Brasil'}</span>
             </p>
+            {city && state && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => {
+                        const params = new URLSearchParams(searchParams.toString());
+                        params.delete('city');
+                        params.delete('state');
+                        router.push(`/search?${params.toString()}`);
+                      }}
+                      className="h-8 w-8 rounded-full text-red-500 hover:bg-red-50 hover:text-red-600 transition-all"
+                    >
+                      <X size={14} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">Remover Filtro de Localização</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         </div>
       </div>
@@ -208,7 +242,7 @@ function SearchResultsContent() {
                 </div>
               ) : results.length > 0 ? (
                 <div className="space-y-6">
-                  {results.map((p, idx) => (
+                  {results.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((p, idx) => (
                     <motion.div
                       key={p.uid}
                       initial={{ opacity: 0, y: 10 }}
@@ -287,6 +321,94 @@ function SearchResultsContent() {
                       </Link>
                     </motion.div>
                   ))}
+
+                  {/* Pagination Component */}
+                  {results.length > ITEMS_PER_PAGE && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-10 pb-20 border-t border-border-subtle mt-10">
+                      <p className="text-sm font-bold text-text-muted uppercase tracking-widest">
+                        Página <span className="text-primary">{currentPage}</span> de {Math.ceil(results.length / ITEMS_PER_PAGE)}
+                      </p>
+                      
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setCurrentPage(1)}
+                          disabled={currentPage === 1}
+                          className="h-10 w-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                        >
+                          <ChevronsLeft size={18} />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                          disabled={currentPage === 1}
+                          className="h-10 w-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                        >
+                          <ChevronLeft size={18} />
+                        </Button>
+
+                        {/* Mobile pagination simplified, Desktop shows numbers */}
+                        <div className="hidden sm:flex items-center gap-1">
+                          {Array.from({ length: Math.ceil(results.length / ITEMS_PER_PAGE) }).map((_, i) => {
+                            const pageNum = i + 1;
+                            // Show first, last, current, and neighbors
+                            if (
+                              pageNum === 1 || 
+                              pageNum === Math.ceil(results.length / ITEMS_PER_PAGE) ||
+                              (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                            ) {
+                              return (
+                                <Button
+                                  key={pageNum}
+                                  variant={currentPage === pageNum ? "default" : "outline"}
+                                  onClick={() => setCurrentPage(pageNum)}
+                                  className={`h-10 w-10 rounded-xl transition-all font-bold ${
+                                    currentPage === pageNum 
+                                      ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-110 z-10' 
+                                      : 'border-border-subtle hover:border-primary/50'
+                                  }`}
+                                >
+                                  {pageNum}
+                                </Button>
+                              );
+                            } else if (
+                              (pageNum === currentPage - 2 && pageNum > 1) ||
+                              (pageNum === currentPage + 2 && pageNum < Math.ceil(results.length / ITEMS_PER_PAGE))
+                            ) {
+                              return <span key={pageNum} className="px-1 text-text-muted">...</span>;
+                            }
+                            return null;
+                          })}
+                        </div>
+
+                        {/* Mobile page number display */}
+                        <div className="sm:hidden font-bold text-primary bg-primary/5 px-4 h-10 flex items-center rounded-xl">
+                          {currentPage}
+                        </div>
+
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setCurrentPage(prev => Math.min(Math.ceil(results.length / ITEMS_PER_PAGE), prev + 1))}
+                          disabled={currentPage === Math.ceil(results.length / ITEMS_PER_PAGE)}
+                          className="h-10 w-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                        >
+                          <ChevronRight size={18} />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setCurrentPage(Math.ceil(results.length / ITEMS_PER_PAGE))}
+                          disabled={currentPage === Math.ceil(results.length / ITEMS_PER_PAGE)}
+                          className="h-10 w-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                        >
+                          <ChevronsRight size={18} />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-12">
