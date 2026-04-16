@@ -45,17 +45,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           let userProfile = await UserService.getProfile(user.uid);
           
           if (!userProfile) {
-            const newProfile: Partial<UserProfile> = {
-              uid: user.uid,
-              name: user.displayName || 'Membro Skillsy',
-              email: user.email || '',
-              photoURL: user.photoURL || '',
-              isProvider: false,
-              role: 'user',
-              contacts: [],
-            };
-            await UserService.createProfile(newProfile);
-            userProfile = await UserService.getProfile(user.uid);
+            // Check if there's a pre-registered profile by email (e.g. created by another admin)
+            const existingByEmail = await UserService.getProfileByEmail(user.email || '');
+            
+            if (existingByEmail && (!existingByEmail.uid || existingByEmail.uid === "")) {
+              // This is a pre-registered profile without a valid UID yet
+              const updatedProfile: Partial<UserProfile> = {
+                ...existingByEmail,
+                uid: user.uid,
+                name: user.displayName || existingByEmail.name || 'Membro Skillsy',
+                photoURL: user.photoURL || existingByEmail.photoURL || '',
+                email: user.email || existingByEmail.email,
+              };
+              await UserService.createProfile(updatedProfile);
+              userProfile = await UserService.getProfile(user.uid);
+            } else {
+              // Bootstrap admin check
+              const isBootstrapAdmin = user.email === "luislmorningstar@gmail.com" && user.emailVerified;
+              
+              const newProfile: Partial<UserProfile> = {
+                uid: user.uid,
+                name: user.displayName || 'Membro Skillsy',
+                email: user.email || '',
+                photoURL: user.photoURL || '',
+                isProvider: false,
+                role: isBootstrapAdmin ? 'admin' : 'user',
+                contacts: [],
+              };
+              await UserService.createProfile(newProfile);
+              userProfile = await UserService.getProfile(user.uid);
+            }
           }
           setProfile(userProfile);
 

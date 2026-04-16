@@ -82,6 +82,19 @@ export const UserService = {
     }
   },
 
+  async getProfileByEmail(email: string): Promise<UserProfile | null> {
+    const path = 'users';
+    try {
+      const q = query(collection(db, 'users'), where('email', '==', email), limit(1));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) return null;
+      return querySnapshot.docs[0].data() as UserProfile;
+    } catch (error) {
+      handleFirestoreError(error, OperationType.LIST, path);
+      return null;
+    }
+  },
+
   async createProfile(profile: Partial<UserProfile>): Promise<void> {
     if (!profile.uid) throw new Error('UID is required');
     const path = `users/${profile.uid}`;

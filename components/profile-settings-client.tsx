@@ -91,8 +91,23 @@ export function ProfileSettingsClient() {
 
   const handleSave = async () => {
     setLoading(true);
+    
+    // Clean data: remove empty strings or set to null if needed
+    const cleanedData = { ...formData };
+    const optionalFields = [
+      'instagram', 'facebook', 'linkedin', 'website', 'whatsapp', 
+      'bio', 'location', 'ward', 'companyName', 'serviceType', 
+      'category', 'photoURL', 'bannerURL'
+    ];
+    
+    optionalFields.forEach(field => {
+      if ((cleanedData as any)[field] === '') {
+        (cleanedData as any)[field] = null;
+      }
+    });
+
     try {
-      await updateProfile(formData);
+      await updateProfile(cleanedData);
       toast.success('Perfil atualizado com sucesso!');
     } catch (error) {
       console.error('Error updating profile:', error);

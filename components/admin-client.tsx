@@ -82,7 +82,10 @@ export function AdminClient() {
   
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isAddAdminDialogOpen, setIsAddAdminDialogOpen] = useState(false);
   const [editFormData, setEditFormData] = useState<Partial<UserProfile>>({});
+  const [newAdminData, setNewAdminData] = useState({ name: '', email: '' });
+  const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -183,6 +186,45 @@ export function AdminClient() {
     }
   };
 
+  const handleCreateAdmin = async () => {
+    if (!newAdminData.name || !newAdminData.email) {
+      toast.error('Preencha todos os campos');
+      return;
+    }
+
+    setIsCreatingAdmin(true);
+    try {
+      // Check if email already exists
+      const existing = await UserService.getProfileByEmail(newAdminData.email);
+      if (existing) {
+        toast.error('Este e-mail já está cadastrado');
+        setIsCreatingAdmin(false);
+        return;
+      }
+
+      const tempId = `pre_${Math.random().toString(36).substring(2, 11)}`;
+      const newAdmin: Partial<UserProfile> = {
+        uid: tempId,
+        name: newAdminData.name,
+        email: newAdminData.email,
+        role: 'admin',
+        isProvider: false,
+        contacts: [],
+      };
+
+      await UserService.createProfile(newAdmin);
+      toast.success('Administrador pré-cadastrado com sucesso!');
+      setIsAddAdminDialogOpen(false);
+      setNewAdminData({ name: '', email: '' });
+      fetchUsers();
+    } catch (error) {
+      console.error('Error creating admin:', error);
+      toast.error('Erro ao criar administrador');
+    } finally {
+      setIsCreatingAdmin(false);
+    }
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-surface pb-20">
@@ -240,6 +282,12 @@ export function AdminClient() {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
+            <Button 
+              onClick={() => setIsAddAdminDialogOpen(true)}
+              className="bg-primary text-white hover:bg-primary/90 rounded-2xl px-6 font-bold shadow-lg shadow-primary/20 h-11"
+            >
+              <ShieldCheck size={18} className="mr-2" /> Novo Admin
+            </Button>
             <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 px-3 py-1">
               Admin: {profile.name}
             </Badge>
@@ -530,6 +578,55 @@ export function AdminClient() {
             </Button>
             <Button onClick={handleSaveEdit} className="bg-primary text-white hover:bg-primary/90 rounded-2xl h-12 px-8 font-bold shadow-lg shadow-primary/20">
               Salvar Alterações
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Admin Dialog */}
+      <Dialog open={isAddAdminDialogOpen} onOpenChange={setIsAddAdminDialogOpen}>
+        <DialogContent className="rounded-[2.5rem] border-none shadow-2xl p-8 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold font-heading">Novo Administrador</DialogTitle>
+            <DialogDescription>
+              Pré-cadastre um e-mail para ter acesso administrativo ao entrar na plataforma.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-6">
+            <div className="space-y-2">
+              <Label htmlFor="new-name" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome</Label>
+              <Input 
+                id="new-name" 
+                placeholder="Nome do futuro admin"
+                value={newAdminData.name} 
+                onChange={(e) => setNewAdminData({ ...newAdminData, name: e.target.value })}
+                className="bg-surface border-none rounded-2xl h-12"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-email" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">E-mail</Label>
+              <Input 
+                id="new-email" 
+                type="email"
+                placeholder="email@exemplo.com"
+                value={newAdminData.email} 
+                onChange={(e) => setNewAdminData({ ...newAdminData, email: e.target.value })}
+                className="bg-surface border-none rounded-2xl h-12"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="gap-3">
+            <Button variant="ghost" onClick={() => setIsAddAdminDialogOpen(false)} className="rounded-2xl h-12 px-8 font-bold">
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleCreateAdmin} 
+              disabled={isCreatingAdmin}
+              className="bg-primary text-white hover:bg-primary/90 rounded-2xl h-12 px-8 font-bold shadow-lg shadow-primary/20"
+            >
+              {isCreatingAdmin ? 'Criando...' : 'Criar Administrador'}
             </Button>
           </DialogFooter>
         </DialogContent>
