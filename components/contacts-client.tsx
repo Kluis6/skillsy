@@ -259,10 +259,6 @@ export function ContactsClient() {
                         <p className="font-bold text-primary truncate text-sm">{selectedContact.serviceType || selectedContact.category || 'Membro'}</p>
                       </div>
                       <div className="text-center md:text-left">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Experiência</p>
-                        <p className="font-bold text-text-main text-sm">{selectedContact.experienceYears || 0} anos</p>
-                      </div>
-                      <div className="text-center md:text-left">
                         <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Avaliação</p>
                         <div className="flex items-center justify-center md:justify-start gap-1 font-bold text-highlight text-sm">
                           <Star size={14} fill="currentColor" /> {selectedContact.rating || '0.0'}

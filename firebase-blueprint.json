@@ -33,7 +33,6 @@
         "gallery": { "type": "array", "items": { "type": "string" }, "description": "URLs de fotos da galeria (máx 5)" },
         "rating": { "type": "number", "description": "Avaliação média" },
         "reviewCount": { "type": "number", "description": "Total de avaliações" },
-        "experienceYears": { "type": "number", "description": "Anos de experiência" },
         "verifiedMember": { "type": "boolean", "description": "Se o membro foi verificado pela comunidade" },
         "isBlocked": { "type": "boolean", "description": "Se o usuário está bloqueado pelo administrador" },
         "createdAt": { "type": "string", "format": "date-time", "description": "Data de criação do perfil" }

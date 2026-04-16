@@ -297,10 +297,6 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
                     <p className="font-bold text-primary truncate">{targetProfile.serviceType || targetProfile.category || 'Membro'}</p>
                   </div>
                   <div className="text-center md:text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Experiência</p>
-                    <p className="font-bold text-text-main">{targetProfile.experienceYears || 0} anos</p>
-                  </div>
-                  <div className="text-center md:text-left">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Avaliação</p>
                     <div className="flex items-center justify-center md:justify-start gap-1 font-bold text-highlight">
                       <Star size={16} fill="currentColor" /> {targetProfile.rating || '0.0'}

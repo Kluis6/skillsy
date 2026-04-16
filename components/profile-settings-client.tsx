@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +23,8 @@ import {
   ShieldCheck,
   Briefcase,
   MapPin,
-  Church
+  Church,
+  Loader2
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -31,6 +32,7 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import Image from 'next/image';
+import imageCompression from 'browser-image-compression';
 
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -39,6 +41,12 @@ import { ThemeToggle } from '@/components/theme-toggle';
 export function ProfileSettingsClient() {
   const { user, profile, updateProfile, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState<string | null>(null);
+  
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+
   const [formData, setFormData] = useState({
     name: '',
     bio: '',
@@ -47,7 +55,6 @@ export function ProfileSettingsClient() {
     serviceType: '',
     category: '',
     companyName: '',
-    experienceYears: 0,
     isProvider: false,
     whatsapp: '',
     instagram: '',
@@ -69,7 +76,6 @@ export function ProfileSettingsClient() {
         serviceType: profile.serviceType || '',
         category: profile.category || '',
         companyName: profile.companyName || '',
-        experienceYears: profile.experienceYears || 0,
         isProvider: profile.isProvider || false,
         whatsapp: profile.whatsapp || '',
         instagram: profile.instagram || '',
@@ -96,14 +102,53 @@ export function ProfileSettingsClient() {
     }
   };
 
-  const handleAddPhoto = () => {
-    const url = prompt('Insira a URL da imagem:');
-    if (url) {
-      setFormData(prev => ({
-        ...prev,
-        gallery: [...prev.gallery, url]
-      }));
+  const compressAndGetBase64 = async (file: File) => {
+    const options = {
+      maxSizeMB: 0.1, // 100KB to keep Firestore docs small
+      maxWidthOrHeight: 1024,
+      useWebWorker: true,
+    };
+    try {
+      const compressedFile = await imageCompression(file, options);
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(compressedFile);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = error => reject(error);
+      });
+    } catch (error) {
+      console.error('Compression error:', error);
+      throw error;
     }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'banner' | 'gallery') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(type);
+    try {
+      const base64 = await compressAndGetBase64(file);
+      if (type === 'avatar') {
+        setFormData(prev => ({ ...prev, photoURL: base64 }));
+        toast.success('Foto de perfil carregada!');
+      } else if (type === 'banner') {
+        setFormData(prev => ({ ...prev, bannerURL: base64 }));
+        toast.success('Banner carregado!');
+      } else if (type === 'gallery') {
+        setFormData(prev => ({ ...prev, gallery: [...prev.gallery, base64] }));
+        toast.success('Foto adicionada à galeria!');
+      }
+    } catch (error) {
+      toast.error('Erro ao carregar imagem');
+    } finally {
+      setUploading(null);
+      e.target.value = ''; // Reset input
+    }
+  };
+
+  const handleAddPhoto = () => {
+    galleryInputRef.current?.click();
   };
 
   const removePhoto = (index: number) => {
@@ -195,15 +240,20 @@ export function ProfileSettingsClient() {
                   />
                 )}
                 <button 
-                  onClick={() => {
-                    const url = prompt('URL da nova foto do banner:');
-                    if (url) setFormData({ ...formData, bannerURL: url });
-                  }}
-                  className="absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white p-2 rounded-xl hover:bg-white/30 transition-colors"
+                  onClick={() => bannerInputRef.current?.click()}
+                  disabled={uploading === 'banner'}
+                  className="absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white p-2 rounded-xl hover:bg-white/30 transition-colors disabled:opacity-50"
                   title="Alterar Banner"
                 >
-                  <Camera size={18} />
+                  {uploading === 'banner' ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}
                 </button>
+                <input 
+                  type="file" 
+                  ref={bannerInputRef} 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={(e) => handleFileChange(e, 'banner')}
+                />
               </div>
               <CardContent className="pt-10 pb-8 flex flex-col items-center -mt-16">
                 <div className="relative group mb-6">
@@ -214,14 +264,19 @@ export function ProfileSettingsClient() {
                     </AvatarFallback>
                   </Avatar>
                   <button 
-                    onClick={() => {
-                      const url = prompt('URL da nova foto de perfil:');
-                      if (url) setFormData({ ...formData, photoURL: url });
-                    }}
-                    className="absolute bottom-0 right-0 bg-primary text-white p-2.5 rounded-2xl shadow-lg hover:scale-110 transition-transform"
+                    onClick={() => avatarInputRef.current?.click()}
+                    disabled={uploading === 'avatar'}
+                    className="absolute bottom-0 right-0 bg-primary text-white p-2.5 rounded-2xl shadow-lg hover:scale-110 transition-transform disabled:opacity-50"
                   >
-                    <Camera size={18} />
+                    {uploading === 'avatar' ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}
                   </button>
+                  <input 
+                    type="file" 
+                    ref={avatarInputRef} 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, 'avatar')}
+                  />
                 </div>
                 <h2 className="text-xl font-bold text-text-main mb-1">{formData.name || 'Seu Nome'}</h2>
                 <p className="text-sm text-text-muted mb-4">{user.email}</p>
@@ -300,15 +355,6 @@ export function ProfileSettingsClient() {
                         value={formData.serviceType}
                         onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
                         placeholder="Ex: Eletricista, Professor de Inglês, etc."
-                        className="bg-surface border-none rounded-2xl h-12"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Anos de Experiência</Label>
-                      <Input 
-                        type="number"
-                        value={formData.experienceYears}
-                        onChange={(e) => setFormData({ ...formData, experienceYears: parseInt(e.target.value) || 0 })}
                         className="bg-surface border-none rounded-2xl h-12"
                       />
                     </div>
@@ -426,10 +472,18 @@ export function ProfileSettingsClient() {
                   variant="outline" 
                   size="sm" 
                   onClick={handleAddPhoto}
-                  className="rounded-xl border-primary/20 text-primary hover:bg-primary/5 font-bold"
+                  disabled={uploading === 'gallery'}
+                  className="rounded-xl border-primary/20 text-primary hover:bg-primary/5 font-bold disabled:opacity-50"
                 >
-                  <Plus size={16} className="mr-2" /> Adicionar Foto
+                  {uploading === 'gallery' ? <Loader2 size={16} className="mr-2 animate-spin" /> : <Plus size={16} className="mr-2" />} Adicionar Foto
                 </Button>
+                <input 
+                  type="file" 
+                  ref={galleryInputRef} 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={(e) => handleFileChange(e, 'gallery')}
+                />
               </div>
               
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">

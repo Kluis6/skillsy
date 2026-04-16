@@ -255,9 +255,6 @@ function SearchResultsContent() {
 
                             <div className="flex flex-wrap gap-3 pt-2">
                               <Badge className="bg-surface text-text-muted hover:bg-primary/5 hover:text-primary border-none rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors">
-                                {p.experienceYears || 0} anos de exp.
-                              </Badge>
-                              <Badge className="bg-surface text-text-muted hover:bg-primary/5 hover:text-primary border-none rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors">
                                 Atendimento Local
                               </Badge>
                               <div className="flex-grow" />
