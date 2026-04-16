@@ -1,11 +1,33 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ShieldCheck, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 
 export function ContactCTA() {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.message) {
+      toast.error('Campos obrigatórios', { description: 'Por favor, preencha todos os campos.' });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    toast.success('Mensagem enviada!', { 
+      description: 'Obrigado pelo contato. Retornaremos em breve.' 
+    });
+    setFormData({ name: '', email: '', message: '' });
+    setIsSubmitting(false);
+  };
+
   return (
     <section className="mt-24 bg-primary rounded-[2.5rem] p-12 md:p-20 text-white relative overflow-hidden shadow-2xl shadow-primary/30">
       <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
@@ -32,17 +54,34 @@ export function ContactCTA() {
         
         <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl">
           <h4 className="text-text-main text-xl font-bold mb-6 text-center">Fale Conosco</h4>
-          <div className="space-y-4">
-            <Input placeholder="Seu Nome" className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" />
-            <Input placeholder="Seu Email" className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input 
+              placeholder="Seu Nome" 
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" 
+            />
+            <Input 
+              placeholder="Seu Email" 
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" 
+            />
             <textarea 
               placeholder="Sua Mensagem" 
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               className="w-full bg-surface border-none rounded-xl p-4 text-text-main placeholder:text-text-muted/50 h-32 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
             />
-            <Button className="w-full bg-primary text-white h-12 rounded-xl font-bold hover:bg-primary/90 shadow-lg shadow-primary/20">
-              Enviar Mensagem
+            <Button 
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-primary text-white h-12 rounded-xl font-bold hover:bg-primary/90 shadow-lg shadow-primary/20"
+            >
+              {isSubmitting ? 'Enviando...' : 'Enviar Mensagem'}
             </Button>
-          </div>
+          </form>
         </div>
       </div>
     </section>

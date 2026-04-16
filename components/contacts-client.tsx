@@ -126,7 +126,7 @@ export function ContactsClient() {
                   <button
                     key={c.uid}
                     onClick={() => setSelectedContactId(c.uid)}
-                    className={`w-full p-4 flex items-center gap-4 transition-all hover:bg-primary/5 text-left relative ${
+                    className={`w-full p-4 flex items-center gap-4 transition-all hover:bg-primary/5 text-left relative group ${
                       selectedContact?.uid === c.uid ? 'bg-primary/5' : ''
                     }`}
                   >
@@ -140,7 +140,22 @@ export function ContactsClient() {
                     <div className="flex-grow min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <h4 className="font-bold text-text-main truncate text-sm">{c.name}</h4>
-                        <ChevronRight size={14} className="text-text-muted/30 shrink-0" />
+                        <div className="flex items-center gap-1 shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 rounded-lg text-text-muted hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleContact(c.uid);
+                              toast.success('Contato removido');
+                              if (selectedContactId === c.uid) setSelectedContactId(null);
+                            }}
+                          >
+                            <UserMinus size={14} />
+                          </Button>
+                          <ChevronRight size={14} className="text-text-muted/30 group-hover:opacity-0 transition-opacity" />
+                        </div>
                       </div>
                       <p className="text-[10px] text-text-muted truncate font-medium">
                         {c.companyName || c.category || 'Membro'}

@@ -44,6 +44,7 @@ function SearchResultsContent() {
   const state = searchParams.get('state') || '';
 
   const [searchTerm, setSearchTerm] = useState(query);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [results, setResults] = useState<UserProfile[]>([]);
   const [suggestions, setSuggestions] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +54,16 @@ function SearchResultsContent() {
       setLoading(true);
       try {
         const location = city && state ? { city, state } : undefined;
-        const data = await UserService.searchProviders(query, location);
+        let data = await UserService.searchProviders(query, location);
+        
+        if (selectedCategories.length > 0) {
+          data = data.filter(p => 
+            selectedCategories.some(cat => 
+              p.category === cat || p.serviceType?.toLowerCase().includes(cat.toLowerCase())
+            )
+          );
+        }
+
         setResults(data);
 
         // If no results, fetch suggestions from the same location
@@ -72,7 +82,7 @@ function SearchResultsContent() {
       }
     };
     fetchResults();
-  }, [query, city, state]);
+  }, [query, city, state, selectedCategories]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,11 +156,32 @@ function SearchResultsContent() {
                 <div>
                   <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4">Categorias</p>
                   <div className="space-y-3">
-                    {['Tecnologia', 'Design', 'Marketing', 'Consultoria', 'Cozinha', 'Limpeza', 'Manutenção', 'Saúde', 'Educação', 'Eventos'].map(cat => (
+                    {[
+                      'Tecnologia', 'Design', 'Marketing', 'Consultoria', 'Cozinha', 
+                      'Limpeza', 'Manutenção', 'Beleza', 'Educação', 'Saúde', 
+                      'Eventos', 'Jurídico', 'Financeiro', 'Assistência', 'Reformas', 
+                      'Automotivo', 'Moda', 'Bem Estar', 'Pet Care', 'Fotografia', 
+                      'Música', 'Idiomas', 'Esportes', 'Festas', 'Transporte'
+                    ].map(cat => (
                       <label key={cat} className="flex items-center gap-3 text-sm font-medium text-text-muted hover:text-primary cursor-pointer transition-colors group">
-                        <div className="w-5 h-5 rounded-lg border-2 border-border-subtle group-hover:border-primary/30 transition-all flex items-center justify-center">
-                          <input type="checkbox" className="hidden" />
-                          <div className="w-2.5 h-2.5 bg-primary rounded-sm opacity-0 group-hover:opacity-10 transition-opacity" />
+                        <div className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${
+                          selectedCategories.includes(cat) ? 'border-primary bg-primary/5' : 'border-border-subtle group-hover:border-primary/30'
+                        }`}>
+                          <input 
+                            type="checkbox" 
+                            className="hidden" 
+                            checked={selectedCategories.includes(cat)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedCategories(prev => [...prev, cat]);
+                              } else {
+                                setSelectedCategories(prev => prev.filter(c => c !== cat));
+                              }
+                            }}
+                          />
+                          <div className={`w-2.5 h-2.5 bg-primary rounded-sm transition-opacity ${
+                            selectedCategories.includes(cat) ? 'opacity-100' : 'opacity-0 group-hover:opacity-10'
+                          }`} />
                         </div>
                         {cat}
                       </label>

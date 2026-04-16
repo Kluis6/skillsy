@@ -277,7 +277,7 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
                       }`}
                     >
                       {isContact ? (
-                        <><UserMinus size={20} className="mr-2" /> Remover</>
+                        <><UserMinus size={20} className="mr-2" /> Remover dos Contatos</>
                       ) : (
                         <><UserPlus size={20} className="mr-2" /> Adicionar aos Contatos</>
                       )}

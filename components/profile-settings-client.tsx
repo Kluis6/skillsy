@@ -279,6 +279,18 @@ export function ProfileSettingsClient() {
                         <option value="Eventos">Eventos</option>
                         <option value="Jurídico">Jurídico</option>
                         <option value="Financeiro">Financeiro</option>
+                        <option value="Assistência">Assistência Técnica</option>
+                        <option value="Reformas">Reformas e Reparos</option>
+                        <option value="Automotivo">Automotivo</option>
+                        <option value="Moda">Moda</option>
+                        <option value="Bem Estar">Bem Estar</option>
+                        <option value="Pet Care">Pet Care</option>
+                        <option value="Fotografia">Fotografia</option>
+                        <option value="Música">Música</option>
+                        <option value="Idiomas">Idiomas</option>
+                        <option value="Esportes">Esportes</option>
+                        <option value="Festas">Festas</option>
+                        <option value="Transporte">Transporte</option>
                         <option value="Outros">Outros</option>
                       </select>
                     </div>

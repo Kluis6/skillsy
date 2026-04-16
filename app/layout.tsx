@@ -55,6 +55,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -66,12 +67,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
-            <TooltipProvider>
-              {children}
-              <Toaster position="top-center" richColors />
-            </TooltipProvider>
-          </AuthProvider>
+          <ErrorBoundary>
+            <AuthProvider>
+              <TooltipProvider>
+                {children}
+                <Toaster position="top-center" richColors />
+              </TooltipProvider>
+            </AuthProvider>
+          </ErrorBoundary>
         </ThemeProvider>
       </body>
     </html>

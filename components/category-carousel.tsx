@@ -16,6 +16,18 @@ import {
   PartyPopper, 
   Scale, 
   Coins,
+  Settings,
+  Hammer,
+  Car,
+  Shirt,
+  Heart,
+  Dog,
+  Camera,
+  Music,
+  Languages,
+  Dumbbell,
+  Cake,
+  Truck,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
@@ -36,6 +48,18 @@ const categories = [
   { name: 'Eventos', icon: PartyPopper, color: 'text-purple-500', bg: 'bg-purple-50' },
   { name: 'Jurídico', icon: Scale, color: 'text-gray-600', bg: 'bg-gray-100' },
   { name: 'Financeiro', icon: Coins, color: 'text-yellow-600', bg: 'bg-yellow-50' },
+  { name: 'Assistência', icon: Settings, color: 'text-blue-600', bg: 'bg-blue-100' },
+  { name: 'Reformas', icon: Hammer, color: 'text-orange-700', bg: 'bg-orange-100' },
+  { name: 'Automotivo', icon: Car, color: 'text-red-700', bg: 'bg-red-100' },
+  { name: 'Moda', icon: Shirt, color: 'text-pink-700', bg: 'bg-pink-100' },
+  { name: 'Bem Estar', icon: Heart, color: 'text-rose-600', bg: 'bg-rose-100' },
+  { name: 'Pet Care', icon: Dog, color: 'text-amber-700', bg: 'bg-amber-100' },
+  { name: 'Fotografia', icon: Camera, color: 'text-zinc-700', bg: 'bg-zinc-100' },
+  { name: 'Música', icon: Music, color: 'text-violet-600', bg: 'bg-violet-100' },
+  { name: 'Idiomas', icon: Languages, color: 'text-sky-600', bg: 'bg-sky-100' },
+  { name: 'Esportes', icon: Dumbbell, color: 'text-lime-600', bg: 'bg-lime-100' },
+  { name: 'Festas', icon: Cake, color: 'text-fuchsia-600', bg: 'bg-fuchsia-100' },
+  { name: 'Transporte', icon: Truck, color: 'text-teal-600', bg: 'bg-teal-100' },
 ];
 
 export function CategoryCarousel() {

@@ -11,7 +11,7 @@
         "photoURL": { "type": "string", "description": "URL da foto de perfil" },
         "bannerURL": { "type": "string", "description": "URL da foto do banner do perfil" },
         "bio": { "type": "string", "description": "Breve biografia ou descrição da empresa" },
-        "category": { "type": "string", "description": "Categoria do serviço prestado" },
+        "category": { "type": "string", "description": "Categoria do serviço prestado (Tecnologia, Design, Marketing, Consultoria, Cozinha, Limpeza, Manutenção, Beleza, Educação, Saúde, Eventos, Jurídico, Financeiro, Assistência, Reformas, Automotivo, Moda, Bem Estar, Pet Care, Fotografia, Música, Idiomas, Esportes, Festas, Transporte)" },
         "isProvider": { "type": "boolean", "description": "Se o usuário é um prestador de serviço" },
         "role": { "type": "string", "enum": ["admin", "user"], "description": "Papel do usuário no sistema" },
         "contacts": { "type": "array", "items": { "type": "string" }, "description": "Lista de UIDs de contatos salvos" },

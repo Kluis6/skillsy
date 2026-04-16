@@ -85,7 +85,17 @@ service cloud.firestore {
     }
 
     function isValidUser(data) {
+      let allowedFields = [
+        'uid', 'name', 'email', 'photoURL', 'bannerURL', 'bio', 
+        'category', 'isProvider', 'role', 'contacts', 'whatsapp', 
+        'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 
+        'phones', 'location', 'ward', 'companyName', 'gallery', 
+        'rating', 'reviewCount', 'experienceYears', 'verifiedMember', 
+        'isBlocked', 'createdAt'
+      ];
+      
       return data.keys().hasAll(['uid', 'name', 'email', 'isProvider', 'role', 'createdAt']) &&
+             data.keys().hasOnly(allowedFields) &&
              data.uid is string &&
              data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
              isValidEmail(data.email) &&
@@ -94,14 +104,19 @@ service cloud.firestore {
              data.createdAt is timestamp &&
              (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 500)) &&
              (!('bannerURL' in data) || (data.bannerURL is string && data.bannerURL.size() <= 500)) &&
-             (!('bio' in data) || (data.bio is string && data.bio.size() <= 1000)) &&
+             (!('bio' in data) || (data.bio is string && data.bio.size() <= 2000)) &&
+             (!('category' in data) || (data.category is string && data.category.size() <= 100)) &&
              (!('contacts' in data) || data.contacts is list) &&
-             (!('whatsapp' in data) || (data.whatsapp is string && data.whatsapp.size() <= 20)) &&
-             (!('serviceType' in data) || (data.serviceType is string && data.serviceType.size() <= 100)) &&
-             (!('phones' in data) || (data.phones is list && data.phones.size() <= 5)) &&
-             (!('ward' in data) || (data.ward is string && data.ward.size() <= 100)) &&
-             (!('companyName' in data) || (data.companyName is string && data.companyName.size() <= 100)) &&
-             (!('socialLinks' in data) || data.socialLinks is map) &&
+             (!('whatsapp' in data) || (data.whatsapp is string && data.whatsapp.size() <= 30)) &&
+             (!('instagram' in data) || (data.instagram is string && data.instagram.size() <= 100)) &&
+             (!('facebook' in data) || (data.facebook is string && data.facebook.size() <= 100)) &&
+             (!('linkedin' in data) || (data.linkedin is string && data.linkedin.size() <= 100)) &&
+             (!('website' in data) || (data.website is string && data.website.size() <= 200)) &&
+             (!('serviceType' in data) || (data.serviceType is string && data.serviceType.size() <= 200)) &&
+             (!('phones' in data) || (data.phones is list && data.phones.size() <= 10)) &&
+             (!('location' in data) || (data.location is string && data.location.size() <= 200)) &&
+             (!('ward' in data) || (data.ward is string && data.ward.size() <= 200)) &&
+             (!('companyName' in data) || (data.companyName is string && data.companyName.size() <= 200)) &&
              (!('gallery' in data) || (data.gallery is list && data.gallery.size() <= 5)) &&
              (!('rating' in data) || data.rating is number) &&
              (!('reviewCount' in data) || data.reviewCount is number) &&
