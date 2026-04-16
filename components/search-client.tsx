@@ -264,8 +264,9 @@ function SearchResultsContent() {
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  toggleContact(p.uid);
-                                  toast.success('Lista de contatos atualizada');
+                                  toggleContact(p.uid).then(() => {
+                                    if (profile) toast.success('Lista de contatos atualizada');
+                                  }).catch(() => {});
                                 }}
                               >
                                 {profile?.contacts?.includes(p.uid) ? (

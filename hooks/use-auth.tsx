@@ -15,6 +15,7 @@ import {
 import { auth } from '@/lib/firebase';
 import { UserService } from '@/services/user-service';
 import { UserProfile } from '@/models/types';
+import { toast } from 'sonner';
 
 interface AuthContextType {
   user: User | null;
@@ -152,7 +153,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleContact = async (contactId: string) => {
-    if (!user || !profile) return;
+    if (!user || !profile) {
+      toast.error('Login necessário', {
+        description: 'Você precisa estar logado para salvar contatos.'
+      });
+      return;
+    }
     
     const isContact = profile.contacts?.includes(contactId);
     
