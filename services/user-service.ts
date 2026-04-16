@@ -113,7 +113,9 @@ export const UserService = {
     const path = `users/${uid}`;
     try {
       const docRef = doc(db, 'users', uid);
-      await updateDoc(docRef, data);
+      // Remove 'id' if it exists in the data to avoid Firestore rule violations
+      const { id, ...updateData } = data as any;
+      await updateDoc(docRef, updateData);
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
     }
@@ -199,9 +201,123 @@ export const UserService = {
     const path = `users/${uid}`;
     try {
       const docRef = doc(db, 'users', uid);
-      await updateDoc(docRef, data);
+      // Remove 'id' if it exists in the data to avoid Firestore rule violations
+      const { id, ...updateData } = data as any;
+      await updateDoc(docRef, updateData);
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
+    }
+  },
+
+  async seedUsers(): Promise<void> {
+    const fakeUsers: Partial<UserProfile>[] = [
+      {
+        uid: 'fake_1',
+        name: 'Ricardo Oliveira',
+        email: 'ricardo.manutencao@example.com',
+        isProvider: true,
+        category: 'Manutenção',
+        serviceType: 'Eletricista e Encanador',
+        location: 'São Paulo, SP',
+        ward: 'Ala Jardins',
+        companyName: 'Oliveira Reparos',
+        bio: 'Profissional com 15 anos de experiência em manutenção residencial e predial.',
+        whatsapp: '11988887777',
+        rating: 4.8,
+        reviewCount: 12,
+        role: 'user',
+        verifiedMember: true,
+        photoURL: 'https://picsum.photos/seed/ricardo/200',
+        bannerURL: 'https://picsum.photos/seed/ricardo_banner/800/200'
+      },
+      {
+        uid: 'fake_2',
+        name: 'Ana Cláudia Santos',
+        email: 'ana.doces@example.com',
+        isProvider: true,
+        category: 'Cozinha',
+        serviceType: 'Bolos e Doces Gourmet',
+        location: 'Curitiba, PR',
+        ward: 'Ala Portão',
+        companyName: 'Ana Doces',
+        bio: 'Faço bolos para casamentos, aniversários e eventos especiais com ingredientes de primeira.',
+        whatsapp: '41999998888',
+        rating: 5.0,
+        reviewCount: 25,
+        role: 'user',
+        verifiedMember: true,
+        photoURL: 'https://picsum.photos/seed/ana/200',
+        bannerURL: 'https://picsum.photos/seed/ana_banner/800/200'
+      },
+      {
+        uid: 'fake_3',
+        name: 'Marcos Vinícius',
+        email: 'marcos.tech@example.com',
+        isProvider: true,
+        category: 'Tecnologia',
+        serviceType: 'Desenvolvedor Web Fullstack',
+        location: 'Belo Horizonte, MG',
+        ward: 'Ala Pampulha',
+        companyName: 'MV Tech Solutions',
+        bio: 'Especialista em React, Node.js e aplicativos mobile. Ajudo sua empresa a crescer digitalmente.',
+        whatsapp: '31977776666',
+        rating: 4.9,
+        reviewCount: 8,
+        role: 'user',
+        verifiedMember: false,
+        photoURL: 'https://picsum.photos/seed/marcos/200',
+        bannerURL: 'https://picsum.photos/seed/marcos_banner/800/200'
+      },
+      {
+        uid: 'fake_4',
+        name: 'Juliana Ferreira',
+        email: 'juliana.limpeza@example.com',
+        isProvider: true,
+        category: 'Limpeza',
+        serviceType: 'Limpeza Pós-Obra e Residencial',
+        location: 'Rio de Janeiro, RJ',
+        ward: 'Ala Barra',
+        companyName: 'Brilho Total',
+        bio: 'Serviço de limpeza detalhado e confiável para sua casa ou escritório.',
+        whatsapp: '21966665555',
+        rating: 4.7,
+        reviewCount: 15,
+        role: 'user',
+        verifiedMember: true,
+        photoURL: 'https://picsum.photos/seed/juliana/200',
+        bannerURL: 'https://picsum.photos/seed/juliana_banner/800/200'
+      },
+      {
+        uid: 'fake_5',
+        name: 'Paulo Souza',
+        email: 'paulo.reformas@example.com',
+        isProvider: true,
+        category: 'Reformas',
+        serviceType: 'Pintura e Drywall',
+        location: 'Porto Alegre, RS',
+        ward: 'Ala Moinhos',
+        companyName: 'Souza Pinturas',
+        bio: 'Pintura residencial e comercial com acabamento impecável e rapidez.',
+        whatsapp: '51955554444',
+        rating: 4.6,
+        reviewCount: 10,
+        role: 'user',
+        verifiedMember: false,
+        photoURL: 'https://picsum.photos/seed/paulo/200',
+        bannerURL: 'https://picsum.photos/seed/paulo_banner/800/200'
+      }
+    ];
+
+    try {
+      for (const user of fakeUsers) {
+        const docRef = doc(db, 'users', user.uid!);
+        await setDoc(docRef, {
+          ...user,
+          createdAt: serverTimestamp()
+        });
+      }
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, 'users/seed');
     }
   },
 

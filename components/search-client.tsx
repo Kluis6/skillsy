@@ -44,7 +44,7 @@ function SearchResultsContent() {
   const state = searchParams.get('state') || '';
 
   const [searchTerm, setSearchTerm] = useState(query);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [results, setResults] = useState<UserProfile[]>([]);
   const [suggestions, setSuggestions] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,11 +56,10 @@ function SearchResultsContent() {
         const location = city && state ? { city, state } : undefined;
         let data = await UserService.searchProviders(query, location);
         
-        if (selectedCategories.length > 0) {
+        if (selectedCategory) {
           data = data.filter(p => 
-            selectedCategories.some(cat => 
-              p.category === cat || p.serviceType?.toLowerCase().includes(cat.toLowerCase())
-            )
+            p.category === selectedCategory || 
+            p.serviceType?.toLowerCase().includes(selectedCategory.toLowerCase())
           );
         }
 
@@ -82,7 +81,7 @@ function SearchResultsContent() {
       }
     };
     fetchResults();
-  }, [query, city, state, selectedCategories]);
+  }, [query, city, state, selectedCategory]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,22 +164,22 @@ function SearchResultsContent() {
                     ].map(cat => (
                       <label key={cat} className="flex items-center gap-3 text-sm font-medium text-text-muted hover:text-primary cursor-pointer transition-colors group">
                         <div className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${
-                          selectedCategories.includes(cat) ? 'border-primary bg-primary/5' : 'border-border-subtle group-hover:border-primary/30'
+                          selectedCategory === cat ? 'border-primary bg-primary/5' : 'border-border-subtle group-hover:border-primary/30'
                         }`}>
                           <input 
                             type="checkbox" 
                             className="hidden" 
-                            checked={selectedCategories.includes(cat)}
+                            checked={selectedCategory === cat}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                setSelectedCategories(prev => [...prev, cat]);
+                                setSelectedCategory(cat);
                               } else {
-                                setSelectedCategories(prev => prev.filter(c => c !== cat));
+                                setSelectedCategory(null);
                               }
                             }}
                           />
                           <div className={`w-2.5 h-2.5 bg-primary rounded-sm transition-opacity ${
-                            selectedCategories.includes(cat) ? 'opacity-100' : 'opacity-0 group-hover:opacity-10'
+                            selectedCategory === cat ? 'opacity-100' : 'opacity-0 group-hover:opacity-10'
                           }`} />
                         </div>
                         {cat}

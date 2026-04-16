@@ -86,12 +86,12 @@ service cloud.firestore {
 
     function isValidUser(data) {
       let allowedFields = [
-        'uid', 'name', 'email', 'photoURL', 'bannerURL', 'bio', 
+        'id', 'uid', 'name', 'email', 'photoURL', 'bannerURL', 'bio', 
         'category', 'isProvider', 'role', 'contacts', 'whatsapp', 
         'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 
         'phones', 'location', 'ward', 'companyName', 'gallery', 
         'rating', 'reviewCount', 'verifiedMember', 'experienceYears',
-        'isBlocked', 'createdAt'
+        'isBlocked', 'createdAt', 'socialLinks'
       ];
       
       return data.keys().hasAll(['uid', 'name', 'email', 'isProvider', 'role', 'createdAt']) &&

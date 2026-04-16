@@ -86,6 +86,7 @@ export function AdminClient() {
   const [editFormData, setEditFormData] = useState<Partial<UserProfile>>({});
   const [newAdminData, setNewAdminData] = useState({ name: '', email: '' });
   const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -232,6 +233,21 @@ export function AdminClient() {
     }
   };
 
+  const handleSeedData = async () => {
+    if (!confirm('Isso irá gerar 5 usuários de teste no banco de dados. Deseja continuar?')) return;
+    
+    setIsSeeding(true);
+    try {
+      await UserService.seedUsers();
+      toast.success('Dados de teste gerados com sucesso!');
+      fetchUsers();
+    } catch (error) {
+      toast.error('Erro ao gerar dados de teste');
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-surface pb-20">
@@ -289,6 +305,14 @@ export function AdminClient() {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
+            <Button 
+              variant="outline"
+              onClick={handleSeedData}
+              disabled={isSeeding}
+              className="rounded-2xl px-6 font-bold h-11 border-primary/20 text-primary hover:bg-primary/5"
+            >
+              {isSeeding ? 'Gerando...' : 'Gerar Dados'}
+            </Button>
             <Button 
               onClick={() => setIsAddAdminDialogOpen(true)}
               className="bg-primary text-white hover:bg-primary/90 rounded-2xl px-6 font-bold shadow-lg shadow-primary/20 h-11"
