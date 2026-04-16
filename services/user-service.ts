@@ -148,24 +148,52 @@ export const UserService = {
   async searchProviders(term: string, location?: { city: string; state: string }): Promise<UserProfile[]> {
     const path = 'users';
     try {
-      const q = query(collection(db, 'users'), where('isProvider', '==', true));
+      // Fetch all users to allow finding people by name even if not marked as provider
+      const q = query(collection(db, 'users'));
       const querySnapshot = await getDocs(q);
       const all = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
 
+      const searchTokens = term.toLowerCase().split(' ').filter(t => t.length > 0);
+
       return all.filter((p: UserProfile) => {
-        const matchesSearch = !term || 
-          p.name.toLowerCase().includes(term.toLowerCase()) || 
-          p.category?.toLowerCase().includes(term.toLowerCase()) ||
-          p.bio?.toLowerCase().includes(term.toLowerCase());
+        const matchesSearch = searchTokens.length === 0 || searchTokens.every(token => {
+          return (
+            p.name.toLowerCase().includes(token) || 
+            (p.category && p.category.toLowerCase().includes(token)) ||
+            (p.serviceType && p.serviceType.toLowerCase().includes(token)) ||
+            (p.companyName && p.companyName.toLowerCase().includes(token)) ||
+            (p.bio && p.bio.toLowerCase().includes(token)) ||
+            (p.email && p.email.toLowerCase().includes(token))
+          );
+        });
         
         const matchesLocation = !location || 
           (p.location && (
             p.location.toLowerCase().includes(location.city.toLowerCase()) ||
             p.location.toLowerCase().includes(location.state.toLowerCase())
-          ));
+          )) || (!p.location && searchTokens.length > 0); // If searching by name specifically, ignore empty location
           
         return matchesSearch && matchesLocation;
+      }).sort((a, b) => {
+        // Prioritize providers and verified members
+        if (a.isProvider && !b.isProvider) return -1;
+        if (!a.isProvider && b.isProvider) return 1;
+        if (a.verifiedMember && !b.verifiedMember) return -1;
+        if (!a.verifiedMember && b.verifiedMember) return 1;
+        return 0;
       });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.LIST, path);
+      return [];
+    }
+  },
+
+  async getAllProviders(): Promise<UserProfile[]> {
+    const path = 'users';
+    try {
+      const q = query(collection(db, 'users'), where('isProvider', '==', true));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];

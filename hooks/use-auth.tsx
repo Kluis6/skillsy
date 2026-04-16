@@ -83,8 +83,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             router.push('/blocked');
           }
 
-          // Admin redirection upon login (if on home page)
-          if (userProfile?.role === 'admin' && pathname === '/') {
+          // Admin redirection upon login (if not already in admin area)
+          if (userProfile?.role === 'admin' && !pathname.startsWith('/admin')) {
             router.push('/admin');
           }
         } catch (error) {
@@ -102,7 +102,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const res = await signInWithPopup(auth, provider);
+      // Immediate redirection attempt after login
+      const profile = await UserService.getProfile(res.user.uid);
+      if (profile?.role === 'admin') {
+        router.push('/admin');
+      }
     } catch (error) {
       console.error('Error signing in with Google:', error);
       throw error;
@@ -134,7 +139,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithEmail = async (email: string, pass: string) => {
     try {
-      await signInWithEmailAndPassword(auth, email, pass);
+      const res = await signInWithEmailAndPassword(auth, email, pass);
+      // Immediate redirection attempt after login
+      const profile = await UserService.getProfile(res.user.uid);
+      if (profile?.role === 'admin') {
+        router.push('/admin');
+      }
     } catch (error) {
       console.error('Error signing in with email:', error);
       throw error;
