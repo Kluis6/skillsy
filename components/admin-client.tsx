@@ -32,7 +32,9 @@ import {
   Calendar,
   MoreVertical,
   Trash2,
-  X
+  X,
+  Navigation,
+  Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
@@ -76,6 +78,7 @@ import { Switch } from '@/components/ui/switch';
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { ThemeToggle } from '@/components/theme-toggle';
+import { LocationService } from '@/services/location-service';
 
 export function AdminClient() {
   const { profile, loading: authLoading } = useAuth();
@@ -101,6 +104,21 @@ export function AdminClient() {
     resolver: zodResolver(adminCreateAdminSchema),
     defaultValues: { name: '', email: '' }
   });
+
+  const [detectingLocation, setDetectingLocation] = useState(false);
+
+  const handleDetectLocation = async () => {
+    setDetectingLocation(true);
+    try {
+      const data = await LocationService.getCurrentLocation();
+      editForm.setValue('location', data.display, { shouldValidate: true });
+      toast.success('Localização detectada!', { description: data.display });
+    } catch (error: any) {
+      toast.error('Erro de geolocalização', { description: error.message });
+    } finally {
+      setDetectingLocation(false);
+    }
+  };
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -495,12 +513,25 @@ export function AdminClient() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="location" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Localização</Label>
-                <Input 
-                  id="location" 
-                  placeholder="Ex: São Paulo, SP"
-                  {...editForm.register('location')}
-                  className="bg-surface border-none rounded-2xl h-12"
-                />
+                <div className="flex gap-2">
+                  <Input 
+                    id="location" 
+                    placeholder="Ex: São Paulo, SP"
+                    {...editForm.register('location')}
+                    className="bg-surface border-none rounded-2xl h-12 flex-grow"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleDetectLocation}
+                    disabled={detectingLocation}
+                    className="shrink-0 h-12 w-12 rounded-2xl bg-surface border-none hover:bg-primary/5 hover:text-primary transition-all"
+                    title="Detectar localização"
+                  >
+                    {detectingLocation ? <Loader2 size={18} className="animate-spin" /> : <Navigation size={18} />}
+                  </Button>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="ward" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Ala / Ramo</Label>

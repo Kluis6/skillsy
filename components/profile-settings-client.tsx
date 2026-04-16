@@ -25,7 +25,8 @@ import {
   MapPin,
   Church,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Navigation
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -41,6 +42,7 @@ import { profileSchema, type ProfileFormData } from '@/lib/validations';
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { ThemeToggle } from '@/components/theme-toggle';
+import { LocationService } from '@/services/location-service';
 
 export function ProfileSettingsClient() {
   const { user, profile, updateProfile, loading: authLoading } = useAuth();
@@ -104,6 +106,21 @@ export function ProfileSettingsClient() {
       });
     }
   }, [profile, reset]);
+
+  const [detectingLocation, setDetectingLocation] = useState(false);
+
+  const handleDetectLocation = async () => {
+    setDetectingLocation(true);
+    try {
+      const data = await LocationService.getCurrentLocation();
+      setValue('location', data.display, { shouldValidate: true });
+      toast.success('Localização detectada!', { description: data.display });
+    } catch (error: any) {
+      toast.error('Erro de geolocalização', { description: error.message });
+    } finally {
+      setDetectingLocation(false);
+    }
+  };
 
   const onFormSubmit = async (data: ProfileFormData) => {
     setLoading(true);
@@ -428,11 +445,24 @@ export function ProfileSettingsClient() {
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
                       <MapPin size={12} /> Localização (Cidade/Estado)
                     </Label>
-                    <Input 
-                      {...register('location')}
-                      placeholder="Ex: São Paulo, SP"
-                      className={`bg-surface border-none rounded-2xl h-12 ${errors.location ? 'ring-2 ring-red-500' : ''}`}
-                    />
+                    <div className="flex gap-2">
+                      <Input 
+                        {...register('location')}
+                        placeholder="Ex: São Paulo, SP"
+                        className={`bg-surface border-none rounded-2xl h-12 flex-grow ${errors.location ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={handleDetectLocation}
+                        disabled={detectingLocation}
+                        className="shrink-0 h-12 w-12 rounded-2xl bg-surface border-none hover:bg-primary/5 hover:text-primary transition-all"
+                        title="Detectar minha localização"
+                      >
+                        {detectingLocation ? <Loader2 size={18} className="animate-spin" /> : <Navigation size={18} />}
+                      </Button>
+                    </div>
                     {errors.location && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.location.message}</p>}
                   </div>
                   <div className="space-y-2 md:col-span-2">

@@ -1,6 +1,6 @@
 {
   "name": "Skillsy",
   "description": "Uma plataforma 100% sem fins lucrativos para conectar membros da comunidade SUD que prestam serviços ou possuem empresas, fomentando o network e o apoio mútuo.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": ["geolocation"],
   "majorCapabilities": []
 }
