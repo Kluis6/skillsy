@@ -109,9 +109,24 @@ export function ProfileSettingsClient() {
     try {
       await updateProfile(cleanedData);
       toast.success('Perfil atualizado com sucesso!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating profile:', error);
-      toast.error('Erro ao atualizar perfil');
+      let errorMessage = 'Erro ao atualizar perfil';
+      
+      try {
+        // Try to parse the JSON error from handleFirestoreError
+        const errorData = JSON.parse(error.message);
+        if (errorData.error.includes('permission-denied') || errorData.error.includes('Missing or insufficient permissions')) {
+          errorMessage = 'Erro de permissão: Verifique se todos os campos estão no formato correto e dentro do limite de tamanho.';
+        } else {
+          errorMessage = `Erro: ${errorData.error}`;
+        }
+      } catch (e) {
+        // Fallback if not a JSON error
+        if (error.message) errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

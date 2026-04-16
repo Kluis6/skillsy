@@ -160,9 +160,16 @@ export function AdminClient() {
       toast.success('Usuário atualizado com sucesso');
       setIsEditDialogOpen(false);
       fetchUsers(); // Refresh list
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating user:', error);
-      toast.error('Erro ao atualizar usuário');
+      let errorMessage = 'Erro ao atualizar usuário';
+      try {
+        const errorData = JSON.parse(error.message);
+        errorMessage = `Erro: ${errorData.error}`;
+      } catch (e) {
+        if (error.message) errorMessage = error.message;
+      }
+      toast.error(errorMessage);
     }
   };
 
