@@ -9,16 +9,32 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LogIn, Mail, Lock, User as UserIcon, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema, signUpSchema, type LoginFormData, type SignUpFormData } from '@/lib/validations';
 
 export function AuthModal({ children }: { children: React.ReactElement }) {
   const { signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  // Form states
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  // Login Form
+  const {
+    register: registerLogin,
+    handleSubmit: handleSubmitLogin,
+    formState: { errors: loginErrors }
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema)
+  });
+
+  // Sign Up Form
+  const {
+    register: registerSignUp,
+    handleSubmit: handleSubmitSignUp,
+    formState: { errors: signUpErrors }
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema)
+  });
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -37,11 +53,10 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
     }
   };
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleEmailLogin = async (data: LoginFormData) => {
     setLoading(true);
     try {
-      await signInWithEmail(email, password);
+      await signInWithEmail(data.email, data.password);
       setOpen(false);
       toast.success('Bem-vindo de volta!');
     } catch (error: any) {
@@ -51,11 +66,10 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
     }
   };
 
-  const handleEmailSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleEmailSignUp = async (data: SignUpFormData) => {
     setLoading(true);
     try {
-      await signUpWithEmail(email, password, name);
+      await signUpWithEmail(data.email, data.password, data.name);
       setOpen(false);
       toast.success('Conta criada com sucesso!');
     } catch (error: any) {
@@ -124,7 +138,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
             </TabsList>
             
             <TabsContent value="login">
-              <form onSubmit={handleEmailLogin} className="space-y-4">
+              <form onSubmit={handleSubmitLogin(handleEmailLogin)} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-text-muted">E-mail</Label>
                   <div className="relative">
@@ -133,12 +147,11 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                       id="email" 
                       type="email" 
                       placeholder="seu@email.com" 
-                      className="pl-10 rounded-xl border-border-subtle focus-visible:ring-accent"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
+                      className={`pl-10 rounded-xl border-border-subtle focus-visible:ring-accent ${loginErrors.email ? 'ring-2 ring-red-500' : ''}`}
+                      {...registerLogin('email')}
                     />
                   </div>
+                  {loginErrors.email && <p className="text-[10px] text-red-500 font-bold ml-1">{loginErrors.email.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-text-muted">Senha</Label>
@@ -147,21 +160,20 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     <Input 
                       id="password" 
                       type="password" 
-                      className="pl-10 rounded-xl border-border-subtle focus-visible:ring-accent"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
+                      className={`pl-10 rounded-xl border-border-subtle focus-visible:ring-accent ${loginErrors.password ? 'ring-2 ring-red-500' : ''}`}
+                      {...registerLogin('password')}
                     />
                   </div>
+                  {loginErrors.password && <p className="text-[10px] text-red-500 font-bold ml-1">{loginErrors.password.message}</p>}
                 </div>
-                <Button type="submit" disabled={loading} className="w-full bg-primary text-white hover:bg-primary/90 rounded-xl h-12 font-semibold">
+                <Button type="submit" disabled={loading} className="w-full bg-primary text-white hover:bg-primary/90 rounded-xl h-12 font-semibold shadow-md active:scale-95 transition-all">
                   {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Entrar'}
                 </Button>
               </form>
             </TabsContent>
 
             <TabsContent value="signup">
-              <form onSubmit={handleEmailSignUp} className="space-y-4">
+              <form onSubmit={handleSubmitSignUp(handleEmailSignUp)} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signup-name" className="text-xs font-bold uppercase tracking-wider text-text-muted">Nome Completo</Label>
                   <div className="relative">
@@ -169,12 +181,11 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     <Input 
                       id="signup-name" 
                       placeholder="Seu nome" 
-                      className="pl-10 rounded-xl border-border-subtle focus-visible:ring-accent"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
+                      className={`pl-10 rounded-xl border-border-subtle focus-visible:ring-accent ${signUpErrors.name ? 'ring-2 ring-red-500' : ''}`}
+                      {...registerSignUp('name')}
                     />
                   </div>
+                  {signUpErrors.name && <p className="text-[10px] text-red-500 font-bold ml-1">{signUpErrors.name.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-email" className="text-xs font-bold uppercase tracking-wider text-text-muted">E-mail</Label>
@@ -184,12 +195,11 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                       id="signup-email" 
                       type="email" 
                       placeholder="seu@email.com" 
-                      className="pl-10 rounded-xl border-border-subtle focus-visible:ring-accent"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
+                      className={`pl-10 rounded-xl border-border-subtle focus-visible:ring-accent ${signUpErrors.email ? 'ring-2 ring-red-500' : ''}`}
+                      {...registerSignUp('email')}
                     />
                   </div>
+                  {signUpErrors.email && <p className="text-[10px] text-red-500 font-bold ml-1">{signUpErrors.email.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password" className="text-xs font-bold uppercase tracking-wider text-text-muted">Senha</Label>
@@ -198,14 +208,13 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     <Input 
                       id="signup-password" 
                       type="password" 
-                      className="pl-10 rounded-xl border-border-subtle focus-visible:ring-accent"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
+                      className={`pl-10 rounded-xl border-border-subtle focus-visible:ring-accent ${signUpErrors.password ? 'ring-2 ring-red-500' : ''}`}
+                      {...registerSignUp('password')}
                     />
                   </div>
+                  {signUpErrors.password && <p className="text-[10px] text-red-500 font-bold ml-1">{signUpErrors.password.message}</p>}
                 </div>
-                <Button type="submit" disabled={loading} className="w-full bg-primary text-white hover:bg-primary/90 rounded-xl h-12 font-semibold">
+                <Button type="submit" disabled={loading} className="w-full bg-primary text-white hover:bg-primary/90 rounded-xl h-12 font-semibold shadow-md active:scale-95 transition-all">
                   {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Criar Conta'}
                 </Button>
               </form>

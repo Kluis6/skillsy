@@ -1,31 +1,41 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { ShieldCheck, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { contactSchema, ContactFormData } from '@/lib/validations';
 
 export function ContactCTA() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) {
-      toast.error('Campos obrigatórios', { description: 'Por favor, preencha todos os campos.' });
-      return;
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting }
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      message: '',
     }
-    
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    toast.success('Mensagem enviada!', { 
-      description: 'Obrigado pelo contato. Retornaremos em breve.' 
-    });
-    setFormData({ name: '', email: '', message: '' });
-    setIsSubmitting(false);
+  });
+
+  const onSubmit = async (data: ContactFormData) => {
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      toast.success('Mensagem enviada!', { 
+        description: 'Obrigado pelo contato. Retornaremos em breve.' 
+      });
+      reset();
+    } catch (error) {
+      toast.error('Erro ao enviar mensagem');
+    }
   };
 
   return (
@@ -54,26 +64,32 @@ export function ContactCTA() {
         
         <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl">
           <h4 className="text-text-main text-xl font-bold mb-6 text-center">Fale Conosco</h4>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input 
-              placeholder="Seu Nome" 
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" 
-            />
-            <Input 
-              placeholder="Seu Email" 
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" 
-            />
-            <textarea 
-              placeholder="Sua Mensagem" 
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="w-full bg-surface border-none rounded-xl p-4 text-text-main placeholder:text-text-muted/50 h-32 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-            />
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-1">
+              <Input 
+                placeholder="Ex: João Silva" 
+                {...register('name')}
+                className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" 
+              />
+              {errors.name && <p className="text-[10px] text-red-500 font-bold ml-2">{errors.name.message}</p>}
+            </div>
+            <div className="space-y-1">
+              <Input 
+                placeholder="Ex: joao@exemplo.com" 
+                type="email"
+                {...register('email')}
+                className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" 
+              />
+              {errors.email && <p className="text-[10px] text-red-500 font-bold ml-2">{errors.email.message}</p>}
+            </div>
+            <div className="space-y-1">
+              <textarea 
+                placeholder="Ex: Gostaria de saber mais sobre como anunciar meus serviços..." 
+                {...register('message')}
+                className="w-full bg-surface border-none rounded-xl p-4 text-text-main placeholder:text-text-muted/50 h-32 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+              />
+              {errors.message && <p className="text-[10px] text-red-500 font-bold ml-2">{errors.message.message}</p>}
+            </div>
             <Button 
               type="submit"
               disabled={isSubmitting}

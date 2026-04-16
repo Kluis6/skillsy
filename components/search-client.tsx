@@ -107,7 +107,7 @@ function SearchResultsContent() {
             <Input 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="O que você procura hoje?"
+              placeholder="Ex: Pintor, Advogado, Bolo de Pote..."
               className="border-none bg-transparent focus-visible:ring-0 text-text-main h-12 font-semibold placeholder:text-text-muted/30"
             />
             <Button type="submit" size="sm" className="rounded-xl bg-primary hover:bg-primary/90 text-white px-8 h-10 font-bold hidden sm:flex shadow-lg shadow-primary/10 active:scale-95 transition-all">

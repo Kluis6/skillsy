@@ -64,7 +64,7 @@ export function HeroSection({
           <div className="relative flex-1">
             <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-muted/50" size={20} />
             <Input 
-              placeholder="O que você procura hoje?" 
+              placeholder="Ex: Pintor, Advogado, Bolo de Pote..." 
               className="pl-14 border-none bg-transparent focus-visible:ring-0 text-lg h-14 font-semibold placeholder:text-text-muted/30"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

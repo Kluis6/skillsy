@@ -82,6 +82,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (userProfile?.isBlocked && pathname !== '/blocked') {
             router.push('/blocked');
           }
+
+          // Admin redirection upon login (if on home page)
+          if (userProfile?.role === 'admin' && pathname === '/') {
+            router.push('/admin');
+          }
         } catch (error) {
           console.error('Error loading profile:', error);
         }

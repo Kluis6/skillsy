@@ -66,7 +66,7 @@ export function CepFilter({ onLocationChange }: CepFilterProps) {
       <div className="relative flex items-center group">
         <MapPin className={`absolute left-3 transition-colors ${error ? 'text-red-500' : 'text-text-muted/40 group-focus-within:text-primary'}`} size={16} />
         <Input
-          placeholder="Filtrar por CEP"
+          placeholder="Ex: 01001-000"
           value={cep}
           onChange={handleCepChange}
           className={`pl-10 pr-10 border-none bg-surface h-12 w-full md:w-48 text-sm rounded-2xl focus-visible:ring-2 focus-visible:ring-primary/20 font-bold placeholder:text-text-muted/30 placeholder:font-medium transition-all ${error ? 'text-red-500 ring-2 ring-red-100' : ''}`}

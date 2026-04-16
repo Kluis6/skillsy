@@ -24,7 +24,8 @@ import {
   Briefcase,
   MapPin,
   Church,
-  Loader2
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -33,6 +34,9 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import Image from 'next/image';
 import imageCompression from 'browser-image-compression';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { profileSchema, type ProfileFormData } from '@/lib/validations';
 
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -47,28 +51,40 @@ export function ProfileSettingsClient() {
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
-  const [formData, setFormData] = useState({
-    name: '',
-    bio: '',
-    location: '',
-    ward: '',
-    serviceType: '',
-    category: '',
-    companyName: '',
-    isProvider: false,
-    whatsapp: '',
-    instagram: '',
-    facebook: '',
-    linkedin: '',
-    website: '',
-    photoURL: '',
-    bannerURL: '',
-    gallery: [] as string[]
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors }
+  } = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: '',
+      bio: '',
+      location: '',
+      ward: '',
+      serviceType: '',
+      category: '',
+      companyName: '',
+      isProvider: false,
+      whatsapp: '',
+      instagram: '',
+      facebook: '',
+      linkedin: '',
+      website: '',
+      photoURL: '',
+      bannerURL: '',
+      gallery: []
+    }
   });
+
+  const formData = watch();
 
   useEffect(() => {
     if (profile) {
-      setFormData({
+      reset({
         name: profile.name || '',
         bio: profile.bio || '',
         location: profile.location || '',
@@ -87,34 +103,33 @@ export function ProfileSettingsClient() {
         gallery: profile.gallery || []
       });
     }
-  }, [profile]);
+  }, [profile, reset]);
 
-  const handleSave = async () => {
+  const onFormSubmit = async (data: ProfileFormData) => {
     setLoading(true);
     
-    // Clean data: remove empty strings or set to null if needed
-    const cleanedData = { ...formData };
-    const optionalFields = [
+    // Clean data: convert empty strings to null for the database
+    const cleanedData = { ...data };
+    const fieldsToNullify = [
       'instagram', 'facebook', 'linkedin', 'website', 'whatsapp', 
       'bio', 'location', 'ward', 'companyName', 'serviceType', 
       'category', 'photoURL', 'bannerURL'
     ];
     
-    optionalFields.forEach(field => {
+    fieldsToNullify.forEach(field => {
       if ((cleanedData as any)[field] === '') {
         (cleanedData as any)[field] = null;
       }
     });
 
     try {
-      await updateProfile(cleanedData);
+      await updateProfile(cleanedData as any);
       toast.success('Perfil atualizado com sucesso!');
     } catch (error: any) {
       console.error('Error updating profile:', error);
       let errorMessage = 'Erro ao atualizar perfil';
       
       try {
-        // Try to parse the JSON error from handleFirestoreError
         const errorData = JSON.parse(error.message);
         if (errorData.error.includes('permission-denied') || errorData.error.includes('Missing or insufficient permissions')) {
           errorMessage = 'Erro de permissão: Verifique se todos os campos estão no formato correto e dentro do limite de tamanho.';
@@ -122,7 +137,6 @@ export function ProfileSettingsClient() {
           errorMessage = `Erro: ${errorData.error}`;
         }
       } catch (e) {
-        // Fallback if not a JSON error
         if (error.message) errorMessage = error.message;
       }
       
@@ -160,13 +174,13 @@ export function ProfileSettingsClient() {
     try {
       const base64 = await compressAndGetBase64(file);
       if (type === 'avatar') {
-        setFormData(prev => ({ ...prev, photoURL: base64 }));
+        setValue('photoURL', base64, { shouldDirty: true });
         toast.success('Foto de perfil carregada!');
       } else if (type === 'banner') {
-        setFormData(prev => ({ ...prev, bannerURL: base64 }));
+        setValue('bannerURL', base64, { shouldDirty: true });
         toast.success('Banner carregado!');
       } else if (type === 'gallery') {
-        setFormData(prev => ({ ...prev, gallery: [...prev.gallery, base64] }));
+        setValue('gallery', [...formData.gallery, base64], { shouldDirty: true });
         toast.success('Foto adicionada à galeria!');
       }
     } catch (error) {
@@ -182,10 +196,7 @@ export function ProfileSettingsClient() {
   };
 
   const removePhoto = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      gallery: prev.gallery.filter((_, i) => i !== index)
-    }));
+    setValue('gallery', formData.gallery.filter((_, i) => i !== index), { shouldDirty: true });
   };
 
   if (authLoading) {
@@ -244,7 +255,7 @@ export function ProfileSettingsClient() {
           <div className="flex items-center gap-4">
             <ThemeToggle />
             <Button 
-              onClick={handleSave} 
+              onClick={handleSubmit(onFormSubmit)} 
               disabled={loading}
               className="bg-primary text-white hover:bg-primary/90 rounded-2xl px-6 font-bold shadow-lg shadow-primary/20 h-11"
             >
@@ -262,7 +273,7 @@ export function ProfileSettingsClient() {
               <div className="relative h-32 bg-gradient-to-r from-primary/10 to-accent/10">
                 {formData.bannerURL && (
                   <Image 
-                    src={formData.bannerURL} 
+                    src={formData.bannerURL!} 
                     alt="Banner" 
                     fill 
                     className="object-cover"
@@ -288,7 +299,7 @@ export function ProfileSettingsClient() {
               <CardContent className="pt-10 pb-8 flex flex-col items-center -mt-16">
                 <div className="relative group mb-6">
                   <Avatar className="w-32 h-32 border-4 border-surface shadow-xl">
-                    <AvatarImage src={formData.photoURL} />
+                    <AvatarImage src={formData.photoURL || undefined} />
                     <AvatarFallback className="bg-primary/5 text-primary text-4xl font-bold">
                       {formData.name[0]}
                     </AvatarFallback>
@@ -328,7 +339,7 @@ export function ProfileSettingsClient() {
                   </div>
                   <Switch 
                     checked={formData.isProvider}
-                    onCheckedChange={(checked) => setFormData({ ...formData, isProvider: checked })}
+                    onCheckedChange={(checked) => setValue('isProvider', checked)}
                   />
                 </div>
                 
@@ -337,56 +348,58 @@ export function ProfileSettingsClient() {
                     <div className="space-y-2">
                       <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome da Empresa (Opcional)</Label>
                       <Input 
-                        value={formData.companyName}
-                        onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                        {...register('companyName')}
                         placeholder="Ex: Silva Construções"
-                        className="bg-surface border-none rounded-2xl h-12"
+                        className={`bg-surface border-none rounded-2xl h-12 ${errors.companyName ? 'ring-2 ring-red-500' : ''}`}
                       />
+                      {errors.companyName && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.companyName.message}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Categoria do Serviço</Label>
-                      <select 
-                        value={formData.category}
-                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        className="w-full bg-surface border-none rounded-2xl h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none"
-                      >
-                        <option value="">Selecione uma categoria</option>
-                        <option value="Tecnologia">Tecnologia</option>
-                        <option value="Design">Design</option>
-                        <option value="Marketing">Marketing</option>
-                        <option value="Consultoria">Consultoria</option>
-                        <option value="Cozinha">Cozinha</option>
-                        <option value="Limpeza">Limpeza</option>
-                        <option value="Manutenção">Manutenção</option>
-                        <option value="Beleza">Beleza</option>
-                        <option value="Educação">Educação</option>
-                        <option value="Saúde">Saúde</option>
-                        <option value="Eventos">Eventos</option>
-                        <option value="Jurídico">Jurídico</option>
-                        <option value="Financeiro">Financeiro</option>
-                        <option value="Assistência">Assistência Técnica</option>
-                        <option value="Reformas">Reformas e Reparos</option>
-                        <option value="Automotivo">Automotivo</option>
-                        <option value="Moda">Moda</option>
-                        <option value="Bem Estar">Bem Estar</option>
-                        <option value="Pet Care">Pet Care</option>
-                        <option value="Fotografia">Fotografia</option>
-                        <option value="Música">Música</option>
-                        <option value="Idiomas">Idiomas</option>
-                        <option value="Esportes">Esportes</option>
-                        <option value="Festas">Festas</option>
-                        <option value="Transporte">Transporte</option>
-                        <option value="Outros">Outros</option>
-                      </select>
+                      <div className="relative">
+                        <select 
+                          {...register('category')}
+                          className={`w-full bg-surface border-none rounded-2xl h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none ${errors.category ? 'ring-2 ring-red-500' : ''}`}
+                        >
+                          <option value="">Selecione uma categoria</option>
+                          <option value="Tecnologia">Tecnologia</option>
+                          <option value="Design">Design</option>
+                          <option value="Marketing">Marketing</option>
+                          <option value="Consultoria">Consultoria</option>
+                          <option value="Cozinha">Cozinha</option>
+                          <option value="Limpeza">Limpeza</option>
+                          <option value="Manutenção">Manutenção</option>
+                          <option value="Beleza">Beleza</option>
+                          <option value="Educação">Educação</option>
+                          <option value="Saúde">Saúde</option>
+                          <option value="Eventos">Eventos</option>
+                          <option value="Jurídico">Jurídico</option>
+                          <option value="Financeiro">Financeiro</option>
+                          <option value="Assistência">Assistência Técnica</option>
+                          <option value="Reformas">Reformas e Reparos</option>
+                          <option value="Automotivo">Automotivo</option>
+                          <option value="Moda">Moda</option>
+                          <option value="Bem Estar">Bem Estar</option>
+                          <option value="Pet Care">Pet Care</option>
+                          <option value="Fotografia">Fotografia</option>
+                          <option value="Música">Música</option>
+                          <option value="Idiomas">Idiomas</option>
+                          <option value="Esportes">Esportes</option>
+                          <option value="Festas">Festas</option>
+                          <option value="Transporte">Transporte</option>
+                          <option value="Outros">Outros</option>
+                        </select>
+                      </div>
+                      {errors.category && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.category.message}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Especialidade Detalhada</Label>
                       <Input 
-                        value={formData.serviceType}
-                        onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
+                        {...register('serviceType')}
                         placeholder="Ex: Eletricista, Professor de Inglês, etc."
-                        className="bg-surface border-none rounded-2xl h-12"
+                        className={`bg-surface border-none rounded-2xl h-12 ${errors.serviceType ? 'ring-2 ring-red-500' : ''}`}
                       />
+                      {errors.serviceType && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.serviceType.message}</p>}
                     </div>
                   </div>
                 )}
@@ -406,91 +419,104 @@ export function ProfileSettingsClient() {
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome Completo</Label>
                     <Input 
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="bg-surface border-none rounded-2xl h-12"
+                      {...register('name')}
+                      className={`bg-surface border-none rounded-2xl h-12 ${errors.name ? 'ring-2 ring-red-500' : ''}`}
                     />
+                    {errors.name && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.name.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
                       <MapPin size={12} /> Localização (Cidade/Estado)
                     </Label>
                     <Input 
-                      value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      {...register('location')}
                       placeholder="Ex: São Paulo, SP"
-                      className="bg-surface border-none rounded-2xl h-12"
+                      className={`bg-surface border-none rounded-2xl h-12 ${errors.location ? 'ring-2 ring-red-500' : ''}`}
                     />
+                    {errors.location && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.location.message}</p>}
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
                       <Church size={12} /> Ala / Ramo
                     </Label>
                     <Input 
-                      value={formData.ward}
-                      onChange={(e) => setFormData({ ...formData, ward: e.target.value })}
+                      {...register('ward')}
                       placeholder="Ex: Ala Centro, Estaca Brasil"
-                      className="bg-surface border-none rounded-2xl h-12"
+                      className={`bg-surface border-none rounded-2xl h-12 ${errors.ward ? 'ring-2 ring-red-500' : ''}`}
                     />
+                    {errors.ward && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.ward.message}</p>}
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Bio / Descrição</Label>
                   <Textarea 
-                    value={formData.bio}
-                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                    {...register('bio')}
                     placeholder="Conte um pouco sobre você e seus talentos..."
-                    className="bg-surface border-none rounded-3xl min-h-[150px] p-6 focus:ring-2 focus:ring-primary/20"
+                    className={`bg-surface border-none rounded-3xl min-h-[150px] p-6 focus:ring-2 focus:ring-primary/20 ${errors.bio ? 'ring-2 ring-red-500' : ''}`}
                   />
+                  {errors.bio && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.bio.message}</p>}
                 </div>
               </CardContent>
             </Card>
 
             <Card className="rounded-[2.5rem] border-none shadow-sm bg-card p-8">
               <h3 className="text-xl font-bold mb-6 font-heading">Redes Sociais & Contato</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1 text-green-600">
                     <MessageCircle size={12} /> WhatsApp
                   </Label>
                   <Input 
-                    value={formData.whatsapp}
-                    onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                    {...register('whatsapp')}
                     placeholder="Ex: 11999999999"
-                    className="bg-surface border-none rounded-2xl h-12"
+                    className={`bg-surface border-none rounded-2xl h-12 ${errors.whatsapp ? 'ring-2 ring-red-500' : ''}`}
                   />
+                  {errors.whatsapp && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.whatsapp.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1 text-pink-600">
                     <Instagram size={12} /> Instagram
                   </Label>
                   <Input 
-                    value={formData.instagram}
-                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                    {...register('instagram')}
                     placeholder="@seuusuario"
-                    className="bg-surface border-none rounded-2xl h-12"
+                    className={`bg-surface border-none rounded-2xl h-12 ${errors.instagram ? 'ring-2 ring-red-500' : ''}`}
                   />
+                  {errors.instagram && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.instagram.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1 text-blue-600">
                     <Facebook size={12} /> Facebook
                   </Label>
                   <Input 
-                    value={formData.facebook}
-                    onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
-                    className="bg-surface border-none rounded-2xl h-12"
+                    {...register('facebook')}
+                    placeholder="Link do perfil"
+                    className={`bg-surface border-none rounded-2xl h-12 ${errors.facebook ? 'ring-2 ring-red-500' : ''}`}
                   />
+                  {errors.facebook && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.facebook.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1 text-blue-800">
                     <Linkedin size={12} /> LinkedIn
                   </Label>
                   <Input 
-                    value={formData.linkedin}
-                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
-                    className="bg-surface border-none rounded-2xl h-12"
+                    {...register('linkedin')}
+                    placeholder="Link do perfil"
+                    className={`bg-surface border-none rounded-2xl h-12 ${errors.linkedin ? 'ring-2 ring-red-500' : ''}`}
                   />
+                  {errors.linkedin && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.linkedin.message}</p>}
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
+                    <Globe size={12} /> Website
+                  </Label>
+                  <Input 
+                    {...register('website')}
+                    placeholder="https://exemplo.com"
+                    className={`bg-surface border-none rounded-2xl h-12 ${errors.website ? 'ring-2 ring-red-500' : ''}`}
+                  />
+                  {errors.website && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.website.message}</p>}
                 </div>
               </div>
             </Card>

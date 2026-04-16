@@ -6,6 +6,14 @@ import { UserService } from '@/services/user-service';
 import { UserProfile } from '@/models/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { 
+  adminEditUserSchema, 
+  AdminEditUserFormData, 
+  adminCreateAdminSchema, 
+  AdminCreateAdminFormData 
+} from '@/lib/validations';
 import { 
   Users, 
   Search, 
@@ -83,10 +91,16 @@ export function AdminClient() {
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddAdminDialogOpen, setIsAddAdminDialogOpen] = useState(false);
-  const [editFormData, setEditFormData] = useState<Partial<UserProfile>>({});
-  const [newAdminData, setNewAdminData] = useState({ name: '', email: '' });
-  const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
+
+  const editForm = useForm<AdminEditUserFormData>({
+    resolver: zodResolver(adminEditUserSchema),
+  });
+
+  const adminForm = useForm<AdminCreateAdminFormData>({
+    resolver: zodResolver(adminCreateAdminSchema),
+    defaultValues: { name: '', email: '' }
+  });
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -150,27 +164,64 @@ export function AdminClient() {
 
   const handleEditClick = (user: UserProfile) => {
     setEditingUser(user);
-    setEditFormData({ ...user });
+    editForm.reset({
+      name: user.name,
+      location: user.location || '',
+      ward: user.ward || '',
+      serviceType: user.serviceType || '',
+      role: user.role as 'user' | 'admin',
+      isProvider: user.isProvider || false,
+      verifiedMember: user.verifiedMember || false,
+      isBlocked: user.isBlocked || false,
+    });
     setIsEditDialogOpen(true);
   };
 
-  const handleSaveEdit = async () => {
+  const onSaveEdit = async (data: AdminEditUserFormData) => {
     if (!editingUser) return;
     try {
-      await UserService.adminUpdateUser(editingUser.uid, editFormData);
+      // Clean empty strings to null
+      const sanitizedData = Object.fromEntries(
+        Object.entries(data).map(([key, value]) => [key, value === '' ? null : value])
+      );
+
+      await UserService.adminUpdateUser(editingUser.uid, sanitizedData);
       toast.success('Usuário atualizado com sucesso');
       setIsEditDialogOpen(false);
-      fetchUsers(); // Refresh list
+      fetchUsers();
     } catch (error: any) {
       console.error('Error updating user:', error);
-      let errorMessage = 'Erro ao atualizar usuário';
-      try {
-        const errorData = JSON.parse(error.message);
-        errorMessage = `Erro: ${errorData.error}`;
-      } catch (e) {
-        if (error.message) errorMessage = error.message;
+      toast.error('Erro ao atualizar usuário');
+    }
+  };
+
+  const onCreateAdmin = async (data: AdminCreateAdminFormData) => {
+    try {
+      // Check if email already exists
+      const existing = await UserService.getProfileByEmail(data.email);
+      if (existing) {
+        toast.error('Este e-mail já está cadastrado');
+        return;
       }
-      toast.error(errorMessage);
+
+      const tempId = `pre_${Math.random().toString(36).substring(2, 11)}`;
+      const newAdmin: Partial<UserProfile> = {
+        uid: tempId,
+        name: data.name,
+        email: data.email,
+        role: 'admin',
+        isProvider: false,
+        contacts: [],
+      };
+
+      await UserService.createProfile(newAdmin);
+      toast.success('Administrador pré-cadastrado com sucesso!');
+      setIsAddAdminDialogOpen(false);
+      adminForm.reset();
+      fetchUsers();
+    } catch (error) {
+      console.error('Error creating admin:', error);
+      toast.error('Erro ao criar administrador');
     }
   };
 
@@ -194,45 +245,6 @@ export function AdminClient() {
     }
   };
 
-  const handleCreateAdmin = async () => {
-    if (!newAdminData.name || !newAdminData.email) {
-      toast.error('Preencha todos os campos');
-      return;
-    }
-
-    setIsCreatingAdmin(true);
-    try {
-      // Check if email already exists
-      const existing = await UserService.getProfileByEmail(newAdminData.email);
-      if (existing) {
-        toast.error('Este e-mail já está cadastrado');
-        setIsCreatingAdmin(false);
-        return;
-      }
-
-      const tempId = `pre_${Math.random().toString(36).substring(2, 11)}`;
-      const newAdmin: Partial<UserProfile> = {
-        uid: tempId,
-        name: newAdminData.name,
-        email: newAdminData.email,
-        role: 'admin',
-        isProvider: false,
-        contacts: [],
-      };
-
-      await UserService.createProfile(newAdmin);
-      toast.success('Administrador pré-cadastrado com sucesso!');
-      setIsAddAdminDialogOpen(false);
-      setNewAdminData({ name: '', email: '' });
-      fetchUsers();
-    } catch (error) {
-      console.error('Error creating admin:', error);
-      toast.error('Erro ao criar administrador');
-    } finally {
-      setIsCreatingAdmin(false);
-    }
-  };
-
   const handleSeedData = async () => {
     if (!confirm('Isso irá gerar 5 usuários de teste no banco de dados. Deseja continuar?')) return;
     
@@ -248,85 +260,30 @@ export function AdminClient() {
     }
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-surface pb-20">
-        <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle px-6 md:px-10 py-4">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <Skeleton className="h-10 w-48 rounded-xl" />
-            <div className="flex items-center gap-4">
-              <ThemeToggle />
-              <Skeleton className="h-8 w-32 rounded-full" />
-            </div>
-          </div>
-        </nav>
-        <main className="max-w-7xl mx-auto px-6 mt-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            {[1, 2, 3].map(i => (
-              <Skeleton key={i} className="h-32 w-full rounded-3xl" />
-            ))}
-          </div>
-          <Skeleton className="h-48 w-full rounded-[2.5rem] mb-8" />
-          <Skeleton className="h-[500px] w-full rounded-[2.5rem]" />
-        </main>
-      </div>
-    );
-  }
-
-  if (profile?.role !== 'admin') {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-surface">
-        <ShieldAlert size={64} className="text-red-500 mb-6" />
-        <h1 className="text-3xl font-bold mb-4">Acesso Negado</h1>
-        <p className="text-text-muted mb-8 max-w-md">
-          Esta área é restrita a administradores. Se você acredita que deveria ter acesso, entre em contato com o suporte.
-        </p>
-        <Link href="/">
-          <Button className="bg-primary text-white font-bold rounded-xl px-8">Voltar para Home</Button>
-        </Link>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-surface pb-20">
-      {/* Header */}
-      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle px-6 md:px-10 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="icon" className="rounded-full hover:bg-surface">
-                <ArrowLeft size={20} />
-              </Button>
-            </Link>
-            <h1 className="text-xl font-bold tracking-tight text-text-main font-heading flex items-center gap-2">
-              <ShieldCheck size={24} className="text-primary" /> Painel Administrativo
-            </h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Button 
-              variant="outline"
-              onClick={handleSeedData}
-              disabled={isSeeding}
-              className="rounded-2xl px-6 font-bold h-11 border-primary/20 text-primary hover:bg-primary/5"
-            >
-              {isSeeding ? 'Gerando...' : 'Gerar Dados'}
-            </Button>
-            <Button 
-              onClick={() => setIsAddAdminDialogOpen(true)}
-              className="bg-primary text-white hover:bg-primary/90 rounded-2xl px-6 font-bold shadow-lg shadow-primary/20 h-11"
-            >
-              <ShieldCheck size={18} className="mr-2" /> Novo Admin
-            </Button>
-            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 px-3 py-1">
-              Admin: {profile.name}
-            </Badge>
-          </div>
+    <div className="pb-20 px-6 md:px-10 py-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div>
+          <h2 className="text-3xl font-bold text-text-main font-heading">Dashboard Administrativo</h2>
+          <p className="text-text-muted mt-1">Gerencie usuários, verificações e configurações da plataforma.</p>
         </div>
-      </nav>
-
-      <main className="max-w-7xl mx-auto px-6 mt-10">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline"
+            onClick={handleSeedData}
+            disabled={isSeeding}
+            className="rounded-2xl px-6 font-bold h-11 border-primary/20 text-primary hover:bg-primary/5"
+          >
+            {isSeeding ? 'Gerando...' : 'Gerar Dados'}
+          </Button>
+          <Button 
+            onClick={() => setIsAddAdminDialogOpen(true)}
+            className="bg-primary text-white hover:bg-primary/90 rounded-2xl px-6 font-bold shadow-lg shadow-primary/20 h-11"
+          >
+            <ShieldCheck size={18} className="mr-2" /> Novo Admin
+          </Button>
+        </div>
+      </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <Card className="bg-card border-none shadow-sm rounded-3xl overflow-hidden">
             <CardHeader className="pb-2">
@@ -359,7 +316,7 @@ export function AdminClient() {
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
                 <Input 
-                  placeholder="Nome ou e-mail..." 
+                  placeholder="Ex: João ou joao@exemplo.com" 
                   className="pl-12 bg-surface border-none rounded-2xl h-12 text-sm"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -504,7 +461,6 @@ export function AdminClient() {
             </Table>
           </div>
         </Card>
-      </main>
 
       {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -516,101 +472,103 @@ export function AdminClient() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome Completo</Label>
-              <Input 
-                id="name" 
-                value={editFormData.name || ''} 
-                onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                className="bg-surface border-none rounded-2xl h-12"
-              />
+          <form onSubmit={editForm.handleSubmit(onSaveEdit)}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome Completo</Label>
+                <Input 
+                  id="name" 
+                  placeholder="Ex: João da Silva"
+                  {...editForm.register('name')}
+                  className="bg-surface border-none rounded-2xl h-12"
+                />
+                {editForm.formState.errors.name && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.name.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">E-mail</Label>
+                <Input 
+                  id="email" 
+                  value={editingUser?.email || ''} 
+                  disabled
+                  className="bg-surface border-none rounded-2xl h-12 opacity-60"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Localização</Label>
+                <Input 
+                  id="location" 
+                  placeholder="Ex: São Paulo, SP"
+                  {...editForm.register('location')}
+                  className="bg-surface border-none rounded-2xl h-12"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ward" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Ala / Ramo</Label>
+                <Input 
+                  id="ward" 
+                  placeholder="Ex: Ala Centro"
+                  {...editForm.register('ward')}
+                  className="bg-surface border-none rounded-2xl h-12"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="serviceType" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Serviço / Categoria</Label>
+                <Input 
+                  id="serviceType" 
+                  placeholder="Ex: Pintura Residencial"
+                  {...editForm.register('serviceType')}
+                  className="bg-surface border-none rounded-2xl h-12"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="role" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Papel no Sistema</Label>
+                <select 
+                  id="role"
+                  {...editForm.register('role')}
+                  className="w-full bg-surface border-none rounded-2xl h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none"
+                >
+                  <option value="user">Usuário Comum</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">E-mail</Label>
-              <Input 
-                id="email" 
-                value={editFormData.email || ''} 
-                disabled
-                className="bg-surface border-none rounded-2xl h-12 opacity-60"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="location" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Localização</Label>
-              <Input 
-                id="location" 
-                value={editFormData.location || ''} 
-                onChange={(e) => setEditFormData({ ...editFormData, location: e.target.value })}
-                className="bg-surface border-none rounded-2xl h-12"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="ward" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Ala / Ramo</Label>
-              <Input 
-                id="ward" 
-                value={editFormData.ward || ''} 
-                onChange={(e) => setEditFormData({ ...editFormData, ward: e.target.value })}
-                className="bg-surface border-none rounded-2xl h-12"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="serviceType" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Serviço / Categoria</Label>
-              <Input 
-                id="serviceType" 
-                value={editFormData.serviceType || ''} 
-                onChange={(e) => setEditFormData({ ...editFormData, serviceType: e.target.value })}
-                className="bg-surface border-none rounded-2xl h-12"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="role" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Papel no Sistema</Label>
-              <select 
-                id="role"
-                value={editFormData.role || 'user'}
-                onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value as any })}
-                className="w-full bg-surface border-none rounded-2xl h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none"
-              >
-                <option value="user">Usuário Comum</option>
-                <option value="admin">Administrador</option>
-              </select>
-            </div>
-          </div>
 
-          <div className="flex flex-wrap gap-6 p-6 bg-surface rounded-3xl mb-6">
-            <div className="flex items-center gap-3">
-              <Switch 
-                id="edit-isProvider" 
-                checked={editFormData.isProvider || false}
-                onCheckedChange={(checked) => setEditFormData({ ...editFormData, isProvider: checked })}
-              />
-              <Label htmlFor="edit-isProvider" className="text-sm font-bold cursor-pointer">Prestador de Serviço</Label>
+            <div className="flex flex-wrap gap-6 p-6 bg-surface rounded-3xl mb-6">
+              <div className="flex items-center gap-3">
+                <Switch 
+                  id="edit-isProvider" 
+                  checked={editForm.watch('isProvider')}
+                  onCheckedChange={(checked) => editForm.setValue('isProvider', checked)}
+                />
+                <Label htmlFor="edit-isProvider" className="text-sm font-bold cursor-pointer">Prestador de Serviço</Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch 
+                  id="edit-verified" 
+                  checked={editForm.watch('verifiedMember')}
+                  onCheckedChange={(checked) => editForm.setValue('verifiedMember', checked)}
+                />
+                <Label htmlFor="edit-verified" className="text-sm font-bold cursor-pointer">Membro Verificado</Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch 
+                  id="edit-blocked" 
+                  checked={editForm.watch('isBlocked')}
+                  onCheckedChange={(checked) => editForm.setValue('isBlocked', checked)}
+                />
+                <Label htmlFor="edit-blocked" className="text-sm font-bold text-red-600 cursor-pointer">Bloquear Acesso</Label>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Switch 
-                id="edit-verified" 
-                checked={editFormData.verifiedMember || false}
-                onCheckedChange={(checked) => setEditFormData({ ...editFormData, verifiedMember: checked })}
-              />
-              <Label htmlFor="edit-verified" className="text-sm font-bold cursor-pointer">Membro Verificado</Label>
-            </div>
-            <div className="flex items-center gap-3">
-              <Switch 
-                id="edit-blocked" 
-                checked={editFormData.isBlocked || false}
-                onCheckedChange={(checked) => setEditFormData({ ...editFormData, isBlocked: checked })}
-              />
-              <Label htmlFor="edit-blocked" className="text-sm font-bold text-red-600 cursor-pointer">Bloquear Acesso</Label>
-            </div>
-          </div>
 
-          <DialogFooter className="gap-3">
-            <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="rounded-2xl h-12 px-8 font-bold">
-              Cancelar
-            </Button>
-            <Button onClick={handleSaveEdit} className="bg-primary text-white hover:bg-primary/90 rounded-2xl h-12 px-8 font-bold shadow-lg shadow-primary/20">
-              Salvar Alterações
-            </Button>
-          </DialogFooter>
+            <DialogFooter className="gap-3">
+              <Button type="button" variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="rounded-2xl h-12 px-8 font-bold">
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={editForm.formState.isSubmitting} className="bg-primary text-white hover:bg-primary/90 rounded-2xl h-12 px-8 font-bold shadow-lg shadow-primary/20">
+                {editForm.formState.isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 
@@ -624,42 +582,44 @@ export function AdminClient() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-6 py-6">
-            <div className="space-y-2">
-              <Label htmlFor="new-name" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome</Label>
-              <Input 
-                id="new-name" 
-                placeholder="Nome do futuro admin"
-                value={newAdminData.name} 
-                onChange={(e) => setNewAdminData({ ...newAdminData, name: e.target.value })}
-                className="bg-surface border-none rounded-2xl h-12"
-              />
+          <form onSubmit={adminForm.handleSubmit(onCreateAdmin)}>
+            <div className="space-y-6 py-6">
+              <div className="space-y-2">
+                <Label htmlFor="new-name" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome</Label>
+                <Input 
+                  id="new-name" 
+                  placeholder="Ex: João Silva"
+                  {...adminForm.register('name')}
+                  className="bg-surface border-none rounded-2xl h-12"
+                />
+                {adminForm.formState.errors.name && <p className="text-[10px] text-red-500 font-bold ml-2">{adminForm.formState.errors.name.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new-email" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">E-mail</Label>
+                <Input 
+                  id="new-email" 
+                  type="email"
+                  placeholder="Ex: joao@exemplo.com"
+                  {...adminForm.register('email')}
+                  className="bg-surface border-none rounded-2xl h-12"
+                />
+                {adminForm.formState.errors.email && <p className="text-[10px] text-red-500 font-bold ml-2">{adminForm.formState.errors.email.message}</p>}
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="new-email" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">E-mail</Label>
-              <Input 
-                id="new-email" 
-                type="email"
-                placeholder="email@exemplo.com"
-                value={newAdminData.email} 
-                onChange={(e) => setNewAdminData({ ...newAdminData, email: e.target.value })}
-                className="bg-surface border-none rounded-2xl h-12"
-              />
-            </div>
-          </div>
 
-          <DialogFooter className="gap-3">
-            <Button variant="ghost" onClick={() => setIsAddAdminDialogOpen(false)} className="rounded-2xl h-12 px-8 font-bold">
-              Cancelar
-            </Button>
-            <Button 
-              onClick={handleCreateAdmin} 
-              disabled={isCreatingAdmin}
-              className="bg-primary text-white hover:bg-primary/90 rounded-2xl h-12 px-8 font-bold shadow-lg shadow-primary/20"
-            >
-              {isCreatingAdmin ? 'Criando...' : 'Criar Administrador'}
-            </Button>
-          </DialogFooter>
+            <DialogFooter className="gap-3">
+              <Button type="button" variant="ghost" onClick={() => setIsAddAdminDialogOpen(false)} className="rounded-2xl h-12 px-8 font-bold">
+                Cancelar
+              </Button>
+              <Button 
+                type="submit"
+                disabled={adminForm.formState.isSubmitting}
+                className="bg-primary text-white hover:bg-primary/90 rounded-2xl h-12 px-8 font-bold shadow-lg shadow-primary/20"
+              >
+                {adminForm.formState.isSubmitting ? 'Criando...' : 'Criar Administrador'}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
