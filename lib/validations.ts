@@ -18,6 +18,10 @@ export const profileSchema = z.object({
   facebook: z.string().max(100, 'Link de Facebook deve ter no máximo 100 caracteres').nullable().optional(),
   linkedin: z.string().max(100, 'Link de LinkedIn deve ter no máximo 100 caracteres').nullable().optional(),
   website: z.string().url('Formato de URL inválido (use https://...)').max(150, 'Link do site muito longo').or(z.literal('')).nullable().optional(),
+  baptismYear: z.string()
+    .regex(/^\d*$/, 'Ano deve conter apenas números')
+    .max(4, 'Ano deve ter 4 dígitos')
+    .nullable().optional(),
   photoURL: z.string().nullable().optional(),
   bannerURL: z.string().nullable().optional(),
   gallery: z.array(z.string()),
@@ -82,6 +86,7 @@ export const adminEditUserSchema = z.object({
   location: z.string().max(100, 'Localização muito longa').nullable().optional(),
   ward: z.string().max(100, 'Ala/Ramo muito longo').nullable().optional(),
   serviceType: z.string().max(100, 'Serviço muito longo').nullable().optional(),
+  baptismYear: z.number().int().min(1830).max(new Date().getFullYear()).nullable().optional(),
   role: z.enum(['user', 'admin']),
   isProvider: z.boolean(),
   verifiedMember: z.boolean(),

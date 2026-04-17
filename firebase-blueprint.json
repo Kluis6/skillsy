@@ -35,6 +35,7 @@
         "reviewCount": { "type": "number", "description": "Total de avaliações" },
         "verifiedMember": { "type": "boolean", "description": "Se o membro foi verificado pela comunidade" },
         "isBlocked": { "type": "boolean", "description": "Se o usuário está bloqueado pelo administrador" },
+        "baptismYear": { "type": "number", "description": "Ano de batismo do membro (SUD)" },
         "createdAt": { "type": "string", "format": "date-time", "description": "Data de criação do perfil" }
       },
       "required": ["uid", "name", "email", "isProvider"]

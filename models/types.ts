@@ -23,6 +23,7 @@ export interface UserProfile {
   rating?: number;
   reviewCount?: number;
   experienceYears?: number;
+  baptismYear?: number;
   verifiedMember?: boolean;
   isBlocked?: boolean;
   createdAt: any;

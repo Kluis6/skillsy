@@ -94,7 +94,7 @@ service cloud.firestore {
         'category', 'isProvider', 'role', 'contacts', 'whatsapp', 
         'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 
         'phones', 'location', 'ward', 'companyName', 'gallery', 
-        'rating', 'reviewCount', 'verifiedMember', 'experienceYears',
+        'rating', 'reviewCount', 'verifiedMember', 'experienceYears', 'baptismYear',
         'isBlocked', 'createdAt', 'socialLinks'
       ];
       
@@ -125,6 +125,7 @@ service cloud.firestore {
              (!('rating' in data) || data.rating is number) &&
              (!('reviewCount' in data) || data.reviewCount is number) &&
              (!('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
+             (!('baptismYear' in data) || data.baptismYear == null || data.baptismYear is number) &&
              (!('verifiedMember' in data) || data.verifiedMember is bool) &&
              (!('isBlocked' in data) || data.isBlocked is bool);
     }

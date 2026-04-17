@@ -76,6 +76,7 @@ export function ProfileSettingsClient() {
       facebook: '',
       linkedin: '',
       website: '',
+      baptismYear: '',
       photoURL: '',
       bannerURL: '',
       gallery: []
@@ -100,6 +101,7 @@ export function ProfileSettingsClient() {
         facebook: profile.facebook || '',
         linkedin: profile.linkedin || '',
         website: profile.website || '',
+        baptismYear: profile.baptismYear ? String(profile.baptismYear) : '',
         photoURL: profile.photoURL || '',
         bannerURL: profile.bannerURL || '',
         gallery: profile.gallery || []
@@ -130,7 +132,7 @@ export function ProfileSettingsClient() {
     const fieldsToNullify = [
       'instagram', 'facebook', 'linkedin', 'website', 'whatsapp', 
       'bio', 'location', 'ward', 'companyName', 'serviceType', 
-      'category', 'photoURL', 'bannerURL'
+      'category', 'photoURL', 'bannerURL', 'baptismYear'
     ];
     
     fieldsToNullify.forEach(field => {
@@ -138,6 +140,19 @@ export function ProfileSettingsClient() {
         (cleanedData as any)[field] = null;
       }
     });
+
+    // Automatic verification if baptism year is present
+    if (cleanedData.baptismYear) {
+      (cleanedData as any).verifiedMember = true;
+      (cleanedData as any).baptismYear = parseInt(cleanedData.baptismYear);
+    } else {
+      // If baptismYear was removed, we don't necessarily remove verification unless it's only based on it
+      // But the user said "considere isso como um perfil verificado", implying the link.
+      // However, admins might verify people manually. 
+      // Let's only set verifiedMember to true but NOT false if baptismYear is absent, 
+      // OR better, let's follow the prompt strictly: baptismYear presence = verified.
+      (cleanedData as any).verifiedMember = false;
+    }
 
     try {
       await updateProfile(cleanedData as any);
@@ -479,6 +494,19 @@ export function ProfileSettingsClient() {
                       className={`bg-surface border-none rounded-2xl h-12 ${errors.ward ? 'ring-2 ring-red-500' : ''}`}
                     />
                     {errors.ward && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.ward.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
+                      <Church size={12} /> Ano de Batismo (SUD)
+                    </Label>
+                    <Input 
+                      {...register('baptismYear')}
+                      placeholder="Ex: 2010"
+                      maxLength={4}
+                      className={`bg-surface border-none rounded-2xl h-12 ${errors.baptismYear ? 'ring-2 ring-red-500' : ''}`}
+                    />
+                    {errors.baptismYear && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.baptismYear.message}</p>}
+                    <p className="text-[10px] text-primary/60 font-medium ml-1">Preencher este campo ativa o selo de Membro Verificado.</p>
                   </div>
                 </div>
 

@@ -259,6 +259,13 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
                     )}
                   </div>
                   
+                  {targetProfile.baptismYear && (
+                    <div className="flex items-center justify-center md:justify-start gap-1 mb-2 text-primary/70">
+                      <Church size={14} />
+                      <span className="text-xs font-bold uppercase tracking-wider">Batismo: {targetProfile.baptismYear}</span>
+                    </div>
+                  )}
+                  
                   <div className="flex flex-col gap-1">
                     <p className="text-lg md:text-xl font-medium text-text-main/80">
                       {targetProfile.serviceType || targetProfile.category || 'Membro da Comunidade'}
@@ -424,9 +431,22 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
                     </div>
                     <div>
                       <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Status</p>
-                      <p className="text-sm font-bold text-text-main">Membro Verificado</p>
+                      <p className="text-sm font-bold text-text-main">
+                        {targetProfile.verifiedMember ? 'Membro Verificado' : 'Perfil em Análise'}
+                      </p>
                     </div>
                   </div>
+                  {targetProfile.baptismYear && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center text-primary shrink-0">
+                        <Church size={20} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Ano de Batismo</p>
+                        <p className="text-sm font-bold text-text-main">{targetProfile.baptismYear}</p>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center text-primary shrink-0">
                       <Calendar size={20} />

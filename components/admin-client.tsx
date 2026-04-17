@@ -191,6 +191,7 @@ export function AdminClient() {
       isProvider: user.isProvider || false,
       verifiedMember: user.verifiedMember || false,
       isBlocked: user.isBlocked || false,
+      baptismYear: user.baptismYear || null,
     });
     setIsEditDialogOpen(true);
   };
@@ -561,6 +562,16 @@ export function AdminClient() {
                   <option value="user">Usuário Comum</option>
                   <option value="admin">Administrador</option>
                 </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="baptismYear" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Ano de Batismo</Label>
+                <Input 
+                  id="baptismYear" 
+                  type="number"
+                  placeholder="Ex: 2010"
+                  {...editForm.register('baptismYear', { valueAsNumber: true })}
+                  className="bg-surface border-none rounded-2xl h-12"
+                />
               </div>
             </div>
 
