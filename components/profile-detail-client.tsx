@@ -39,6 +39,7 @@ import { Separator } from "@/components/ui/separator";
 
 interface ProfileDetailClientProps {
   id: string;
+  initialProfile: UserProfile | null;
 }
 
 import Image from 'next/image';
@@ -53,18 +54,20 @@ import {
 
 import { ThemeToggle } from '@/components/theme-toggle';
 
-export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
+export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientProps) {
   const router = useRouter();
   const { user, profile: currentUserProfile, toggleContact } = useAuth();
-  const [targetProfile, setTargetProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [targetProfile, setTargetProfile] = useState<UserProfile | null>(initialProfile);
+  const [loading, setLoading] = useState(!initialProfile);
   const [userRating, setUserRating] = useState(0);
   const [ratingHover, setRatingHover] = useState(0);
   const [submittingRating, setSubmittingRating] = useState(false);
 
   useEffect(() => {
+    // We only need to fetch if we don't have the profile yet or to get fresh data
     const fetchProfile = async () => {
-      if (!id) return;
+      if (!id || initialProfile) return;
+      setLoading(true);
       try {
         const p = await UserService.getProfile(id);
         setTargetProfile(p);
@@ -76,7 +79,7 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
       }
     };
     fetchProfile();
-  }, [id]);
+  }, [id, initialProfile]);
 
   const isContact = currentUserProfile?.contacts?.includes(id);
 

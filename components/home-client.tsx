@@ -27,8 +27,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { UserProfile } from '@/models/types';
 
-export function HomeClient() {
+export function HomeClient({ initialProviders = [] }: { initialProviders?: UserProfile[] }) {
   const router = useRouter();
   const { user, profile, logout, loading, toggleContact } = useAuth();
   const [activeTab, setActiveTab] = useState<'explore' | 'contacts'>('explore');
@@ -41,18 +42,7 @@ export function HomeClient() {
     setLocationFilter,
     providers,
     searching
-  } = useSearchController();
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const params = new URLSearchParams();
-    if (searchTerm) params.set('q', searchTerm);
-    if (locationFilter) {
-      params.set('city', locationFilter.city);
-      params.set('state', locationFilter.state);
-    }
-    router.push(`/search?${params.toString()}`);
-  };
+  } = useSearchController(initialProviders);
 
   const { savedContacts } = useContactsController(profile, activeTab);
 
@@ -96,7 +86,6 @@ export function HomeClient() {
       <HeroSection 
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-        handleSearch={handleSearch}
         searching={searching}
         locationFilter={locationFilter}
         setLocationFilter={setLocationFilter}

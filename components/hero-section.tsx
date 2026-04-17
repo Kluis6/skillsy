@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import Form from 'next/form';
 import { motion } from 'motion/react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,7 @@ import { CepFilter } from '@/components/cep-filter';
 interface HeroSectionProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  handleSearch: (e: React.FormEvent) => void;
+  // handleSearch removed as Form handles it via action
   searching: boolean;
   locationFilter: { city: string; state: string } | null;
   setLocationFilter: (loc: { city: string; state: string } | null) => void;
@@ -19,7 +19,6 @@ interface HeroSectionProps {
 export function HeroSection({
   searchTerm,
   setSearchTerm,
-  handleSearch,
   searching,
   locationFilter,
   setLocationFilter
@@ -54,26 +53,36 @@ export function HeroSection({
           Apoio mútuo e excelência em cada serviço prestado.
         </motion.p>
 
-        <motion.form 
+        <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          onSubmit={handleSearch}
-          className="flex flex-col md:flex-row gap-3 max-w-3xl mx-auto bg-card p-2 rounded-3xl md:rounded-full shadow-2xl shadow-primary/10 border border-border-subtle ring-1 ring-black/[0.02] mb-6"
         >
-          <div className="relative flex-1">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-muted/50" size={20} />
-            <Input 
-              placeholder="Ex: Pintor, Advogado, Bolo de Pote..." 
-              className="pl-14 border-none bg-transparent focus-visible:ring-0 text-lg h-14 font-semibold placeholder:text-text-muted/30"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <Button type="submit" className="bg-primary text-white h-14 px-10 rounded-2xl md:rounded-full hover:bg-primary/90 transition-all font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95">
-            {searching ? 'Buscando...' : 'Buscar'}
-          </Button>
-        </motion.form>
+          <Form 
+            action="/search"
+            className="flex flex-col md:flex-row gap-3 max-w-3xl mx-auto bg-card p-2 rounded-3xl md:rounded-full shadow-2xl shadow-primary/10 border border-border-subtle ring-1 ring-black/[0.02] mb-6"
+          >
+            <div className="relative flex-1">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-muted/50" size={20} />
+              <Input 
+                name="q"
+                placeholder="Ex: Pintor, Advogado, Bolo de Pote..." 
+                className="pl-14 border-none bg-transparent focus-visible:ring-0 text-lg h-14 font-semibold placeholder:text-text-muted/30"
+                defaultValue={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {locationFilter && (
+                <>
+                  <input type="hidden" name="city" value={locationFilter.city} />
+                  <input type="hidden" name="state" value={locationFilter.state} />
+                </>
+              )}
+            </div>
+            <Button type="submit" className="bg-primary text-white h-14 px-10 rounded-2xl md:rounded-full hover:bg-primary/90 transition-all font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95">
+              {searching ? 'Buscando...' : 'Buscar'}
+            </Button>
+          </Form>
+        </motion.div>
 
         <motion.div 
           initial={{ opacity: 0 }}

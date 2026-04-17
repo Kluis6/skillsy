@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { HomeClient } from '@/components/home-client';
+import { UserService } from '@/services/user-service';
 
 export const metadata: Metadata = {
   title: 'Home | Skillsy - Sua Rede de Confiança SUD',
@@ -10,6 +11,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
-  return <HomeClient />;
+export default async function Home() {
+  const initialProviders = await UserService.getProviders(6);
+  
+  return <HomeClient initialProviders={initialProviders} />;
 }

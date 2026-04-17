@@ -505,7 +505,28 @@ function SearchResultsContent() {
 
 export function SearchClient() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-surface p-6 md:p-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-center mb-10">
+            <Skeleton className="h-10 w-40 rounded-xl" />
+            <Skeleton className="h-10 w-10 rounded-full" />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+            <div className="lg:col-span-1 space-y-6">
+              <Skeleton className="h-40 w-full rounded-3xl" />
+              <Skeleton className="h-64 w-full rounded-3xl" />
+            </div>
+            <div className="lg:col-span-3 space-y-8">
+              <Skeleton className="h-16 w-full rounded-full" />
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} className="h-40 w-full rounded-[2rem]" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
       <SearchResultsContent />
     </Suspense>
   );

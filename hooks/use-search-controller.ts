@@ -2,10 +2,10 @@ import { useState, useCallback, useEffect } from 'react';
 import { UserService } from '@/services/user-service';
 import { UserProfile } from '@/models/types';
 
-export function useSearchController() {
+export function useSearchController(initialProviders: UserProfile[] = []) {
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState<{ city: string; state: string } | null>(null);
-  const [providers, setProviders] = useState<UserProfile[]>([]);
+  const [providers, setProviders] = useState<UserProfile[]>(initialProviders);
   const [searching, setSearching] = useState(false);
 
   const fetchInitialProviders = useCallback(async () => {
@@ -35,22 +35,20 @@ export function useSearchController() {
     let isMounted = true;
 
     const performSearch = async () => {
-      if (locationFilter) {
+      // If we have initialProviders and no filters are active, skip search
+      if (!locationFilter && !searchTerm && initialProviders.length > 0) {
+        return;
+      }
+
+      if (locationFilter || searchTerm) {
         setSearching(true);
         try {
-          const filtered = await UserService.searchProviders(searchTerm, locationFilter);
+          const filtered = await UserService.searchProviders(searchTerm, locationFilter || undefined);
           if (isMounted) setProviders(filtered);
         } catch (error) {
           console.error('Error searching:', error);
         } finally {
           if (isMounted) setSearching(false);
-        }
-      } else if (!searchTerm) {
-        try {
-          const data = await UserService.getProviders(6);
-          if (isMounted) setProviders(data);
-        } catch (error) {
-          console.error('Error fetching initial providers:', error);
         }
       }
     };
@@ -58,7 +56,7 @@ export function useSearchController() {
     performSearch();
 
     return () => { isMounted = false; };
-  }, [locationFilter, searchTerm]);
+  }, [locationFilter, searchTerm, initialProviders.length]);
 
   return {
     searchTerm,

@@ -31,5 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PublicProfilePage({ params }: Props) {
   const { id } = await params;
-  return <ProfileDetailClient id={id} />;
+  const initialProfile = await UserService.getProfile(id);
+  
+  return <ProfileDetailClient id={id} initialProfile={initialProfile} />;
 }
