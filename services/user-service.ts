@@ -352,7 +352,7 @@ export const UserService = {
   async submitRating(fromId: string, toId: string, score: number, comment?: string): Promise<void> {
     try {
       await runTransaction(db, async (transaction) => {
-        const voteRef = doc(db, 'users', fromId, 'private_data', 'votes', toId);
+        const voteRef = doc(db, 'users', fromId, 'votes', toId);
         const voteSnap = await transaction.get(voteRef);
         
         if (voteSnap.exists()) {

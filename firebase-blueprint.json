@@ -83,7 +83,7 @@
       "schema": "User",
       "description": "Coleção de perfis de usuários"
     },
-    "/users/{userId}/private_data/votes/{providerId}": {
+    "/users/{userId}/votes/{providerId}": {
       "schema": "UserVote",
       "description": "Registro privado de votos do usuário"
     },

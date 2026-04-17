@@ -183,14 +183,14 @@ service cloud.firestore {
                      request.resource.data.reviewCount is number &&
                      ((!('reviewCount' in resource.data) && request.resource.data.reviewCount == 1) ||
                       (request.resource.data.reviewCount == resource.data.reviewCount + 1)) &&
-                     getAfter(/databases/$(database)/documents/users/$(request.auth.uid)/private_data/votes/$(userId)) != null)
+                     getAfter(/databases/$(database)/documents/users/$(request.auth.uid)/votes/$(userId)) != null)
                     || isAdmin();
       
       // Delete: Only Admin
       allow delete: if isAdmin();
 
       // Private data subcollection
-      match /private_data/votes/{providerId} {
+      match /votes/{providerId} {
         allow read, write: if isOwner(userId) && isValidVoteRecord(request.resource.data, providerId);
       }
     }
@@ -216,7 +216,7 @@ service cloud.firestore {
       // Create: Only authenticated users who are not blocked and not rating themselves
       // MUST also create a private vote record to prevent spam while staying anonymous
       allow create: if isAuthenticated() && isNotBlocked() && isValidRating(request.resource.data) &&
-                      getAfter(/databases/$(database)/documents/users/$(request.auth.uid)/private_data/votes/$(request.resource.data.toId)) != null;
+                      getAfter(/databases/$(database)/documents/users/$(request.auth.uid)/votes/$(request.resource.data.toId)) != null;
 
       // Update/Delete: Only Admin (for moderation)
       allow update, delete: if isAdmin();
