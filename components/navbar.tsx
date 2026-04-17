@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/use-auth';
 import { 
   Menu, 
   Search, 
@@ -37,7 +38,21 @@ interface NavbarProps {
   setActiveTab: (tab: 'explore' | 'contacts') => void;
 }
 
-export function Navbar({ user, profile, logout, activeTab, setActiveTab }: NavbarProps) {
+export function Navbar({ 
+  user: propUser, 
+  profile: propProfile, 
+  logout: propLogout, 
+  activeTab: propActiveTab, 
+  setActiveTab: propSetActiveTab 
+}: Partial<NavbarProps>) {
+  const auth = useAuth();
+  const [internalTab, setInternalTab] = useState<'explore' | 'contacts'>('explore');
+
+  const user = propUser !== undefined ? propUser : auth.user;
+  const profile = propProfile !== undefined ? propProfile : auth.profile;
+  const logout = propLogout !== undefined ? propLogout : auth.logout;
+  const activeTab = propActiveTab !== undefined ? propActiveTab : internalTab;
+  const setActiveTab = propSetActiveTab !== undefined ? propSetActiveTab : setInternalTab;
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle px-6 md:px-10 py-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center">

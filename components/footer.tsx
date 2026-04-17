@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { toast } from 'sonner';
+import Link from 'next/link';
 
 export function Footer() {
   return (
@@ -18,18 +19,18 @@ export function Footer() {
           <span className="text-primary font-bold">Plataforma 100% sem fins lucrativos.</span>
         </p>
         <div className="flex gap-6 text-text-muted">
-          <button 
-            onClick={() => toast.info('Em breve', { description: 'A página de Termos de Uso está sendo elaborada.' })}
-            className="hover:text-primary transition-colors bg-transparent border-none cursor-pointer text-sm"
+          <Link 
+            href="/termos"
+            className="hover:text-primary transition-colors text-sm"
           >
             Termos
-          </button>
-          <button 
-            onClick={() => toast.info('Em breve', { description: 'A página de Política de Privacidade está sendo elaborada.' })}
-            className="hover:text-primary transition-colors bg-transparent border-none cursor-pointer text-sm"
+          </Link>
+          <Link 
+            href="/privacidade"
+            className="hover:text-primary transition-colors text-sm"
           >
             Privacidade
-          </button>
+          </Link>
         </div>
       </div>
     </footer>

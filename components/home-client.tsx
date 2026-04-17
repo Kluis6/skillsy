@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, User as UserIcon, Briefcase, MapPin, Star, UserPlus, UserMinus, Users, ShieldCheck, Menu, Settings, LogOut, Heart, Clock, CalendarDays, Church } from 'lucide-react';
+import { Search, MapPin, Star, UserPlus, UserMinus, Users, Briefcase, Church, CalendarDays, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';

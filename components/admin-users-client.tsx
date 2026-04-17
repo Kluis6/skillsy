@@ -33,7 +33,11 @@ import {
   Navigation,
   Loader2,
   Clock,
-  CalendarDays
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -130,6 +134,10 @@ export function AdminUsersClient() {
   const [isAddAdminDialogOpen, setIsAddAdminDialogOpen] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
   const editForm = useForm<AdminEditUserFormData>({
     resolver: zodResolver(adminEditUserSchema),
   });
@@ -201,6 +209,7 @@ export function AdminUsersClient() {
     }
 
     setFilteredUsers(result);
+    setCurrentPage(1); // Reset to first page when filters change
   }, [users, searchTerm, filterWard, filterState, filterHasServices, filterRecent]);
 
   useEffect(() => {
@@ -428,7 +437,7 @@ export function AdminUsersClient() {
         </Card>
 
         {/* Users Table */}
-        <Card className="bg-card border-none shadow-sm rounded-[2.5rem] overflow-hidden">
+        <Card className="bg-card border-none shadow-sm rounded-[2.5rem] overflow-hidden mb-10">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader className="bg-surface/50">
@@ -446,7 +455,7 @@ export function AdminUsersClient() {
                     <TableCell colSpan={5} className="py-20 text-center text-text-muted">Carregando dados...</TableCell>
                   </TableRow>
                 ) : filteredUsers.length > 0 ? (
-                  filteredUsers.map((u) => (
+                  filteredUsers.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((u) => (
                     <TableRow key={u.uid} className="border-border-subtle hover:bg-surface/30 transition-colors">
                       <TableCell className="py-5 pl-8">
                         <div className="flex items-center gap-4">
@@ -532,6 +541,63 @@ export function AdminUsersClient() {
               </TableBody>
             </Table>
           </div>
+          
+          {/* Pagination UI */}
+          {!loading && filteredUsers.length > 0 && (
+            <div className="bg-surface/50 px-8 py-5 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-xs font-bold text-text-muted uppercase tracking-widest">
+                Mostrando <span className="text-primary">{Math.min(filteredUsers.length, (currentPage - 1) * ITEMS_PER_PAGE + 1)}</span> - <span className="text-primary">{Math.min(filteredUsers.length, currentPage * ITEMS_PER_PAGE)}</span> de {filteredUsers.length} registros
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="w-9 h-9 rounded-xl hover:bg-primary/5 hover:text-primary disabled:opacity-30"
+                >
+                  <ChevronsLeft size={16} />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="w-9 h-9 rounded-xl hover:bg-primary/5 hover:text-primary disabled:opacity-30"
+                >
+                  <ChevronLeft size={16} />
+                </Button>
+                
+                <div className="flex items-center mx-2 gap-1">
+                  <span className="text-xs font-bold text-text-muted uppercase tracking-widest">Página</span>
+                  <div className="bg-surface px-3 py-1.5 rounded-lg text-xs font-black text-primary border border-border-subtle/50 min-w-[2.5rem] text-center">
+                    {currentPage}
+                  </div>
+                  <span className="text-xs font-bold text-text-muted uppercase tracking-widest">de {Math.ceil(filteredUsers.length / ITEMS_PER_PAGE)}</span>
+                </div>
+                
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredUsers.length / ITEMS_PER_PAGE), prev + 1))}
+                  disabled={currentPage === Math.ceil(filteredUsers.length / ITEMS_PER_PAGE)}
+                  className="w-9 h-9 rounded-xl hover:bg-primary/5 hover:text-primary disabled:opacity-30"
+                >
+                  <ChevronRight size={16} />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setCurrentPage(Math.ceil(filteredUsers.length / ITEMS_PER_PAGE))}
+                  disabled={currentPage === Math.ceil(filteredUsers.length / ITEMS_PER_PAGE)}
+                  className="w-9 h-9 rounded-xl hover:bg-primary/5 hover:text-primary disabled:opacity-30"
+                >
+                  <ChevronsRight size={16} />
+                </Button>
+              </div>
+            </div>
+          )}
         </Card>
 
       {/* Edit User Dialog */}
