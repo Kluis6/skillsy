@@ -372,7 +372,9 @@ export function ProfileSettingsClient() {
                       {errors.companyName && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.companyName.message}</p>}
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Categoria do Serviço</Label>
+                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">
+                        Categoria do Serviço <span className="text-red-500">*</span>
+                      </Label>
                       <div className="relative">
                         <select 
                           {...register('category')}
@@ -434,7 +436,9 @@ export function ProfileSettingsClient() {
               <CardContent className="px-0 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome Completo</Label>
+                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">
+                      Nome Completo <span className="text-red-500">*</span>
+                    </Label>
                     <Input 
                       {...register('name')}
                       className={`bg-surface border-none rounded-2xl h-12 ${errors.name ? 'ring-2 ring-red-500' : ''}`}
@@ -479,11 +483,17 @@ export function ProfileSettingsClient() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Bio / Descrição</Label>
+                  <div className="flex justify-between items-center ml-1">
+                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted">Bio / Descrição</Label>
+                    <span className={`text-[10px] font-bold ${formData.bio && formData.bio.length > 500 ? 'text-red-500' : 'text-text-muted'}`}>
+                      {formData.bio?.length || 0} / 500
+                    </span>
+                  </div>
                   <Textarea 
                     {...register('bio')}
                     placeholder="Conte um pouco sobre você e seus talentos..."
                     className={`bg-surface border-none rounded-3xl min-h-[150px] p-6 focus:ring-2 focus:ring-primary/20 ${errors.bio ? 'ring-2 ring-red-500' : ''}`}
+                    maxLength={500}
                   />
                   {errors.bio && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.bio.message}</p>}
                 </div>

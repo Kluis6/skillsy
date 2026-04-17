@@ -77,7 +77,10 @@ service cloud.firestore {
     }
 
     function isNotBlocked() {
-      return !isAuthenticated() || !('isBlocked' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data) || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isBlocked == false;
+      return !isAuthenticated() || 
+             !exists(/databases/$(database)/documents/users/$(request.auth.uid)) || 
+             !('isBlocked' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data) || 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isBlocked == false;
     }
 
     function isValidEmail(email) {

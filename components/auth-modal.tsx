@@ -43,11 +43,24 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
       setOpen(false);
       toast.success('Bem-vindo ao Skillsy!');
     } catch (error: any) {
-      console.error('Login error:', error);
-      const message = error.code === 'auth/unauthorized-domain' 
-        ? 'Domínio não autorizado no Firebase Console.' 
-        : 'Erro ao entrar com Google. Tente novamente.';
-      toast.error(message);
+      console.error('Login error detail:', error);
+      
+      let message = 'Erro ao entrar com Google. Tente novamente.';
+      
+      if (error.code === 'auth/unauthorized-domain') {
+        message = 'Domínio não autorizado. Adicione os URLs do projeto na seção "Authentication > Settings" do Firebase Console.';
+      } else if (error.code === 'auth/popup-blocked') {
+        message = 'O popup foi bloqueado pelo seu navegador. Por favor, permita popups para este site.';
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        message = 'O login foi cancelado (popup fechado antes da conclusão).';
+      } else if (error.message) {
+        message = `Erro: ${error.message}`;
+      }
+      
+      toast.error(message, {
+        duration: 8000,
+        description: error.code ? `Código do erro: ${error.code}` : undefined
+      });
     } finally {
       setLoading(false);
     }
@@ -140,7 +153,9 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
             <TabsContent value="login">
               <form onSubmit={handleSubmitLogin(handleEmailLogin)} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-text-muted">E-mail</Label>
+                  <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                    E-mail <span className="text-red-500">*</span>
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted/50" size={16} />
                     <Input 
@@ -154,7 +169,9 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                   {loginErrors.email && <p className="text-[10px] text-red-500 font-bold ml-1">{loginErrors.email.message}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-text-muted">Senha</Label>
+                  <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                    Senha <span className="text-red-500">*</span>
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted/50" size={16} />
                     <Input 
@@ -175,7 +192,9 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
             <TabsContent value="signup">
               <form onSubmit={handleSubmitSignUp(handleEmailSignUp)} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-name" className="text-xs font-bold uppercase tracking-wider text-text-muted">Nome Completo</Label>
+                  <Label htmlFor="signup-name" className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                    Nome Completo <span className="text-red-500">*</span>
+                  </Label>
                   <div className="relative">
                     <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted/50" size={16} />
                     <Input 
@@ -188,7 +207,9 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                   {signUpErrors.name && <p className="text-[10px] text-red-500 font-bold ml-1">{signUpErrors.name.message}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email" className="text-xs font-bold uppercase tracking-wider text-text-muted">E-mail</Label>
+                  <Label htmlFor="signup-email" className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                    E-mail <span className="text-red-500">*</span>
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted/50" size={16} />
                     <Input 
@@ -202,7 +223,9 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                   {signUpErrors.email && <p className="text-[10px] text-red-500 font-bold ml-1">{signUpErrors.email.message}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password" className="text-xs font-bold uppercase tracking-wider text-text-muted">Senha</Label>
+                  <Label htmlFor="signup-password" className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                    Senha <span className="text-red-500">*</span>
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted/50" size={16} />
                     <Input 

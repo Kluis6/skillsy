@@ -14,6 +14,7 @@ export function ContactCTA() {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting }
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -23,6 +24,8 @@ export function ContactCTA() {
       message: '',
     }
   });
+
+  const messageText = watch('message');
 
   const onSubmit = async (data: ContactFormData) => {
     try {
@@ -67,7 +70,7 @@ export function ContactCTA() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-1">
               <Input 
-                placeholder="Ex: João Silva" 
+                placeholder="Nome Completo *" 
                 {...register('name')}
                 className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" 
               />
@@ -75,7 +78,7 @@ export function ContactCTA() {
             </div>
             <div className="space-y-1">
               <Input 
-                placeholder="Ex: joao@exemplo.com" 
+                placeholder="E-mail *" 
                 type="email"
                 {...register('email')}
                 className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" 
@@ -83,10 +86,17 @@ export function ContactCTA() {
               {errors.email && <p className="text-[10px] text-red-500 font-bold ml-2">{errors.email.message}</p>}
             </div>
             <div className="space-y-1">
+              <div className="flex justify-between items-center px-1 mb-1">
+                <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Sua Mensagem *</span>
+                <span className={`text-[10px] font-bold ${messageText?.length > 1000 ? 'text-red-500' : 'text-text-muted'}`}>
+                  {messageText?.length || 0} / 1000
+                </span>
+              </div>
               <textarea 
-                placeholder="Ex: Gostaria de saber mais sobre como anunciar meus serviços..." 
+                placeholder="Conte-nos como podemos ajudar..." 
                 {...register('message')}
                 className="w-full bg-surface border-none rounded-xl p-4 text-text-main placeholder:text-text-muted/50 h-32 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                maxLength={1000}
               />
               {errors.message && <p className="text-[10px] text-red-500 font-bold ml-2">{errors.message.message}</p>}
             </div>
