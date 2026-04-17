@@ -162,12 +162,21 @@ service cloud.firestore {
       // Create: Owner can create as 'user', Admin can create anything
       allow create: if (isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.role == 'user') || isAdmin();
       
-      // Update: Owner can update their info but NOT their role or isBlocked (unless admin), Admin can update anything
+      // Update: Owner can update their info, Admin anything, 
+      // OR a non-owner can perform a rating update if paired with a vote record
       allow update: if (isOwner(userId) && isValidUser(request.resource.data) && 
                         request.resource.data.role == resource.data.role &&
                         (!('isBlocked' in request.resource.data) || request.resource.data.isBlocked == resource.data.isBlocked) &&
                         request.resource.data.uid == resource.data.uid &&
-                        request.resource.data.createdAt == resource.data.createdAt) || isAdmin();
+                        request.resource.data.createdAt == resource.data.createdAt) 
+                    || 
+                    (isAuthenticated() && isNotBlocked() && request.auth.uid != userId && 
+                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount']) &&
+                     isValidUser(request.resource.data) &&
+                     ((!('reviewCount' in resource.data) && request.resource.data.reviewCount == 1) ||
+                      (request.resource.data.reviewCount == resource.data.reviewCount + 1)) &&
+                     getAfter(/databases/$(database)/documents/users/$(request.auth.uid)/private_data/votes/$(userId)) != null)
+                    || isAdmin();
       
       // Delete: Only Admin
       allow delete: if isAdmin();
