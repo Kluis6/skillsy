@@ -150,7 +150,7 @@ function SearchResultsContent() {
             {city && state && (
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger asChild>
+                  <TooltipTrigger>
                     <Button 
                       variant="ghost" 
                       size="icon" 
