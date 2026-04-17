@@ -402,7 +402,7 @@ export function AdminUsersClient() {
               </div>
               <div className="space-y-2">
                 <Label className="text-xs font-bold text-text-muted uppercase ml-1">Estado (UF)</Label>
-                <Select value={filterState} onValueChange={setFilterState}>
+                <Select value={filterState} onValueChange={(val) => setFilterState(val || 'all')}>
                   <SelectTrigger className="bg-surface border-none rounded-2xl h-12 text-sm w-full">
                     <SelectValue placeholder="Selecione o Estado" />
                   </SelectTrigger>
