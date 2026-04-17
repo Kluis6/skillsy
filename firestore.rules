@@ -95,7 +95,7 @@ service cloud.firestore {
         'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 
         'phones', 'location', 'ward', 'companyName', 'gallery', 
         'rating', 'reviewCount', 'verifiedMember', 'experienceYears', 'baptismYear',
-        'isBlocked', 'createdAt', 'socialLinks'
+        'isBlocked', 'createdAt', 'socialLinks', 'availability', 'serviceHours'
       ];
       
       return data.keys().hasAll(['uid', 'name', 'email', 'isProvider', 'role', 'createdAt']) &&
@@ -126,6 +126,8 @@ service cloud.firestore {
              (!('reviewCount' in data) || data.reviewCount is number) &&
              (!('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
              (!('baptismYear' in data) || data.baptismYear == null || data.baptismYear is number) &&
+             (!('availability' in data) || data.availability == null || data.availability is list) &&
+             (!('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200)) &&
              (!('verifiedMember' in data) || data.verifiedMember is bool) &&
              (!('isBlocked' in data) || data.isBlocked is bool);
     }

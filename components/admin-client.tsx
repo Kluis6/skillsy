@@ -34,7 +34,9 @@ import {
   Trash2,
   X,
   Navigation,
-  Loader2
+  Loader2,
+  Clock,
+  CalendarDays
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
@@ -192,6 +194,8 @@ export function AdminClient() {
       verifiedMember: user.verifiedMember || false,
       isBlocked: user.isBlocked || false,
       baptismYear: user.baptismYear || null,
+      availability: user.availability || [],
+      serviceHours: user.serviceHours || '',
     });
     setIsEditDialogOpen(true);
   };
@@ -570,6 +574,46 @@ export function AdminClient() {
                   type="number"
                   placeholder="Ex: 2010"
                   {...editForm.register('baptismYear', { valueAsNumber: true })}
+                  className="bg-surface border-none rounded-2xl h-12"
+                />
+              </div>
+              <div className="space-y-4 pt-2 md:col-span-2">
+                <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
+                  <CalendarDays size={12} /> Disponibilidade
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].map((day) => {
+                    const isSelected = editForm.watch('availability')?.includes(day);
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => {
+                          const current = editForm.getValues('availability') || [];
+                          const next = isSelected 
+                            ? current.filter(d => d !== day)
+                            : [...current, day];
+                          editForm.setValue('availability', next, { shouldDirty: true });
+                        }}
+                        className={`h-10 px-4 rounded-xl text-xs font-bold transition-all border-2 ${
+                          isSelected 
+                            ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20' 
+                            : 'bg-surface border-transparent text-text-muted hover:border-primary/20'
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="space-y-2 pt-2 md:col-span-2">
+                <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
+                  <Clock size={12} /> Horário de Atendimento
+                </Label>
+                <Input 
+                  {...editForm.register('serviceHours')}
+                  placeholder="Ex: 08:00 - 18:00 ou Por agendamento"
                   className="bg-surface border-none rounded-2xl h-12"
                 />
               </div>

@@ -27,7 +27,9 @@ import {
   Globe,
   Phone,
   Church,
-  Users
+  Users,
+  Clock,
+  CalendarDays
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -260,9 +262,13 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
                   </div>
                   
                   {targetProfile.baptismYear && (
-                    <div className="flex items-center justify-center md:justify-start gap-1 mb-2 text-primary/70">
-                      <Church size={14} />
-                      <span className="text-xs font-bold uppercase tracking-wider">Batismo: {targetProfile.baptismYear}</span>
+                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2 text-primary/70">
+                      <div className="flex items-center gap-1">
+                        <Church size={14} />
+                        <span className="text-xs font-bold uppercase tracking-wider">Batismo: {targetProfile.baptismYear}</span>
+                      </div>
+                      <span className="w-1 h-1 rounded-full bg-primary/30" />
+                      <span className="text-xs font-bold uppercase tracking-wider">Membro há {new Date().getFullYear() - targetProfile.baptismYear} anos</span>
                     </div>
                   )}
                   
@@ -442,20 +448,37 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
                         <Church size={20} />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Ano de Batismo</p>
-                        <p className="text-sm font-bold text-text-main">{targetProfile.baptismYear}</p>
+                        <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Tempo de Membro</p>
+                        <p className="text-sm font-bold text-text-main">
+                          {targetProfile.baptismYear} ({new Date().getFullYear() - targetProfile.baptismYear} anos)
+                        </p>
                       </div>
                     </div>
                   )}
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center text-primary shrink-0">
-                      <Calendar size={20} />
+                      <CalendarDays size={20} />
                     </div>
                     <div>
                       <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Disponibilidade</p>
-                      <p className="text-sm font-bold text-text-main">Segunda a Sexta</p>
+                      <p className="text-sm font-bold text-text-main">
+                        {targetProfile.availability && targetProfile.availability.length > 0 
+                          ? targetProfile.availability.join(', ') 
+                          : 'Não informada'}
+                      </p>
                     </div>
                   </div>
+                  {targetProfile.serviceHours && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center text-primary shrink-0">
+                        <Clock size={20} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Horário</p>
+                        <p className="text-sm font-bold text-text-main">{targetProfile.serviceHours}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <Separator className="my-8 bg-border-subtle/50" />

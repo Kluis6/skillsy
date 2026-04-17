@@ -22,7 +22,10 @@ import {
   UserMinus,
   ChevronLeft,
   ChevronsLeft,
-  ChevronsRight
+  ChevronsRight,
+  Clock,
+  CalendarDays,
+  Church
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
@@ -285,6 +288,27 @@ function SearchResultsContent() {
                             <p className="text-text-muted text-sm leading-relaxed line-clamp-2 max-w-2xl">
                               {p.bio || 'Este membro da comunidade oferece serviços de alta qualidade com valores compartilhados. Clique para ver mais detalhes e entrar em contato.'}
                             </p>
+
+                            <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
+                              {p.baptismYear && (
+                                <div className="flex items-center gap-1.5">
+                                  <Church size={12} className="text-primary/60" />
+                                  <span>Membro há {new Date().getFullYear() - p.baptismYear} anos</span>
+                                </div>
+                              )}
+                              {p.availability && p.availability.length > 0 && (
+                                <div className="flex items-center gap-1.5">
+                                  <CalendarDays size={12} className="text-primary/60" />
+                                  <span>{p.availability.join(', ')}</span>
+                                </div>
+                              )}
+                              {p.serviceHours && (
+                                <div className="flex items-center gap-1.5">
+                                  <Clock size={12} className="text-primary/60" />
+                                  <span>{p.serviceHours}</span>
+                                </div>
+                              )}
+                            </div>
 
                             <div className="flex flex-wrap gap-3 pt-2">
                               <Badge className="bg-surface text-text-muted hover:bg-primary/5 hover:text-primary border-none rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors">

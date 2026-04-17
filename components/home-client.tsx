@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, User as UserIcon, Briefcase, MapPin, Star, UserPlus, UserMinus, Users, ShieldCheck, Menu, Settings, LogOut, Heart } from 'lucide-react';
+import { Search, User as UserIcon, Briefcase, MapPin, Star, UserPlus, UserMinus, Users, ShieldCheck, Menu, Settings, LogOut, Heart, Clock, CalendarDays, Church } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
@@ -182,10 +182,31 @@ export function HomeClient() {
                           </div>
                         </div>
 
-                        <CardContent className="p-0 flex-grow mb-8">
-                          <p className="text-text-muted text-sm leading-relaxed line-clamp-3">
+                        <CardContent className="p-0 flex-grow mb-8 text-sm">
+                          <p className="text-text-muted leading-relaxed line-clamp-3 mb-4">
                             {p.bio || 'Membro dedicado da comunidade oferecendo serviços com excelência e valores compartilhados.'}
                           </p>
+
+                          <div className="space-y-2 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
+                            {p.baptismYear && (
+                              <div className="flex items-center gap-1.5">
+                                <Church size={12} className="text-primary/60" />
+                                <span>Membro há {new Date().getFullYear() - p.baptismYear} anos</span>
+                              </div>
+                            )}
+                            {p.availability && p.availability.length > 0 && (
+                              <div className="flex items-center gap-1.5">
+                                <CalendarDays size={12} className="text-primary/60" />
+                                <span>{p.availability.join(', ')}</span>
+                              </div>
+                            )}
+                            {p.serviceHours && (
+                              <div className="flex items-center gap-1.5">
+                                <Clock size={12} className="text-primary/60" />
+                                <span>{p.serviceHours}</span>
+                              </div>
+                            )}
+                          </div>
                         </CardContent>
 
                         <div className="pt-6 border-t border-border-subtle flex justify-between items-center">

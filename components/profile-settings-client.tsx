@@ -26,7 +26,9 @@ import {
   Church,
   Loader2,
   AlertCircle,
-  Navigation
+  Navigation,
+  Clock,
+  CalendarDays
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -77,6 +79,8 @@ export function ProfileSettingsClient() {
       linkedin: '',
       website: '',
       baptismYear: '',
+      availability: [],
+      serviceHours: '',
       photoURL: '',
       bannerURL: '',
       gallery: []
@@ -102,6 +106,8 @@ export function ProfileSettingsClient() {
         linkedin: profile.linkedin || '',
         website: profile.website || '',
         baptismYear: profile.baptismYear ? String(profile.baptismYear) : '',
+        availability: profile.availability || [],
+        serviceHours: profile.serviceHours || '',
         photoURL: profile.photoURL || '',
         bannerURL: profile.bannerURL || '',
         gallery: profile.gallery || []
@@ -132,7 +138,7 @@ export function ProfileSettingsClient() {
     const fieldsToNullify = [
       'instagram', 'facebook', 'linkedin', 'website', 'whatsapp', 
       'bio', 'location', 'ward', 'companyName', 'serviceType', 
-      'category', 'photoURL', 'bannerURL', 'baptismYear'
+      'category', 'photoURL', 'bannerURL', 'baptismYear', 'serviceHours'
     ];
     
     fieldsToNullify.forEach(field => {
@@ -434,6 +440,49 @@ export function ProfileSettingsClient() {
                         className={`bg-surface border-none rounded-2xl h-12 ${errors.serviceType ? 'ring-2 ring-red-500' : ''}`}
                       />
                       {errors.serviceType && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.serviceType.message}</p>}
+                    </div>
+
+                    <div className="space-y-4 pt-2">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
+                        <CalendarDays size={12} /> Disponibilidade
+                      </Label>
+                      <div className="flex flex-wrap gap-2">
+                        {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].map((day) => {
+                          const isSelected = formData.availability?.includes(day);
+                          return (
+                            <button
+                              key={day}
+                              type="button"
+                              onClick={() => {
+                                const current = formData.availability || [];
+                                const next = isSelected 
+                                  ? current.filter(d => d !== day)
+                                  : [...current, day];
+                                setValue('availability', next, { shouldDirty: true });
+                              }}
+                              className={`h-10 px-4 rounded-xl text-xs font-bold transition-all border-2 ${
+                                isSelected 
+                                  ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20' 
+                                  : 'bg-surface border-transparent text-text-muted hover:border-primary/20'
+                              }`}
+                            >
+                              {day}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-2">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
+                        <Clock size={12} /> Horário de Atendimento
+                      </Label>
+                      <Input 
+                        {...register('serviceHours')}
+                        placeholder="Ex: 08:00 - 18:00 ou Por agendamento"
+                        className={`bg-surface border-none rounded-2xl h-12 ${errors.serviceHours ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                      {errors.serviceHours && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.serviceHours.message}</p>}
                     </div>
                   </div>
                 )}

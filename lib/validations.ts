@@ -22,6 +22,8 @@ export const profileSchema = z.object({
     .regex(/^\d*$/, 'Ano deve conter apenas números')
     .max(4, 'Ano deve ter 4 dígitos')
     .nullable().optional(),
+  availability: z.array(z.string()).optional(),
+  serviceHours: z.string().max(100, 'Horário muito longo').nullable().optional(),
   photoURL: z.string().nullable().optional(),
   bannerURL: z.string().nullable().optional(),
   gallery: z.array(z.string()),
@@ -87,6 +89,8 @@ export const adminEditUserSchema = z.object({
   ward: z.string().max(100, 'Ala/Ramo muito longo').nullable().optional(),
   serviceType: z.string().max(100, 'Serviço muito longo').nullable().optional(),
   baptismYear: z.number().int().min(1830).max(new Date().getFullYear()).nullable().optional(),
+  availability: z.array(z.string()).optional(),
+  serviceHours: z.string().max(100, 'Horário muito longo').nullable().optional(),
   role: z.enum(['user', 'admin']),
   isProvider: z.boolean(),
   verifiedMember: z.boolean(),
