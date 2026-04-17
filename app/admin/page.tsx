@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { AdminClient } from '@/components/admin-client';
+import { AdminDashboardClient } from '@/components/admin-dashboard-client';
 
 export const metadata: Metadata = {
   title: 'Painel Administrativo',
@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminPage() {
-  return <AdminClient />;
+  return <AdminDashboardClient />;
 }

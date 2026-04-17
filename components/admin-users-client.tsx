@@ -17,7 +17,6 @@ import {
 import { 
   Users, 
   Search, 
-  Filter, 
   ShieldAlert, 
   ShieldCheck, 
   Edit3, 
@@ -31,19 +30,16 @@ import {
   Mail,
   Calendar,
   MoreVertical,
-  Trash2,
-  X,
   Navigation,
   Loader2,
   Clock,
   CalendarDays
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -76,20 +72,56 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-import { Skeleton } from "@/components/ui/skeleton";
-
-import { ThemeToggle } from '@/components/theme-toggle';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { LocationService } from '@/services/location-service';
 
-export function AdminClient() {
+const BRAZIL_STATES = [
+  { label: 'Todos os Estados', value: 'all' },
+  { label: 'Acre', value: 'AC' },
+  { label: 'Alagoas', value: 'AL' },
+  { label: 'Amapá', value: 'AP' },
+  { label: 'Amazonas', value: 'AM' },
+  { label: 'Bahia', value: 'BA' },
+  { label: 'Ceará', value: 'CE' },
+  { label: 'Distrito Federal', value: 'DF' },
+  { label: 'Espírito Santo', value: 'ES' },
+  { label: 'Goiás', value: 'GO' },
+  { label: 'Maranhão', value: 'MA' },
+  { label: 'Mato Grosso', value: 'MT' },
+  { label: 'Mato Grosso do Sul', value: 'MS' },
+  { label: 'Minas Gerais', value: 'MG' },
+  { label: 'Pará', value: 'PA' },
+  { label: 'Paraíba', value: 'PB' },
+  { label: 'Paraná', value: 'PR' },
+  { label: 'Pernambuco', value: 'PE' },
+  { label: 'Piauí', value: 'PI' },
+  { label: 'Rio de Janeiro', value: 'RJ' },
+  { label: 'Rio Grande do Norte', value: 'RN' },
+  { label: 'Rio Grande do Sul', value: 'RS' },
+  { label: 'Rondônia', value: 'RO' },
+  { label: 'Roraima', value: 'RR' },
+  { label: 'Santa Catarina', value: 'SC' },
+  { label: 'São Paulo', value: 'SP' },
+  { label: 'Sergipe', value: 'SE' },
+  { label: 'Tocantins', value: 'TO' },
+];
+
+export function AdminUsersClient() {
   const { profile, loading: authLoading } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterWard, setFilterWard] = useState('');
-  const [filterState, setFilterState] = useState('');
+  const [filterState, setFilterState] = useState('all');
   const [filterHasServices, setFilterHasServices] = useState(false);
   const [filterRecent, setFilterRecent] = useState(false);
   
@@ -150,8 +182,10 @@ export function AdminClient() {
       result = result.filter(u => u.ward?.toLowerCase().includes(filterWard.toLowerCase()));
     }
 
-    if (filterState) {
-      result = result.filter(u => u.location?.toLowerCase().includes(filterState.toLowerCase()));
+    if (filterState !== 'all') {
+      result = result.filter(u => 
+        u.location?.toUpperCase().includes(filterState.toUpperCase())
+      );
     }
 
     if (filterHasServices) {
@@ -159,7 +193,6 @@ export function AdminClient() {
     }
 
     if (filterRecent) {
-      // Sort by createdAt descending
       result.sort((a, b) => {
         const dateA = a.createdAt?.seconds || 0;
         const dateB = b.createdAt?.seconds || 0;
@@ -184,6 +217,12 @@ export function AdminClient() {
 
   const handleEditClick = (user: UserProfile) => {
     setEditingUser(user);
+    
+    // Ensure baptismYear is handled as a number even if stored as string
+    const baptismYearValue = typeof user.baptismYear === 'string' 
+      ? parseInt(user.baptismYear, 10) 
+      : user.baptismYear;
+
     editForm.reset({
       name: user.name,
       location: user.location || '',
@@ -193,7 +232,7 @@ export function AdminClient() {
       isProvider: user.isProvider || false,
       verifiedMember: user.verifiedMember || false,
       isBlocked: user.isBlocked || false,
-      baptismYear: user.baptismYear || null,
+      baptismYear: baptismYearValue && !isNaN(baptismYearValue) ? baptismYearValue : null,
       availability: user.availability || [],
       serviceHours: user.serviceHours || '',
     });
@@ -203,7 +242,6 @@ export function AdminClient() {
   const onSaveEdit = async (data: AdminEditUserFormData) => {
     if (!editingUser) return;
     try {
-      // Clean empty strings to null
       const sanitizedData = Object.fromEntries(
         Object.entries(data).map(([key, value]) => [key, value === '' ? null : value])
       );
@@ -220,7 +258,6 @@ export function AdminClient() {
 
   const onCreateAdmin = async (data: AdminCreateAdminFormData) => {
     try {
-      // Check if email already exists
       const existing = await UserService.getProfileByEmail(data.email);
       if (existing) {
         toast.error('Este e-mail já está cadastrado');
@@ -283,52 +320,58 @@ export function AdminClient() {
     }
   };
 
-  return (
-    <div className="pb-20 px-6 md:px-10 py-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-        <div>
-          <h2 className="text-3xl font-bold text-text-main font-heading">Dashboard Administrativo</h2>
-          <p className="text-text-muted mt-1">Gerencie usuários, verificações e configurações da plataforma.</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="outline"
-            onClick={handleSeedData}
-            disabled={isSeeding}
-            className="rounded-2xl px-6 font-bold h-11 border-primary/20 text-primary hover:bg-primary/5"
-          >
-            {isSeeding ? 'Gerando...' : 'Gerar Dados'}
-          </Button>
-          <Button 
-            onClick={() => setIsAddAdminDialogOpen(true)}
-            className="bg-primary text-white hover:bg-primary/90 rounded-2xl px-6 font-bold shadow-lg shadow-primary/20 h-11"
-          >
-            <ShieldCheck size={18} className="mr-2" /> Novo Admin
-          </Button>
-        </div>
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface">
+        <Loader2 className="animate-spin text-primary" size={40} />
       </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <Card className="bg-card border-none shadow-sm rounded-3xl overflow-hidden">
-            <CardHeader className="pb-2">
-              <CardDescription className="text-[10px] font-bold uppercase tracking-widest">Total de Usuários</CardDescription>
-              <CardTitle className="text-4xl font-bold font-heading">{users.length}</CardTitle>
-            </CardHeader>
-            <div className="h-1 bg-primary/20 w-full" />
-          </Card>
-          <Card className="bg-card border-none shadow-sm rounded-3xl overflow-hidden">
-            <CardHeader className="pb-2">
-              <CardDescription className="text-[10px] font-bold uppercase tracking-widest">Prestadores de Serviço</CardDescription>
-              <CardTitle className="text-4xl font-bold font-heading">{users.filter(u => u.isProvider).length}</CardTitle>
-            </CardHeader>
-            <div className="h-1 bg-green-500/20 w-full" />
-          </Card>
-          <Card className="bg-card border-none shadow-sm rounded-3xl overflow-hidden">
-            <CardHeader className="pb-2">
-              <CardDescription className="text-[10px] font-bold uppercase tracking-widest">Membros Verificados</CardDescription>
-              <CardTitle className="text-4xl font-bold font-heading">{users.filter(u => u.verifiedMember).length}</CardTitle>
-            </CardHeader>
-            <div className="h-1 bg-highlight/20 w-full" />
-          </Card>
+    );
+  }
+
+  if (profile?.role !== 'admin') {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-surface">
+        <ShieldAlert size={64} className="text-red-500 mb-6" />
+        <h1 className="text-3xl font-bold mb-4">Acesso Negado</h1>
+        <p className="text-text-muted mb-8">Esta área é restrita a administradores do sistema.</p>
+        <Link href="/">
+          <Button className="bg-primary text-white font-bold rounded-xl px-8">Voltar para Home</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <TooltipProvider>
+      <div className="pb-20 px-6 md:px-10 py-8 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+          <div className="flex items-center gap-4">
+             <Link href="/admin">
+               <Button variant="ghost" size="icon" className="rounded-full hover:bg-surface">
+                 <ArrowLeft size={20} />
+               </Button>
+             </Link>
+             <div>
+               <h2 className="text-3xl font-bold text-text-main font-heading">Gerenciar Usuários</h2>
+               <p className="text-text-muted mt-1">Total de {users.length} membros cadastrados.</p>
+             </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="outline"
+              onClick={handleSeedData}
+              disabled={isSeeding}
+              className="rounded-2xl px-6 font-bold h-11 border-border-subtle hover:bg-surface"
+            >
+              {isSeeding ? 'Gerando...' : 'Gerar Dados'}
+            </Button>
+            <Button 
+              onClick={() => setIsAddAdminDialogOpen(true)}
+              className="bg-primary text-white hover:bg-primary/90 rounded-2xl px-6 font-bold shadow-lg shadow-primary/20 h-11"
+            >
+              <ShieldCheck size={18} className="mr-2" /> Novo Admin
+            </Button>
+          </div>
         </div>
 
         {/* Filters & Search */}
@@ -358,13 +401,19 @@ export function AdminClient() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs font-bold text-text-muted uppercase ml-1">Estado</Label>
-                <Input 
-                  placeholder="Ex: SP" 
-                  className="bg-surface border-none rounded-2xl h-12 text-sm"
-                  value={filterState}
-                  onChange={(e) => setFilterState(e.target.value)}
-                />
+                <Label className="text-xs font-bold text-text-muted uppercase ml-1">Estado (UF)</Label>
+                <Select value={filterState} onValueChange={setFilterState}>
+                  <SelectTrigger className="bg-surface border-none rounded-2xl h-12 text-sm w-full">
+                    <SelectValue placeholder="Selecione o Estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BRAZIL_STATES.map((state) => (
+                      <SelectItem key={state.value} value={state.value}>
+                        {state.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex items-center gap-3 h-12 px-4 bg-surface rounded-2xl">
                 <Switch 
@@ -401,7 +450,7 @@ export function AdminClient() {
                     <TableRow key={u.uid} className="border-border-subtle hover:bg-surface/30 transition-colors">
                       <TableCell className="py-5 pl-8">
                         <div className="flex items-center gap-4">
-                          <Avatar className="w-10 h-10 border border-border-subtle">
+                          <Avatar size="lg" className="border border-border-subtle">
                             <AvatarImage src={u.photoURL} />
                             <AvatarFallback className="bg-primary/5 text-primary font-bold">{u.name[0]}</AvatarFallback>
                           </Avatar>
@@ -487,7 +536,7 @@ export function AdminClient() {
 
       {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="rounded-[2.5rem] border-none shadow-2xl p-8 max-w-2xl">
+        <DialogContent className="rounded-[2.5rem] border-none shadow-2xl p-8 max-w-2xl overflow-y-auto max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold font-heading">Editar Perfil de Usuário</DialogTitle>
             <DialogDescription>
@@ -708,6 +757,7 @@ export function AdminClient() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }
