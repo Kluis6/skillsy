@@ -7,7 +7,6 @@ import { UserProfile } from '@/models/types';
 import { 
   Users, 
   ShieldCheck, 
-  Briefcase, 
   ArrowRight,
   Loader2,
   ShieldAlert
