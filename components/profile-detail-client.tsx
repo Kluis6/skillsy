@@ -140,9 +140,29 @@ export function ProfileDetailClient({ id }: ProfileDetailClientProps) {
       // Refresh profile to show new rating
       const updated = await UserService.getProfile(id);
       setTargetProfile(updated);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting rating:', error);
-      toast.error('Erro ao enviar avaliação');
+      
+      let message = 'Erro ao enviar avaliação';
+      
+      // Try to parse the FirestoreErrorInfo or generic error
+      try {
+        const errorData = JSON.parse(error.message);
+        if (errorData.error) {
+          if (errorData.error.toLowerCase().includes('permission') || errorData.error.toLowerCase().includes('insufficient')) {
+            message = 'Erro de permissão. Verifique se você já avaliou este profissional ou tente novamente mais tarde.';
+          } else {
+            message = errorData.error;
+          }
+        }
+      } catch {
+        // Not JSON, use message directly if it's user-friendly
+        if (error.message && !error.message.includes('[object Object]')) {
+          message = error.message;
+        }
+      }
+
+      toast.error(message);
     } finally {
       setSubmittingRating(false);
     }
