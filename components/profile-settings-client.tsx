@@ -83,7 +83,12 @@ export function ProfileSettingsClient() {
       serviceHours: '',
       photoURL: '',
       bannerURL: '',
-      gallery: []
+      gallery: [],
+      businessAddress: '',
+      businessAddressNumber: '',
+      businessNeighborhood: '',
+      businessState: '',
+      businessComplement: ''
     }
   });
 
@@ -110,7 +115,12 @@ export function ProfileSettingsClient() {
         serviceHours: profile.serviceHours || '',
         photoURL: profile.photoURL || '',
         bannerURL: profile.bannerURL || '',
-        gallery: profile.gallery || []
+        gallery: profile.gallery || [],
+        businessAddress: profile.businessAddress || '',
+        businessAddressNumber: profile.businessAddressNumber || '',
+        businessNeighborhood: profile.businessNeighborhood || '',
+        businessState: profile.businessState || '',
+        businessComplement: profile.businessComplement || ''
       });
     }
   }, [profile, reset]);
@@ -138,7 +148,8 @@ export function ProfileSettingsClient() {
     const fieldsToNullify = [
       'instagram', 'facebook', 'linkedin', 'website', 'whatsapp', 
       'bio', 'location', 'ward', 'companyName', 'serviceType', 
-      'category', 'photoURL', 'bannerURL', 'baptismYear', 'serviceHours'
+      'category', 'photoURL', 'bannerURL', 'baptismYear', 'serviceHours',
+      'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'businessComplement'
     ];
     
     fieldsToNullify.forEach(field => {
@@ -556,6 +567,52 @@ export function ProfileSettingsClient() {
                     />
                     {errors.baptismYear && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.baptismYear.message}</p>}
                     <p className="text-[10px] text-primary/60 font-medium ml-1">Preencher este campo ativa o selo de Membro Verificado.</p>
+                  </div>
+                </div>
+
+                <div className="pt-4 space-y-4">
+                  <h4 className="text-sm font-bold text-text-main border-l-4 border-primary pl-3">Endereço Comercial (Opcional)</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="md:col-span-2 space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Endereço (Rua/Avenida)</Label>
+                      <Input 
+                        {...register('businessAddress')}
+                        placeholder="Ex: Rua das Flores"
+                        className={`bg-surface border-none rounded-2xl h-12 ${errors.businessAddress ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Número</Label>
+                      <Input 
+                        {...register('businessAddressNumber')}
+                        placeholder="Ex: 123"
+                        className={`bg-surface border-none rounded-2xl h-12 ${errors.businessAddressNumber ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Bairro</Label>
+                      <Input 
+                        {...register('businessNeighborhood')}
+                        placeholder="Ex: Centro"
+                        className={`bg-surface border-none rounded-2xl h-12 ${errors.businessNeighborhood ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Estado</Label>
+                      <Input 
+                        {...register('businessState')}
+                        placeholder="Ex: SP"
+                        className={`bg-surface border-none rounded-2xl h-12 ${errors.businessState ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Complemento</Label>
+                      <Input 
+                        {...register('businessComplement')}
+                        placeholder="Ex: Sala 10, Bloco B"
+                        className={`bg-surface border-none rounded-2xl h-12 ${errors.businessComplement ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                    </div>
                   </div>
                 </div>
 

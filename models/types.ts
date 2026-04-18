@@ -19,6 +19,11 @@ export interface UserProfile {
   phones?: string[];
   ward?: string;
   companyName?: string;
+  businessAddress?: string;
+  businessAddressNumber?: string;
+  businessNeighborhood?: string;
+  businessState?: string;
+  businessComplement?: string;
   gallery?: string[];
   rating?: number;
   reviewCount?: number;

@@ -249,6 +249,11 @@ export function AdminUsersClient() {
       baptismYear: baptismYearValue && !isNaN(baptismYearValue) ? baptismYearValue : null,
       availability: user.availability || [],
       serviceHours: user.serviceHours || '',
+      businessAddress: user.businessAddress || '',
+      businessAddressNumber: user.businessAddressNumber || '',
+      businessNeighborhood: user.businessNeighborhood || '',
+      businessState: user.businessState || '',
+      businessComplement: user.businessComplement || '',
     });
     setIsEditDialogOpen(true);
   };
@@ -719,6 +724,53 @@ export function AdminUsersClient() {
                   className="bg-surface border-none rounded-2xl h-12"
                 />
               </div>
+
+              <div className="md:col-span-2 space-y-4 pt-2">
+                <h4 className="text-sm font-bold text-text-main border-l-4 border-primary pl-3">Endereço Comercial (Opcional)</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="md:col-span-2 space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Endereço (Rua/Avenida)</Label>
+                    <Input 
+                      placeholder="Ex: Rua das Flores"
+                      {...editForm.register('businessAddress')}
+                      className="bg-surface border-none rounded-2xl h-12"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Número</Label>
+                    <Input 
+                      placeholder="Ex: 123"
+                      {...editForm.register('businessAddressNumber')}
+                      className="bg-surface border-none rounded-2xl h-12"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Bairro</Label>
+                    <Input 
+                      placeholder="Ex: Centro"
+                      {...editForm.register('businessNeighborhood')}
+                      className="bg-surface border-none rounded-2xl h-12"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Estado</Label>
+                    <Input 
+                      placeholder="Ex: SP"
+                      {...editForm.register('businessState')}
+                      className="bg-surface border-none rounded-2xl h-12"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Complemento</Label>
+                    <Input 
+                      placeholder="Ex: Sala 10, Bloco B"
+                      {...editForm.register('businessComplement')}
+                      className="bg-surface border-none rounded-2xl h-12"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-4 pt-2 md:col-span-2">
                 <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
                   <CalendarDays size={12} /> Disponibilidade

@@ -8,6 +8,11 @@ export const profileSchema = z.object({
   serviceType: z.string().max(100, 'Serviço deve ter no máximo 100 caracteres').nullable().optional(),
   category: z.string().max(50, 'Categoria inválida').nullable().optional(),
   companyName: z.string().max(100, 'Nome da empresa deve ter no máximo 100 caracteres').nullable().optional(),
+  businessAddress: z.string().max(150, 'Endereço deve ter no máximo 150 caracteres').nullable().optional(),
+  businessAddressNumber: z.string().max(20, 'Número deve ter no máximo 20 caracteres').nullable().optional(),
+  businessNeighborhood: z.string().max(100, 'Bairro deve ter no máximo 100 caracteres').nullable().optional(),
+  businessState: z.string().max(100, 'Estado deve ter no máximo 100 caracteres').nullable().optional(),
+  businessComplement: z.string().max(100, 'Complemento deve ter no máximo 100 caracteres').nullable().optional(),
   isProvider: z.boolean(),
   whatsapp: z.string()
     .regex(/^\d*$/, 'Apenas números são permitidos')
@@ -88,6 +93,11 @@ export const adminEditUserSchema = z.object({
   location: z.string().max(100, 'Localização muito longa').nullable().optional(),
   ward: z.string().max(100, 'Ala/Ramo muito longo').nullable().optional(),
   serviceType: z.string().max(100, 'Serviço muito longo').nullable().optional(),
+  businessAddress: z.string().max(150, 'Endereço muito longo').nullable().optional(),
+  businessAddressNumber: z.string().max(20, 'Número muito longo').nullable().optional(),
+  businessNeighborhood: z.string().max(100, 'Bairro muito longo').nullable().optional(),
+  businessState: z.string().max(100, 'Estado muito longo').nullable().optional(),
+  businessComplement: z.string().max(100, 'Complemento muito longo').nullable().optional(),
   baptismYear: z.number().int().min(1830).max(new Date().getFullYear()).nullable().optional(),
   availability: z.array(z.string()).optional(),
   serviceHours: z.string().max(100, 'Horário muito longo').nullable().optional(),

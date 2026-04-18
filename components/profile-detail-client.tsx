@@ -32,7 +32,8 @@ import {
   CalendarDays,
   Plus,
   ChevronRight,
-  Home
+  Home,
+  Navigation
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -483,6 +484,36 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
 
         {/* Sidebar */}
         <aside className="mt-4 md:mt-0 space-y-4">
+          {targetProfile.businessAddress && (
+            <Card className="rounded-xl border border-border-subtle bg-white dark:bg-card shadow-sm p-4">
+              <h3 className="text-sm font-bold text-text-main mb-3 flex items-center gap-2">
+                <MapPin size={16} className="text-primary" /> Endereço Comercial
+              </h3>
+              <div className="space-y-1.5 min-w-0">
+                <p className="text-sm text-text-main font-medium leading-tight">
+                  {targetProfile.businessAddress}, {targetProfile.businessAddressNumber}
+                </p>
+                {targetProfile.businessComplement && (
+                  <p className="text-xs text-text-muted">{targetProfile.businessComplement}</p>
+                )}
+                <p className="text-xs text-text-muted">
+                  {targetProfile.businessNeighborhood}
+                </p>
+                <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
+                  {targetProfile.businessState}
+                </p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full mt-3 h-8 rounded-lg text-xs font-bold border-primary/20 text-primary hover:bg-primary/5"
+                  onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${targetProfile.businessAddress}, ${targetProfile.businessAddressNumber}, ${targetProfile.businessNeighborhood}, ${targetProfile.businessState}`)}`, '_blank')}
+                >
+                  <Navigation size={12} className="mr-1.5" /> Ver no Mapa
+                </Button>
+              </div>
+            </Card>
+          )}
+
           <Card className="rounded-xl border border-border-subtle bg-white dark:bg-card shadow-sm overflow-hidden">
             <div className="p-4 border-b border-border-subtle">
               <h3 className="text-sm font-bold text-text-main">Pessoas que talvez você conheça</h3>
