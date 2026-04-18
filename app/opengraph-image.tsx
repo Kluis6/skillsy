@@ -68,7 +68,7 @@ export default function OpenGraphImage() {
             >
               <div style={{ fontSize: '30px', fontWeight: 600 }}>Skillsy</div>
               <div style={{ fontSize: '22px', color: '#335c4c' }}>
-                Rede de apoio comunitario SUD
+                Network SUD
               </div>
             </div>
           </div>
@@ -85,7 +85,7 @@ export default function OpenGraphImage() {
               Encontre profissionais e servicos de confianca
             </div>
             <div style={{ fontSize: '30px', lineHeight: 1.35, color: '#335c4c' }}>
-              Conectando talentos, indicacoes e apoio mutuo em uma plataforma sem fins
+              Conectando talentos, indicações e apoio mutuo em uma plataforma sem fins
               lucrativos.
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function OpenGraphImage() {
             }}
           >
             <div>skillsy.com.br</div>
-            <div>Busca segura • Perfis publicos • Comunidade SUD</div>
+            <div>Busca segura • Perfis públicos • Comunidade SUD</div>
           </div>
         </div>
       </div>
