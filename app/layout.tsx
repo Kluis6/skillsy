@@ -6,37 +6,44 @@ import { AuthProvider } from '@/hooks/use-auth';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-heading' });
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://skillsy.com.br';
+const defaultDescription =
+  'Conectando talentos e serviços na comunidade SUD. Uma plataforma 100% sem fins lucrativos para impulsionar o apoio mútuo.';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl),
   title: {
     default: 'Skillsy | Rede de Apoio Comunitário SUD',
     template: '%s | Skillsy'
   },
-  description: 'Conectando talentos e serviços na comunidade SUD. Uma plataforma 100% sem fins lucrativos para impulsionar o apoio mútuo.',
+  description: defaultDescription,
   keywords: ['SUD', 'comunidade', 'serviços', 'profissionais', 'apoio mútuo', 'talentos'],
   authors: [{ name: 'Skillsy Community' }],
   creator: 'Skillsy',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    url: 'https://skillsy.com.br',
+    url: '/',
     siteName: 'Skillsy',
     title: 'Skillsy | Rede de Apoio Comunitário SUD',
-    description: 'Conectando talentos e serviços na comunidade SUD. Uma plataforma 100% sem fins lucrativos.',
+    description: defaultDescription,
     images: [
       {
-        url: 'https://picsum.photos/seed/skillsy-og/1200/630',
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Skillsy Community Network',
+        alt: 'Skillsy - rede de apoio comunitário SUD',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Skillsy | Rede de Apoio Comunitário SUD',
-    description: 'Conectando talentos e serviços na comunidade SUD.',
-    images: ['https://picsum.photos/seed/skillsy-twitter/1200/630'],
+    description: defaultDescription,
+    images: ['/opengraph-image'],
   },
   robots: {
     index: true,

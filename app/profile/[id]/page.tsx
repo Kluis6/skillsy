@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { ProfileDetailClient } from '@/components/profile-detail-client';
 import { UserService } from '@/services/user-service';
 
@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const profile = await UserService.getProfile(id);
     if (!profile) return { title: 'Perfil não encontrado' };
 
-    const title = `${profile.name} | ${profile.serviceType || 'Membro'} | Skillsy`;
+    const title = `${profile.name} | ${profile.serviceType || 'Membro'}`;
     const description = profile.bio || `Conheça ${profile.name}, profissional na comunidade SUD especializado em ${profile.serviceType || 'serviços diversos'}.`;
 
     return {
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     };
   } catch (error) {
-    return { title: 'Perfil | Skillsy' };
+    return { title: 'Perfil' };
   }
 }
 
