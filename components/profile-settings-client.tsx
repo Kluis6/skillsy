@@ -26,6 +26,7 @@ import {
   Church,
   Loader2,
   AlertCircle,
+  CheckCircle2,
   Navigation,
   Clock,
   CalendarDays,
@@ -62,9 +63,10 @@ export function ProfileSettingsClient() {
     setValue,
     watch,
     reset,
-    formState: { errors }
+    formState: { errors, touchedFields, dirtyFields }
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       bio: '',
@@ -521,16 +523,31 @@ export function ProfileSettingsClient() {
               </CardHeader>
               <CardContent className="px-0 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">
-                      Nome Completo <span className="text-red-500">*</span>
-                    </Label>
-                    <Input 
-                      {...register('name')}
-                      className={`bg-surface border-none rounded-2xl h-12 ${errors.name ? 'ring-2 ring-red-500' : ''}`}
-                    />
-                    {errors.name && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.name.message}</p>}
-                  </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">
+                        Nome Completo <span className="text-red-500">*</span>
+                      </Label>
+                      <div className="relative">
+                        <Input 
+                          {...register('name')}
+                          className={`bg-surface border-2 rounded-2xl h-12 transition-all ${
+                            errors.name 
+                            ? 'border-red-500/50 focus:border-red-500 ring-0' 
+                            : touchedFields.name && !errors.name 
+                              ? 'border-green-500/50 focus:border-green-500 ring-0' 
+                              : 'border-transparent focus:border-primary/20 ring-0'
+                          }`}
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                          {errors.name ? (
+                            <AlertCircle size={18} className="text-red-500" />
+                          ) : touchedFields.name && !errors.name ? (
+                            <CheckCircle2 size={18} className="text-green-500" />
+                          ) : null}
+                        </div>
+                      </div>
+                      {errors.name && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.name.message}</p>}
+                    </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
                       <MapPin size={12} /> Localização (Cidade/Estado)

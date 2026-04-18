@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ShieldCheck, Star } from 'lucide-react';
+import { ShieldCheck, Star, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -16,9 +16,10 @@ export function ContactCTA() {
     handleSubmit,
     reset,
     watch,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting, touchedFields, dirtyFields }
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       email: '',
@@ -70,22 +71,54 @@ export function ContactCTA() {
           <h4 className="text-text-main text-xl font-bold mb-6 text-center">Fale Conosco</h4>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-1">
-              <Input 
-                placeholder="Nome Completo *" 
-                {...register('name')}
-                className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" 
-              />
+              <div className="relative">
+                <Input 
+                  placeholder="Nome Completo *" 
+                  {...register('name')}
+                  className={`bg-surface border-2 h-12 rounded-xl text-text-main placeholder:text-text-muted/50 transition-all ${
+                    errors.name 
+                    ? 'border-red-500/50 focus:border-red-500' 
+                    : touchedFields.name && !errors.name 
+                      ? 'border-green-500/50 focus:border-green-500' 
+                      : 'border-transparent focus:border-primary/20'
+                  }`} 
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  {errors.name ? (
+                    <AlertCircle size={18} className="text-red-500" />
+                  ) : touchedFields.name && !errors.name ? (
+                    <CheckCircle2 size={18} className="text-green-500" />
+                  ) : null}
+                </div>
+              </div>
               {errors.name && <p className="text-[10px] text-red-500 font-bold ml-2">{errors.name.message}</p>}
             </div>
+
             <div className="space-y-1">
-              <Input 
-                placeholder="E-mail *" 
-                type="email"
-                {...register('email')}
-                className="bg-surface border-none h-12 rounded-xl text-text-main placeholder:text-text-muted/50" 
-              />
+              <div className="relative">
+                <Input 
+                  placeholder="E-mail *" 
+                  type="email"
+                  {...register('email')}
+                  className={`bg-surface border-2 h-12 rounded-xl text-text-main placeholder:text-text-muted/50 transition-all ${
+                    errors.email 
+                    ? 'border-red-500/50 focus:border-red-500' 
+                    : touchedFields.email && !errors.email 
+                      ? 'border-green-500/50 focus:border-green-500' 
+                      : 'border-transparent focus:border-primary/20'
+                  }`} 
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  {errors.email ? (
+                    <AlertCircle size={18} className="text-red-500" />
+                  ) : touchedFields.email && !errors.email ? (
+                    <CheckCircle2 size={18} className="text-green-500" />
+                  ) : null}
+                </div>
+              </div>
               {errors.email && <p className="text-[10px] text-red-500 font-bold ml-2">{errors.email.message}</p>}
             </div>
+
             <div className="space-y-1">
               <div className="flex justify-between items-center px-1 mb-1">
                 <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Sua Mensagem *</span>
@@ -93,12 +126,27 @@ export function ContactCTA() {
                   {messageText?.length || 0} / 1000
                 </span>
               </div>
-              <textarea 
-                placeholder="Conte-nos como podemos ajudar..." 
-                {...register('message')}
-                className="w-full bg-surface border-none rounded-xl p-4 text-text-main placeholder:text-text-muted/50 h-32 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                maxLength={1000}
-              />
+              <div className="relative">
+                <textarea 
+                  placeholder="Conte-nos como podemos ajudar..." 
+                  {...register('message')}
+                  className={`w-full bg-surface border-2 rounded-xl p-4 text-text-main placeholder:text-text-muted/50 h-32 outline-none transition-all ${
+                    errors.message 
+                    ? 'border-red-500/50 focus:border-red-500' 
+                    : touchedFields.message && !errors.message 
+                      ? 'border-green-500/50 focus:border-green-500' 
+                      : 'border-transparent focus:border-primary/20'
+                  }`}
+                  maxLength={1000}
+                />
+                <div className="absolute right-3 top-3 pointer-events-none">
+                  {errors.message ? (
+                    <AlertCircle size={18} className="text-red-500" />
+                  ) : touchedFields.message && !errors.message ? (
+                    <CheckCircle2 size={18} className="text-green-500" />
+                  ) : null}
+                </div>
+              </div>
               {errors.message && <p className="text-[10px] text-red-500 font-bold ml-2">{errors.message.message}</p>}
             </div>
             <Button 
