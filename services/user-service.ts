@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import { UserProfile } from '@/models/types';
+import { NotificationService } from './notification-service';
 
 enum OperationType {
   CREATE = 'create',
@@ -103,6 +104,15 @@ export const UserService = {
       await setDoc(docRef, {
         ...profile,
         createdAt: serverTimestamp(),
+      });
+
+      // Notify admins about the new user
+      await NotificationService.createNotification({
+        title: 'Novo Usuário Cadastrado',
+        message: `${profile.name || 'Um novo membro'} acabou de se juntar à plataforma Skillsy.`,
+        type: 'new_user',
+        read: false,
+        link: '/admin/users'
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);

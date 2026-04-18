@@ -39,3 +39,7 @@ Este documento estabelece as normas técnicas obrigatórias para o desenvolvimen
 
 ## 4. IA e Gemini
 - Chamadas à API Gemini **DEVEM** ser feitas exclusivamente no lado do cliente (`'use client'`), conforme requisito da plataforma.
+
+## 5. UI e Componentes (shadcn/ui)
+- **Prioridade shadcn/ui**: O uso de componentes da biblioteca shadcn/ui em sua versão mais atual é prioritário.
+- **Customização**: Criar componentes customizados apenas quando a biblioteca shadcn/ui não oferecer um componente adequado ou extensível para a funcionalidade necessária.

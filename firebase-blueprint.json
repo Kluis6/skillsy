@@ -76,6 +76,20 @@
         "votedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["providerId"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "Notificação administrativa para o sistema",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["new_user", "system", "report"] },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "link": { "type": "string", "description": "Link opcional para ação" }
+      },
+      "required": ["title", "message", "type", "read"]
     }
   },
   "firestore": {
@@ -94,6 +108,10 @@
     "/ratings/{ratingId}": {
       "schema": "Rating",
       "description": "Coleção de avaliações anônimas"
+    },
+    "/admin_notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "Notificações para os administradores"
     }
   }
 }

@@ -84,7 +84,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider, 
+  TooltipTrigger 
+} from '@/components/ui/tooltip';
 import { LocationService } from '@/services/location-service';
 
 const BRAZIL_STATES = [
@@ -505,31 +510,53 @@ export function AdminUsersClient() {
                         </div>
                       </TableCell>
                       <TableCell className="text-right pr-8">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-surface transition-colors cursor-pointer outline-none">
-                            <MoreVertical size={18} />
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="rounded-2xl border-border-subtle shadow-xl p-2 w-48">
-                            <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-text-muted px-3 py-2">Gerenciar</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => handleEditClick(u)} className="rounded-xl cursor-pointer focus:bg-primary/5 focus:text-primary">
-                              <Edit3 size={16} className="mr-2" /> Editar Perfil
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleToggleVerify(u)} className="rounded-xl cursor-pointer focus:bg-primary/5 focus:text-primary">
-                              <ShieldCheck size={16} className="mr-2" /> {u.verifiedMember ? 'Remover Verificação' : 'Verificar Membro'}
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator className="bg-border-subtle my-1" />
-                            <DropdownMenuItem 
-                              onClick={() => handleToggleBlock(u)} 
-                              className={`rounded-xl cursor-pointer ${u.isBlocked ? 'text-green-600 focus:bg-green-50 focus:text-green-600' : 'text-red-600 focus:bg-red-50 focus:text-red-600'}`}
-                            >
-                              {u.isBlocked ? (
-                                <><CheckCircle size={16} className="mr-2" /> Desbloquear</>
-                              ) : (
-                                <><Ban size={16} className="mr-2" /> Bloquear Usuário</>
-                              )}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="flex items-center justify-end gap-2">
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleToggleBlock(u)}
+                                className={`w-9 h-9 rounded-xl transition-all ${
+                                  u.isBlocked 
+                                    ? 'text-green-600 hover:bg-green-50 hover:text-green-700 bg-green-50/10' 
+                                    : 'text-red-500 hover:bg-red-50 hover:text-red-600'
+                                }`}
+                              >
+                                {u.isBlocked ? <CheckCircle size={18} /> : <Ban size={18} />}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="rounded-xl font-bold text-xs uppercase tracking-widest bg-white border-border-subtle shadow-xl px-3 py-2 text-text-main">
+                              {u.isBlocked ? 'Desbloquear Acesso' : 'Bloquear Acesso'}
+                            </TooltipContent>
+                          </Tooltip>
+
+                          <DropdownMenu>
+                            <DropdownMenuTrigger className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-surface transition-colors cursor-pointer outline-none">
+                              <MoreVertical size={18} />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="rounded-2xl border-border-subtle shadow-xl p-2 w-48">
+                              <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-text-muted px-3 py-2">Gerenciar</DropdownMenuLabel>
+                              <DropdownMenuItem onClick={() => handleEditClick(u)} className="rounded-xl cursor-pointer focus:bg-primary/5 focus:text-primary">
+                                <Edit3 size={16} className="mr-2" /> Editar Perfil
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleToggleVerify(u)} className="rounded-xl cursor-pointer focus:bg-primary/5 focus:text-primary">
+                                <ShieldCheck size={16} className="mr-2" /> {u.verifiedMember ? 'Remover Verificação' : 'Verificar Membro'}
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator className="bg-border-subtle my-1" />
+                              <DropdownMenuItem 
+                                onClick={() => handleToggleBlock(u)} 
+                                className={`rounded-xl cursor-pointer ${u.isBlocked ? 'text-green-600 focus:bg-green-50 focus:text-green-600' : 'text-red-600 focus:bg-red-50 focus:text-red-600'}`}
+                              >
+                                {u.isBlocked ? (
+                                  <><CheckCircle size={16} className="mr-2" /> Desbloquear</>
+                                ) : (
+                                  <><Ban size={16} className="mr-2" /> Bloquear Usuário</>
+                                )}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
