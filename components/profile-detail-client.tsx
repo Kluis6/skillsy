@@ -60,6 +60,8 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -665,6 +667,7 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
         <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black/95 border-none sm:rounded-2xl gap-0">
           {selectedImage !== null && targetProfile?.gallery?.[selectedImage] && (
             <div className="flex flex-col">
+              <DialogTitle className="sr-only">Visualização de Foto</DialogTitle>
               <div className="relative aspect-square md:aspect-video w-full bg-black flex items-center justify-center">
                  <Image 
                    src={typeof targetProfile.gallery[selectedImage] === 'string' ? (targetProfile.gallery[selectedImage] as any) : targetProfile.gallery[selectedImage].url}
@@ -676,8 +679,10 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
               </div>
               {typeof targetProfile.gallery[selectedImage] === 'object' && targetProfile.gallery[selectedImage].description && (
                 <div className="p-6 bg-white dark:bg-card">
-                   <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-2">Descrição</h4>
-                   <p className="text-text-main text-base leading-relaxed tracking-tight">{targetProfile.gallery[selectedImage].description}</p>
+                   <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-2">Comentário</h4>
+                   <DialogDescription className="text-text-main text-base leading-relaxed tracking-tight">
+                     {targetProfile.gallery[selectedImage].description}
+                   </DialogDescription>
                 </div>
               )}
             </div>

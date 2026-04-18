@@ -767,7 +767,7 @@ export function ProfileSettingsClient() {
                       </div>
                     </div>
                     <Textarea
-                      placeholder="Descrição (opcional)"
+                      placeholder="Comentário (opcional)"
                       value={typeof photo === 'string' ? '' : photo.description || ''}
                       onChange={(e) => {
                         const newGallery = [...formData.gallery];
