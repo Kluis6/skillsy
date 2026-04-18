@@ -124,6 +124,11 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
     window.open(`https://wa.me/${phone.startsWith('55') ? phone : `55${phone}`}`, '_blank');
   };
 
+  const handlePhoneCall = () => {
+    if (!targetProfile?.phone) return;
+    window.open(`tel:${targetProfile.phone.replace(/\D/g, '')}`, '_self');
+  };
+
   const handleRate = async (score: number) => {
     if (!user) {
       toast.error('Login necessário', {
@@ -304,8 +309,16 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
 
                     <p className="text-sm text-text-muted pt-1">
                       {targetProfile.location && <span>{targetProfile.location}</span>}
-                      {targetProfile.location && (targetProfile.instagram || targetProfile.website) && (
+                      {targetProfile.location && (targetProfile.instagram || targetProfile.website || targetProfile.phone) && (
                         <span className="mx-1.5 text-text-muted/40">•</span>
+                      )}
+                      {targetProfile.phone && (
+                        <button 
+                          onClick={handlePhoneCall}
+                          className="text-text-main font-bold hover:text-primary transition-colors flex items-center gap-1 mr-2"
+                        >
+                          <Phone size={14} /> {targetProfile.phone}
+                        </button>
                       )}
                       {(targetProfile.instagram || targetProfile.website) && (
                         <button className="text-primary font-bold hover:underline">
@@ -394,6 +407,35 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
               </a>
             )}
           </section>
+          
+          {/* Gallery Section */}
+          {targetProfile.gallery && targetProfile.gallery.length > 0 && (
+            <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-text-main">Galeria de Fotos</h3>
+                <span className="text-xs text-text-muted font-medium">{targetProfile.gallery.length} fotos</span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {targetProfile.gallery.map((photo, index) => (
+                  <motion.div 
+                    key={index}
+                    whileHover={{ scale: 1.02 }}
+                    className={`relative rounded-xl overflow-hidden shadow-sm border border-border-subtle aspect-square ${
+                      index === 0 ? 'col-span-2 md:col-span-2 md:row-span-2' : ''
+                    }`}
+                  >
+                    <Image 
+                      src={photo} 
+                      alt={`Galeria ${index + 1}`} 
+                      fill 
+                      className="object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Experience Section (Simulated based on image) */}
           <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">

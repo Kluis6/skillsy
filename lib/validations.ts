@@ -19,6 +19,10 @@ export const profileSchema = z.object({
     .min(10, 'WhatsApp deve ter pelo menos 10 dígitos (DDD + Número)')
     .max(15, 'Número de WhatsApp deve ter no máximo 15 dígitos')
     .nullable().optional(),
+  phone: z.string()
+    .regex(/^\d*$/, 'Apenas números são permitidos')
+    .max(15, 'Número de telefone deve ter no máximo 15 dígitos')
+    .nullable().optional(),
   instagram: z.string().max(50, 'Usuário de Instagram deve ter no máximo 50 caracteres').nullable().optional(),
   facebook: z.string().max(100, 'Link de Facebook deve ter no máximo 100 caracteres').nullable().optional(),
   linkedin: z.string().max(100, 'Link de LinkedIn deve ter no máximo 100 caracteres').nullable().optional(),

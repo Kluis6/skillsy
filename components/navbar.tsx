@@ -11,7 +11,8 @@ import {
   Settings, 
   Heart, 
   LogOut, 
-  User as UserIcon 
+  User as UserIcon,
+  Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -112,6 +113,15 @@ export function Navbar({
                     >
                       <Search size={18} /> Explorar Membros
                     </Button>
+
+                    <Link href="/join">
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start gap-3 h-12 rounded-xl font-semibold text-text-muted hover:text-primary hover:bg-surface/50"
+                      >
+                        <Zap size={18} /> Por que participar?
+                      </Button>
+                    </Link>
                     
                     {user && (
                       <Link href="/contacts">
@@ -191,6 +201,13 @@ export function Navbar({
             >
               Explorar
             </li>
+            {!user && (
+              <Link href="/join">
+                <li className="cursor-pointer transition-all hover:text-primary">
+                  Vantagens
+                </li>
+              </Link>
+            )}
             {user && (
               <li 
                 onClick={() => setActiveTab('contacts')}

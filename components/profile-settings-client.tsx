@@ -28,7 +28,8 @@ import {
   AlertCircle,
   Navigation,
   Clock,
-  CalendarDays
+  CalendarDays,
+  Phone
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -74,6 +75,7 @@ export function ProfileSettingsClient() {
       companyName: '',
       isProvider: false,
       whatsapp: '',
+      phone: '',
       instagram: '',
       facebook: '',
       linkedin: '',
@@ -106,6 +108,7 @@ export function ProfileSettingsClient() {
         companyName: profile.companyName || '',
         isProvider: profile.isProvider || false,
         whatsapp: profile.whatsapp || '',
+        phone: profile.phone || '',
         instagram: profile.instagram || '',
         facebook: profile.facebook || '',
         linkedin: profile.linkedin || '',
@@ -146,7 +149,7 @@ export function ProfileSettingsClient() {
     // Clean data: convert empty strings to null for the database
     const cleanedData = { ...data };
     const fieldsToNullify = [
-      'instagram', 'facebook', 'linkedin', 'website', 'whatsapp', 
+      'instagram', 'facebook', 'linkedin', 'website', 'whatsapp', 'phone',
       'bio', 'location', 'ward', 'companyName', 'serviceType', 
       'category', 'photoURL', 'bannerURL', 'baptismYear', 'serviceHours',
       'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'businessComplement'
@@ -229,6 +232,10 @@ export function ProfileSettingsClient() {
         setValue('bannerURL', base64, { shouldDirty: true });
         toast.success('Banner carregado!');
       } else if (type === 'gallery') {
+        if (formData.gallery.length >= 5) {
+          toast.error('Limite atingido', { description: 'Você pode enviar no máximo 5 fotos para a galeria.' });
+          return;
+        }
         setValue('gallery', [...formData.gallery, base64], { shouldDirty: true });
         toast.success('Foto adicionada à galeria!');
       }
@@ -241,6 +248,10 @@ export function ProfileSettingsClient() {
   };
 
   const handleAddPhoto = () => {
+    if (formData.gallery.length >= 5) {
+      toast.error('Limite atingido', { description: 'Você pode enviar no máximo 5 fotos para a galeria.' });
+      return;
+    }
     galleryInputRef.current?.click();
   };
 
@@ -647,6 +658,17 @@ export function ProfileSettingsClient() {
                     className={`bg-surface border-none rounded-2xl h-12 ${errors.whatsapp ? 'ring-2 ring-red-500' : ''}`}
                   />
                   {errors.whatsapp && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.whatsapp.message}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
+                    <Phone size={12} className="text-primary" /> Telefone Adicional (Opcional)
+                  </Label>
+                  <Input 
+                    {...register('phone')}
+                    placeholder="Ex: 1133334444"
+                    className={`bg-surface border-none rounded-2xl h-12 ${errors.phone ? 'ring-2 ring-red-500' : ''}`}
+                  />
+                  {errors.phone && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.phone.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1 text-pink-600">

@@ -16,6 +16,7 @@ export interface UserProfile {
   linkedin?: string;
   website?: string;
   serviceType?: string;
+  phone?: string;
   phones?: string[];
   ward?: string;
   companyName?: string;

@@ -92,7 +92,7 @@ service cloud.firestore {
       let allowedFields = [
         'id', 'uid', 'name', 'email', 'photoURL', 'bannerURL', 'bio', 
         'category', 'isProvider', 'role', 'contacts', 'whatsapp', 
-        'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 
+        'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 'phone', 
         'phones', 'location', 'ward', 'companyName', 'gallery', 
         'rating', 'reviewCount', 'verifiedMember', 'experienceYears', 'baptismYear',
         'isBlocked', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
@@ -113,6 +113,7 @@ service cloud.firestore {
              (!('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100)) &&
              (!('contacts' in data) || data.contacts == null || data.contacts is list) &&
              (!('whatsapp' in data) || data.whatsapp == null || (data.whatsapp is string && data.whatsapp.size() <= 30)) &&
+             (!('phone' in data) || data.phone == null || (data.phone is string && data.phone.size() <= 30)) &&
              (!('instagram' in data) || data.instagram == null || (data.instagram is string && data.instagram.size() <= 100)) &&
              (!('facebook' in data) || data.facebook == null || (data.facebook is string && data.facebook.size() <= 100)) &&
              (!('linkedin' in data) || data.linkedin == null || (data.linkedin is string && data.linkedin.size() <= 100)) &&

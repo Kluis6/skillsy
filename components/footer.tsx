@@ -20,6 +20,12 @@ export function Footer() {
         </p>
         <div className="flex gap-6 text-text-muted">
           <Link 
+            href="/join"
+            className="hover:text-primary transition-colors text-sm font-semibold"
+          >
+            Fazer Parte
+          </Link>
+          <Link 
             href="/termos"
             className="hover:text-primary transition-colors text-sm"
           >
