@@ -29,7 +29,10 @@ import {
   Church,
   Users,
   Clock,
-  CalendarDays
+  CalendarDays,
+  Plus,
+  ChevronRight,
+  Home
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -211,33 +214,53 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
   }
 
   return (
-    <div className="min-h-screen bg-surface pb-20">
-      {/* Header */}
-      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle px-6 md:px-10 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="rounded-full hover:bg-surface"
-            onClick={() => router.back()}
-          >
-            <ArrowLeft size={20} />
-          </Button>
-          <h1 className="text-lg font-bold text-text-main font-heading">Perfil do Membro</h1>
-          <ThemeToggle />
+    <div className="min-h-screen bg-[#F3F2EF] dark:bg-background pb-12 transition-colors duration-300">
+      {/* Header/Secondary Nav (Optional, based on image but keeping app consistency) */}
+      <nav className="sticky top-0 z-50 bg-white dark:bg-card border-b border-border-subtle px-6 md:px-10 h-16 flex items-center shadow-sm">
+        <div className="max-w-6xl mx-auto w-full flex justify-between items-center">
+          <div className="flex items-center gap-6">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-full hover:bg-surface"
+              onClick={() => router.back()}
+            >
+              <ArrowLeft size={20} />
+            </Button>
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-surface rounded-md border border-border-subtle w-64">
+              <span className="text-text-muted text-xs">Pesquisar...</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4 md:gap-8">
+            <Link href="/" className="flex flex-col items-center gap-1 group">
+              <Home size={22} className="text-text-muted group-hover:text-text-main transition-colors" />
+              <span className="text-[10px] text-text-muted group-hover:text-text-main font-medium">Início</span>
+            </Link>
+            <div className="flex flex-col items-center gap-1 group opacity-40 cursor-not-allowed">
+              <Users size={22} className="text-text-muted" />
+              <span className="text-[10px] text-text-muted font-medium">Minha rede</span>
+            </div>
+            <div className="flex flex-col items-center gap-1 group opacity-40 cursor-not-allowed">
+              <Briefcase size={22} className="text-text-muted" />
+              <span className="text-[10px] text-text-muted font-medium">Vagas</span>
+            </div>
+            <div className="h-full w-px bg-border-subtle mx-2 self-stretch" />
+            <ThemeToggle />
+          </div>
         </div>
       </nav>
 
-      <main className="max-w-4xl mx-auto px-6 mt-10">
+      <main className="max-w-6xl mx-auto px-4 md:px-10 mt-6 md:grid md:grid-cols-[1fr_300px] gap-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-8"
+          className="space-y-4"
         >
-          {/* Hero Profile Card (LinkedIn Style) */}
-          <Card className="rounded-[2.5rem] border-none shadow-2xl shadow-primary/5 overflow-hidden bg-card">
-            <div className="relative h-48 md:h-64 bg-gradient-to-r from-primary/20 to-accent/20">
-              {targetProfile.bannerURL && (
+          {/* Top Profile Card */}
+          <Card className="rounded-xl overflow-hidden border border-border-subtle bg-white dark:bg-card shadow-sm">
+            <div className="relative h-48 md:h-52 bg-gradient-to-r from-blue-400/20 to-indigo-400/20">
+              {targetProfile.bannerURL ? (
                 <Image 
                   src={targetProfile.bannerURL} 
                   alt="Banner" 
@@ -245,145 +268,197 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
                   className="object-cover"
                   referrerPolicy="no-referrer"
                 />
+              ) : (
+                <div className="absolute inset-0 bg-[#D9E2EF] dark:bg-muted/50" />
               )}
             </div>
-            <CardContent className="px-8 pb-10">
-              <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6 -mt-20 md:-mt-24 mb-6">
-                <Avatar className="w-40 h-40 md:w-48 md:h-48 border-[6px] border-card shadow-xl">
-                  <AvatarImage src={targetProfile.photoURL} />
-                  <AvatarFallback className="bg-surface text-primary font-bold text-5xl">
-                    {targetProfile.name[0]}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className="flex-grow text-center md:text-left pb-2">
-                  <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                    <h2 className="text-3xl md:text-4xl font-bold text-text-main font-heading tracking-tight">{targetProfile.name}</h2>
-                    {targetProfile.verifiedMember && (
-                      <ShieldCheck size={28} className="text-primary" />
-                    )}
-                  </div>
-                  
-                  {targetProfile.baptismYear && (
-                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2 text-primary/70">
-                      <div className="flex items-center gap-1">
-                        <Church size={14} />
-                        <span className="text-xs font-bold uppercase tracking-wider">Batismo: {targetProfile.baptismYear}</span>
-                      </div>
-                      <span className="w-1 h-1 rounded-full bg-primary/30" />
-                      <span className="text-xs font-bold uppercase tracking-wider">Membro há {new Date().getFullYear() - targetProfile.baptismYear} anos</span>
+            
+            <CardContent className="px-8 pb-8">
+              <div className="relative flex flex-col pt-0">
+                {/* Avatar Overlap */}
+                <div className="-mt-24 mb-4 relative z-10 w-40 h-40 md:w-44 md:h-44">
+                  <Avatar className="w-full h-full border-[4px] border-white dark:border-card bg-white dark:bg-card shadow-sm">
+                    <AvatarImage src={targetProfile.photoURL} className="object-cover" />
+                    <AvatarFallback className="bg-surface text-primary font-bold text-5xl">
+                      {targetProfile.name[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+
+                <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-2xl md:text-3xl font-bold text-text-main leading-tight">
+                        {targetProfile.name}
+                      </h2>
+                      {targetProfile.verifiedMember && (
+                        <ShieldCheck size={22} className="text-primary" />
+                      )}
                     </div>
-                  )}
-                  
-                  <div className="flex flex-col gap-1">
-                    <p className="text-lg md:text-xl font-medium text-text-main/80">
-                      {targetProfile.serviceType || targetProfile.category || 'Membro da Comunidade'}
+                    
+                    <p className="text-lg text-text-main font-regular leading-relaxed max-w-xl">
+                      {targetProfile.serviceType || targetProfile.category || 'Membro da Comunidade Skillsy'}
+                      {targetProfile.companyName && ` na ${targetProfile.companyName}`}
                     </p>
-                    {targetProfile.companyName && (
-                      <p className="text-primary font-bold flex items-center justify-center md:justify-start gap-2">
-                        <Building2 size={18} /> {targetProfile.companyName}
-                      </p>
-                    )}
+
+                    <p className="text-sm text-text-muted pt-1">
+                      {targetProfile.location && <span>{targetProfile.location}</span>}
+                      {targetProfile.location && (targetProfile.instagram || targetProfile.website) && (
+                        <span className="mx-1.5 text-text-muted/40">•</span>
+                      )}
+                      {(targetProfile.instagram || targetProfile.website) && (
+                        <button className="text-primary font-bold hover:underline">
+                          Informações de contato
+                        </button>
+                      )}
+                    </p>
+
+                    <p className="text-sm text-primary font-bold pt-1 hover:underline cursor-pointer">
+                      {targetProfile.contacts?.length || 0} conexões
+                    </p>
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-3 text-sm text-text-muted">
-                    <p className="flex items-center gap-1.5">
-                      <MapPin size={16} /> {targetProfile.location || 'Localização não informada'}
-                    </p>
-                    {targetProfile.ward && (
-                      <p className="flex items-center gap-1.5">
-                        <Church size={16} /> {targetProfile.ward}
-                      </p>
+                  <div className="flex flex-col gap-3 w-full md:w-auto">
+                    {targetProfile.companyName && (
+                      <div className="flex items-center gap-2.5 group cursor-pointer">
+                        <div className="w-8 h-8 rounded bg-surface flex items-center justify-center border border-border-subtle group-hover:bg-primary/5 transition-colors">
+                          <Building2 size={16} className="text-primary" />
+                        </div>
+                        <span className="text-sm font-bold text-text-main hover:text-primary transition-colors underline-offset-2 hover:underline">
+                          {targetProfile.companyName}
+                        </span>
+                      </div>
                     )}
-                    <p className="flex items-center gap-1.5 text-primary font-bold">
-                      <Users size={16} /> {targetProfile.contacts?.length || 0} conexões
-                    </p>
+                    {targetProfile.ward && (
+                      <div className="flex items-center gap-2.5 group cursor-pointer">
+                        <div className="w-8 h-8 rounded bg-surface flex items-center justify-center border border-border-subtle group-hover:bg-primary/5 transition-colors text-primary">
+                          <Church size={16} />
+                        </div>
+                        <span className="text-sm font-bold text-text-main hover:text-primary transition-colors underline-offset-2 hover:underline">
+                          {targetProfile.ward}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-3 mt-4 md:mt-0">
+                <div className="flex flex-wrap items-center gap-3 mt-6">
                   {user?.uid !== targetProfile.uid && (
                     <Button 
                       onClick={handleToggleContact}
-                      variant={isContact ? "outline" : "default"}
-                      className={`rounded-full h-12 px-8 font-bold transition-all ${
+                      className={`rounded-full h-10 px-6 font-bold shadow-none ${
                         isContact 
-                          ? 'border-primary text-primary hover:bg-primary/5' 
-                          : 'bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20'
+                          ? 'border-2 border-primary text-primary hover:bg-primary/5 bg-transparent' 
+                          : 'bg-primary text-white hover:bg-primary/90'
                       }`}
                     >
                       {isContact ? (
-                        <><UserMinus size={20} className="mr-2" /> Remover dos Contatos</>
+                        <>Em sua rede</>
                       ) : (
-                        <><UserPlus size={20} className="mr-2" /> Adicionar aos Contatos</>
+                        <><UserPlus size={18} className="mr-2" /> Conectar</>
                       )}
                     </Button>
                   )}
                   <Button 
                     onClick={handleWhatsApp}
-                    className="rounded-full h-12 px-8 bg-green-500 text-white hover:bg-green-600 font-bold shadow-lg shadow-green-200"
+                    variant="outline"
+                    className="rounded-full h-10 px-6 border-2 border-primary text-primary hover:bg-primary/5 font-bold"
                   >
-                    <MessageCircle size={20} className="mr-2" /> WhatsApp
+                    Mensagem
                   </Button>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-border-subtle w-full">
-                  <div className="text-center md:text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Especialidade</p>
-                    <p className="font-bold text-primary truncate">{targetProfile.serviceType || targetProfile.category || 'Membro'}</p>
-                  </div>
-                  <div className="text-center md:text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Avaliação</p>
-                    <div className="flex items-center justify-center md:justify-start gap-1 font-bold text-highlight">
-                      <Star size={16} fill="currentColor" /> {targetProfile.rating || '0.0'}
-                    </div>
-                  </div>
-                  <div className="text-center md:text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Localização</p>
-                    <p className="font-bold text-text-main truncate">{targetProfile.ward || 'Geral'}</p>
-                  </div>
+                  <Button 
+                    variant="outline"
+                    className="rounded-full h-10 px-4 border-2 border-text-muted/40 text-text-muted hover:bg-surface font-bold"
+                  >
+                    Mais
+                  </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Bio & Details */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2 space-y-8">
-              <section className="bg-card rounded-[2.5rem] p-8 shadow-sm border border-border-subtle">
-                <h3 className="text-xl font-bold mb-4 font-heading flex items-center gap-2">
-                  <Info size={20} className="text-primary" /> Sobre o Profissional
-                </h3>
-                <p className="text-text-muted leading-relaxed whitespace-pre-wrap">
-                  {targetProfile.bio || 'Este membro ainda não adicionou uma descrição detalhada ao seu perfil.'}
-                </p>
-              </section>
+          {/* About Section */}
+          <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
+            <h3 className="text-xl font-bold mb-4 text-text-main">Sobre</h3>
+            <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap max-w-3xl">
+              {targetProfile.bio || 'Este membro ainda não adicionou uma descrição detalhada.'}
+            </p>
+            {targetProfile.website && (
+              <a 
+                href={formatUrl(targetProfile.website)} 
+                target="_blank" 
+                className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:underline"
+              >
+                {targetProfile.website.replace(/^https?:\/\//, '')} <ArrowLeft size={14} className="rotate-135" />
+              </a>
+            )}
+          </section>
 
-              {targetProfile.isProvider && (
-                <section className="bg-card rounded-[2.5rem] p-8 shadow-sm border border-border-subtle">
-                  <h3 className="text-xl font-bold mb-4 font-heading flex items-center gap-2">
-                    <Briefcase size={20} className="text-primary" /> Serviços Oferecidos
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {(targetProfile.serviceType || 'Serviços Gerais').split(',').map((s, i) => (
-                      <Badge key={i} variant="secondary" className="bg-surface text-text-main px-4 py-2 rounded-xl border-none font-medium">
-                        {s.trim()}
-                      </Badge>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {targetProfile.isProvider && (
-                <section className="bg-card rounded-[2.5rem] p-8 shadow-sm border border-border-subtle">
-                  <h3 className="text-xl font-bold mb-4 font-heading flex items-center gap-2">
-                    <Star size={20} className="text-highlight" /> Avaliar este Profissional
-                  </h3>
-                  <p className="text-text-muted text-sm mb-6">
-                    Sua avaliação ajuda outros membros da comunidade a encontrarem os melhores serviços.
+          {/* Experience Section (Simulated based on image) */}
+          <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-text-main">Experiência</h3>
+              <Button variant="ghost" size="icon" className="rounded-full opacity-40">
+                <Plus size={20} />
+              </Button>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="flex gap-3">
+                <div className="w-12 h-12 rounded bg-surface flex items-center justify-center shrink-0 border border-border-subtle">
+                  <Briefcase size={24} className="text-text-muted/40" />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <h4 className="font-bold text-text-main">{targetProfile.serviceType || 'Profissional'}</h4>
+                  <p className="text-sm text-text-main">{targetProfile.companyName || 'Autônomo'}</p>
+                  <p className="text-xs text-text-muted">
+                    {targetProfile.experienceYears ? `há ${targetProfile.experienceYears} anos` : 'Período não informado'}
                   </p>
-                  
-                  <div className="flex items-center gap-2 mb-4">
+                  <p className="text-xs text-text-muted italic">{targetProfile.location}</p>
+                  {targetProfile.bio && (
+                    <p className="text-xs text-text-muted mt-2 line-clamp-2">{targetProfile.bio}</p>
+                  )}
+                </div>
+              </div>
+              
+              <Separator className="bg-border-subtle/50" />
+              
+              <div className="flex gap-3 opacity-60">
+                <div className="w-12 h-12 rounded bg-surface flex items-center justify-center shrink-0 border border-border-subtle">
+                  <Church size={24} className="text-text-muted/40" />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <h4 className="font-bold text-text-main">Membro voluntário</h4>
+                  <p className="text-sm text-text-main">{targetProfile.ward || 'Comunidade Local'}</p>
+                  <p className="text-xs text-text-muted">
+                    {targetProfile.baptismYear ? `Desde ${targetProfile.baptismYear}` : 'Período não informado'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Verification / Trust Section */}
+          <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
+             <h3 className="text-xl font-bold mb-4 text-text-main flex items-center gap-2">
+                Avaliações da Comunidade
+             </h3>
+             <div className="flex items-center gap-4 mb-6">
+               <div className="text-center bg-surface rounded-2xl p-4 min-w-[100px]">
+                 <p className="text-3xl font-black text-primary">{targetProfile.rating || '0.0'}</p>
+                 <div className="flex items-center justify-center gap-0.5 text-highlight py-1">
+                   <Star size={12} fill="currentColor" />
+                   <Star size={12} fill="currentColor" />
+                   <Star size={12} fill="currentColor" />
+                   <Star size={12} fill="currentColor" />
+                   <Star size={12} className="text-border-subtle" />
+                 </div>
+                 <p className="text-[10px] font-bold text-text-muted uppercase">{targetProfile.reviewCount || 0} avaliações</p>
+               </div>
+               
+               <div className="flex-grow space-y-1.5">
+                  <p className="text-sm text-text-muted">Avalie a qualidade do serviço prestado por este membro.</p>
+                  <div className="flex items-center gap-1.5">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
@@ -391,157 +466,83 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
                         onMouseEnter={() => setRatingHover(star)}
                         onMouseLeave={() => setRatingHover(0)}
                         onClick={() => handleRate(star)}
-                        className={`transition-all transform hover:scale-110 ${
+                        className={`transition-all ${
                           (ratingHover || userRating || 0) >= star 
                             ? 'text-highlight' 
                             : 'text-border-subtle'
-                        } ${(submittingRating || user?.uid === targetProfile.uid) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                        } disabled:opacity-50`}
                       >
-                        <Star 
-                          size={32} 
-                          fill={(ratingHover || userRating || 0) >= star ? "currentColor" : "none"} 
-                        />
+                        <Star size={24} fill={(ratingHover || userRating || 0) >= star ? "currentColor" : "none"} />
                       </button>
                     ))}
                   </div>
-                  
-                  {!user && (
-                    <p className="text-xs text-text-muted italic">
-                      * Você precisa estar logado para avaliar.
-                    </p>
-                  )}
-                  {user?.uid === targetProfile.uid && (
-                    <p className="text-xs text-text-muted italic">
-                      * Você não pode avaliar seu próprio perfil.
-                    </p>
-                  )}
-                </section>
-              )}
-            </div>
-
-            <div className="space-y-8">
-              <section className="bg-card rounded-[2.5rem] p-8 shadow-sm border border-border-subtle">
-                <h3 className="text-lg font-bold mb-6 font-heading">Informações</h3>
-                <div className="space-y-6">
-                  {targetProfile.companyName && (
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center text-primary shrink-0">
-                        <Building2 size={20} />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Empresa</p>
-                        <p className="text-sm font-bold text-text-main">{targetProfile.companyName}</p>
-                      </div>
-                    </div>
-                  )}
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center text-primary shrink-0">
-                      <ShieldCheck size={20} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Status</p>
-                      <p className="text-sm font-bold text-text-main">
-                        {targetProfile.verifiedMember ? 'Membro Verificado' : 'Perfil em Análise'}
-                      </p>
-                    </div>
-                  </div>
-                  {targetProfile.baptismYear && (
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center text-primary shrink-0">
-                        <Church size={20} />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Tempo de Membro</p>
-                        <p className="text-sm font-bold text-text-main">
-                          {targetProfile.baptismYear} ({new Date().getFullYear() - targetProfile.baptismYear} anos)
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center text-primary shrink-0">
-                      <CalendarDays size={20} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Disponibilidade</p>
-                      <p className="text-sm font-bold text-text-main">
-                        {targetProfile.availability && targetProfile.availability.length > 0 
-                          ? targetProfile.availability.join(', ') 
-                          : 'Não informada'}
-                      </p>
-                    </div>
-                  </div>
-                  {targetProfile.serviceHours && (
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center text-primary shrink-0">
-                        <Clock size={20} />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Horário</p>
-                        <p className="text-sm font-bold text-text-main">{targetProfile.serviceHours}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <Separator className="my-8 bg-border-subtle/50" />
-
-                <h4 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4">Redes Sociais</h4>
-                <div className="flex gap-2">
-                  {targetProfile.instagram && (
-                    <a href={formatUrl(targetProfile.instagram)} target="_blank" rel="noopener noreferrer">
-                      <Button variant="ghost" size="icon" className="rounded-xl hover:bg-surface text-text-muted hover:text-primary">
-                        <Instagram size={20} />
-                      </Button>
-                    </a>
-                  )}
-                  {targetProfile.facebook && (
-                    <a href={formatUrl(targetProfile.facebook)} target="_blank" rel="noopener noreferrer">
-                      <Button variant="ghost" size="icon" className="rounded-xl hover:bg-surface text-text-muted hover:text-primary">
-                        <Facebook size={20} />
-                      </Button>
-                    </a>
-                  )}
-                  {targetProfile.linkedin && (
-                    <a href={formatUrl(targetProfile.linkedin)} target="_blank" rel="noopener noreferrer">
-                      <Button variant="ghost" size="icon" className="rounded-xl hover:bg-surface text-text-muted hover:text-primary">
-                        <Linkedin size={20} />
-                      </Button>
-                    </a>
-                  )}
-                  {targetProfile.website && (
-                    <a href={formatUrl(targetProfile.website)} target="_blank" rel="noopener noreferrer">
-                      <Button variant="ghost" size="icon" className="rounded-xl hover:bg-surface text-text-muted hover:text-primary">
-                        <Globe size={20} />
-                      </Button>
-                    </a>
-                  )}
-                  {!targetProfile.instagram && !targetProfile.facebook && !targetProfile.linkedin && !targetProfile.website && (
-                    <p className="text-xs text-text-muted italic">Nenhuma rede social vinculada.</p>
-                  )}
-                </div>
-              </section>
-
-              {!user && (
-                <section className="bg-primary/5 rounded-[2.5rem] p-8 border border-primary/10">
-                  <div className="flex items-center gap-3 mb-4 text-primary">
-                    <Lock size={20} />
-                    <h3 className="font-bold">Acesso Restrito</h3>
-                  </div>
-                  <p className="text-sm text-text-muted mb-6">
-                    Faça login para adicionar este profissional aos seus contatos e ver mais detalhes.
-                  </p>
-                  <Button 
-                    onClick={() => router.push('/')}
-                    className="w-full bg-primary text-white rounded-xl font-bold h-11"
-                  >
-                    Fazer Login
-                  </Button>
-                </section>
-              )}
-            </div>
-          </div>
+               </div>
+             </div>
+          </section>
         </motion.div>
+
+        {/* Sidebar */}
+        <aside className="mt-4 md:mt-0 space-y-4">
+          <Card className="rounded-xl border border-border-subtle bg-white dark:bg-card shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-border-subtle">
+              <h3 className="text-sm font-bold text-text-main">Pessoas que talvez você conheça</h3>
+            </div>
+            <div className="p-4 space-y-4">
+              {[
+                { name: 'Ricardo Silva', role: 'Carpinteiro na Ala Sul', avatar: 'https://picsum.photos/seed/ricardo/40/40' },
+                { name: 'Ana Souza', role: 'Designer em SP', avatar: 'https://picsum.photos/seed/ana/40/40' },
+                { name: 'Marcos Oliveira', role: 'Encanador na Ala Oeste', avatar: 'https://picsum.photos/seed/marcos/40/40' },
+              ].map((person, idx) => (
+                <div key={idx} className="flex gap-2.5 items-start">
+                  <Avatar className="w-10 h-10 shrink-0">
+                    <AvatarImage src={person.avatar} />
+                    <AvatarFallback>{person.name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-text-main leading-none mb-1 truncate group-hover:underline cursor-pointer">
+                      {person.name}
+                    </p>
+                    <p className="text-xs text-text-muted line-clamp-2 leading-snug">
+                      {person.role}
+                    </p>
+                    <Button variant="outline" size="sm" className="mt-2 h-7 rounded-full text-xs border-[1.5px] border-text-muted/60 text-text-muted font-bold hover:bg-surface">
+                      <UserPlus size={14} className="mr-1.5" /> Conectar
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <div className="pt-2">
+                <Button variant="ghost" className="w-full h-8 text-xs font-bold text-text-muted hover:bg-surface rounded-md">
+                  Exibir mais <ChevronRight size={14} className="ml-1" />
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="rounded-xl border border-border-subtle bg-white dark:bg-card shadow-sm p-4">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-bold text-text-muted uppercase tracking-widest">Contatos diretos</p>
+              <Users size={14} className="text-primary/40" />
+            </div>
+            <div className="flex gap-1.5">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Avatar key={i} className="w-8 h-8 border-2 border-white dark:border-card -ml-2 first:ml-0">
+                  <AvatarImage src={`https://picsum.photos/seed/${i * 123}/32/32`} />
+                  <AvatarFallback>?</AvatarFallback>
+                </Avatar>
+              ))}
+              <div className="w-8 h-8 rounded-full bg-surface border-2 border-white dark:border-card -ml-2 flex items-center justify-center text-[10px] font-bold text-text-muted">
+                +12
+              </div>
+            </div>
+          </Card>
+          
+          <div className="px-4 py-2">
+            <p className="text-[10px] text-text-muted font-medium text-center">
+              Skillsy © 2026 • Privacidade e Termos de Uso
+            </p>
+          </div>
+        </aside>
       </main>
     </div>
   );
