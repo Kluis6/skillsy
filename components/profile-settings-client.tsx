@@ -236,7 +236,7 @@ export function ProfileSettingsClient() {
           toast.error('Limite atingido', { description: 'Você pode enviar no máximo 5 fotos para a galeria.' });
           return;
         }
-        setValue('gallery', [...formData.gallery, base64], { shouldDirty: true });
+        setValue('gallery', [...formData.gallery, { url: base64, description: '' }], { shouldDirty: true });
         toast.success('Foto adicionada à galeria!');
       }
     } catch (error) {
@@ -743,26 +743,44 @@ export function ProfileSettingsClient() {
                 />
               </div>
               
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {formData.gallery.map((photo, index) => (
-                  <div key={index} className="relative aspect-square rounded-2xl overflow-hidden group border border-border-subtle">
-                    <Image 
-                      src={photo} 
-                      alt={`Galeria ${index}`} 
-                      fill 
-                      className="object-cover transition-transform group-hover:scale-110"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Button 
-                        variant="destructive" 
-                        size="icon" 
-                        onClick={() => removePhoto(index)}
-                        className="rounded-full w-8 h-8"
-                      >
-                        <Trash2 size={14} />
-                      </Button>
+                  <div key={index} className="flex flex-col gap-2">
+                    <div className="relative aspect-square rounded-2xl overflow-hidden group border border-border-subtle">
+                      <Image 
+                        src={typeof photo === 'string' ? photo : photo.url} 
+                        alt={`Galeria ${index}`} 
+                        fill 
+                        className="object-cover transition-transform group-hover:scale-110"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Button 
+                          variant="destructive" 
+                          size="icon" 
+                          type="button"
+                          onClick={() => removePhoto(index)}
+                          className="rounded-full w-8 h-8"
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      </div>
                     </div>
+                    <Textarea
+                      placeholder="Descrição (opcional)"
+                      value={typeof photo === 'string' ? '' : photo.description || ''}
+                      onChange={(e) => {
+                        const newGallery = [...formData.gallery];
+                        const photoItem = formData.gallery[index];
+                        if (typeof photoItem === 'string') {
+                           newGallery[index] = { url: photoItem, description: e.target.value };
+                        } else {
+                           newGallery[index] = { ...photoItem, description: e.target.value };
+                        }
+                        setValue('gallery', newGallery, { shouldDirty: true });
+                      }}
+                      className="text-[10px] min-h-[50px] h-auto p-2 bg-surface border-none resize-none rounded-xl"
+                    />
                   </div>
                 ))}
                 {formData.gallery.length === 0 && (

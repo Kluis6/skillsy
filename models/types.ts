@@ -1,3 +1,8 @@
+export interface GalleryItem {
+  url: string;
+  description?: string;
+}
+
 export interface UserProfile {
   uid: string;
   name: string;
@@ -25,7 +30,7 @@ export interface UserProfile {
   businessNeighborhood?: string;
   businessState?: string;
   businessComplement?: string;
-  gallery?: string[];
+  gallery?: GalleryItem[];
   rating?: number;
   reviewCount?: number;
   experienceYears?: number;

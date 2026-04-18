@@ -57,6 +57,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
+
 import { ThemeToggle } from '@/components/theme-toggle';
 
 export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientProps) {
@@ -67,6 +72,7 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
   const [userRating, setUserRating] = useState(0);
   const [ratingHover, setRatingHover] = useState(0);
   const [submittingRating, setSubmittingRating] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<number | null>(null);
 
   useEffect(() => {
     // We only need to fetch if we don't have the profile yet or to get fresh data
@@ -445,13 +451,14 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
                     <motion.div 
                       key={index}
                       whileHover={{ scale: 1.02 }}
-                      className={`relative rounded-xl overflow-hidden shadow-sm border border-border-subtle aspect-square ${
+                      onClick={() => setSelectedImage(index)}
+                      className={`relative rounded-xl overflow-hidden shadow-sm border border-border-subtle aspect-square cursor-pointer ${
                         index === 0 ? 'col-span-2 md:col-span-2 md:row-span-2' : ''
                       }`}
                     >
                       <Image 
-                        src={photo} 
-                        alt={`Galeria ${index + 1}`} 
+                        src={typeof photo === 'string' ? photo : photo.url} 
+                        alt={typeof photo === 'object' && photo.description ? photo.description : `Galeria ${index + 1}`} 
                         fill 
                         className="object-cover"
                         referrerPolicy="no-referrer"
@@ -653,6 +660,30 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
           </div>
         </aside>
       </main>
+      {/* Lightbox Dialog */}
+      <Dialog open={selectedImage !== null} onOpenChange={(open) => !open && setSelectedImage(null)}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black/95 border-none sm:rounded-2xl gap-0">
+          {selectedImage !== null && targetProfile?.gallery?.[selectedImage] && (
+            <div className="flex flex-col">
+              <div className="relative aspect-square md:aspect-video w-full bg-black flex items-center justify-center">
+                 <Image 
+                   src={typeof targetProfile.gallery[selectedImage] === 'string' ? (targetProfile.gallery[selectedImage] as any) : targetProfile.gallery[selectedImage].url}
+                   alt="Preview"
+                   fill
+                   className="object-contain"
+                   referrerPolicy="no-referrer"
+                 />
+              </div>
+              {typeof targetProfile.gallery[selectedImage] === 'object' && targetProfile.gallery[selectedImage].description && (
+                <div className="p-6 bg-white dark:bg-card">
+                   <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-2">Descrição</h4>
+                   <p className="text-text-main text-base leading-relaxed tracking-tight">{targetProfile.gallery[selectedImage].description}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -35,7 +35,10 @@ export const profileSchema = z.object({
   serviceHours: z.string().max(100, 'Horário muito longo').nullable().optional(),
   photoURL: z.string().nullable().optional(),
   bannerURL: z.string().nullable().optional(),
-  gallery: z.array(z.string()),
+  gallery: z.array(z.object({
+    url: z.string(),
+    description: z.string().max(200, 'Descrição da foto muito longa').nullable().optional()
+  })),
 }).refine((data) => {
   if (data.isProvider) {
     return !!data.category && data.category !== '';
