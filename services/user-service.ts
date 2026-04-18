@@ -414,5 +414,18 @@ export const UserService = {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
     }
+  },
+
+  async submitSupportMessage(data: { name: string; email: string; message: string }): Promise<void> {
+    const path = 'support_messages';
+    try {
+      await addDoc(collection(db, 'support_messages'), {
+        ...data,
+        read: false,
+        createdAt: serverTimestamp()
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
   }
 };

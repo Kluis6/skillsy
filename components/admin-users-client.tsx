@@ -24,6 +24,7 @@ import {
   CheckCircle,
   Star,
   ArrowLeft,
+  ArrowUpDown,
   Briefcase,
   Church,
   MapPin,
@@ -133,6 +134,7 @@ export function AdminUsersClient() {
   const [filterState, setFilterState] = useState('all');
   const [filterHasServices, setFilterHasServices] = useState(false);
   const [filterRecent, setFilterRecent] = useState(false);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -211,11 +213,18 @@ export function AdminUsersClient() {
         const dateB = b.createdAt?.seconds || 0;
         return dateB - dateA;
       });
+    } else {
+      result.sort((a, b) => {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        if (sortOrder === 'asc') return nameA.localeCompare(nameB);
+        return nameB.localeCompare(nameA);
+      });
     }
 
     setFilteredUsers(result);
     setCurrentPage(1); // Reset to first page when filters change
-  }, [users, searchTerm, filterWard, filterState, filterHasServices, filterRecent]);
+  }, [users, searchTerm, filterWard, filterState, filterHasServices, filterRecent, sortOrder]);
 
   useEffect(() => {
     if (profile?.role === 'admin') {
@@ -452,7 +461,18 @@ export function AdminUsersClient() {
             <Table>
               <TableHeader className="bg-surface/50">
                 <TableRow className="border-border-subtle hover:bg-transparent">
-                  <TableHead className="w-[300px] py-6 pl-8 font-bold text-text-muted uppercase text-[10px] tracking-widest">Usuário</TableHead>
+                  <TableHead 
+                    className="w-[300px] py-6 pl-8 font-bold text-text-muted uppercase text-[10px] tracking-widest cursor-pointer group hover:text-primary transition-colors"
+                    onClick={() => {
+                      setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+                      setFilterRecent(false);
+                    }}
+                  >
+                    <div className="flex items-center gap-1">
+                      Usuário
+                      <ArrowUpDown size={12} className={`transition-opacity ${sortOrder ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+                    </div>
+                  </TableHead>
                   <TableHead className="font-bold text-text-muted uppercase text-[10px] tracking-widest">Localização / Ala</TableHead>
                   <TableHead className="font-bold text-text-muted uppercase text-[10px] tracking-widest">Status</TableHead>
                   <TableHead className="font-bold text-text-muted uppercase text-[10px] tracking-widest">Avaliação</TableHead>

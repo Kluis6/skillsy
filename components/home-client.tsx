@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { HeroSection } from '@/components/hero-section';
+import { BenefitsSection } from '@/components/benefits-section';
 import { ContactCTA } from '@/components/contact-cta';
 import { CategoryCarousel } from '@/components/category-carousel';
 import { AuthModal } from '@/components/auth-modal';
@@ -93,6 +94,8 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
 
       {/* Categories Carousel */}
       <CategoryCarousel />
+
+      {!user && <BenefitsSection />}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 md:px-10 pb-24">

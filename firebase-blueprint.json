@@ -90,6 +90,19 @@
         "link": { "type": "string", "description": "Link opcional para ação" }
       },
       "required": ["title", "message", "type", "read"]
+    },
+    "SupportMessage": {
+      "title": "SupportMessage",
+      "description": "Mensagem enviada pelo formulário de contato",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Nome de quem enviou" },
+        "email": { "type": "string", "description": "E-mail de quem enviou" },
+        "message": { "type": "string", "description": "Conteúdo da mensagem" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "read": { "type": "boolean", "description": "Status de leitura pelo admin" }
+      },
+      "required": ["name", "email", "message"]
     }
   },
   "firestore": {
@@ -112,6 +125,10 @@
     "/admin_notifications/{notificationId}": {
       "schema": "Notification",
       "description": "Notificações para os administradores"
+    },
+    "/support_messages/{messageId}": {
+      "schema": "SupportMessage",
+      "description": "Mensagens de suporte/contato do formulário"
     }
   }
 }

@@ -95,7 +95,8 @@ service cloud.firestore {
         'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 
         'phones', 'location', 'ward', 'companyName', 'gallery', 
         'rating', 'reviewCount', 'verifiedMember', 'experienceYears', 'baptismYear',
-        'isBlocked', 'createdAt', 'socialLinks', 'availability', 'serviceHours'
+        'isBlocked', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
+        'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'businessComplement'
       ];
       
       return data.keys().hasAll(['uid', 'name', 'email', 'isProvider', 'role', 'createdAt']) &&
@@ -128,6 +129,11 @@ service cloud.firestore {
              (!('baptismYear' in data) || data.baptismYear == null || data.baptismYear is number) &&
              (!('availability' in data) || data.availability == null || data.availability is list) &&
              (!('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200)) &&
+             (!('businessAddress' in data) || data.businessAddress == null || (data.businessAddress is string && data.businessAddress.size() <= 200)) &&
+             (!('businessAddressNumber' in data) || data.businessAddressNumber == null || (data.businessAddressNumber is string && data.businessAddressNumber.size() <= 20)) &&
+             (!('businessNeighborhood' in data) || data.businessNeighborhood == null || (data.businessNeighborhood is string && data.businessNeighborhood.size() <= 100)) &&
+             (!('businessState' in data) || data.businessState == null || (data.businessState is string && data.businessState.size() <= 100)) &&
+             (!('businessComplement' in data) || data.businessComplement == null || (data.businessComplement is string && data.businessComplement.size() <= 100)) &&
              (!('verifiedMember' in data) || data.verifiedMember is bool) &&
              (!('isBlocked' in data) || data.isBlocked is bool);
     }
@@ -169,9 +175,25 @@ service cloud.firestore {
              (!('createdAt' in data) || data.createdAt is timestamp);
     }
 
+    function isValidSupportMessage(data) {
+      let allowed = ['name', 'email', 'message', 'createdAt', 'read'];
+      return data.keys().hasAll(['name', 'email', 'message']) &&
+             data.keys().hasOnly(allowed) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             isValidEmail(data.email) &&
+             data.message is string && data.message.size() > 0 && data.message.size() <= 1000 &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('read' in data) || data.read is bool);
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
+
+    match /support_messages/{messageId} {
+      allow create: if isValidSupportMessage(request.resource.data);
+      allow read, update, delete: if isAdmin();
+    }
 
     match /admin_notifications/{notificationId} {
       allow read, update, delete: if isAdmin();

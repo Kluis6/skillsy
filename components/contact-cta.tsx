@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { contactSchema, ContactFormData } from '@/lib/validations';
+import { UserService } from '@/services/user-service';
 
 export function ContactCTA() {
   const {
@@ -29,8 +30,7 @@ export function ContactCTA() {
 
   const onSubmit = async (data: ContactFormData) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await UserService.submitSupportMessage(data);
       
       toast.success('Mensagem enviada!', { 
         description: 'Obrigado pelo contato. Retornaremos em breve.' 
@@ -38,6 +38,7 @@ export function ContactCTA() {
       reset();
     } catch (error) {
       toast.error('Erro ao enviar mensagem');
+      console.error(error);
     }
   };
 
