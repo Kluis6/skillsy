@@ -719,7 +719,12 @@ export function ProfileSettingsClient() {
 
             <Card className="rounded-[2.5rem] border-none shadow-sm bg-card p-8">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold font-heading">Galeria de Fotos</h3>
+                <div className="flex items-center gap-3">
+                  <h3 className="text-xl font-bold font-heading">Galeria de Fotos</h3>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${formData.gallery.length >= 5 ? 'bg-red-50 text-red-500 border-red-100' : 'bg-primary/5 text-primary border-primary/10'}`}>
+                    {formData.gallery.length}/5
+                  </span>
+                </div>
                 <Button 
                   variant="outline" 
                   size="sm" 

@@ -33,7 +33,8 @@ import {
   Plus,
   ChevronRight,
   Home,
-  Navigation
+  Navigation,
+  Camera
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -356,37 +357,48 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 mt-6">
-                  {user?.uid !== targetProfile.uid && (
-                    <Button 
-                      onClick={handleToggleContact}
-                      className={`rounded-full h-10 px-6 font-bold shadow-none ${
-                        isContact 
-                          ? 'border-2 border-primary text-primary hover:bg-primary/5 bg-transparent' 
-                          : 'bg-primary text-white hover:bg-primary/90'
-                      }`}
-                    >
-                      {isContact ? (
-                        <>Em sua rede</>
+                    <div className="flex flex-wrap items-center gap-3 mt-6">
+                      {user?.uid === targetProfile.uid ? (
+                        <Link href="/profile">
+                          <Button className="rounded-full h-10 px-6 font-bold bg-primary text-white hover:bg-primary/90 shadow-none">
+                            Editar perfil
+                          </Button>
+                        </Link>
                       ) : (
-                        <><UserPlus size={18} className="mr-2" /> Conectar</>
+                        <>
+                          {user?.uid !== targetProfile.uid && (
+                            <Button 
+                              onClick={handleToggleContact}
+                              className={`rounded-full h-10 px-6 font-bold shadow-none ${
+                                isContact 
+                                  ? 'border-2 border-primary text-primary hover:bg-primary/5 bg-transparent' 
+                                  : 'bg-primary text-white hover:bg-primary/90'
+                              }`}
+                            >
+                              {isContact ? (
+                                <>Em sua rede</>
+                              ) : (
+                                <><UserPlus size={18} className="mr-2" /> Conectar</>
+                              )}
+                            </Button>
+                          )}
+                        </>
                       )}
-                    </Button>
-                  )}
-                  <Button 
-                    onClick={handleWhatsApp}
-                    variant="outline"
-                    className="rounded-full h-10 px-6 border-2 border-primary text-primary hover:bg-primary/5 font-bold"
-                  >
-                    Mensagem
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    className="rounded-full h-10 px-4 border-2 border-text-muted/40 text-text-muted hover:bg-surface font-bold"
-                  >
-                    Mais
-                  </Button>
-                </div>
+                      
+                      <Button 
+                        onClick={handleWhatsApp}
+                        variant="outline"
+                        className="rounded-full h-10 px-6 border-2 border-primary text-primary hover:bg-primary/5 font-bold"
+                      >
+                        Mensagem
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        className="rounded-full h-10 px-4 border-2 border-text-muted/40 text-text-muted hover:bg-surface font-bold"
+                      >
+                        Mais
+                      </Button>
+                    </div>
               </div>
             </CardContent>
           </Card>
@@ -409,33 +421,57 @@ export function ProfileDetailClient({ id, initialProfile }: ProfileDetailClientP
           </section>
           
           {/* Gallery Section */}
-          {targetProfile.gallery && targetProfile.gallery.length > 0 && (
-            <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
+          {(targetProfile.gallery && targetProfile.gallery.length > 0) || (user?.uid === targetProfile.uid) ? (
+            <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm relative overflow-hidden">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-text-main">Galeria de Fotos</h3>
-                <span className="text-xs text-text-muted font-medium">{targetProfile.gallery.length} fotos</span>
+                <div className="flex items-center gap-3">
+                  <h3 className="text-xl font-bold text-text-main">Galeria de Fotos</h3>
+                  {targetProfile.gallery && targetProfile.gallery.length > 0 && (
+                    <span className="text-xs text-text-muted font-medium bg-surface px-2 py-0.5 rounded-full border border-border-subtle">{targetProfile.gallery.length}/5 fotos</span>
+                  )}
+                </div>
+                {user?.uid === targetProfile.uid && (
+                  <Link href="/profile">
+                    <Button variant="ghost" size="sm" className="text-xs font-bold text-primary hover:bg-primary/5 h-8">
+                      Gerenciar Galeria
+                    </Button>
+                  </Link>
+                )}
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {targetProfile.gallery.map((photo, index) => (
-                  <motion.div 
-                    key={index}
-                    whileHover={{ scale: 1.02 }}
-                    className={`relative rounded-xl overflow-hidden shadow-sm border border-border-subtle aspect-square ${
-                      index === 0 ? 'col-span-2 md:col-span-2 md:row-span-2' : ''
-                    }`}
-                  >
-                    <Image 
-                      src={photo} 
-                      alt={`Galeria ${index + 1}`} 
-                      fill 
-                      className="object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                  </motion.div>
-                ))}
-              </div>
+              
+              {targetProfile.gallery && targetProfile.gallery.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {targetProfile.gallery.map((photo, index) => (
+                    <motion.div 
+                      key={index}
+                      whileHover={{ scale: 1.02 }}
+                      className={`relative rounded-xl overflow-hidden shadow-sm border border-border-subtle aspect-square ${
+                        index === 0 ? 'col-span-2 md:col-span-2 md:row-span-2' : ''
+                      }`}
+                    >
+                      <Image 
+                        src={photo} 
+                        alt={`Galeria ${index + 1}`} 
+                        fill 
+                        className="object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-border-subtle rounded-2xl bg-surface/50">
+                  <Camera className="w-12 h-12 text-text-muted/30 mb-4" />
+                  <p className="text-sm text-text-muted font-medium mb-4">Sua galeria ainda não possui fotos profissionais.</p>
+                  <Link href="/profile">
+                    <Button size="sm" className="bg-primary text-white font-bold h-9">
+                      Adicionar fotos
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </section>
-          )}
+          ) : null}
 
           {/* Experience Section (Simulated based on image) */}
           <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
