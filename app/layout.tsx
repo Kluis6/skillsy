@@ -8,16 +8,16 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-heading' });
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://skillsy.com.br';
 const defaultDescription =
-  'Conectando talentos e serviços na comunidade SUD. Uma plataforma 100% sem fins lucrativos para impulsionar o apoio mútuo.';
+  'Conectando talentos e serviços na comunidade SUD. Uma plataforma para impulsionar pessoas.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: 'Skillsy | Rede de Apoio Comunitário SUD',
+    default: 'Skillsy | Network SUD',
     template: '%s | Skillsy'
   },
   description: defaultDescription,
-  keywords: ['SUD', 'comunidade', 'serviços', 'profissionais', 'apoio mútuo', 'talentos'],
+  keywords: ['SUD', 'comunidade', 'serviços', 'profissionais', 'membros para membros', 'talentos'],
   authors: [{ name: 'Skillsy Community' }],
   creator: 'Skillsy',
   alternates: {
@@ -28,20 +28,20 @@ export const metadata: Metadata = {
     locale: 'pt_BR',
     url: '/',
     siteName: 'Skillsy',
-    title: 'Skillsy | Rede de Apoio Comunitário SUD',
+    title: 'Skillsy | Network SUD',
     description: defaultDescription,
     images: [
       {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Skillsy - rede de apoio comunitário SUD',
+        alt: 'Skillsy - Network SUD',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Skillsy | Rede de Apoio Comunitário SUD',
+    title: 'Skillsy | Network SUD',
     description: defaultDescription,
     images: ['/opengraph-image'],
   },

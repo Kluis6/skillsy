@@ -1,39 +1,51 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useAuth } from '@/hooks/use-auth';
-import { useSearchController } from '@/hooks/use-search-controller';
-import { useContactsController } from '@/hooks/use-contacts-controller';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, MapPin, Star, UserPlus, UserMinus, Users, Briefcase, Church, CalendarDays, Clock } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Navbar } from '@/components/navbar';
-import { Footer } from '@/components/footer';
-import { HeroSection } from '@/components/hero-section';
-import { BenefitsSection } from '@/components/benefits-section';
-import { ContactCTA } from '@/components/contact-cta';
-import { CategoryCarousel } from '@/components/category-carousel';
-import { AuthModal } from '@/components/auth-modal';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { useSearchController } from "@/hooks/use-search-controller";
+import { useContactsController } from "@/hooks/use-contacts-controller";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  MapPin,
+  Star,
+  UserPlus,
+  UserMinus,
+  Users,
+  Briefcase,
+  Church,
+  CalendarDays,
+  Clock,
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
+import { HeroSection } from "@/components/hero-section";
+import { BenefitsSection } from "@/components/benefits-section";
+import { ContactCTA } from "@/components/contact-cta";
+import { CategoryCarousel } from "@/components/category-carousel";
+import { AuthModal } from "@/components/auth-modal";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import { UserProfile } from '@/models/types';
+import { UserProfile } from "@/models/types";
 
-export function HomeClient({ initialProviders = [] }: { initialProviders?: UserProfile[] }) {
+export function HomeClient({
+  initialProviders = [],
+}: {
+  initialProviders?: UserProfile[];
+}) {
   const router = useRouter();
   const { user, profile, logout, loading, toggleContact } = useAuth();
-  const [activeTab, setActiveTab] = useState<'explore' | 'contacts'>('explore');
+  const [activeTab, setActiveTab] = useState<"explore" | "contacts">("explore");
 
   // Controllers
   const {
@@ -42,7 +54,7 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
     locationFilter,
     setLocationFilter,
     providers,
-    searching
+    searching,
   } = useSearchController(initialProviders);
 
   const { savedContacts } = useContactsController(profile, activeTab);
@@ -76,15 +88,15 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
 
   return (
     <div className="min-h-screen bg-background font-sans text-text-main">
-      <Navbar 
-        user={user} 
-        profile={profile} 
-        logout={logout} 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
+      <Navbar
+        user={user}
+        profile={profile}
+        logout={logout}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
 
-      <HeroSection 
+      <HeroSection
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         searching={searching}
@@ -100,7 +112,7 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 md:px-10 pb-24">
         <AnimatePresence mode="wait">
-          {activeTab === 'explore' ? (
+          {activeTab === "explore" ? (
             <motion.div
               key="explore"
               initial={{ opacity: 0, y: 20 }}
@@ -108,8 +120,12 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
               exit={{ opacity: 0, y: -20 }}
             >
               <div className="text-center mb-16">
-                <h3 className="text-3xl font-bold text-text-main mb-4">Membros em Destaque</h3>
-                <p className="text-text-muted">Conheça os profissionais mais bem avaliados da nossa rede.</p>
+                <h3 className="text-3xl font-bold text-text-main mb-4">
+                  Membros em Destaque
+                </h3>
+                <p className="text-text-muted">
+                  Conheça os profissionais mais bem avaliados da nossa rede.
+                </p>
               </div>
 
               {providers.length > 0 ? (
@@ -123,73 +139,92 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
                     >
                       <Card className="group h-full flex flex-col hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 border-border-subtle bg-card rounded-3xl p-8 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-surface rounded-bl-full -mr-12 -mt-12 transition-all group-hover:bg-primary/10" />
-                               {p.uid !== user?.uid && (
+                        {p.uid !== user?.uid && (
                           <Tooltip>
                             <TooltipTrigger>
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 className="absolute top-4 right-4 text-text-muted hover:text-primary hover:bg-primary/5 rounded-full z-10 transition-colors"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   if (!user) {
-                                    toast.error('Login necessário', {
-                                      description: 'Você precisa estar logado para adicionar contatos.'
+                                    toast.error("Login necessário", {
+                                      description:
+                                        "Você precisa estar logado para adicionar contatos.",
                                     });
                                     return;
                                   }
                                   toggleContact(p.uid);
                                 }}
                               >
-                                {profile?.contacts?.includes(p.uid) ? <UserMinus size={20} /> : <UserPlus size={20} />}
+                                {profile?.contacts?.includes(p.uid) ? (
+                                  <UserMinus size={20} />
+                                ) : (
+                                  <UserPlus size={20} />
+                                )}
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent className="bg-text-main text-white border-none rounded-lg text-[10px] font-bold uppercase tracking-widest">
-                              {profile?.contacts?.includes(p.uid) ? 'Remover Contato' : 'Adicionar Contato'}
+                              {profile?.contacts?.includes(p.uid)
+                                ? "Remover Contato"
+                                : "Adicionar Contato"}
                             </TooltipContent>
                           </Tooltip>
                         )}
-                        
+
                         <div className="mb-6">
                           <Badge className="bg-surface text-primary border-none font-bold text-[10px] uppercase px-3 py-1 rounded-full">
-                            {p.category || 'Geral'}
+                            {p.category || "Geral"}
                           </Badge>
                         </div>
-                        
+
                         <div className="flex items-center gap-4 mb-6">
                           <Avatar className="w-14 h-14 border-2 border-surface">
                             <AvatarImage src={p.photoURL} />
-                            <AvatarFallback className="bg-surface text-primary font-bold text-xl">{p.name[0]}</AvatarFallback>
+                            <AvatarFallback className="bg-surface text-primary font-bold text-xl">
+                              {p.name[0]}
+                            </AvatarFallback>
                           </Avatar>
                           <div>
-                            <CardTitle className="text-xl font-bold text-text-main">{p.name}</CardTitle>
+                            <CardTitle className="text-xl font-bold text-text-main">
+                              {p.name}
+                            </CardTitle>
                             {p.companyName && (
                               <p className="text-[10px] font-bold text-primary uppercase tracking-wider mt-0.5">
                                 {p.companyName}
                               </p>
                             )}
                             <div className="flex items-center gap-1 text-xs text-text-muted mt-1">
-                              <MapPin size={12} /> {p.location || 'Brasil'}
+                              <MapPin size={12} /> {p.location || "Brasil"}
                             </div>
                           </div>
                         </div>
 
                         <CardContent className="p-0 flex-grow mb-8 text-sm">
                           <p className="text-text-muted leading-relaxed line-clamp-3 mb-4">
-                            {p.bio || 'Membro dedicado da comunidade oferecendo serviços com excelência e valores compartilhados.'}
+                            {p.bio ||
+                              "Membro dedicado da comunidade oferecendo serviços com excelência e valores compartilhados."}
                           </p>
 
                           <div className="space-y-2 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
                             {p.baptismYear && (
                               <div className="flex items-center gap-1.5">
                                 <Church size={12} className="text-primary/60" />
-                                <span>Membro há {new Date().getFullYear() - p.baptismYear} anos</span>
+                                <span>
+                                  Membro há{" "}
+                                  {new Date().getFullYear() - p.baptismYear}{" "}
+                                  anos
+                                </span>
                               </div>
                             )}
                             {p.availability && p.availability.length > 0 && (
                               <div className="flex items-center gap-1.5">
-                                <CalendarDays size={12} className="text-primary/60" />
-                                <span>{p.availability.join(', ')}</span>
+                                <CalendarDays
+                                  size={12}
+                                  className="text-primary/60"
+                                />
+                                <span>{p.availability.join(", ")}</span>
                               </div>
                             )}
                             {p.serviceHours && (
@@ -203,10 +238,16 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
 
                         <div className="pt-6 border-t border-border-subtle flex justify-between items-center">
                           <div className="flex items-center gap-1 text-sm font-bold text-highlight">
-                            <Star size={16} fill="currentColor" /> {p.rating || '0.0'}
+                            <Star size={16} fill="currentColor" />{" "}
+                            {p.rating || "0.0"}
                           </div>
                           <Link href={`/profile/${p.uid}`}>
-                            <Button variant="link" className="text-primary font-bold p-0 h-auto">Ver Detalhes</Button>
+                            <Button
+                              variant="link"
+                              className="text-primary font-bold p-0 h-auto"
+                            >
+                              Ver Detalhes
+                            </Button>
                           </Link>
                         </div>
                       </Card>
@@ -216,8 +257,12 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
               ) : (
                 <div className="text-center py-24 bg-surface/30 rounded-3xl border-2 border-dashed border-border-subtle">
                   <Briefcase className="mx-auto h-12 w-12 text-text-muted/20 mb-4" />
-                  <h4 className="text-xl font-bold text-text-main">Nenhum resultado</h4>
-                  <p className="text-sm text-text-muted">Tente ajustar seus filtros de busca.</p>
+                  <h4 className="text-xl font-bold text-text-main">
+                    Nenhum resultado
+                  </h4>
+                  <p className="text-sm text-text-muted">
+                    Tente ajustar seus filtros de busca.
+                  </p>
                 </div>
               )}
             </motion.div>
@@ -229,8 +274,12 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
               exit={{ opacity: 0, y: -20 }}
             >
               <div className="text-center mb-16">
-                <h3 className="text-3xl font-bold text-text-main mb-4">Seus Contatos</h3>
-                <p className="text-text-muted">Mantenha sua rede de confiança sempre por perto.</p>
+                <h3 className="text-3xl font-bold text-text-main mb-4">
+                  Seus Contatos
+                </h3>
+                <p className="text-text-muted">
+                  Mantenha sua rede de confiança sempre por perto.
+                </p>
               </div>
 
               {savedContacts.length > 0 ? (
@@ -243,34 +292,43 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
                       transition={{ delay: idx * 0.05 }}
                     >
                       <Card className="group h-full flex flex-col hover:shadow-2xl transition-all duration-300 border-border-subtle bg-card rounded-3xl p-8 relative">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="absolute top-4 right-4 text-primary hover:bg-primary/5 rounded-full"
                           onClick={() => toggleContact(p.uid)}
                         >
                           <UserMinus size={20} />
                         </Button>
-                        
+
                         <div className="flex items-center gap-4 mb-6">
                           <Avatar className="w-16 h-16 border-2 border-surface">
                             <AvatarImage src={p.photoURL} />
-                            <AvatarFallback className="bg-surface text-primary font-bold text-2xl">{p.name[0]}</AvatarFallback>
+                            <AvatarFallback className="bg-surface text-primary font-bold text-2xl">
+                              {p.name[0]}
+                            </AvatarFallback>
                           </Avatar>
                           <div>
-                            <CardTitle className="text-xl font-bold text-text-main">{p.name}</CardTitle>
+                            <CardTitle className="text-xl font-bold text-text-main">
+                              {p.name}
+                            </CardTitle>
                             {p.companyName && (
                               <p className="text-[10px] font-bold text-primary uppercase tracking-wider mt-0.5">
                                 {p.companyName}
                               </p>
                             )}
-                            <Badge variant="outline" className="mt-1 border-primary/20 text-primary text-[10px] font-bold uppercase">{p.category || 'Membro'}</Badge>
+                            <Badge
+                              variant="outline"
+                              className="mt-1 border-primary/20 text-primary text-[10px] font-bold uppercase"
+                            >
+                              {p.category || "Membro"}
+                            </Badge>
                           </div>
                         </div>
 
                         <CardContent className="p-0 flex-grow mb-8">
                           <p className="text-text-muted text-sm leading-relaxed line-clamp-2">
-                            {p.bio || 'Sem descrição disponível.'}
+                            {p.bio || "Sem descrição disponível."}
                           </p>
                         </CardContent>
 
@@ -280,7 +338,10 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
                               Ver Perfil
                             </Button>
                           </Link>
-                          <Button variant="outline" className="flex-1 border-border-subtle hover:bg-surface rounded-2xl h-11 text-sm font-bold">
+                          <Button
+                            variant="outline"
+                            className="flex-1 border-border-subtle hover:bg-surface rounded-2xl h-11 text-sm font-bold"
+                          >
                             Mensagem
                           </Button>
                         </div>
@@ -291,11 +352,15 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
               ) : (
                 <div className="text-center py-24 bg-surface/30 rounded-3xl border-2 border-dashed border-border-subtle">
                   <Users className="mx-auto h-12 w-12 text-text-muted/20 mb-4" />
-                  <h4 className="text-xl font-bold text-text-main">Lista vazia</h4>
-                  <p className="text-sm text-text-muted mb-8">Você ainda não salvou nenhum contato.</p>
-                  <Button 
+                  <h4 className="text-xl font-bold text-text-main">
+                    Lista vazia
+                  </h4>
+                  <p className="text-sm text-text-muted mb-8">
+                    Você ainda não salvou nenhum contato.
+                  </p>
+                  <Button
                     className="rounded-full bg-primary text-white font-bold px-8"
-                    onClick={() => setActiveTab('explore')}
+                    onClick={() => setActiveTab("explore")}
                   >
                     Explorar Agora
                   </Button>
@@ -309,10 +374,12 @@ export function HomeClient({ initialProviders = [] }: { initialProviders?: UserP
         <ContactCTA />
 
         <div className="mt-16 text-center text-sm text-text-muted">
-          Possui uma empresa ou presta serviços? {' '}
+          Possui uma empresa ou presta serviços?{" "}
           {user ? (
             !profile?.isProvider && (
-              <strong className="text-accent cursor-pointer hover:underline">Cadastre sua Skill agora</strong>
+              <strong className="text-accent cursor-pointer hover:underline">
+                Cadastre sua Skill agora
+              </strong>
             )
           ) : (
             <AuthModal>

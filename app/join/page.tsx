@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { motion } from 'motion/react';
 import { ShieldCheck, Star, Users, ArrowRight, Zap, Trophy, Heart, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
