@@ -87,7 +87,7 @@ export function HomeClient({
   }
 
   return (
-    <div className="min-h-screen bg-background font-sans text-text-main">
+    <div className="min-h-screen bg-background text-text-main">
       <Navbar
         user={user}
         profile={profile}

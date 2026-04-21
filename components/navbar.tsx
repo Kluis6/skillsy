@@ -15,7 +15,6 @@ import { UserProfile } from "@/models/types";
 import { User } from "firebase/auth";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,

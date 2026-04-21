@@ -67,7 +67,7 @@ import { ErrorBoundary } from "@/components/error-boundary";
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={cn("font-sans", inter.variable, outfit.variable)} suppressHydrationWarning>
-      <body>
+      <body className='antialiased'>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
