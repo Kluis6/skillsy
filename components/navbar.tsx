@@ -1,35 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import { BsList, BsXLg } from "react-icons/bs";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  Menu,
-  Search,
-  Users,
-  ShieldCheck,
-  Settings,
-  Heart,
-  LogOut,
-  User as UserIcon,
-  Zap,
-} from "lucide-react";
+import { User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
+
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AuthModal } from "@/components/auth-modal";
-import { toast } from "sonner";
+
 import { UserProfile } from "@/models/types";
 import { User } from "firebase/auth";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface NavbarProps {
   user: User | null;
@@ -59,8 +62,113 @@ export function Navbar({
     propSetActiveTab !== undefined ? propSetActiveTab : setInternalTab;
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle ">
-      <div className="container mx-auto flex justify-between items-center px-4  py-2.5">
-        <div className="flex items-center gap-4">
+      <div className="container mx-auto flex justify-between items-center px-4 py-2.5">
+        <div className="flex items-center space-x-4">
+          <Drawer direction="left">
+            <DrawerTrigger className="flex md:hidden">
+              <Button size="icon" className="size-10" variant="ghost">
+                <BsList className="size-5" />
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <DrawerHeader className="flex flex-row justify-between ">
+                <div className="flex flex-col">
+                  <DrawerTitle className="text-primary">Skillsy</DrawerTitle>
+                  <DrawerDescription>
+                    Onde talentos encontram oportunidades
+                  </DrawerDescription>
+                </div>
+                <DrawerTrigger asChild>
+                  <Button size="icon" className="bg-white hover:bg-zinc-100">
+                    <BsXLg className="text-gray-800" />
+                  </Button>
+                </DrawerTrigger>
+              </DrawerHeader>
+              <div className="px-4 space-y-4">
+                <h3 className="font-medium text-sm text-gray-800">Navegação</h3>
+                <ul className="w-full space-y-1">
+                  <li className=" p-2 hover:bg-surface">
+                    <Link
+                      href="/weareskillsy"
+                      className="flex text-sm font-normal text-gray-800"
+                    >
+                      O que é Skillsy?
+                    </Link>
+                  </li>
+                  <li className=" p-2 hover:bg-surface">
+                    <Link
+                      href="/join"
+                      className="flex text-sm font-normal text-gray-800"
+                    >
+                      Por que participar?
+                    </Link>
+                  </li>
+                  <li className=" p-2 hover:bg-surface">
+                    <Link
+                      href="/join"
+                      className="flex text-sm font-normal text-gray-800"
+                    >
+                      Privacidade
+                    </Link>
+                  </li>
+                  <li className=" p-2 hover:bg-surface">
+                    <Link
+                      href="/termos"
+                      className="flex text-sm font-normal text-gray-800"
+                    >
+                      Termos de uso
+                    </Link>
+                  </li>
+                </ul>
+
+                {user && (
+                  <>
+                    <h3 className="font-medium text-sm text-gray-800">
+                      Minha conta
+                    </h3>
+
+                    <ul className="space-y-1">
+                      <li className="hover:bg-surface p-2">
+                        <Link
+                          className="flex text-sm font-normal text-gray-800"
+                          href="/contacts"
+                        >
+                          Meus Contatos
+                        </Link>
+                      </li>
+                      <li className="hover:bg-surface p-2">
+                        <Link
+                          className="flex text-sm font-normal text-gray-800"
+                          href="/profile"
+                        >
+                          Configurações do Perfil
+                        </Link>
+                      </li>
+                      <li>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-gray-800 rounded-none"
+                          onClick={logout}
+                        >
+                          Sair da Conta
+                        </Button>
+                      </li>
+                    </ul>
+                  </>
+                )}
+              </div>
+
+              <DrawerFooter>
+                <Link
+                  className="text-center bg-primary p-2 font-medium text-sm text-white rounded-sm"
+                  href={"/donation"}
+                >
+                  Ajude o projeto
+                </Link>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
+
           <div className="flex items-center gap-2">
             <Link href={"/"}>
               <h1 className="text-2xl font-bold tracking-tight text-primary">
@@ -69,208 +177,172 @@ export function Navbar({
             </Link>
           </div>
         </div>
-        <div className="flex items-center gap-4 md:gap-8">
-          <ul className="hidden md:flex items-center gap-8 text-sm font-semibold text-text-muted">
-            {!user && (
-              <Link href="/join">
-                <li className="cursor-pointer transition-all hover:text-primary">
-                  Vantagens
-                </li>
-              </Link>
-            )}
-            {user && (
-              <li
-                onClick={() => setActiveTab("contacts")}
-                className={`cursor-pointer transition-all ${activeTab === "contacts" ? "text-primary" : "hover:text-primary"}`}
+
+        <div className="flex items-center space-x-4">
+          <ul className="hidden md:flex items-center text-sm font-semibold text-text-muted">
+            <li>
+              <Link
+                href={"#"}
+                className="text-sm font-normal text-gray-700 hover:text-gray-800 decoration-1 hover:underline transition-all underline-offset-2 decoration-gray-800"
               >
-                Contatos
-              </li>
-            )}
+                O que é Skillsy
+              </Link>
+            </li>
           </ul>
 
-          <ThemeToggle />
-          <Sheet>
-            <SheetTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-text-main hover:bg-surface rounded-full transition-all duration-300"
-                >
-                  <Menu size={24} />
-                </Button>
-              }
-            />
-            <SheetContent
-              side="left"
-              className="w-[300px] sm:w-[400px] bg-background p-0 border-r border-border-subtle"
-            >
-              <div className="flex flex-col h-full">
-                <SheetHeader className="p-8 text-left bg-surface/30">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-                      <span className="text-white font-bold text-2xl">S</span>
-                    </div>
-                    <SheetTitle className="text-2xl font-bold text-text-main">
-                      Skillsy
-                    </SheetTitle>
-                  </div>
-                  <SheetDescription className="text-text-muted font-medium">
-                    Sua rede de confiança e talentos.
-                  </SheetDescription>
-                </SheetHeader>
-
-                <div className="flex-1 overflow-y-auto py-6">
-                  {user ? (
-                    <div className="px-6 mb-8">
-                      <div className="flex items-center gap-4 p-4 bg-surface rounded-2xl border border-primary/5">
-                        <Avatar className="w-12 h-12 border-2 border-white shadow-sm">
-                          <AvatarImage src={user.photoURL || ""} />
-                          <AvatarFallback className="bg-primary text-white font-bold">
-                            {profile?.name?.[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col">
-                          <span className="font-bold text-text-main">
-                            {profile?.name}
-                          </span>
-                          <span className="text-xs text-text-muted">
-                            {user.email}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="px-6 mb-8">
-                      <AuthModal>
-                        <Button className="w-full bg-primary text-white font-bold h-12 rounded-xl shadow-lg shadow-primary/10">
-                          Entrar na Conta
-                        </Button>
-                      </AuthModal>
-                    </div>
-                  )}
-
-                  <div className="px-4 space-y-1">
-                    <h4 className="px-4 text-[10px] font-bold uppercase tracking-widest text-text-muted/60 mb-2">
-                      Navegação
-                    </h4>
-                    <Button
-                      variant="ghost"
-                      className={`w-full justify-start gap-3 h-12 rounded-xl font-semibold ${activeTab === "explore" ? "bg-surface text-primary" : "text-text-muted hover:text-primary hover:bg-surface/50"}`}
-                      onClick={() => setActiveTab("explore")}
-                    >
-                      <Search size={18} /> Explorar Membros
-                    </Button>
-
-                    <Link href="/join">
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start gap-3 h-12 rounded-xl font-semibold text-text-muted hover:text-primary hover:bg-surface/50"
-                      >
-                        <Zap size={18} /> Por que participar?
-                      </Button>
-                    </Link>
-
-                    {user && (
-                      <Link href="/contacts">
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start gap-3 h-12 rounded-xl font-semibold text-text-muted hover:text-primary hover:bg-surface/50"
-                        >
-                          <Users size={18} /> Meus Contatos
-                        </Button>
-                      </Link>
-                    )}
-                  </div>
-
-                  <Separator className="my-6 mx-8 w-auto bg-border-subtle/50" />
-
-                  <div className="px-4 space-y-1">
-                    <h4 className="px-4 text-[10px] font-bold uppercase tracking-widest text-text-muted/60 mb-2">
-                      Conta
-                    </h4>
-                    {profile?.role === "admin" && (
-                      <Link href="/admin">
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start gap-3 h-12 rounded-xl font-bold text-primary bg-primary/5 hover:bg-primary/10 border border-primary/10 mb-2"
-                        >
-                          <ShieldCheck size={18} /> Painel Admin
-                        </Button>
-                      </Link>
-                    )}
-                    <Link href="/profile">
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start gap-3 h-12 rounded-xl font-semibold text-text-muted hover:text-primary hover:bg-surface/50"
-                      >
-                        <Settings size={18} /> Configurações do Perfil
-                      </Button>
-                    </Link>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3 h-12 rounded-xl font-semibold text-text-muted hover:text-primary hover:bg-surface/50"
-                      onClick={() =>
-                        toast.info("Funcionalidade de Doação", {
-                          description:
-                            "Esta plataforma é sem fins lucrativos. Em breve você poderá apoiar a manutenção do projeto.",
-                        })
-                      }
-                    >
-                      <Heart size={18} className="text-red-500" /> Doar para o
-                      Projeto
-                    </Button>
-                  </div>
+          <Drawer direction="left">
+            <DrawerTrigger className="hidden md:flex">
+              <Button size="icon" className="size-10" variant="ghost">
+                <BsList className="size-5" />
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <DrawerHeader className="flex flex-row justify-between ">
+                <div className="flex flex-col">
+                  <DrawerTitle className="text-primary">Skillsy</DrawerTitle>
+                  <DrawerDescription>
+                    Onde talentos encontram oportunidades
+                  </DrawerDescription>
                 </div>
+                <DrawerTrigger asChild>
+                  <Button size="icon" className="bg-white hover:bg-zinc-100">
+                    <BsXLg className="text-gray-800" />
+                  </Button>
+                </DrawerTrigger>
+              </DrawerHeader>
+              <div className="px-4 space-y-4">
+                <h3 className="font-medium text-sm text-gray-800">Navegação</h3>
+                <ul className="w-full space-y-1">
+                  <li className=" p-2 hover:bg-surface">
+                    <Link
+                      href="/weareskillsy"
+                      className="flex text-sm font-normal text-gray-800"
+                    >
+                      O que é Skillsy?
+                    </Link>
+                  </li>
+                  <li className=" p-2 hover:bg-surface">
+                    <Link
+                      href="/join"
+                      className="flex text-sm font-normal text-gray-800"
+                    >
+                      Por que participar?
+                    </Link>
+                  </li>
+                  <li className=" p-2 hover:bg-surface">
+                    <Link
+                      href="/join"
+                      className="flex text-sm font-normal text-gray-800"
+                    >
+                      Privacidade
+                    </Link>
+                  </li>
+                  <li className=" p-2 hover:bg-surface">
+                    <Link
+                      href="/termos"
+                      className="flex text-sm font-normal text-gray-800"
+                    >
+                      Termos de uso
+                    </Link>
+                  </li>
+                </ul>
 
                 {user && (
-                  <div className="p-6 border-t border-border-subtle bg-surface/10">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3 h-12 rounded-xl font-bold text-red-500 hover:text-red-600 hover:bg-red-50"
-                      onClick={logout}
-                    >
-                      <LogOut size={18} /> Sair da Conta
-                    </Button>
-                  </div>
+                  <>
+                    <h3 className="font-medium text-sm text-gray-800">
+                      Minha conta
+                    </h3>
+
+                    <ul className="space-y-1">
+                      <li className="hover:bg-surface p-2">
+                        <Link
+                          className="flex text-sm font-normal text-gray-800"
+                          href="/contacts"
+                        >
+                          Meus Contatos
+                        </Link>
+                      </li>
+                      <li className="hover:bg-surface p-2">
+                        <Link
+                          className="flex text-sm font-normal text-gray-800"
+                          href="/profile"
+                        >
+                          Configurações do Perfil
+                        </Link>
+                      </li>
+                      <li>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-gray-800 rounded-none"
+                          onClick={logout}
+                        >
+                          Sair da Conta
+                        </Button>
+                      </li>
+                    </ul>
+                  </>
                 )}
               </div>
-            </SheetContent>
-          </Sheet>
+
+              <DrawerFooter>
+                <Link
+                  className="text-center bg-primary p-2 font-medium text-sm text-white rounded-sm"
+                  href={"/donation"}
+                >
+                  Ajude o projeto
+                </Link>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
+
           {user ? (
-            <div className="flex items-center gap-4">
-              <div className="hidden sm:flex flex-col items-end">
-                <span className="text-xs font-bold text-text-main">
-                  {profile?.name}
-                </span>
-                {profile?.role === "admin" && (
-                  <span className="text-[10px] text-accent font-bold uppercase">
-                    Admin
-                  </span>
-                )}
-              </div>
-              <Avatar className="w-9 h-9 border border-border-subtle">
-                <AvatarImage src={user.photoURL || ""} />
-                <AvatarFallback>
-                  <UserIcon size={18} />
-                </AvatarFallback>
-              </Avatar>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={logout}
-                className="text-text-muted hover:text-primary font-bold"
-              >
-                Sair
-              </Button>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Avatar className="size-9 ring-2 ring-offset-2 ring-zinc-400">
+                    <AvatarImage src={user.photoURL || ""} />
+                    <AvatarFallback>
+                      <UserIcon className="size-9" />
+                    </AvatarFallback>
+                  </Avatar>
+                }
+              ></DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuGroup className="space-y-1">
+                  <DropdownMenuLabel>Minha conta</DropdownMenuLabel>
+                  <DropdownMenuItem>
+                    <Link
+                      className="flex text-sm font-normal text-gray-800"
+                      href="/contacts"
+                    >
+                      Meus Contatos
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link
+                      className="flex text-sm font-normal text-gray-800"
+                      href="/profile"
+                    >
+                      Configurações do Perfil
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={logout}>
+                    Sair da conta
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <AuthModal>
-              <Button className="bg-primary text-white hover:bg-primary/90 rounded-full px-6 font-bold shadow-lg shadow-primary/20">
+              <Button variant="default" className="bg-blue-600 px-4">
                 Entrar
               </Button>
             </AuthModal>
           )}
+          <ThemeToggle />
         </div>
       </div>
     </nav>
