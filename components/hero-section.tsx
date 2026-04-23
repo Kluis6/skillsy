@@ -24,7 +24,7 @@ export function HeroSection({
   setLocationFilter,
 }: HeroSectionProps) {
   return (
-    <section className="w-full h-[90vh]">
+    <section className="w-full h-[70vh]">
       <div className="container mx-auto space-y-4 flex flex-col justify-center items-center h-full px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -47,7 +47,7 @@ export function HeroSection({
         >
           <Form
             action="/search"
-            className="flex flex-col w-full space-y-4 justify-center items-center"
+            className="flex flex-col w-full space-y-6 justify-center items-center"
           >
             <div className="relative w-full md:w-2xl flex justify-center items-center">
               <Search
@@ -57,7 +57,7 @@ export function HeroSection({
               <Input
                 name="q"
                 placeholder="Ex: Pintor, Advogado, Bolo de Pote..."
-                className="pl-12 h-12 w-full  shadow shadow-zinc-400 "
+                className="pl-12 h-10 w-full  shadow shadow-zinc-400 "
                 defaultValue={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -82,7 +82,7 @@ export function HeroSection({
             </p>
             <div className="flex flex-col sm:flex-row gap-4 ">
               <CepFilter onLocationChange={setLocationFilter} />
-              <Button type="submit" variant="default" className="py-4 px-6">
+              <Button type="submit" variant="default" className="py-4 px-6 h-10">
                 {searching ? "Pesquisando..." : "Pesquisar"}
               </Button>
             </div>

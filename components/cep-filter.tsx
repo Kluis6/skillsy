@@ -115,7 +115,7 @@ export function CepFilter({
           variant="outline"
           onClick={handleDetectLocation}
           disabled={loading}
-          className="py-4 px-6 text-gray-700  min-w-28 flex justify-between  text-center items-center"
+          className="py-4 px-6 text-gray-700 h-10  min-w-28 flex justify-between  text-center items-center"
         >
           {loading ? (
             <div className="w-full flex justify-center items-center">
