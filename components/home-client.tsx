@@ -110,7 +110,7 @@ export function HomeClient({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <div className="text-center mb-16">
+            <div className="text-center my-24">
               <h3 className="text-3xl font-bold text-text-main mb-4">
                 Membros em Destaque
               </h3>
@@ -215,7 +215,7 @@ export function HomeClient({
         {/* CTA Section */}
         <ContactCTA />
 
-        <div className="mt-16 text-center text-sm text-text-muted">
+        <div className="my-24 text-center text-sm text-text-muted">
           Possui uma empresa ou presta serviços?{" "}
           {user ? (
             !profile?.isProvider && (

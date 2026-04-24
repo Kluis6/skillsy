@@ -1,39 +1,33 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { toast } from 'sonner';
-import Link from 'next/link';
+import React from "react";
+import { toast } from "sonner";
+import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="bg-card border-t border-border-subtle py-12 px-6 md:px-10">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-            <span className="text-white font-bold text-sm">S</span>
-          </div>
-          <span className="font-bold text-text-main tracking-tight">Skillsy</span>
-        </div>
-        <p className="text-text-muted text-center md:text-left">
-          © 2026 Skillsy. Criado para fortalecer a comunidade SUD. <br className="md:hidden" />
-          <span className="text-primary font-bold">Plataforma 100% sem fins lucrativos.</span>
+    <footer className="bg-card border-t border-border-subtle py-5">
+      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center  gap-6 px-4">
+        <h4 className="font-bold text-primary tracking-tight">Skillsy</h4>
+        <p className="text-text-muted text-center text-xs md:text-left">
+          © 2026 <strong>Skillsy</strong>. Criado para fortalecer a comunidade
         </p>
         <div className="flex gap-6 text-text-muted">
-          <Link 
+          <Link
             href="/join"
-            className="hover:text-primary transition-colors text-sm font-semibold"
+            className="hover:text-blue-600 text-gray-700 transition-colors text-sm font-normal"
           >
-            Fazer Parte
+            Participe
           </Link>
-          <Link 
+          <Link
             href="/termos"
-            className="hover:text-primary transition-colors text-sm"
+            className="hover:text-blue-600 text-gray-700 transition-colors text-sm"
           >
             Termos
           </Link>
-          <Link 
+          <Link
             href="/privacidade"
-            className="hover:text-primary transition-colors text-sm"
+            className="hover:text-blue-600 text-gray-700 transition-colors text-sm"
           >
             Privacidade
           </Link>
