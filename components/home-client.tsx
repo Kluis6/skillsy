@@ -4,21 +4,18 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSearchController } from "@/hooks/use-search-controller";
 import { useContactsController } from "@/hooks/use-contacts-controller";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  MapPin,
-  Star,
-  UserPlus,
-  UserMinus,
-  Users,
-  Briefcase,
-  Church,
-  CalendarDays,
-  Clock,
-} from "lucide-react";
+import { MapPin, Star, Briefcase, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -30,13 +27,8 @@ import { AuthModal } from "@/components/auth-modal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { toast } from "sonner";
 import { UserProfile } from "@/models/types";
+import Image from "next/image";
 
 export function HomeClient({
   initialProviders = [],
@@ -87,7 +79,7 @@ export function HomeClient({
   }
 
   return (
-    <div className="min-h-screen bg-background text-text-main">
+    <div className="min-h-screen w-full">
       <Navbar
         user={user}
         profile={profile}
@@ -110,264 +102,114 @@ export function HomeClient({
       {!user && <BenefitsSection />}
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 md:px-10 pb-24">
+      <main className="container mx-auto px-4 my-12">
         <AnimatePresence mode="wait">
-          {activeTab === "explore" ? (
-            <motion.div
-              key="explore"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <div className="text-center mb-16">
-                <h3 className="text-3xl font-bold text-text-main mb-4">
-                  Membros em Destaque
-                </h3>
-                <p className="text-text-muted">
-                  Conheça os profissionais mais bem avaliados da nossa rede.
-                </p>
-              </div>
+          <motion.div
+            key="explore"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <div className="text-center mb-16">
+              <h3 className="text-3xl font-bold text-text-main mb-4">
+                Membros em Destaque
+              </h3>
+              <p className="text-text-muted">
+                Conheça os profissionais mais bem avaliados da nossa rede.
+              </p>
+            </div>
 
-              {providers.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {providers.map((p, idx) => (
-                    <motion.div
-                      key={p.uid}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                    >
-                      <Card className="group h-full flex flex-col hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 border-border-subtle bg-card rounded-3xl p-8 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-surface rounded-bl-full -mr-12 -mt-12 transition-all group-hover:bg-primary/10" />
-                        {p.uid !== user?.uid && (
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="absolute top-4 right-4 text-text-muted hover:text-primary hover:bg-primary/5 rounded-full z-10 transition-colors"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (!user) {
-                                    toast.error("Login necessário", {
-                                      description:
-                                        "Você precisa estar logado para adicionar contatos.",
-                                    });
-                                    return;
-                                  }
-                                  toggleContact(p.uid);
-                                }}
-                              >
-                                {profile?.contacts?.includes(p.uid) ? (
-                                  <UserMinus size={20} />
-                                ) : (
-                                  <UserPlus size={20} />
-                                )}
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-text-main text-white border-none rounded-lg text-[10px] font-bold uppercase tracking-widest">
-                              {profile?.contacts?.includes(p.uid)
-                                ? "Remover Contato"
-                                : "Adicionar Contato"}
-                            </TooltipContent>
-                          </Tooltip>
-                        )}
-
-                        <div className="mb-6">
-                          <Badge className="bg-surface text-primary border-none font-bold text-[10px] uppercase px-3 py-1 rounded-full">
-                            {p.category || "Geral"}
-                          </Badge>
+            {providers.length > 0 ? (
+              <div className="grid grid-cols-12 gap-4 md:gap-8">
+                {providers.map((p, idx) => (
+                  <motion.div
+                    key={p.uid}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="col-span-12 md:col-span-6 xl:col-span-4"
+                  >
+                    <Card className="relative mx-auto w-full h-fit bg-white pt-0">
+                      <div className="relative w-full h-40">
+                        <div className="absolute inset-0 z-30 h-40 bg-black/25" />
+                        <Image
+                          src={p.bannerURL ? p.bannerURL : ""}
+                          alt="Event cover"
+                          fill
+                          className=" z-20 aspect-auto h-full w-full  object-cover"
+                        />
+                        <div className="flex items-center gap-1 text-base font-bold text-highlight z-30 absolute right-4 top-4 drop-shadow-xl">
+                          <Star size={16} fill="currentColor" />{" "}
+                          {p.rating || "0.0"}
                         </div>
+                        <div className="absolute z-30 bottom-4 left-4">
+                          {p.companyName && (
+                            <p className="text-sm font-bold text-white  uppercase tracking-wider drop-shadow-xl">
+                              {p.companyName}
+                            </p>
+                          )}
+                        </div>
+                      </div>
 
-                        <div className="flex items-center gap-4 mb-6">
-                          <Avatar className="w-14 h-14 border-2 border-surface">
+                      <CardHeader>
+                        <section className="flex gap-4 items-center ">
+                          <Avatar className="size-14">
                             <AvatarImage src={p.photoURL} />
                             <AvatarFallback className="bg-surface text-primary font-bold text-xl">
                               {p.name[0]}
                             </AvatarFallback>
                           </Avatar>
-                          <div>
-                            <CardTitle className="text-xl font-bold text-text-main">
+                          <div className="flex flex-col">
+                            <CardTitle className="text-xl flex justify-start gap-x-2 items-center font-bold text-text-main">
                               {p.name}
+                              {p.verifiedMember && (
+                                <ShieldCheck className="size-5 text-blue-500" />
+                              )}
                             </CardTitle>
-                            {p.companyName && (
-                              <p className="text-[10px] font-bold text-primary uppercase tracking-wider mt-0.5">
-                                {p.companyName}
-                              </p>
-                            )}
-                            <div className="flex items-center gap-1 text-xs text-text-muted mt-1">
+                            <CardDescription className=" flex items-center gap-1">
                               <MapPin size={12} /> {p.location || "Brasil"}
-                            </div>
+                            </CardDescription>
                           </div>
-                        </div>
+                        </section>
 
-                        <CardContent className="p-0 flex-grow mb-8 text-sm">
-                          <p className="text-text-muted leading-relaxed line-clamp-3 mb-4">
-                            {p.bio ||
-                              "Membro dedicado da comunidade oferecendo serviços com excelência e valores compartilhados."}
-                          </p>
+                        <CardAction>
+                          <Badge className="bg-surface text-blue-500 font-normal">
+                            {p.category || "Geral"}
+                          </Badge>
+                        </CardAction>
+                      </CardHeader>
 
-                          <div className="space-y-2 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
-                            {p.baptismYear && (
-                              <div className="flex items-center gap-1.5">
-                                <Church size={12} className="text-primary/60" />
-                                <span>
-                                  Membro há{" "}
-                                  {new Date().getFullYear() - p.baptismYear}{" "}
-                                  anos
-                                </span>
-                              </div>
-                            )}
-                            {p.availability && p.availability.length > 0 && (
-                              <div className="flex items-center gap-1.5">
-                                <CalendarDays
-                                  size={12}
-                                  className="text-primary/60"
-                                />
-                                <span>{p.availability.join(", ")}</span>
-                              </div>
-                            )}
-                            {p.serviceHours && (
-                              <div className="flex items-center gap-1.5">
-                                <Clock size={12} className="text-primary/60" />
-                                <span>{p.serviceHours}</span>
-                              </div>
-                            )}
-                          </div>
-                        </CardContent>
+                      <CardContent className="flex-grow text-sm">
+                        <p className="text-text-muted leading-relaxed line-clamp-3 mb-4">
+                          {p.bio ||
+                            "Membro dedicado da comunidade oferecendo serviços com excelência e valores compartilhados."}
+                        </p>
+                      </CardContent>
 
-                        <div className="pt-6 border-t border-border-subtle flex justify-between items-center">
-                          <div className="flex items-center gap-1 text-sm font-bold text-highlight">
-                            <Star size={16} fill="currentColor" />{" "}
-                            {p.rating || "0.0"}
-                          </div>
-                          <Link href={`/profile/${p.uid}`}>
-                            <Button
-                              variant="link"
-                              className="text-primary font-bold p-0 h-auto"
-                            >
-                              Ver Detalhes
-                            </Button>
-                          </Link>
-                        </div>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-24 bg-surface/30 rounded-3xl border-2 border-dashed border-border-subtle">
-                  <Briefcase className="mx-auto h-12 w-12 text-text-muted/20 mb-4" />
-                  <h4 className="text-xl font-bold text-text-main">
-                    Nenhum resultado
-                  </h4>
-                  <p className="text-sm text-text-muted">
-                    Tente ajustar seus filtros de busca.
-                  </p>
-                </div>
-              )}
-            </motion.div>
-          ) : (
-            <motion.div
-              key="contacts"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <div className="text-center mb-16">
-                <h3 className="text-3xl font-bold text-text-main mb-4">
-                  Seus Contatos
-                </h3>
-                <p className="text-text-muted">
-                  Mantenha sua rede de confiança sempre por perto.
+                      <CardFooter>
+                        <Link
+                          href={`/profile/${p.uid}`}
+                          className="w-full text-center font-medium text-sm bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-sm h-10 flex justify-center items-center"
+                        >
+                          Ver Detalhes
+                        </Link>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-24 bg-surface/30 rounded-3xl border-2 border-dashed border-border-subtle">
+                <Briefcase className="mx-auto h-12 w-12 text-text-muted/20 mb-4" />
+                <h4 className="text-xl font-bold text-text-main">
+                  Nenhum resultado
+                </h4>
+                <p className="text-sm text-text-muted">
+                  Tente ajustar seus filtros de busca.
                 </p>
               </div>
-
-              {savedContacts.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {savedContacts.map((p, idx) => (
-                    <motion.div
-                      key={p.uid}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                    >
-                      <Card className="group h-full flex flex-col hover:shadow-2xl transition-all duration-300 border-border-subtle bg-card rounded-3xl p-8 relative">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="absolute top-4 right-4 text-primary hover:bg-primary/5 rounded-full"
-                          onClick={() => toggleContact(p.uid)}
-                        >
-                          <UserMinus size={20} />
-                        </Button>
-
-                        <div className="flex items-center gap-4 mb-6">
-                          <Avatar className="w-16 h-16 border-2 border-surface">
-                            <AvatarImage src={p.photoURL} />
-                            <AvatarFallback className="bg-surface text-primary font-bold text-2xl">
-                              {p.name[0]}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <CardTitle className="text-xl font-bold text-text-main">
-                              {p.name}
-                            </CardTitle>
-                            {p.companyName && (
-                              <p className="text-[10px] font-bold text-primary uppercase tracking-wider mt-0.5">
-                                {p.companyName}
-                              </p>
-                            )}
-                            <Badge
-                              variant="outline"
-                              className="mt-1 border-primary/20 text-primary text-[10px] font-bold uppercase"
-                            >
-                              {p.category || "Membro"}
-                            </Badge>
-                          </div>
-                        </div>
-
-                        <CardContent className="p-0 flex-grow mb-8">
-                          <p className="text-text-muted text-sm leading-relaxed line-clamp-2">
-                            {p.bio || "Sem descrição disponível."}
-                          </p>
-                        </CardContent>
-
-                        <div className="pt-6 border-t border-border-subtle flex gap-3">
-                          <Link href={`/profile/${p.uid}`} className="flex-1">
-                            <Button className="w-full bg-primary text-white hover:bg-primary/90 rounded-2xl h-11 text-sm font-bold">
-                              Ver Perfil
-                            </Button>
-                          </Link>
-                          <Button
-                            variant="outline"
-                            className="flex-1 border-border-subtle hover:bg-surface rounded-2xl h-11 text-sm font-bold"
-                          >
-                            Mensagem
-                          </Button>
-                        </div>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-24 bg-surface/30 rounded-3xl border-2 border-dashed border-border-subtle">
-                  <Users className="mx-auto h-12 w-12 text-text-muted/20 mb-4" />
-                  <h4 className="text-xl font-bold text-text-main">
-                    Lista vazia
-                  </h4>
-                  <p className="text-sm text-text-muted mb-8">
-                    Você ainda não salvou nenhum contato.
-                  </p>
-                  <Button
-                    className="rounded-full bg-primary text-white font-bold px-8"
-                    onClick={() => setActiveTab("explore")}
-                  >
-                    Explorar Agora
-                  </Button>
-                </div>
-              )}
-            </motion.div>
-          )}
+            )}
+          </motion.div>
         </AnimatePresence>
 
         {/* CTA Section */}
