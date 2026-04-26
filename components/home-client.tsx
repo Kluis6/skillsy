@@ -120,7 +120,7 @@ export function HomeClient({
             </div>
 
             {providers.length > 0 ? (
-              <div className="grid grid-cols-12 gap-4 md:gap-8">
+              <div className="grid grid-cols-12 gap-y-6 md:gap-y-8 md:gap-8">
                 {providers.map((p, idx) => (
                   <motion.div
                     key={p.uid}
@@ -130,13 +130,13 @@ export function HomeClient({
                     className="col-span-12 md:col-span-6 xl:col-span-4"
                   >
                     <Card className="relative mx-auto w-full h-fit bg-white pt-0">
-                      <div className="relative w-full h-40">
-                        <div className="absolute inset-0 z-30 h-40 bg-black/25" />
+                      <div className="relative w-full h-30 md:h-40">
+                        <div className="absolute inset-0 z-30 h-30 md:h-40 bg-black/25" />
                         <Image
                           src={p.bannerURL ? p.bannerURL : ""}
                           alt="Event cover"
                           fill
-                          className=" z-20 aspect-auto h-full w-full  object-cover"
+                          className="z-20 aspect-auto h-full w-full  object-cover"
                         />
                         <div className="flex items-center gap-1 text-base font-bold text-highlight z-30 absolute right-4 top-4 drop-shadow-xl">
                           <Star size={16} fill="currentColor" />{" "}
@@ -153,20 +153,20 @@ export function HomeClient({
 
                       <CardHeader>
                         <section className="flex gap-4 items-center ">
-                          <Avatar className="size-14">
+                          <Avatar className="size-10 md:size-14">
                             <AvatarImage src={p.photoURL} />
                             <AvatarFallback className="bg-surface text-primary font-bold text-xl">
                               {p.name[0]}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex flex-col">
-                            <CardTitle className="text-xl flex justify-start gap-x-2 items-center font-bold text-text-main">
+                            <CardTitle className=" text-base md:text-xl flex justify-start gap-x-2 items-center font-bold text-text-main">
                               {p.name}
                               {p.verifiedMember && (
                                 <ShieldCheck className="size-5 text-blue-500" />
                               )}
                             </CardTitle>
-                            <CardDescription className=" flex items-center gap-1">
+                            <CardDescription className="md:text-base text-xs flex items-center gap-1">
                               <MapPin size={12} /> {p.location || "Brasil"}
                             </CardDescription>
                           </div>

@@ -1,37 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { useContactsController } from '@/hooks/use-contacts-controller';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  Users, 
-  UserMinus, 
-  ArrowLeft, 
-  Briefcase, 
-  MapPin, 
-  Building2, 
-  MessageCircle, 
-  ShieldCheck, 
-  Church, 
-  Star, 
-  Info,
-  Search,
-  ChevronRight
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { Users, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Input } from '@/components/ui/input';
-import { UserProfile } from '@/models/types';
-import { toast } from 'sonner';
-
-import { useContactsStore } from '@/store/use-contacts-store';
 import { ContactsAside } from './contacts/contacts-aside';
 import { ContactsMain } from './contacts/contacts-main';
 
