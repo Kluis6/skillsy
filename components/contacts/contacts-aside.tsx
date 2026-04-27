@@ -8,6 +8,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { UserProfile } from "@/models/types";
 import { useContactsStore } from "@/store/use-contacts-store";
 import { toast } from "sonner";
+import Link from "next/link";
+import { LuArrowLeft } from "react-icons/lu";
 
 interface ContactsAsideProps {
   contacts: UserProfile[];
@@ -46,8 +48,11 @@ export function ContactsAside({
   };
 
   return (
-    <aside className="w-full border-r border-border-subtle bg-card flex flex-col shrink-0 overflow-hidden">
-      <div className="p-4 border-b border-border-subtle bg- ">
+    <aside className="w-full bg-card flex flex-col h-screen overflow-hidden">
+      <div className="p-4 border-b border-border-s flex flex-col space-y-4">
+        <div>
+          <Link href="/" className="flex justify-start items-center space-x-2"> <LuArrowLeft className="text" /> <p className="text-gray-700 font-normal text-sm">Voltar</p></Link>
+        </div>
         <div className="relative">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted/40"
@@ -55,7 +60,7 @@ export function ContactsAside({
           />
           <Input
             placeholder="Buscar contatos..."
-            className="pl-10 h-12 text-sm focus:bg-white placeholder:text-gray-400"
+            className="pl-10 h-10 text-sm focus:bg-white placeholder:text-gray-400"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

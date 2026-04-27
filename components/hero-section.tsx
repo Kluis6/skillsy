@@ -76,7 +76,7 @@ export function HeroSection({
               Localização atual:{" "}
               <span className="text-blue-700 font-medium">
                 {locationFilter
-                  ? `<> ${locationFilter.city}, ${locationFilter.state}`
+                  ? `${locationFilter.city}, ${locationFilter.state}`
                   : "Todo o Brasil"}
               </span>
             </p>
