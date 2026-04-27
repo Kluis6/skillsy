@@ -49,16 +49,10 @@ export function Navbar({
   setActiveTab: propSetActiveTab,
 }: Partial<NavbarProps>) {
   const auth = useAuth();
-  const [internalTab, setInternalTab] = useState<"explore" | "contacts">(
-    "explore",
-  );
 
   const user = propUser !== undefined ? propUser : auth.user;
-  const profile = propProfile !== undefined ? propProfile : auth.profile;
   const logout = propLogout !== undefined ? propLogout : auth.logout;
-  const activeTab = propActiveTab !== undefined ? propActiveTab : internalTab;
-  const setActiveTab =
-    propSetActiveTab !== undefined ? propSetActiveTab : setInternalTab;
+
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle ">
       <div className="container mx-auto flex justify-between items-center px-4 py-2.5">
@@ -169,26 +163,16 @@ export function Navbar({
           </Drawer>
 
           <div className="flex items-center gap-2">
-            <Link href={"/"}>
-              <h1 className="text-2xl font-bold tracking-tight text-primary">
-                Skillsy
-              </h1>
+            <Link
+              href={"#"}
+              className="text-sm font-normal text-gray-700 hover:text-gray-800 decoration-1 hover:underline transition-all underline-offset-2 decoration-gray-800"
+            >
+              O que é Skillsy
             </Link>
           </div>
         </div>
 
         <div className="flex items-center space-x-4">
-          <ul className="hidden md:flex items-center text-sm font-semibold text-text-muted">
-            <li>
-              <Link
-                href={"#"}
-                className="text-sm font-normal text-gray-700 hover:text-gray-800 decoration-1 hover:underline transition-all underline-offset-2 decoration-gray-800"
-              >
-                O que é Skillsy
-              </Link>
-            </li>
-          </ul>
-
           <Drawer direction="left">
             <DrawerTrigger className="hidden md:flex">
               <Button size="icon" className="size-10" variant="ghost">

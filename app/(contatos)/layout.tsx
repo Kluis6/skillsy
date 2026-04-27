@@ -12,8 +12,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         } as CSSProperties
       }
     >
-      <main className="">
-        <SidebarTrigger />
+      <main className="h-full">
+  
         {children}
       </main>
     </SidebarProvider>

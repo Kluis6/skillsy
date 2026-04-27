@@ -1,9 +1,8 @@
 "use client";
 
-import { Search, ChevronRight, UserMinus, Users } from "lucide-react";
+import { Search, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserProfile } from "@/models/types";
 import { useContactsStore } from "@/store/use-contacts-store";
@@ -50,12 +49,17 @@ export function ContactsAside({
   return (
     <aside className="w-full bg-card flex flex-col h-screen overflow-hidden">
       <div className="p-4 border-b border-border-s flex flex-col space-y-4">
-        <div>
-          <Link href="/" className="flex justify-start items-center space-x-2"> <LuArrowLeft className="text" /> <p className="text-gray-700 font-normal text-sm">Voltar</p></Link>
+        <div className="w-full flex justify-between items-center">
+          <Link href="/" className="flex justify-start items-center space-x-2">
+            <LuArrowLeft className="text" />
+            <p className="text-gray-700 font-normal text-sm">Voltar</p>
+          </Link>
+
+          <h4 className="text-sm font-normal text-gray-800">Meus contatos</h4>
         </div>
         <div className="relative">
           <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted/40"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"
             size={16}
           />
           <Input
@@ -98,11 +102,11 @@ export function ContactsAside({
                     <h4 className="font-bold text-text-main truncate text-sm">
                       {c.name}
                     </h4>
-                    <div className="flex items-center gap-1 shrink-0">
+                    {/* <div className="flex items-center gap-1 shrink-0">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-lg text-text-muted hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
+                        className=" h-10 rounded-full text-text-muted hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleContact(c.uid).then(() => {
@@ -119,7 +123,7 @@ export function ContactsAside({
                         size={14}
                         className="text-text-muted/30 group-hover:opacity-0 transition-opacity"
                       />
-                    </div>
+                    </div> */}
                   </div>
                   <p className="text-[10px] text-text-muted truncate font-medium">
                     {c.companyName || c.category || "Membro"}

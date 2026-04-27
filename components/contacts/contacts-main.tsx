@@ -1,27 +1,28 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { 
-  Users, 
-  UserMinus, 
-  Briefcase, 
-  MapPin, 
-  Building2, 
-  MessageCircle, 
-  ShieldCheck, 
-  Star, 
-  Info 
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { UserProfile } from '@/models/types';
-import { useContactsStore } from '@/store/use-contacts-store';
-import { toast } from 'sonner';
+import React from "react";
+import {
+  Users,
+  UserMinus,
+  Briefcase,
+  MapPin,
+  Building2,
+  MessageCircle,
+  ShieldCheck,
+  Star,
+  Info,
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserProfile } from "@/models/types";
+import { useContactsStore } from "@/store/use-contacts-store";
+import { toast } from "sonner";
+import { SidebarTrigger } from "../ui/sidebar";
 
 interface ContactsMainProps {
   contacts: UserProfile[];
@@ -31,11 +32,15 @@ interface ContactsMainProps {
 export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
   const { selectedContactId, setSelectedContactId } = useContactsStore();
 
-  const selectedContact = contacts.find(c => c.uid === selectedContactId) || 
-                         (contacts.length > 0 ? contacts[0] : null);
+  const selectedContact =
+    contacts.find((c) => c.uid === selectedContactId) ||
+    (contacts.length > 0 ? contacts[0] : null);
 
   return (
-    <main className="w-full overflow-y-auto bg-surface/30 custom-scrollbar">
+    <main className="w-full overflow-y-auto bg-surface/30 custom-scrollbar relative">
+      <div className="bg-blue-600 sticky right-0 top-0 z-20 flex md:hidden">
+        <SidebarTrigger />
+      </div>
       <AnimatePresence mode="sync" initial={false}>
         {selectedContact ? (
           <motion.div
@@ -47,13 +52,14 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
             className="w-full h-full"
           >
             {/* Profile Hero (LinkedIn Style) */}
+
             <div className="w-full bg-amber-500">
               <div className="relative h-40 md:h-56 bg-gradient-to-r from-primary/20 to-accent/20">
                 {selectedContact.bannerURL && (
-                  <Image 
-                    src={selectedContact.bannerURL} 
-                    alt="Banner" 
-                    fill 
+                  <Image
+                    src={selectedContact.bannerURL}
+                    alt="Banner"
+                    fill
                     className="object-cover"
                     referrerPolicy="no-referrer"
                   />
@@ -67,18 +73,22 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                       {selectedContact.name[0]}
                     </AvatarFallback>
                   </Avatar>
-                  
+
                   <div className="flex-grow text-center md:text-left pb-2">
                     <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                      <h2 className="text-2xl md:text-3xl font-bold text-text-main font-heading tracking-tight">{selectedContact.name}</h2>
+                      <h2 className="text-2xl md:text-3xl font-bold text-text-main font-heading tracking-tight">
+                        {selectedContact.name}
+                      </h2>
                       {selectedContact.verifiedMember && (
                         <ShieldCheck size={24} className="text-primary" />
                       )}
                     </div>
-                    
+
                     <div className="flex flex-col gap-1">
                       <p className="text-base md:text-lg font-medium text-text-main/80">
-                        {selectedContact.serviceType || selectedContact.category || 'Membro da Comunidade'}
+                        {selectedContact.serviceType ||
+                          selectedContact.category ||
+                          "Membro da Comunidade"}
                       </p>
                       {selectedContact.companyName && (
                         <p className="text-primary font-bold flex items-center justify-center md:justify-start gap-2 text-sm">
@@ -89,19 +99,22 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
 
                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-3 text-xs text-text-muted">
                       <p className="flex items-center gap-1.5">
-                        <MapPin size={14} /> {selectedContact.location || 'Localização não informada'}
+                        <MapPin size={14} />{" "}
+                        {selectedContact.location ||
+                          "Localização não informada"}
                       </p>
                       <p className="flex items-center gap-1.5 text-primary font-bold">
-                        <Users size={14} /> {selectedContact.contacts?.length || 0} conexões
+                        <Users size={14} />{" "}
+                        {selectedContact.contacts?.length || 0} conexões
                       </p>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap justify-center gap-2 mt-4 md:mt-0">
-                    <Button 
+                    <Button
                       onClick={() => {
                         toggleContact(selectedContact.uid).then(() => {
-                          toast.success('Contato removido');
+                          toast.success("Contato removido");
                           setSelectedContactId(null);
                         });
                       }}
@@ -118,18 +131,31 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-border-subtle w-full">
                   <div className="text-center md:text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Especialidade</p>
-                    <p className="font-bold text-primary truncate text-sm">{selectedContact.serviceType || selectedContact.category || 'Membro'}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">
+                      Especialidade
+                    </p>
+                    <p className="font-bold text-primary truncate text-sm">
+                      {selectedContact.serviceType ||
+                        selectedContact.category ||
+                        "Membro"}
+                    </p>
                   </div>
                   <div className="text-center md:text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Avaliação</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">
+                      Avaliação
+                    </p>
                     <div className="flex items-center justify-center md:justify-start gap-1 font-bold text-highlight text-sm">
-                      <Star size={14} fill="currentColor" /> {selectedContact.rating || '0.0'}
+                      <Star size={14} fill="currentColor" />{" "}
+                      {selectedContact.rating || "0.0"}
                     </div>
                   </div>
                   <div className="text-center md:text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Localização</p>
-                    <p className="font-bold text-text-main truncate text-sm">{selectedContact.ward || 'Geral'}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">
+                      Localização
+                    </p>
+                    <p className="font-bold text-text-main truncate text-sm">
+                      {selectedContact.ward || "Geral"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -140,50 +166,69 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
               <div className="md:col-span-2 space-y-6">
                 <section className="bg-card rounded-[2rem] p-6 shadow-sm border border-border-subtle">
                   <h3 className="text-lg font-bold mb-4 font-heading flex items-center gap-2">
-                    <Info size={18} className="text-primary" /> Sobre o Profissional
+                    <Info size={18} className="text-primary" /> Sobre o
+                    Profissional
                   </h3>
                   <p className="text-text-muted text-sm leading-relaxed whitespace-pre-wrap">
-                    {selectedContact.bio || 'Este membro ainda não adicionou uma descrição detalhada ao seu perfil.'}
+                    {selectedContact.bio ||
+                      "Este membro ainda não adicionou uma descrição detalhada ao seu perfil."}
                   </p>
                 </section>
 
                 {selectedContact.isProvider && (
                   <section className="bg-card rounded-[2rem] p-6 shadow-sm border border-border-subtle">
                     <h3 className="text-lg font-bold mb-4 font-heading flex items-center gap-2">
-                      <Briefcase size={18} className="text-primary" /> Serviços Oferecidos
+                      <Briefcase size={18} className="text-primary" /> Serviços
+                      Oferecidos
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {(selectedContact.serviceType || 'Serviços Gerais').split(',').map((s, i) => (
-                        <Badge key={i} variant="secondary" className="bg-surface text-text-main px-3 py-1.5 rounded-lg border-none font-medium text-xs">
-                          {s.trim()}
-                        </Badge>
-                      ))}
+                      {(selectedContact.serviceType || "Serviços Gerais")
+                        .split(",")
+                        .map((s, i) => (
+                          <Badge
+                            key={i}
+                            variant="secondary"
+                            className="bg-surface text-text-main px-3 py-1.5 rounded-lg border-none font-medium text-xs"
+                          >
+                            {s.trim()}
+                          </Badge>
+                        ))}
                     </div>
                   </section>
                 )}
               </div>
 
               <div className="space-y-6">
-                <Link href={`/profile/${selectedContact.uid}`} className="block">
+                <Link
+                  href={`/profile/${selectedContact.uid}`}
+                  className="block"
+                >
                   <Button className="w-full h-12 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/10">
                     Ver Perfil Completo
                   </Button>
                 </Link>
-                
+
                 <Card className="rounded-[2rem] border-border-subtle bg-card p-6">
                   <h4 className="font-bold text-sm mb-4 flex items-center gap-2">
-                    <ShieldCheck size={16} className="text-primary" /> Verificação
+                    <ShieldCheck size={16} className="text-primary" />{" "}
+                    Verificação
                   </h4>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-text-muted">Membro desde</span>
                       <span className="font-bold text-text-main">
-                        {selectedContact.createdAt ? new Date(selectedContact.createdAt as any).toLocaleDateString() : '2024'}
+                        {selectedContact.createdAt
+                          ? new Date(
+                              selectedContact.createdAt as any,
+                            ).toLocaleDateString()
+                          : "2024"}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-text-muted">Status</span>
-                      <Badge className="bg-green-500/10 text-green-500 border-none text-[10px] font-bold">Ativo</Badge>
+                      <Badge className="bg-green-500/10 text-green-500 border-none text-[10px] font-bold">
+                        Ativo
+                      </Badge>
                     </div>
                   </div>
                 </Card>
@@ -195,9 +240,12 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
             <div className="w-24 h-24 bg-primary/5 rounded-full flex items-center justify-center mb-6">
               <Users size={48} className="text-primary/20" />
             </div>
-            <h3 className="text-2xl font-bold text-text-main mb-2">Selecione um contato</h3>
+            <h3 className="text-2xl font-bold text-text-main mb-2">
+              Selecione um contato
+            </h3>
             <p className="text-text-muted max-w-sm">
-              Escolha um profissional da sua lista à esquerda para visualizar os detalhes do perfil e entrar em contato.
+              Escolha um profissional da sua lista à esquerda para visualizar os
+              detalhes do perfil e entrar em contato.
             </p>
           </div>
         )}
