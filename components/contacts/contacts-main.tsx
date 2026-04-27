@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { PiShareFat } from "react-icons/pi";
 import {
   Users,
   UserMinus,
@@ -16,13 +16,25 @@ import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserProfile } from "@/models/types";
 import { useContactsStore } from "@/store/use-contacts-store";
 import { toast } from "sonner";
 import { SidebarTrigger } from "../ui/sidebar";
+import { BsWhatsapp } from "react-icons/bs";
+import { TooltipContent, Tooltip, TooltipTrigger } from "../ui/tooltip";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface ContactsMainProps {
   contacts: UserProfile[];
@@ -37,7 +49,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
     (contacts.length > 0 ? contacts[0] : null);
 
   return (
-    <main className="w-full overflow-y-auto bg-surface/30 custom-scrollbar relative">
+    <main className="w-full overflow-y-auto bg-surface custom-scrollbar relative">
       <div className="bg-blue-600 sticky right-0 top-0 z-20 flex md:hidden">
         <SidebarTrigger />
       </div>
@@ -49,79 +61,121 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 0, transition: { duration: 0 } }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="w-full h-full"
+            className="w-full h-full space-y-4"
           >
             {/* Profile Hero (LinkedIn Style) */}
 
-            <div className="w-full bg-amber-500">
-              <div className="relative h-40 md:h-56 bg-gradient-to-r from-primary/20 to-accent/20">
-                {selectedContact.bannerURL && (
-                  <Image
-                    src={selectedContact.bannerURL}
-                    alt="Banner"
-                    fill
-                    className="object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                )}
-              </div>
-              <div className="w-full">
-                <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16 md:-mt-20 mb-6">
-                  <Avatar className="w-32 h-32 md:w-40 md:h-40 border-[6px] border-card shadow-xl">
-                    <AvatarImage src={selectedContact.photoURL} />
-                    <AvatarFallback className="bg-surface text-primary font-bold text-4xl">
-                      {selectedContact.name[0]}
-                    </AvatarFallback>
-                  </Avatar>
+            <div className="w-full bg-white">
+              <div className="relative w-full h-52 md:h-68">
+                <div className="h-40 md:h-50 relative">
+                  {selectedContact.bannerURL && (
+                    <Image
+                      src={selectedContact.bannerURL}
+                      alt="Banner"
+                      fill
+                      className="object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
+                </div>
+                <Avatar className="size-30 md:size-38 border-[6px] border-card shadow-xl absolute bottom-0 md:left-4 left-1/2 -translate-x-1/2 md:translate-x-1">
+                  <AvatarImage src={selectedContact.photoURL} />
+                  <AvatarFallback className="bg-surface text-primary font-bold text-4xl">
+                    {selectedContact.name[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="hidden md:flex justify-end p-4 gap-x-2">
+                  <Sheet>
+                    <SheetTrigger>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="size-10"
+                          >
+                            <PiShareFat className="text-gray-700" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Compartilhar</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </SheetTrigger>
+                    <SheetContent side="bottom">
+                      <SheetHeader>
+                        <SheetTitle>Are you absolutely sure?</SheetTitle>
+                        <SheetDescription>
+                          This action cannot be undone.
+                        </SheetDescription>
+                      </SheetHeader>
+                    </SheetContent>
+                  </Sheet>
 
-                  <div className="flex-grow text-center md:text-left pb-2">
-                    <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                      <h2 className="text-2xl md:text-3xl font-bold text-text-main font-heading tracking-tight">
-                        {selectedContact.name}
-                      </h2>
-                      {selectedContact.verifiedMember && (
-                        <ShieldCheck size={24} className="text-primary" />
-                      )}
+                  <Button className="h-10 px-6 bg-green-500 text-white hover:bg-green-600 font-bold space-x-1">
+                    <BsWhatsapp className="size-4" /> <p>WhatsApp</p>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="w-full bg-white p-4 border-b">
+                <div className="flex flex-col md:flex-row items-center md:items-end gap-6 ">
+                  <div className="text-center md:text-left w-full space-y-1">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center justify-center md:justify-start gap-x-1">
+                        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 font-heading tracking-tight">
+                          {selectedContact.name}
+                        </h2>
+                        {selectedContact.verifiedMember && (
+                          <ShieldCheck size={24} className="text-primary" />
+                        )}
+                      </div>
+                      <div className="text-center md:text-left">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">
+                          Avaliação
+                        </p>
+                        <div className="flex items-center justify-center drop-shadow-2xl md:justify-start gap-1 font-bold text-highlight text-sm">
+                          <Star size={14} fill="currentColor" />
+                          {selectedContact.rating || "0.0"}
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                      <p className="text-base md:text-lg font-medium text-text-main/80">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-base font-medium text-gray-700">
                         {selectedContact.serviceType ||
                           selectedContact.category ||
                           "Membro da Comunidade"}
                       </p>
                       {selectedContact.companyName && (
-                        <p className="text-primary font-bold flex items-center justify-center md:justify-start gap-2 text-sm">
+                        <p className="text-blue-600 font-bold text-sm flex items-center justify-center md:justify-start gap-2">
                           <Building2 size={16} /> {selectedContact.companyName}
                         </p>
                       )}
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-3 text-xs text-text-muted">
-                      <p className="flex items-center gap-1.5">
-                        <MapPin size={14} />{" "}
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
+                      <div className="flex items-center gap-x-1 text-gray-700 text-sm">
+                        <MapPin size={14} />
                         {selectedContact.location ||
                           "Localização não informada"}
-                      </p>
-                      <p className="flex items-center gap-1.5 text-primary font-bold">
-                        <Users size={14} />{" "}
-                        {selectedContact.contacts?.length || 0} conexões
+                      </div>
+                    </div>
+                    <div className="text-center md:text-left">
+                      <p className="font-normal text-gray-800 truncate text-sm">
+                        {selectedContact.ward || "Geral"}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap justify-center gap-2 mt-4 md:mt-0">
+                  <div className="flex md:hidden flex-wrap justify-center gap-2">
                     <Button
-                      onClick={() => {
-                        toggleContact(selectedContact.uid).then(() => {
-                          toast.success("Contato removido");
-                          setSelectedContactId(null);
-                        });
-                      }}
                       variant="outline"
-                      className="rounded-full h-10 px-6 font-bold border-primary text-primary hover:bg-primary/5"
+                      className="rounded-full h-10 px-6"
                     >
-                      <UserMinus size={18} className="mr-2" /> Remover
+                      <Link href={`/profile/${selectedContact.uid}`}>
+                        <Info size={18} className="mr-2" /> Ver perfil
+                      </Link>
                     </Button>
                     <Button className="rounded-full h-10 px-6 bg-green-500 text-white hover:bg-green-600 font-bold shadow-lg shadow-green-200">
                       <MessageCircle size={18} className="mr-2" /> WhatsApp
@@ -129,7 +183,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-border-subtle w-full">
+                {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4  w-full">
                   <div className="text-center md:text-left">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">
                       Especialidade
@@ -149,25 +203,16 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                       {selectedContact.rating || "0.0"}
                     </div>
                   </div>
-                  <div className="text-center md:text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">
-                      Localização
-                    </p>
-                    <p className="font-bold text-text-main truncate text-sm">
-                      {selectedContact.ward || "Geral"}
-                    </p>
-                  </div>
-                </div>
+                </div> */}
               </div>
             </div>
 
             {/* Bio & Details */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-blue-700">
+            <div className="border-y">
               <div className="md:col-span-2 space-y-6">
-                <section className="bg-card rounded-[2rem] p-6 shadow-sm border border-border-subtle">
-                  <h3 className="text-lg font-bold mb-4 font-heading flex items-center gap-2">
-                    <Info size={18} className="text-primary" /> Sobre o
-                    Profissional
+                <section className="bg-white p-4 border-border-subtle">
+                  <h3 className="text-lg font-bold font-heading text-gray-800">
+                    Sobre o Profissional
                   </h3>
                   <p className="text-text-muted text-sm leading-relaxed whitespace-pre-wrap">
                     {selectedContact.bio ||
@@ -175,7 +220,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   </p>
                 </section>
 
-                {selectedContact.isProvider && (
+                {/* {selectedContact.isProvider && (
                   <section className="bg-card rounded-[2rem] p-6 shadow-sm border border-border-subtle">
                     <h3 className="text-lg font-bold mb-4 font-heading flex items-center gap-2">
                       <Briefcase size={18} className="text-primary" /> Serviços
@@ -195,44 +240,28 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                         ))}
                     </div>
                   </section>
-                )}
+                )} */}
               </div>
-
-              <div className="space-y-6">
-                <Link
-                  href={`/profile/${selectedContact.uid}`}
-                  className="block"
-                >
-                  <Button className="w-full h-12 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/10">
-                    Ver Perfil Completo
-                  </Button>
-                </Link>
-
-                <Card className="rounded-[2rem] border-border-subtle bg-card p-6">
-                  <h4 className="font-bold text-sm mb-4 flex items-center gap-2">
-                    <ShieldCheck size={16} className="text-primary" />{" "}
-                    Verificação
-                  </h4>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-text-muted">Membro desde</span>
-                      <span className="font-bold text-text-main">
-                        {selectedContact.createdAt
-                          ? new Date(
-                              selectedContact.createdAt as any,
-                            ).toLocaleDateString()
-                          : "2024"}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-text-muted">Status</span>
-                      <Badge className="bg-green-500/10 text-green-500 border-none text-[10px] font-bold">
-                        Ativo
-                      </Badge>
-                    </div>
-                  </div>
-                </Card>
-              </div>
+            </div>
+            <div className="p-4 bg-white w-full border-y flex flex-col md:flex-row gap-2 flex-nowrap">
+              <Button
+                onClick={() => {
+                  toggleContact(selectedContact.uid).then(() => {
+                    toast.success("Contato removido");
+                    setSelectedContactId(null);
+                  });
+                }}
+                variant="destructive"
+                className="h-12 md:w-1/2 w-full font-bold "
+              >
+                <UserMinus size={18} className="" /> <p>Remover contato</p>
+              </Button>
+              <Link
+                className=" h-12 w-full flex justify-center items-center text-white font-bold bg-blue-500 rounded-md"
+                href={`/profile/${selectedContact.uid}`}
+              >
+                <p>Ver perfil</p>
+              </Link>
             </div>
           </motion.div>
         ) : (
