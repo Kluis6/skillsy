@@ -35,18 +35,19 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                          (contacts.length > 0 ? contacts[0] : null);
 
   return (
-    <main className="flex-grow overflow-y-auto bg-surface/30 custom-scrollbar p-4 md:p-8">
-      <AnimatePresence mode="wait">
+    <main className="w-full overflow-y-auto bg-surface/30 custom-scrollbar">
+      <AnimatePresence mode="sync" initial={false}>
         {selectedContact ? (
           <motion.div
             key={selectedContact.uid}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="max-w-4xl mx-auto space-y-8"
+            exit={{ opacity: 0, x: 0, transition: { duration: 0 } }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="w-full h-full"
           >
             {/* Profile Hero (LinkedIn Style) */}
-            <Card className="rounded-[2.5rem] border-none shadow-2xl shadow-primary/5 overflow-hidden bg-card">
+            <div className="w-full bg-amber-500">
               <div className="relative h-40 md:h-56 bg-gradient-to-r from-primary/20 to-accent/20">
                 {selectedContact.bannerURL && (
                   <Image 
@@ -58,7 +59,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   />
                 )}
               </div>
-              <CardContent className="px-8 pb-10">
+              <div className="w-full">
                 <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16 md:-mt-20 mb-6">
                   <Avatar className="w-32 h-32 md:w-40 md:h-40 border-[6px] border-card shadow-xl">
                     <AvatarImage src={selectedContact.photoURL} />
@@ -131,11 +132,11 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                     <p className="font-bold text-text-main truncate text-sm">{selectedContact.ward || 'Geral'}</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Bio & Details */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-blue-700">
               <div className="md:col-span-2 space-y-6">
                 <section className="bg-card rounded-[2rem] p-6 shadow-sm border border-border-subtle">
                   <h3 className="text-lg font-bold mb-4 font-heading flex items-center gap-2">

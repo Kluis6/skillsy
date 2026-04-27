@@ -130,8 +130,8 @@ export function HomeClient({
                     className="col-span-12 md:col-span-6 xl:col-span-4"
                   >
                     <Card className="relative mx-auto w-full h-fit bg-white pt-0">
-                      <div className="relative w-full h-30 md:h-40">
-                        <div className="absolute inset-0 z-30 h-30 md:h-40 bg-black/25" />
+                      <div className="relative w-full h-25 md:h-40">
+                        <div className="absolute inset-0 z-30 h-25 md:h-40 bg-black/25" />
                         <Image
                           src={p.bannerURL ? p.bannerURL : ""}
                           alt="Event cover"
@@ -160,10 +160,10 @@ export function HomeClient({
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex flex-col">
-                            <CardTitle className=" text-base md:text-xl flex justify-start gap-x-2 items-center font-bold text-text-main">
+                            <CardTitle className="text-base md:text-xl flex justify-start gap-x-1 md:gap-x-2 items-center font-bold text-text-main">
                               {p.name}
                               {p.verifiedMember && (
-                                <ShieldCheck className="size-5 text-blue-500" />
+                                <ShieldCheck className="size-4 md:size-5 text-blue-500" />
                               )}
                             </CardTitle>
                             <CardDescription className="md:text-base text-xs flex items-center gap-1">
@@ -219,7 +219,7 @@ export function HomeClient({
           Possui uma empresa ou presta serviços?{" "}
           {user ? (
             !profile?.isProvider && (
-              <strong className="text-accent cursor-pointer hover:underline">
+              <strong className="text-blue-600 cursor-pointer hover:underline">
                 Cadastre sua Skill agora
               </strong>
             )

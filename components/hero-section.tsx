@@ -51,13 +51,13 @@ export function HeroSection({
           >
             <div className="relative w-full md:w-2xl flex justify-center items-center">
               <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted/70"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300"
                 size={20}
               />
               <Input
                 name="q"
-                placeholder="Ex: Pintor, Advogado, Bolo de Pote..."
-                className="pl-12 h-10 w-full  shadow shadow-zinc-400 "
+                placeholder="O que você procura? Pintor, Advogado, Bolo de Pote..."
+                className="pl-12 h-12 w-full placeholder:text-gray-400"
                 defaultValue={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -72,17 +72,21 @@ export function HeroSection({
                 />
               </>
             )}
-            <p className="text-xs font-medium text-text-muted tracking-widest">
+            <p className="text-xs font-normal text-text-muted tracking-widest">
               Localização atual:{" "}
-              <span className="text-primary">
+              <span className="text-blue-700 font-medium">
                 {locationFilter
-                  ? `${locationFilter.city}, ${locationFilter.state}`
+                  ? `<> ${locationFilter.city}, ${locationFilter.state}`
                   : "Todo o Brasil"}
               </span>
             </p>
             <div className="flex flex-col sm:flex-row gap-4 ">
               <CepFilter onLocationChange={setLocationFilter} />
-              <Button type="submit" variant="default" className="py-4 px-6 h-10">
+              <Button
+                type="submit"
+                variant="default"
+                className="py-5 px-7 bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
+              >
                 {searching ? "Pesquisando..." : "Pesquisar"}
               </Button>
             </div>

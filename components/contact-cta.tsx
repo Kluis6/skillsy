@@ -74,12 +74,12 @@ export function ContactCTA() {
                     <Input
                       placeholder="Nome *"
                       {...register("name")}
-                      className={`bg-surface border-2 h-12  text-text-main placeholder:text-text-muted/50 transition-all ${
+                      className={` border-1 h-12 border-gray-300  text-text-main placeholder:text-text-muted/50 transition-all ${
                         errors.name
                           ? "border-red-500/50 focus:border-red-500"
                           : touchedFields.name && !errors.name
                             ? "border-green-500/50 focus:border-green-500"
-                            : "border-transparent focus:border-primary/20"
+                            : " focus:border-blue-500/20"
                       }`}
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -103,12 +103,12 @@ export function ContactCTA() {
                       placeholder="E-mail *"
                       type="email"
                       {...register("email")}
-                      className={`bg-surface border-2 h-12  text-text-main placeholder:text-text-muted/50 transition-all ${
+                      className={`border-1 h-12  border-gray-300 text-text-main placeholder:text-text-muted/50 transition-all ${
                         errors.email
                           ? "border-red-500/50 focus:border-red-500"
                           : touchedFields.email && !errors.email
                             ? "border-green-500/50 focus:border-green-500"
-                            : "border-transparent focus:border-primary/20"
+                            : "focus:border-primary/20"
                       }`}
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -141,12 +141,12 @@ export function ContactCTA() {
                     <textarea
                       placeholder="Conte-nos como podemos ajudar..."
                       {...register("message")}
-                      className={`w-full bg-surface border-2 rounded-xl p-4 text-text-main placeholder:text-text-muted/50 h-32 outline-none transition-all ${
+                      className={`w-full border-1 border-gray-300 rounded-md p-4 text-text-main placeholder:text-text-muted/50 h-32 outline-none transition-all ${
                         errors.message
                           ? "border-red-500/50 focus:border-red-500"
                           : touchedFields.message && !errors.message
                             ? "border-green-500/50 focus:border-green-500"
-                            : "border-transparent focus:border-primary/20"
+                            : "focus:border-primary/20"
                       }`}
                       maxLength={1000}
                     />

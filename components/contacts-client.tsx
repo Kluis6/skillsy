@@ -1,18 +1,21 @@
-'use client';
+"use client";
 
-import { useAuth } from '@/hooks/use-auth';
-import { useContactsController } from '@/hooks/use-contacts-controller';
-import { Button } from '@/components/ui/button';
-import { Users, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { useAuth } from "@/hooks/use-auth";
+import { useContactsController } from "@/hooks/use-contacts-controller";
+import { Button } from "@/components/ui/button";
+import { Users } from "lucide-react";
+import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ThemeToggle } from '@/components/theme-toggle';
-import { ContactsAside } from './contacts/contacts-aside';
-import { ContactsMain } from './contacts/contacts-main';
+import { AppSidebar } from "./appsidebar";
+import { ContactsAside } from "./contacts/contacts-aside";
+import { ContactsMain } from "./contacts/contacts-main";
 
 export function ContactsClient() {
   const { user, profile, toggleContact, loading: authLoading } = useAuth();
-  const { savedContacts, loading: contactsLoading } = useContactsController(profile, 'contacts');
+  const { savedContacts, loading: contactsLoading } = useContactsController(
+    profile,
+    "contacts",
+  );
 
   if (authLoading) {
     return (
@@ -25,7 +28,7 @@ export function ContactsClient() {
           <aside className="w-80 border-r border-border-subtle bg-card hidden md:block">
             <div className="p-4 space-y-4">
               <Skeleton className="h-10 w-full rounded-xl" />
-              {[1, 2, 3, 4].map(i => (
+              {[1, 2, 3, 4].map((i) => (
                 <Skeleton key={i} className="h-20 w-full rounded-2xl" />
               ))}
             </div>
@@ -44,39 +47,31 @@ export function ContactsClient() {
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-surface">
         <Users size={64} className="text-text-muted mb-6" />
         <h1 className="text-3xl font-bold mb-4">Acesso Restrito</h1>
-        <p className="text-text-muted mb-8">Você precisa estar logado para ver seus contatos.</p>
+        <p className="text-text-muted mb-8">
+          Você precisa estar logado para ver seus contatos.
+        </p>
         <Link href="/">
-          <Button className="bg-primary text-white font-bold rounded-xl px-8">Voltar para Home</Button>
+          <Button className="bg-primary text-white font-bold rounded-xl px-8">
+            Voltar para Home
+          </Button>
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-surface flex flex-col overflow-hidden">
+    <div className="h-screen w-screen bg-surface flex flex-col overflow-hidden">
       {/* Header */}
-      <nav className="h-16 bg-background/80 backdrop-blur-md border-b border-border-subtle px-6 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-surface">
-              <ArrowLeft size={20} />
-            </Button>
-          </Link>
-          <h1 className="text-xl font-bold text-text-main font-heading">Minha Rede</h1>
-        </div>
-        <ThemeToggle />
-      </nav>
 
       <div className="flex-grow flex overflow-hidden">
-        <ContactsAside 
-          contacts={savedContacts} 
-          loading={contactsLoading} 
-          toggleContact={toggleContact} 
-        />
-        <ContactsMain 
-          contacts={savedContacts} 
-          toggleContact={toggleContact} 
-        />
+        <AppSidebar>
+          <ContactsAside
+            contacts={savedContacts}
+            loading={contactsLoading}
+            toggleContact={toggleContact}
+          />
+        </AppSidebar>
+        <ContactsMain contacts={savedContacts} toggleContact={toggleContact} />
       </div>
     </div>
   );
