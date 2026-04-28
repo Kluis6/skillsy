@@ -20,7 +20,7 @@ interface ContactsAsideProps {
 export function ContactsAside({
   contacts,
   loading,
-  toggleContact,
+
   onContactToggle,
 }: ContactsAsideProps) {
   const {
@@ -48,14 +48,14 @@ export function ContactsAside({
 
   return (
     <aside className="w-full bg-card flex flex-col h-screen overflow-hidden">
-      <div className="p-4 border-b border-border-s flex flex-col space-y-4">
-        <div className="w-full flex justify-between items-center">
-          <Link href="/" className="flex justify-start items-center space-x-2">
-            <LuArrowLeft className="text" />
+      <div className="px-4 py-2.5 border-b border-border-s flex flex-col space-y-4">
+        <div className="w-full flex justify-between items-center ">
+          <Link href="/" className="flex justify-start items-center space-x-2 h-10">
+            <LuArrowLeft className="text-gray-700" />
             <p className="text-gray-700 font-normal text-sm">Voltar</p>
           </Link>
 
-          <h4 className="text-sm font-normal text-gray-800">Meus contatos</h4>
+          <h4 className="text-sm font-medium text-gray-600">Meus contatos</h4>
         </div>
         <div className="relative">
           <Search

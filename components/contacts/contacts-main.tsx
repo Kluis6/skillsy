@@ -4,7 +4,6 @@ import { PiShareFat } from "react-icons/pi";
 import {
   Users,
   UserMinus,
-  Briefcase,
   MapPin,
   Building2,
   MessageCircle,
@@ -16,8 +15,6 @@ import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserProfile } from "@/models/types";
 import { useContactsStore } from "@/store/use-contacts-store";
@@ -27,14 +24,13 @@ import { BsWhatsapp } from "react-icons/bs";
 import { TooltipContent, Tooltip, TooltipTrigger } from "../ui/tooltip";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { LuChurch, LuUserRound } from "react-icons/lu";
 
 interface ContactsMainProps {
   contacts: UserProfile[];
@@ -49,9 +45,9 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
     (contacts.length > 0 ? contacts[0] : null);
 
   return (
-    <main className="w-full overflow-y-auto bg-surface custom-scrollbar relative">
-      <div className="bg-blue-600 sticky right-0 top-0 z-20 flex md:hidden">
-        <SidebarTrigger />
+    <main className="w-full bg-surface relative custom-scrollbar overflow-y-auto">
+      <div className="right-0 flex md:hidden py-2 px-4 sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle h-[60px] ">
+        <SidebarTrigger className="flex justify-start items-center h-10 px-0" />
       </div>
       <AnimatePresence mode="sync" initial={false}>
         {selectedContact ? (
@@ -61,7 +57,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 0, transition: { duration: 0 } }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="w-full h-full space-y-4"
+            className="w-full h-full space-y-4 "
           >
             {/* Profile Hero (LinkedIn Style) */}
 
@@ -84,9 +80,9 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                     {selectedContact.name[0]}
                   </AvatarFallback>
                 </Avatar>
-                <div className="hidden md:flex justify-end p-4 gap-x-2">
+                <div className="flex justify-end p-4 gap-x-2">
                   <Sheet>
-                    <SheetTrigger>
+                    <SheetTrigger className="hidden md:block">
                       <Tooltip>
                         <TooltipTrigger>
                           <Button
@@ -112,17 +108,26 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                     </SheetContent>
                   </Sheet>
 
-                  <Button className="h-10 px-6 bg-green-500 text-white hover:bg-green-600 font-bold space-x-1">
+                  <Button className="h-10 px-6 hidden md:flex bg-green-500 text-white hover:bg-green-600 font-bold space-x-1">
                     <BsWhatsapp className="size-4" /> <p>WhatsApp</p>
                   </Button>
+                  <div className="flex justify-end md:text-right md:hidden flex-col">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted drop-shadow-xl">
+                      Avaliação
+                    </p>
+                    <div className="flex items-center justify-start drop-shadow-xl gap-1 font-bold text-highlight text-base">
+                      <Star size={14} fill="currentColor" />
+                      {selectedContact.rating || "0.0"}
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div className="w-full bg-white p-4 border-b">
-                <div className="flex flex-col md:flex-row items-center md:items-end gap-6 ">
+                <div className="flex flex-col md:flex-row items-center justify-center md:items-end gap-6 w-full">
                   <div className="text-center md:text-left w-full space-y-1">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center justify-center md:justify-start gap-x-1">
+                    <div className="flex md:justify-between items-center justify-center">
+                      <div className="flex items-center justify-center  md:justify-start gap-x-1">
                         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 font-heading tracking-tight">
                           {selectedContact.name}
                         </h2>
@@ -130,15 +135,18 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                           <ShieldCheck size={24} className="text-primary" />
                         )}
                       </div>
-                      <div className="text-center md:text-left">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">
+
+                      <div className="text-center md:text-left md:flex flex-col hidden">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted drop-shadow-xl">
                           Avaliação
                         </p>
-                        <div className="flex items-center justify-center drop-shadow-2xl md:justify-start gap-1 font-bold text-highlight text-sm">
+                        <div className="flex items-center justify-center drop-shadow-xl md:justify-start gap-1 font-bold text-highlight text-base">
                           <Star size={14} fill="currentColor" />
                           {selectedContact.rating || "0.0"}
                         </div>
                       </div>
+
+                      
                     </div>
 
                     <div className="flex flex-col space-y-1">
@@ -147,38 +155,62 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                           selectedContact.category ||
                           "Membro da Comunidade"}
                       </p>
-                      {selectedContact.companyName && (
-                        <p className="text-blue-600 font-bold text-sm flex items-center justify-center md:justify-start gap-2">
-                          <Building2 size={16} /> {selectedContact.companyName}
-                        </p>
-                      )}
                     </div>
+                    {selectedContact.companyName && (
+                      <div className="flex items-center gap-x-2 w-full justify-center md:justify-start">
+                        <Building2 size={16} className="text-gray-700" />
+                        <p className="text-gray-700 font-normal text-sm flex items-center justify-center md:justify-start gap-2">
+                          {selectedContact.companyName}
+                        </p>
+                      </div>
+                    )}
 
-                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
-                      <div className="flex items-center gap-x-1 text-gray-700 text-sm">
-                        <MapPin size={14} />
+                    <div className="flex items-center space-x-2 justify-center md:justify-start ">
+                      <MapPin size={14} />
+                      <p className="text-gray-700 text-sm font-normal">
                         {selectedContact.location ||
                           "Localização não informada"}
-                      </div>
+                      </p>
                     </div>
-                    <div className="text-center md:text-left">
-                      <p className="font-normal text-gray-800 truncate text-sm">
+
+                    <div className="text-center md:text-left flex items-center justify-center md:justify-start text-primary space-x-2">
+                      <LuChurch size={14} />
+                      <p className="text-primary font-medium truncate text-sm">
                         {selectedContact.ward || "Geral"}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex md:hidden flex-wrap justify-center gap-2">
-                    <Button
-                      variant="outline"
-                      className="rounded-full h-10 px-6"
-                    >
-                      <Link href={`/profile/${selectedContact.uid}`}>
-                        <Info size={18} className="mr-2" /> Ver perfil
-                      </Link>
-                    </Button>
-                    <Button className="rounded-full h-10 px-6 bg-green-500 text-white hover:bg-green-600 font-bold shadow-lg shadow-green-200">
-                      <MessageCircle size={18} className="mr-2" /> WhatsApp
+                    <Sheet>
+                      <SheetTrigger className="">
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="size-10"
+                            >
+                              <PiShareFat className="text-gray-700" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Compartilhar</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </SheetTrigger>
+                      <SheetContent side="bottom">
+                        <SheetHeader>
+                          <SheetTitle>Are you absolutely sure?</SheetTitle>
+                          <SheetDescription>
+                            This action cannot be undone.
+                          </SheetDescription>
+                        </SheetHeader>
+                      </SheetContent>
+                    </Sheet>
+
+                    <Button className="h-10 px-6 flex bg-green-500 text-white hover:bg-green-600 font-bold space-x-1">
+                      <BsWhatsapp className="size-4" /> <p>WhatsApp</p>
                     </Button>
                   </div>
                 </div>
@@ -211,7 +243,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
             <div className="border-y">
               <div className="md:col-span-2 space-y-6">
                 <section className="bg-white p-4 border-border-subtle">
-                  <h3 className="text-lg font-bold font-heading text-gray-800">
+                  <h3 className="text-lg font-bold font-heading text-gray-700">
                     Sobre o Profissional
                   </h3>
                   <p className="text-text-muted text-sm leading-relaxed whitespace-pre-wrap">
@@ -252,15 +284,15 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   });
                 }}
                 variant="destructive"
-                className="h-12 md:w-1/2 w-full font-bold "
+                className="h-10 md:w-1/2 w-full font-bold space-x-2"
               >
-                <UserMinus size={18} className="" /> <p>Remover contato</p>
+                <UserMinus size={18} /> <p>Remover contato</p>
               </Button>
               <Link
-                className=" h-12 w-full flex justify-center items-center text-white font-bold bg-blue-500 rounded-md"
+                className="h-10 w-full flex justify-center items-center space-x-2 text-white font-bold bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-lg"
                 href={`/profile/${selectedContact.uid}`}
               >
-                <p>Ver perfil</p>
+                <LuUserRound size={18} /> <p className="text-sm">Ver contato</p>
               </Link>
             </div>
           </motion.div>

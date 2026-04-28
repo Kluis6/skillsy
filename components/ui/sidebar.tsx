@@ -267,7 +267,7 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <LuArrowLeft /> <p>voltar</p>
+      <LuArrowLeft /> <p className="text-gray-700 font-normal text-sm">voltar</p>
       <span className="sr-only">Voltar aos contatos</span>
     </Button>
   );
