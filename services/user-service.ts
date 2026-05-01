@@ -1,4 +1,4 @@
-import { 
+import {
   collection, 
   query, 
   getDocs, 
@@ -16,6 +16,7 @@ import {
   runTransaction
 } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
+import { toPlainValue } from '@/lib/firestore-plain';
 import { UserProfile } from '@/models/types';
 import { NotificationService } from './notification-service';
 
@@ -76,7 +77,7 @@ export const UserService = {
     try {
       const docRef = doc(db, 'users', uid);
       const docSnap = await getDoc(docRef);
-      return docSnap.exists() ? (docSnap.data() as UserProfile) : null;
+      return docSnap.exists() ? toPlainValue(docSnap.data() as UserProfile) : null;
     } catch (error) {
       handleFirestoreError(error, OperationType.GET, path);
       return null;
@@ -89,7 +90,7 @@ export const UserService = {
       const q = query(collection(db, 'users'), where('email', '==', email), limit(1));
       const querySnapshot = await getDocs(q);
       if (querySnapshot.empty) return null;
-      return querySnapshot.docs[0].data() as UserProfile;
+      return toPlainValue(querySnapshot.docs[0].data() as UserProfile);
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return null;
@@ -148,7 +149,9 @@ export const UserService = {
     try {
       const q = query(collection(db, 'users'), where('isProvider', '==', true), limit(limitCount));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+      return querySnapshot.docs.map((doc) =>
+        toPlainValue({ id: doc.id, ...doc.data() } as UserProfile),
+      );
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
@@ -161,7 +164,9 @@ export const UserService = {
       // Fetch all users to allow finding people by name even if not marked as provider
       const q = query(collection(db, 'users'));
       const querySnapshot = await getDocs(q);
-      const all = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+      const all = querySnapshot.docs.map((doc) =>
+        toPlainValue({ id: doc.id, ...doc.data() } as UserProfile),
+      );
 
       const searchTokens = term.toLowerCase().split(' ').filter(t => t.length > 0);
 
@@ -203,7 +208,9 @@ export const UserService = {
     try {
       const q = query(collection(db, 'users'), where('isProvider', '==', true));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+      return querySnapshot.docs.map((doc) =>
+        toPlainValue({ id: doc.id, ...doc.data() } as UserProfile),
+      );
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
@@ -216,7 +223,9 @@ export const UserService = {
     try {
       const q = query(collection(db, 'users'), where('uid', 'in', uids.slice(0, 10)));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+      return querySnapshot.docs.map((doc) =>
+        toPlainValue({ id: doc.id, ...doc.data() } as UserProfile),
+      );
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
@@ -228,7 +237,9 @@ export const UserService = {
     try {
       const q = query(collection(db, 'users'));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+      return querySnapshot.docs.map((doc) =>
+        toPlainValue({ id: doc.id, ...doc.data() } as UserProfile),
+      );
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
@@ -409,7 +420,9 @@ export const UserService = {
     try {
       const q = query(collection(db, 'ratings'), where('toId', '==', toId));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return querySnapshot.docs.map((doc) =>
+        toPlainValue({ id: doc.id, ...doc.data() }),
+      );
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];

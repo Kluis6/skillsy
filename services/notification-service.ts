@@ -1,4 +1,4 @@
-import { 
+import {
   collection, 
   query, 
   getDocs, 
@@ -13,6 +13,7 @@ import {
   writeBatch
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { toPlainValue } from '@/lib/firestore-plain';
 
 export interface AdminNotification {
   id: string;
@@ -33,7 +34,9 @@ export const NotificationService = {
         limit(limitCount)
       );
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AdminNotification));
+      return querySnapshot.docs.map((doc) =>
+        toPlainValue({ id: doc.id, ...doc.data() } as AdminNotification),
+      );
     } catch (error) {
       console.error('Error fetching notifications:', error);
       return [];
@@ -47,7 +50,9 @@ export const NotificationService = {
       limit(20)
     );
     return onSnapshot(q, (snapshot) => {
-      const notifications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AdminNotification));
+      const notifications = snapshot.docs.map((doc) =>
+        toPlainValue({ id: doc.id, ...doc.data() } as AdminNotification),
+      );
       callback(notifications);
     });
   },
