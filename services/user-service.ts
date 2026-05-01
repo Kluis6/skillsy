@@ -149,9 +149,7 @@ export const UserService = {
     try {
       const q = query(collection(db, 'users'), where('isProvider', '==', true), limit(limitCount));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map((doc) =>
-        toPlainValue({ id: doc.id, ...doc.data() } as UserProfile),
-      );
+      return querySnapshot.docs.map((doc) => toPlainValue(doc.data() as UserProfile));
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
@@ -164,9 +162,7 @@ export const UserService = {
       // Fetch all users to allow finding people by name even if not marked as provider
       const q = query(collection(db, 'users'));
       const querySnapshot = await getDocs(q);
-      const all = querySnapshot.docs.map((doc) =>
-        toPlainValue({ id: doc.id, ...doc.data() } as UserProfile),
-      );
+      const all = querySnapshot.docs.map((doc) => toPlainValue(doc.data() as UserProfile));
 
       const searchTokens = term.toLowerCase().split(' ').filter(t => t.length > 0);
 
@@ -208,9 +204,7 @@ export const UserService = {
     try {
       const q = query(collection(db, 'users'), where('isProvider', '==', true));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map((doc) =>
-        toPlainValue({ id: doc.id, ...doc.data() } as UserProfile),
-      );
+      return querySnapshot.docs.map((doc) => toPlainValue(doc.data() as UserProfile));
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
@@ -223,9 +217,7 @@ export const UserService = {
     try {
       const q = query(collection(db, 'users'), where('uid', 'in', uids.slice(0, 10)));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map((doc) =>
-        toPlainValue({ id: doc.id, ...doc.data() } as UserProfile),
-      );
+      return querySnapshot.docs.map((doc) => toPlainValue(doc.data() as UserProfile));
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
@@ -237,9 +229,7 @@ export const UserService = {
     try {
       const q = query(collection(db, 'users'));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map((doc) =>
-        toPlainValue({ id: doc.id, ...doc.data() } as UserProfile),
-      );
+      return querySnapshot.docs.map((doc) => toPlainValue(doc.data() as UserProfile));
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];

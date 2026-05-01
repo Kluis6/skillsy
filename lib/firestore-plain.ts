@@ -1,3 +1,14 @@
+type JsonSerializable<T> = {
+  toJSON: () => T;
+};
+
+function hasToJSON<T>(value: object): value is JsonSerializable<T> {
+  return (
+    'toJSON' in value &&
+    typeof (value as { toJSON?: unknown }).toJSON === 'function'
+  );
+}
+
 export function toPlainValue<T>(value: T): T {
   if (value === null || value === undefined) {
     return value;
@@ -11,11 +22,8 @@ export function toPlainValue<T>(value: T): T {
     return value;
   }
 
-  if (
-    'toJSON' in (value as object) &&
-    typeof (value as { toJSON?: unknown }).toJSON === 'function'
-  ) {
-    return toPlainValue((value as { toJSON: () => T }).toJSON());
+  if (hasToJSON<T>(value)) {
+    return toPlainValue(value.toJSON());
   }
 
   return Object.fromEntries(
