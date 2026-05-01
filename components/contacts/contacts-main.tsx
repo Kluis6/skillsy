@@ -6,10 +6,11 @@ import {
   UserMinus,
   MapPin,
   Building2,
-  MessageCircle,
   ShieldCheck,
   Star,
-  Info,
+  Copy,
+  ExternalLink,
+  Share2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
@@ -28,9 +29,11 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
+  SheetClose,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { LuChurch, LuUserRound } from "react-icons/lu";
+import { FaTelegramPlane } from "react-icons/fa";
 
 interface ContactsMainProps {
   contacts: UserProfile[];
@@ -43,6 +46,164 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
   const selectedContact =
     contacts.find((c) => c.uid === selectedContactId) ||
     (contacts.length > 0 ? contacts[0] : null);
+
+  const shareUrl = selectedContact
+    ? typeof window === "undefined"
+      ? `/profile/${selectedContact.uid}`
+      : `${window.location.origin}/profile/${selectedContact.uid}`
+    : "";
+
+  const canUseNativeShare =
+    typeof navigator !== "undefined" && "share" in navigator;
+
+  const getWhatsAppNumber = (contact: UserProfile) => {
+    const rawNumber =
+      contact.whatsapp || contact.phone || contact.phones?.find(Boolean) || "";
+
+    return rawNumber.replace(/\D/g, "");
+  };
+
+  const handleWhatsApp = () => {
+    if (!selectedContact) return;
+
+    const phone = getWhatsAppNumber(selectedContact);
+
+    if (!phone) {
+      toast.error("WhatsApp não informado", {
+        description: "Este contato ainda não possui um número disponível.",
+      });
+      return;
+    }
+
+    const normalizedPhone = phone.startsWith("55") ? phone : `55${phone}`;
+    window.open(
+      `https://wa.me/${normalizedPhone}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+
+  const handleCopyLink = async () => {
+    if (!shareUrl) return;
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Link copiado", {
+        description: "Agora você pode compartilhar o perfil do contato.",
+      });
+    } catch {
+      toast.error("Não foi possível copiar o link");
+    }
+  };
+
+  const handleNativeShare = async () => {
+    if (!selectedContact || !shareUrl || !canUseNativeShare) return;
+
+    try {
+      await navigator.share({
+        title: selectedContact.name,
+        text: `Confira o contato de ${selectedContact.name} no Skillsy.`,
+        url: shareUrl,
+      });
+    } catch {
+      // Usuario cancelou ou o navegador bloqueou a acao.
+    }
+  };
+
+  const handleWhatsAppShare = () => {
+    if (!selectedContact || !shareUrl) return;
+
+    const message = `Confira o contato de ${selectedContact.name} no Skillsy: ${shareUrl}`;
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(message)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+
+  const handleTelegramShare = () => {
+    if (!selectedContact || !shareUrl) return;
+
+    const message = `Confira o contato de ${selectedContact.name} no Skillsy: ${shareUrl}`;
+    window.open(
+      `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(message)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+
+  const shareActions = [
+    {
+      label: "Compartilhar no WhatsApp",
+      description: "Envie o contato no WhatsApp.",
+      icon: BsWhatsapp,
+      onClick: handleWhatsAppShare,
+      className: "text-green-600",
+    },
+    {
+      label: "Compartilhar no Telegram",
+      description: "Envie o contato no Telegram.",
+      icon: FaTelegramPlane,
+      onClick: handleTelegramShare,
+      className: "text-sky-500",
+    },
+    {
+      label: "Copiar link",
+      description: "Copia o link para a area de transferencia.",
+      icon: Copy,
+      onClick: handleCopyLink,
+      className: "text-sky-600",
+    },
+  ];
+
+  if (canUseNativeShare) {
+    shareActions.unshift({
+      label: "Compartilhar no dispositivo",
+      description: "Usa o menu nativo de compartilhamento do navegador.",
+      icon: Share2,
+      onClick: handleNativeShare,
+      className: "text-amber-600",
+    });
+  }
+
+  const renderShareSheet = () => (
+    <SheetContent side="bottom" className="rounded-t-lg">
+      <SheetHeader className="text-left">
+        <SheetTitle>Compartilhar contato</SheetTitle>
+        <SheetDescription className="">
+          Envie o contato de <strong>{selectedContact?.name}</strong> por:
+        </SheetDescription>
+      </SheetHeader>
+      <div className="gap-2 p-4 flex md:flex-row flex-col">
+        {shareActions.map((action) => {
+          const Icon = action.icon;
+
+          return (
+            <SheetClose className="w-full" key={action.label}>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-auto w-full justify-start gap-3 p-4 text-left "
+                onClick={action.onClick}
+              >
+                <span className={action.className}>
+                  <Icon className="size-5" />
+                </span>
+                <span className="flex min-w-0 flex-col items-start">
+                  <span className="font-semibold text-gray-800">
+                    {action.label}
+                  </span>
+                  <span className="text-xs text-muted-foreground whitespace-normal">
+                    {action.description}
+                  </span>
+                </span>
+              </Button>
+            </SheetClose>
+          );
+        })}
+      </div>
+    </SheetContent>
+  );
 
   return (
     <main className="w-full bg-surface relative custom-scrollbar overflow-y-auto">
@@ -98,17 +259,14 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                         </TooltipContent>
                       </Tooltip>
                     </SheetTrigger>
-                    <SheetContent side="bottom">
-                      <SheetHeader>
-                        <SheetTitle>Are you absolutely sure?</SheetTitle>
-                        <SheetDescription>
-                          This action cannot be undone.
-                        </SheetDescription>
-                      </SheetHeader>
-                    </SheetContent>
+                    {renderShareSheet()}
                   </Sheet>
 
-                  <Button className="h-10 px-6 hidden md:flex bg-green-500 text-white hover:bg-green-600 font-bold space-x-1">
+                  <Button
+                    type="button"
+                    onClick={handleWhatsApp}
+                    className="h-10 px-6 hidden md:flex bg-green-500 text-white hover:bg-green-600 font-bold space-x-1"
+                  >
                     <BsWhatsapp className="size-4" /> <p>WhatsApp</p>
                   </Button>
                   <div className="flex justify-end md:text-right md:hidden flex-col">
@@ -145,8 +303,6 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                           {selectedContact.rating || "0.0"}
                         </div>
                       </div>
-
-                      
                     </div>
 
                     <div className="flex flex-col space-y-1">
@@ -183,7 +339,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
 
                   <div className="flex md:hidden flex-wrap justify-center gap-2">
                     <Sheet>
-                      <SheetTrigger className="">
+                      <SheetTrigger>
                         <Tooltip>
                           <TooltipTrigger>
                             <Button
@@ -199,17 +355,14 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                           </TooltipContent>
                         </Tooltip>
                       </SheetTrigger>
-                      <SheetContent side="bottom">
-                        <SheetHeader>
-                          <SheetTitle>Are you absolutely sure?</SheetTitle>
-                          <SheetDescription>
-                            This action cannot be undone.
-                          </SheetDescription>
-                        </SheetHeader>
-                      </SheetContent>
+                      {renderShareSheet()}
                     </Sheet>
 
-                    <Button className="h-10 px-6 flex bg-green-500 text-white hover:bg-green-600 font-bold space-x-1">
+                    <Button
+                      type="button"
+                      onClick={handleWhatsApp}
+                      className="h-10 px-6 flex bg-green-500 text-white hover:bg-green-600 font-bold space-x-1"
+                    >
                       <BsWhatsapp className="size-4" /> <p>WhatsApp</p>
                     </Button>
                   </div>
