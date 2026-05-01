@@ -179,25 +179,28 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
           const Icon = action.icon;
 
           return (
-            <SheetClose className="w-full" key={action.label}>
-              <Button
-                type="button"
-                variant="outline"
-                className="h-auto w-full justify-start gap-3 p-4 text-left "
-                onClick={action.onClick}
-              >
-                <span className={action.className}>
-                  <Icon className="size-5" />
+            <SheetClose
+              key={action.label}
+              render={
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-auto w-full justify-start gap-3 p-4 text-left"
+                  onClick={action.onClick}
+                />
+              }
+            >
+              <span className={action.className}>
+                <Icon className="size-5" />
+              </span>
+              <span className="flex min-w-0 flex-col items-start">
+                <span className="font-semibold text-gray-800">
+                  {action.label}
                 </span>
-                <span className="flex min-w-0 flex-col items-start">
-                  <span className="font-semibold text-gray-800">
-                    {action.label}
-                  </span>
-                  <span className="text-xs text-muted-foreground whitespace-normal">
-                    {action.description}
-                  </span>
+                <span className="text-xs text-muted-foreground whitespace-normal">
+                  {action.description}
                 </span>
-              </Button>
+              </span>
             </SheetClose>
           );
         })}
@@ -208,7 +211,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
   return (
     <main className="w-full bg-surface relative custom-scrollbar overflow-y-auto">
       <div className="right-0 flex md:hidden py-2 px-4 sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle h-[60px] ">
-        <SidebarTrigger className="flex justify-start items-center h-10 px-0" />
+        <SidebarTrigger className="flex justify-start items-center h-10 px-0 " />
       </div>
       <AnimatePresence mode="sync" initial={false}>
         {selectedContact ? (
@@ -243,22 +246,26 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                 </Avatar>
                 <div className="flex justify-end p-4 gap-x-2">
                   <Sheet>
-                    <SheetTrigger className="hidden md:block">
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="size-10"
-                          >
-                            <PiShareFat className="text-gray-700" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Compartilhar</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </SheetTrigger>
+                    <Tooltip>
+                      <SheetTrigger
+                        render={
+                          <TooltipTrigger
+                            render={
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="hidden md:block size-10"
+                              />
+                            }
+                          />
+                        }
+                      >
+                        <PiShareFat className="text-gray-700" />
+                      </SheetTrigger>
+                      <TooltipContent>
+                        <p>Compartilhar</p>
+                      </TooltipContent>
+                    </Tooltip>
                     {renderShareSheet()}
                   </Sheet>
 
@@ -339,22 +346,26 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
 
                   <div className="flex md:hidden flex-wrap justify-center gap-2">
                     <Sheet>
-                      <SheetTrigger>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="size-10"
-                            >
-                              <PiShareFat className="text-gray-700" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Compartilhar</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </SheetTrigger>
+                      <Tooltip>
+                        <SheetTrigger
+                          render={
+                            <TooltipTrigger
+                              render={
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="size-10"
+                                />
+                              }
+                            />
+                          }
+                        >
+                          <PiShareFat className="text-gray-700" />
+                        </SheetTrigger>
+                        <TooltipContent>
+                          <p>Compartilhar</p>
+                        </TooltipContent>
+                      </Tooltip>
                       {renderShareSheet()}
                     </Sheet>
 

@@ -58,7 +58,7 @@ export function Navbar({
       <div className="container mx-auto flex justify-between items-center px-4 py-2.5">
         <div className="flex items-center space-x-4">
           <Drawer direction="left">
-            <DrawerTrigger className="flex md:hidden">
+            <DrawerTrigger asChild className="flex md:hidden">
               <Button size="icon" className="size-10" variant="ghost">
                 <BsList className="size-5" />
               </Button>
@@ -162,7 +162,7 @@ export function Navbar({
             </DrawerContent>
           </Drawer>
 
-          <div className="flex items-center gap-2">
+          <div className="md:flex hidden items-center gap-2">
             <Link
               href={"#"}
               className="text-sm font-normal text-gray-700 hover:text-gray-800 decoration-1 hover:underline transition-all underline-offset-2 decoration-gray-800"
@@ -174,7 +174,7 @@ export function Navbar({
 
         <div className="flex items-center space-x-4">
           <Drawer direction="left">
-            <DrawerTrigger className="hidden md:flex">
+            <DrawerTrigger asChild>
               <Button size="icon" className="size-10" variant="ghost">
                 <BsList className="size-5" />
               </Button>
@@ -282,12 +282,17 @@ export function Navbar({
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <Avatar className="size-9 ring-2 ring-offset-2 ring-zinc-400">
-                    <AvatarImage src={user.photoURL || ""} />
-                    <AvatarFallback>
-                      <UserIcon className="size-9" />
-                    </AvatarFallback>
-                  </Avatar>
+                  <button
+                    type="button"
+                    className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <Avatar className="size-9 ring-2 ring-offset-2 ring-zinc-400">
+                      <AvatarImage src={user.photoURL || undefined} />
+                      <AvatarFallback>
+                        <UserIcon className="size-9" />
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
                 }
               ></DropdownMenuTrigger>
               <DropdownMenuContent>

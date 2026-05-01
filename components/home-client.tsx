@@ -132,12 +132,16 @@ export function HomeClient({
                     <Card className="relative mx-auto w-full h-fit bg-white pt-0">
                       <div className="relative w-full h-25 md:h-40">
                         <div className="absolute inset-0 z-30 h-25 md:h-40 bg-black/25" />
-                        <Image
-                          src={p.bannerURL ? p.bannerURL : ""}
-                          alt="Event cover"
-                          fill
-                          className="z-20 aspect-auto h-full w-full  object-cover"
-                        />
+                        {p.bannerURL ? (
+                          <Image
+                            src={p.bannerURL}
+                            alt="Event cover"
+                            fill
+                            className="z-20 aspect-auto h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 z-20 bg-surface" />
+                        )}
                         <div className="flex items-center gap-1 text-base font-bold text-highlight z-30 absolute right-4 top-4 drop-shadow-xl">
                           <Star size={16} fill="currentColor" />{" "}
                           {p.rating || "0.0"}

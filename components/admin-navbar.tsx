@@ -95,15 +95,21 @@ export function AdminNavbar() {
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-2 mr-2">
             <Popover>
-              <PopoverTrigger>
-                <Button variant="ghost" size="icon" className="relative rounded-full text-text-muted hover:text-primary">
+              <PopoverTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative rounded-full text-text-muted hover:text-primary"
+                  />
+                }
+              >
                   <Bell size={18} />
                   {unreadCount > 0 && (
                     <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-background">
                       {unreadCount}
                     </span>
                   )}
-                </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80 p-0 rounded-2xl border-border-subtle shadow-2xl overflow-hidden" align="end">
                 <div className="p-4 bg-surface border-b border-border-subtle flex items-center justify-between">

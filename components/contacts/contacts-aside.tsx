@@ -50,8 +50,11 @@ export function ContactsAside({
     <aside className="w-full bg-card flex flex-col h-screen overflow-hidden">
       <div className="px-4 py-2.5 border-b border-border-s flex flex-col space-y-4">
         <div className="w-full flex justify-between items-center ">
-          <Link href="/" className="flex justify-start items-center space-x-2 h-10">
-            <LuArrowLeft className="text-gray-700" />
+          <Link
+            href="/"
+            className="flex justify-start items-center space-x-[0.4rem] h-10"
+          >
+            <LuArrowLeft className="text-gray-700 size-4" />
             <p className="text-gray-700 font-normal text-sm">Voltar</p>
           </Link>
 

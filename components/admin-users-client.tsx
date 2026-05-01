@@ -537,19 +537,21 @@ export function AdminUsersClient() {
                       <TableCell className="text-right pr-8">
                         <div className="flex items-center justify-end gap-2">
                           <Tooltip>
-                            <TooltipTrigger>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleToggleBlock(u)}
-                                className={`w-9 h-9 rounded-xl transition-all ${
-                                  u.isBlocked 
-                                    ? 'text-green-600 hover:bg-green-50 hover:text-green-700 bg-green-50/10' 
-                                    : 'text-red-500 hover:bg-red-50 hover:text-red-600'
-                                }`}
-                              >
-                                {u.isBlocked ? <CheckCircle size={18} /> : <Ban size={18} />}
-                              </Button>
+                            <TooltipTrigger
+                              render={
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleToggleBlock(u)}
+                                  className={`w-9 h-9 rounded-xl transition-all ${
+                                    u.isBlocked 
+                                      ? 'text-green-600 hover:bg-green-50 hover:text-green-700 bg-green-50/10' 
+                                      : 'text-red-500 hover:bg-red-50 hover:text-red-600'
+                                  }`}
+                                />
+                              }
+                            >
+                              {u.isBlocked ? <CheckCircle size={18} /> : <Ban size={18} />}
                             </TooltipTrigger>
                             <TooltipContent side="top" className="rounded-xl font-bold text-xs uppercase tracking-widest bg-white border-border-subtle shadow-xl px-3 py-2 text-text-main">
                               {u.isBlocked ? 'Desbloquear Acesso' : 'Bloquear Acesso'}

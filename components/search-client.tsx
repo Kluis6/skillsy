@@ -153,20 +153,22 @@ function SearchResultsContent() {
             {city && state && (
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => {
-                        const params = new URLSearchParams(searchParams.toString());
-                        params.delete('city');
-                        params.delete('state');
-                        router.push(`/search?${params.toString()}`);
-                      }}
-                      className="h-8 w-8 rounded-full text-red-500 hover:bg-red-50 hover:text-red-600 transition-all"
-                    >
-                      <X size={14} />
-                    </Button>
+                  <TooltipTrigger
+                    render={
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => {
+                          const params = new URLSearchParams(searchParams.toString());
+                          params.delete('city');
+                          params.delete('state');
+                          router.push(`/search?${params.toString()}`);
+                        }}
+                        className="h-8 w-8 rounded-full text-red-500 hover:bg-red-50 hover:text-red-600 transition-all"
+                      />
+                    }
+                  >
+                    <X size={14} />
                   </TooltipTrigger>
                   <TooltipContent>
                     <p className="text-xs">Remover Filtro de Localização</p>
