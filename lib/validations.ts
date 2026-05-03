@@ -1,52 +1,107 @@
 import { z } from 'zod';
 
+const currentYear = new Date().getFullYear();
+
+const optionalTextField = (max: number, message: string) =>
+  z.string().trim().max(max, message).nullable().optional();
+
+const optionalDigitsField = (
+  min: number,
+  max: number,
+  minMessage: string,
+  maxMessage: string,
+) =>
+  z
+    .union([
+      z.literal(''),
+      z
+        .string()
+        .trim()
+        .regex(/^\d+$/, 'Apenas números são permitidos')
+        .min(min, minMessage)
+        .max(max, maxMessage),
+    ])
+    .nullable()
+    .optional();
+
 export const profileSchema = z.object({
-  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(50, 'Nome deve ter no máximo 500 caracteres'),
-  bio: z.string().max(500, 'Bio deve ter no máximo 500 caracteres').nullable().optional(),
-  location: z.string().max(100, 'Localização deve ter no máximo 100 caracteres').nullable().optional(),
-  ward: z.string().max(100, 'Ala/Ramo deve ter no máximo 100 caracteres').nullable().optional(),
-  serviceType: z.string().max(100, 'Serviço deve ter no máximo 100 caracteres').nullable().optional(),
-  category: z.string().max(50, 'Categoria inválida').nullable().optional(),
-  companyName: z.string().max(100, 'Nome da empresa deve ter no máximo 100 caracteres').nullable().optional(),
-  businessAddress: z.string().max(150, 'Endereço deve ter no máximo 150 caracteres').nullable().optional(),
-  businessAddressNumber: z.string().max(20, 'Número deve ter no máximo 20 caracteres').nullable().optional(),
-  businessNeighborhood: z.string().max(100, 'Bairro deve ter no máximo 100 caracteres').nullable().optional(),
-  businessState: z.string().max(100, 'Estado deve ter no máximo 100 caracteres').nullable().optional(),
-  businessComplement: z.string().max(100, 'Complemento deve ter no máximo 100 caracteres').nullable().optional(),
+  name: z
+    .string()
+    .trim()
+    .min(2, 'Nome deve ter pelo menos 2 caracteres')
+    .max(50, 'Nome deve ter no máximo 50 caracteres'),
+  bio: optionalTextField(500, 'Bio deve ter no máximo 500 caracteres'),
+  location: optionalTextField(100, 'Localização deve ter no máximo 100 caracteres'),
+  ward: optionalTextField(100, 'Ala/Ramo deve ter no máximo 100 caracteres'),
+  serviceType: optionalTextField(100, 'Serviço deve ter no máximo 100 caracteres'),
+  category: optionalTextField(50, 'Categoria inválida'),
+  companyName: optionalTextField(100, 'Nome da empresa deve ter no máximo 100 caracteres'),
+  businessAddress: optionalTextField(150, 'Endereço deve ter no máximo 150 caracteres'),
+  businessAddressNumber: optionalTextField(20, 'Número deve ter no máximo 20 caracteres'),
+  businessNeighborhood: optionalTextField(100, 'Bairro deve ter no máximo 100 caracteres'),
+  businessState: optionalTextField(100, 'Estado deve ter no máximo 100 caracteres'),
+  businessComplement: optionalTextField(100, 'Complemento deve ter no máximo 100 caracteres'),
   isProvider: z.boolean(),
-  whatsapp: z.string()
-    .regex(/^\d*$/, 'Apenas números são permitidos')
-    .min(10, 'WhatsApp deve ter pelo menos 10 dígitos (DDD + Número)')
-    .max(15, 'Número de WhatsApp deve ter no máximo 15 dígitos')
-    .nullable().optional(),
-  phone: z.string()
-    .regex(/^\d*$/, 'Apenas números são permitidos')
-    .max(15, 'Número de telefone deve ter no máximo 15 dígitos')
-    .nullable().optional(),
-  instagram: z.string().max(50, 'Usuário de Instagram deve ter no máximo 50 caracteres').nullable().optional(),
-  facebook: z.string().max(100, 'Link de Facebook deve ter no máximo 100 caracteres').nullable().optional(),
-  linkedin: z.string().max(100, 'Link de LinkedIn deve ter no máximo 100 caracteres').nullable().optional(),
-  website: z.string().url('Formato de URL inválido (use https://...)').max(150, 'Link do site muito longo').or(z.literal('')).nullable().optional(),
-  baptismYear: z.string()
-    .regex(/^\d*$/, 'Ano deve conter apenas números')
-    .max(4, 'Ano deve ter 4 dígitos')
-    .nullable().optional(),
+  whatsapp: optionalDigitsField(
+    10,
+    15,
+    'WhatsApp deve ter pelo menos 10 dígitos (DDD + Número)',
+    'Número de WhatsApp deve ter no máximo 15 dígitos',
+  ),
+  phone: z
+    .union([
+      z.literal(''),
+      z
+        .string()
+        .trim()
+        .regex(/^\d+$/, 'Apenas números são permitidos')
+        .max(15, 'Número de telefone deve ter no máximo 15 dígitos'),
+    ])
+    .nullable()
+    .optional(),
+  instagram: optionalTextField(50, 'Usuário de Instagram deve ter no máximo 50 caracteres'),
+  facebook: optionalTextField(100, 'Link de Facebook deve ter no máximo 100 caracteres'),
+  linkedin: optionalTextField(100, 'Link de LinkedIn deve ter no máximo 100 caracteres'),
+  website: z
+    .union([
+      z.literal(''),
+      z
+        .string()
+        .trim()
+        .url('Formato de URL inválido (use https://...)')
+        .max(150, 'Link do site muito longo'),
+    ])
+    .nullable()
+    .optional(),
+  baptismYear: z
+    .union([
+      z.literal(''),
+      z
+        .string()
+        .trim()
+        .regex(/^\d{4}$/, 'Ano deve ter exatamente 4 dígitos')
+        .refine(
+          (value) => {
+            const year = Number(value);
+            return year >= 1830 && year <= currentYear;
+          },
+          `Ano deve estar entre 1830 e ${currentYear}`,
+        ),
+    ])
+    .nullable()
+    .optional(),
   availability: z.array(z.string()).optional(),
-  serviceHours: z.string().max(100, 'Horário muito longo').nullable().optional(),
+  serviceHours: optionalTextField(100, 'Horário muito longo'),
   photoURL: z.string().nullable().optional(),
   bannerURL: z.string().nullable().optional(),
-  gallery: z.array(z.object({
-    url: z.string(),
-    description: z.string().max(200, 'Descrição da foto muito longa').nullable().optional()
-  })),
-}).refine((data) => {
-  if (data.isProvider) {
-    return !!data.category && data.category !== '';
-  }
-  return true;
-}, {
-  message: "Selecione uma categoria para anunciar seu serviço",
-  path: ["category"]
+  gallery: z
+    .array(
+      z.object({
+        url: z.string(),
+        description: z.string().max(200, 'Descrição da foto muito longa').nullable().optional()
+      }),
+    )
+    .max(5, 'Você pode enviar no máximo 5 fotos para a galeria'),
 });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;

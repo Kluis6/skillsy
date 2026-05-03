@@ -321,20 +321,18 @@ export function ProfileDetailClient({
                       )}
                     </p>
 
-                    <p className="text-sm text-primary font-bold pt-1 hover:underline cursor-pointer">
-                      {targetProfile.contacts?.length || 0} conexões
-                    </p>
+               
                   </div>
 
                   <div className="flex flex-col gap-3 w-full md:w-auto">
                     {targetProfile.companyName && (
                       <div className="flex items-center gap-2.5 group cursor-pointer">
-                        <div className="w-8 h-8 rounded bg-surface flex items-center justify-center border border-border-subtle group-hover:bg-primary/5 transition-colors">
-                          <Building2 size={16} className="text-primary" />
+                        <div className="size-8 rounded bg-surface flex items-center justify-center border border-border-subtle group-hover:bg-primary/5 transition-colors">
+                          <Building2 size={16} className="text-blue-600" />
                         </div>
-                        <span className="text-sm font-bold text-text-main hover:text-primary transition-colors underline-offset-2 hover:underline">
+                        <p className="text-sm font-medium text-text-main">
                           {targetProfile.companyName}
-                        </span>
+                        </p>
                       </div>
                     )}
                     {targetProfile.ward && (

@@ -124,9 +124,90 @@ export const UserService = {
     const path = `users/${uid}`;
     try {
       const docRef = doc(db, 'users', uid);
-      // Remove 'id' if it exists in the data to avoid Firestore rule violations
-      const { id, ...updateData } = data as any;
-      await updateDoc(docRef, updateData);
+      const allowedUserFields = new Set([
+        'id',
+        'uid',
+        'name',
+        'email',
+        'photoURL',
+        'bannerURL',
+        'bio',
+        'category',
+        'isProvider',
+        'role',
+        'contacts',
+        'whatsapp',
+        'instagram',
+        'facebook',
+        'linkedin',
+        'website',
+        'serviceType',
+        'phone',
+        'phones',
+        'location',
+        'ward',
+        'companyName',
+        'gallery',
+        'rating',
+        'reviewCount',
+        'experienceYears',
+        'verifiedMember',
+        'baptismYear',
+        'isBlocked',
+        'createdAt',
+        'socialLinks',
+        'availability',
+        'serviceHours',
+        'businessAddress',
+        'businessAddressNumber',
+        'businessNeighborhood',
+        'businessState',
+        'businessComplement',
+      ]);
+
+      const immutableKeys = new Set([
+        'uid',
+        'email',
+        'role',
+        'createdAt',
+        'verifiedMember',
+        'isBlocked',
+        'rating',
+        'reviewCount',
+      ]);
+
+      const sanitizeData = (source: Record<string, unknown>) =>
+        Object.fromEntries(
+          Object.entries(source).filter(
+            ([key, value]) =>
+              allowedUserFields.has(key) &&
+              key !== 'id' &&
+              value !== undefined,
+          ),
+        );
+
+      const currentSnapshot = await getDoc(docRef);
+      if (!currentSnapshot.exists()) {
+        throw new Error('Perfil não encontrado para atualização');
+      }
+
+      const currentData = sanitizeData(currentSnapshot.data() as Record<string, unknown>);
+      const incomingData = sanitizeData(data as Record<string, unknown>);
+
+      const safeIncomingData = Object.fromEntries(
+        Object.entries(incomingData).filter(
+          ([key, value]) =>
+            !immutableKeys.has(key) &&
+            value !== undefined,
+        ),
+      );
+
+      const nextData = {
+        ...currentData,
+        ...safeIncomingData,
+      };
+
+      await setDoc(docRef, nextData);
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
     }

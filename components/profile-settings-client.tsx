@@ -163,17 +163,14 @@ export function ProfileSettingsClient() {
       }
     });
 
-    // Automatic verification if baptism year is present
+    if (!cleanedData.availability?.length) {
+      cleanedData.availability = [];
+    }
+
+    cleanedData.gallery = (cleanedData.gallery || []).filter((item) => item?.url);
+
     if (cleanedData.baptismYear) {
-      (cleanedData as any).verifiedMember = true;
-      (cleanedData as any).baptismYear = parseInt(cleanedData.baptismYear);
-    } else {
-      // If baptismYear was removed, we don't necessarily remove verification unless it's only based on it
-      // But the user said "considere isso como um perfil verificado", implying the link.
-      // However, admins might verify people manually. 
-      // Let's only set verifiedMember to true but NOT false if baptismYear is absent, 
-      // OR better, let's follow the prompt strictly: baptismYear presence = verified.
-      (cleanedData as any).verifiedMember = false;
+      (cleanedData as any).baptismYear = parseInt(cleanedData.baptismYear, 10);
     }
 
     try {
@@ -238,7 +235,10 @@ export function ProfileSettingsClient() {
           toast.error('Limite atingido', { description: 'Você pode enviar no máximo 5 fotos para a galeria.' });
           return;
         }
-        setValue('gallery', [...formData.gallery, { url: base64, description: '' }], { shouldDirty: true });
+        setValue('gallery', [...formData.gallery, { url: base64, description: '' }], {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
         toast.success('Foto adicionada à galeria!');
       }
     } catch (error) {
@@ -258,7 +258,10 @@ export function ProfileSettingsClient() {
   };
 
   const removePhoto = (index: number) => {
-    setValue('gallery', formData.gallery.filter((_, i) => i !== index), { shouldDirty: true });
+    setValue('gallery', formData.gallery.filter((_, i) => i !== index), {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
   if (authLoading) {
@@ -401,7 +404,12 @@ export function ProfileSettingsClient() {
                   </div>
                   <Switch 
                     checked={formData.isProvider}
-                    onCheckedChange={(checked) => setValue('isProvider', checked)}
+                    onCheckedChange={(checked) =>
+                      setValue('isProvider', checked, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
                   />
                 </div>
                 
@@ -418,7 +426,7 @@ export function ProfileSettingsClient() {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">
-                        Categoria do Serviço <span className="text-red-500">*</span>
+                        Categoria do Serviço
                       </Label>
                       <div className="relative">
                         <select 
@@ -482,7 +490,10 @@ export function ProfileSettingsClient() {
                                 const next = isSelected 
                                   ? current.filter(d => d !== day)
                                   : [...current, day];
-                                setValue('availability', next, { shouldDirty: true });
+                                setValue('availability', next, {
+                                  shouldDirty: true,
+                                  shouldValidate: true,
+                                });
                               }}
                               className={`h-10 px-4 rounded-xl text-xs font-bold transition-all border-2 ${
                                 isSelected 
@@ -594,7 +605,9 @@ export function ProfileSettingsClient() {
                       className={`bg-surface border-none rounded-2xl h-12 ${errors.baptismYear ? 'ring-2 ring-red-500' : ''}`}
                     />
                     {errors.baptismYear && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.baptismYear.message}</p>}
-                    <p className="text-[10px] text-primary/60 font-medium ml-1">Preencher este campo ativa o selo de Membro Verificado.</p>
+                    <p className="text-[10px] text-primary/60 font-medium ml-1">
+                      Este campo ajuda a completar seu perfil, mas o selo de verificação segue as regras de moderação da plataforma.
+                    </p>
                   </div>
                 </div>
 
@@ -794,7 +807,10 @@ export function ProfileSettingsClient() {
                         } else {
                            newGallery[index] = { ...photoItem, description: e.target.value };
                         }
-                        setValue('gallery', newGallery, { shouldDirty: true });
+                        setValue('gallery', newGallery, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        });
                       }}
                       className="text-[10px] min-h-[50px] h-auto p-2 bg-surface border-none resize-none rounded-xl"
                     />
