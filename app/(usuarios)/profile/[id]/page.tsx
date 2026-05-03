@@ -35,3 +35,6 @@ export default async function PublicProfilePage({ params }: Props) {
   
   return <ProfileDetailClient id={id} initialProfile={initialProfile} />;
 }
+
+
+

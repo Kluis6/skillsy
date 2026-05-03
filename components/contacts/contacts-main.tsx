@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   Star,
   Copy,
-  ExternalLink,
   Share2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -174,7 +173,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
           Envie o contato de <strong>{selectedContact?.name}</strong> por:
         </SheetDescription>
       </SheetHeader>
-      <div className="gap-2 p-4 flex md:flex-row flex-col">
+      <div className="gap-2 p-4 flex md:flex-row flex-col w-full">
         {shareActions.map((action) => {
           const Icon = action.icon;
 
@@ -185,7 +184,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-auto w-full justify-start gap-3 p-4 text-left"
+                  className="h-auto w-full md:w-1/3 justify-start gap-3 p-4 text-left"
                   onClick={action.onClick}
                 />
               }
@@ -227,7 +226,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
 
             <div className="w-full bg-white">
               <div className="relative w-full h-52 md:h-68">
-                <div className="h-40 md:h-50 relative">
+                <div className="h-40 md:h-50 w-full relative">
                   {selectedContact.bannerURL && (
                     <Image
                       src={selectedContact.bannerURL}
@@ -254,7 +253,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                               <Button
                                 variant="outline"
                                 size="icon"
-                                className="hidden md:block size-10"
+                                className="hidden md:flex justify-center items-center size-10"
                               />
                             }
                           />

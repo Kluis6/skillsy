@@ -67,7 +67,7 @@ export function ContactsAside({
           />
           <Input
             placeholder="Buscar contatos..."
-            className="pl-10 h-10 text-sm focus:bg-white placeholder:text-gray-400"
+            className="pl-10 h-10 text-sm focus:bg-white placeholder:text-gray-400 rounded-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

@@ -94,7 +94,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={children} nativeButton={false} />
+      <DialogTrigger render={children} nativeButton />
       <DialogContent className="sm:max-w-[400px] rounded-2xl border-border-subtle bg-white shadow-xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-extrabold tracking-tighter text-primary">
