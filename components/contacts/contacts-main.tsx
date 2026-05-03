@@ -155,21 +155,21 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
   ];
 
   const renderShareButton = (className?: string) => {
-    const button = (
-      <Button
-        variant="outline"
-        size="icon"
-        className={className}
-        onClick={canUseNativeShare ? handleNativeShare : undefined}
-      >
-        <PiShareFat className="text-gray-700" />
-      </Button>
-    );
-
     if (canUseNativeShare) {
       return (
         <Tooltip>
-          <TooltipTrigger asChild>{button}</TooltipTrigger>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="outline"
+                size="icon"
+                className={className}
+                onClick={handleNativeShare}
+              />
+            }
+          >
+            <PiShareFat className="text-gray-700" />
+          </TooltipTrigger>
           <TooltipContent>
             <p>Compartilhar</p>
           </TooltipContent>
@@ -180,9 +180,21 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
     return (
       <Sheet>
         <Tooltip>
-          <SheetTrigger asChild>
-            <TooltipTrigger asChild>{button}</TooltipTrigger>
-          </SheetTrigger>
+          <SheetTrigger
+            render={
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={className}
+                  />
+                }
+              >
+                <PiShareFat className="text-gray-700" />
+              </TooltipTrigger>
+            }
+          />
           <TooltipContent>
             <p>Compartilhar</p>
           </TooltipContent>
