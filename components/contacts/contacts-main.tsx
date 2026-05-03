@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   Star,
   Copy,
-  Share2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
@@ -155,15 +154,43 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
     },
   ];
 
-  if (canUseNativeShare) {
-    shareActions.unshift({
-      label: "Compartilhar no dispositivo",
-      description: "Usa o menu nativo de compartilhamento do navegador.",
-      icon: Share2,
-      onClick: handleNativeShare,
-      className: "text-amber-600",
-    });
-  }
+  const renderShareButton = (className?: string) => {
+    const button = (
+      <Button
+        variant="outline"
+        size="icon"
+        className={className}
+        onClick={canUseNativeShare ? handleNativeShare : undefined}
+      >
+        <PiShareFat className="text-gray-700" />
+      </Button>
+    );
+
+    if (canUseNativeShare) {
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>{button}</TooltipTrigger>
+          <TooltipContent>
+            <p>Compartilhar</p>
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+
+    return (
+      <Sheet>
+        <Tooltip>
+          <SheetTrigger asChild>
+            <TooltipTrigger asChild>{button}</TooltipTrigger>
+          </SheetTrigger>
+          <TooltipContent>
+            <p>Compartilhar</p>
+          </TooltipContent>
+        </Tooltip>
+        {renderShareSheet()}
+      </Sheet>
+    );
+  };
 
   const renderShareSheet = () => (
     <SheetContent side="bottom" className="rounded-t-lg">
@@ -244,29 +271,9 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex justify-end p-4 gap-x-2">
-                  <Sheet>
-                    <Tooltip>
-                      <SheetTrigger
-                        render={
-                          <TooltipTrigger
-                            render={
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="hidden md:flex justify-center items-center size-10"
-                              />
-                            }
-                          />
-                        }
-                      >
-                        <PiShareFat className="text-gray-700" />
-                      </SheetTrigger>
-                      <TooltipContent>
-                        <p>Compartilhar</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    {renderShareSheet()}
-                  </Sheet>
+                  {renderShareButton(
+                    "hidden md:flex justify-center items-center size-10",
+                  )}
 
                   <Button
                     type="button"
@@ -344,29 +351,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   </div>
 
                   <div className="flex md:hidden flex-wrap justify-center gap-2">
-                    <Sheet>
-                      <Tooltip>
-                        <SheetTrigger
-                          render={
-                            <TooltipTrigger
-                              render={
-                                <Button
-                                  variant="outline"
-                                  size="icon"
-                                  className="size-10"
-                                />
-                              }
-                            />
-                          }
-                        >
-                          <PiShareFat className="text-gray-700" />
-                        </SheetTrigger>
-                        <TooltipContent>
-                          <p>Compartilhar</p>
-                        </TooltipContent>
-                      </Tooltip>
-                      {renderShareSheet()}
-                    </Sheet>
+                    {renderShareButton("size-10")}
 
                     <Button
                       type="button"

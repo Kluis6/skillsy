@@ -248,7 +248,7 @@ export function ProfileDetailClient({
         >
           {/* Top Profile Card */}
           <div className="border-border-subtle border-b bg-white dark:bg-card">
-            <div className="relative h-30 md:h-52 bg-gradient-to-r from-blue-400/20 to-indigo-400/20">
+            <div className="relative h-26 md:h-52 bg-gradient-to-r from-blue-400/20 to-indigo-400/20">
               {targetProfile.bannerURL ? (
                 <Image
                   src={targetProfile.bannerURL}
@@ -265,13 +265,13 @@ export function ProfileDetailClient({
             <section className="mx-auto container px-4 pb-4">
               <div className="relative flex flex-col pt-0">
                 {/* Avatar Overlap */}
-                <div className="-mt-14 mb-4 relative z-10 size-28 md:size-40">
+                <div className="-mt-14 md:-mt-22 mb-4 relative z-10 size-28 md:size-40">
                   <Avatar className="w-full h-full border-4 border-white dark:border-card bg-white dark:bg-card shadow-sm shadow-black/30">
                     <AvatarImage
                       src={targetProfile.photoURL}
                       className="object-cover"
                     />
-                    <AvatarFallback className="bg-surface text-primary font-bold text-5xl">
+                    <AvatarFallback className="bg-surface text-primary font-bold text-4xl">
                       {targetProfile.name[0]}
                     </AvatarFallback>
                   </Avatar>
@@ -280,15 +280,15 @@ export function ProfileDetailClient({
                 <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <h2 className="text-2xl md:text-3xl font-bold text-text-main leading-tight">
+                      <h2 className="text-xl md:text-3xl font-bold text-text-main leading-tight">
                         {targetProfile.name}
                       </h2>
                       {targetProfile.verifiedMember && (
-                        <ShieldCheck size={22} className="text-primary" />
+                        <ShieldCheck className="text-primary size-5 md:size-8" />
                       )}
                     </div>
 
-                    <p className="text-lg text-text-main font-regular leading-relaxed max-w-xl">
+                    <p className="text-sm text-text-main font-regular leading-relaxed max-w-xl">
                       {targetProfile.serviceType ||
                         targetProfile.category ||
                         "Membro da Comunidade Skillsy"}
