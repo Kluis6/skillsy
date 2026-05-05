@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { AVAILABILITY_OPTIONS, PROVIDER_CATEGORIES, type ProfileFormValues } from '@/lib/profile-form';
+import { AVAILABILITY_OPTIONS, PROVIDER_CATEGORIES } from '@/lib/profile-form';
 
 const currentYear = new Date().getFullYear();
 
 const optionalTextField = (max: number, message: string) =>
-  z.string().trim().max(max, message).nullable().optional();
+  z.string().trim().max(max, message);
 
 const optionalDigitsField = (
   min: number,
@@ -22,8 +22,7 @@ const optionalDigitsField = (
         .min(min, minMessage)
         .max(max, maxMessage),
     ])
-    .nullable()
-    .optional();
+    ;
 
 export const profileSchema = z.object({
   name: z
@@ -35,10 +34,7 @@ export const profileSchema = z.object({
   location: optionalTextField(100, 'Localização deve ter no máximo 100 caracteres'),
   ward: optionalTextField(100, 'Ala/Ramo deve ter no máximo 100 caracteres'),
   serviceType: optionalTextField(100, 'Serviço deve ter no máximo 100 caracteres'),
-  category: z
-    .union([z.literal(''), z.enum(PROVIDER_CATEGORIES)])
-    .nullable()
-    .optional(),
+  category: z.union([z.literal(''), z.enum(PROVIDER_CATEGORIES)]),
   companyName: optionalTextField(100, 'Nome da empresa deve ter no máximo 100 caracteres'),
   businessAddress: optionalTextField(150, 'Endereço deve ter no máximo 150 caracteres'),
   businessAddressNumber: optionalTextField(20, 'Número deve ter no máximo 20 caracteres'),
@@ -61,8 +57,7 @@ export const profileSchema = z.object({
         .regex(/^\d+$/, 'Apenas números são permitidos')
         .max(15, 'Número de telefone deve ter no máximo 15 dígitos'),
     ])
-    .nullable()
-    .optional(),
+    ,
   instagram: optionalTextField(50, 'Usuário de Instagram deve ter no máximo 50 caracteres'),
   facebook: optionalTextField(100, 'Link de Facebook deve ter no máximo 100 caracteres'),
   linkedin: optionalTextField(100, 'Link de LinkedIn deve ter no máximo 100 caracteres'),
@@ -75,8 +70,7 @@ export const profileSchema = z.object({
         .url('Formato de URL inválido (use https://...)')
         .max(150, 'Link do site muito longo'),
     ])
-    .nullable()
-    .optional(),
+    ,
   baptismYear: z
     .union([
       z.literal(''),
@@ -92,17 +86,16 @@ export const profileSchema = z.object({
           `Ano deve estar entre 1830 e ${currentYear}`,
         ),
     ])
-    .nullable()
-    .optional(),
-  availability: z.array(z.enum(AVAILABILITY_OPTIONS)).optional(),
+    ,
+  availability: z.array(z.enum(AVAILABILITY_OPTIONS)),
   serviceHours: optionalTextField(100, 'Horário muito longo'),
-  photoURL: z.string().nullable().optional(),
-  bannerURL: z.string().nullable().optional(),
+  photoURL: z.string(),
+  bannerURL: z.string(),
   gallery: z
     .array(
       z.object({
         url: z.string().trim().min(1, 'A foto precisa ter uma URL válida'),
-        description: z.string().max(200, 'Descrição da foto muito longa').nullable().optional()
+        description: z.string().max(200, 'Descrição da foto muito longa')
       }),
     )
     .max(5, 'Você pode enviar no máximo 5 fotos para a galeria'),
@@ -128,7 +121,7 @@ export const profileSchema = z.object({
   }
 });
 
-export type ProfileFormData = ProfileFormValues;
+export type ProfileFormData = z.infer<typeof profileSchema>;
 
 export const loginSchema = z.object({
   email: z.string()

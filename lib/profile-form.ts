@@ -31,7 +31,14 @@ export const PROVIDER_CATEGORIES = [
 
 export const AVAILABILITY_OPTIONS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'] as const;
 
-type NullableString = string | null;
+export type ProviderCategory = '' | (typeof PROVIDER_CATEGORIES)[number];
+export type AvailabilityOption = (typeof AVAILABILITY_OPTIONS)[number];
+export interface ProfileGalleryItem {
+  url: string;
+  description: string;
+}
+
+type OptionalString = string | undefined;
 
 export interface ProfileFormValues {
   name: string;
@@ -39,7 +46,7 @@ export interface ProfileFormValues {
   location: string;
   ward: string;
   serviceType: string;
-  category: string;
+  category: ProviderCategory;
   companyName: string;
   isProvider: boolean;
   whatsapp: string;
@@ -49,11 +56,11 @@ export interface ProfileFormValues {
   linkedin: string;
   website: string;
   baptismYear: string;
-  availability: string[];
+  availability: AvailabilityOption[];
   serviceHours: string;
   photoURL: string;
   bannerURL: string;
-  gallery: GalleryItem[];
+  gallery: ProfileGalleryItem[];
   businessAddress: string;
   businessAddressNumber: string;
   businessNeighborhood: string;
@@ -73,26 +80,41 @@ const PROVIDER_ONLY_FIELDS = [
   'businessComplement',
 ] as const;
 
-const normalizeOptionalText = (value: unknown): NullableString => {
-  if (typeof value !== 'string') return null;
+const normalizeOptionalText = (value: unknown): OptionalString => {
+  if (typeof value !== 'string') return undefined;
 
   const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
+  return trimmed.length > 0 ? trimmed : undefined;
 };
 
-const normalizeDigits = (value: unknown): NullableString => {
+const normalizeDigits = (value: unknown): OptionalString => {
   const normalized = normalizeOptionalText(value);
-  return normalized ? normalized.replace(/\D/g, '') : null;
+  return normalized ? normalized.replace(/\D/g, '') : undefined;
 };
 
-const normalizeGallery = (gallery: unknown): GalleryItem[] => {
+const normalizeCategory = (value: unknown): ProviderCategory => {
+  if (typeof value !== 'string') return '';
+  return PROVIDER_CATEGORIES.includes(value as (typeof PROVIDER_CATEGORIES)[number])
+    ? (value as ProviderCategory)
+    : '';
+};
+
+const normalizeAvailability = (value: unknown): AvailabilityOption[] => {
+  if (!Array.isArray(value)) return [];
+
+  return value.filter((day): day is AvailabilityOption =>
+    AVAILABILITY_OPTIONS.includes(day as AvailabilityOption),
+  );
+};
+
+const normalizeGallery = (gallery: unknown): ProfileGalleryItem[] => {
   if (!Array.isArray(gallery)) return [];
 
   return gallery
     .map((item) => {
       if (typeof item === 'string') {
         const url = normalizeOptionalText(item);
-        return url ? { url, description: null } : null;
+        return url ? { url, description: '' } : null;
       }
 
       if (!item || typeof item !== 'object') return null;
@@ -103,10 +125,10 @@ const normalizeGallery = (gallery: unknown): GalleryItem[] => {
 
       return {
         url,
-        description: normalizeOptionalText(maybeItem.description),
+        description: normalizeOptionalText(maybeItem.description) || '',
       };
     })
-    .filter((item): item is GalleryItem => Boolean(item))
+    .filter((item): item is ProfileGalleryItem => item !== null)
     .slice(0, 5);
 };
 
@@ -149,7 +171,7 @@ export const profileToFormValues = (profile: UserProfile | null): ProfileFormVal
     location: profile.location || '',
     ward: profile.ward || '',
     serviceType: profile.serviceType || '',
-    category: profile.category || '',
+    category: normalizeCategory(profile.category),
     companyName: profile.companyName || '',
     isProvider: profile.isProvider || false,
     whatsapp: profile.whatsapp || '',
@@ -159,7 +181,7 @@ export const profileToFormValues = (profile: UserProfile | null): ProfileFormVal
     linkedin: profile.linkedin || '',
     website: profile.website || '',
     baptismYear: profile.baptismYear ? String(profile.baptismYear) : '',
-    availability: Array.isArray(profile.availability) ? profile.availability : [],
+    availability: normalizeAvailability(profile.availability),
     serviceHours: profile.serviceHours || '',
     photoURL: profile.photoURL || '',
     bannerURL: profile.bannerURL || '',
@@ -198,21 +220,20 @@ export const toProfileUpdatePayload = (values: ProfileFormValues): Partial<UserP
     website: normalizeOptionalText(values.website),
     photoURL: normalizeOptionalText(values.photoURL),
     bannerURL: normalizeOptionalText(values.bannerURL),
-    gallery: normalizeGallery(values.gallery),
+    gallery: normalizeGallery(values.gallery).map((item): GalleryItem => ({
+      url: item.url,
+      description: normalizeOptionalText(item.description),
+    })),
     category: normalizeOptionalText(providerValues.category),
     companyName: normalizeOptionalText(providerValues.companyName),
     serviceType: normalizeOptionalText(providerValues.serviceType),
-    availability: isProvider
-      ? providerValues.availability.filter((day): day is string =>
-          AVAILABILITY_OPTIONS.includes(day as (typeof AVAILABILITY_OPTIONS)[number]),
-        )
-      : [],
+    availability: isProvider ? normalizeAvailability(providerValues.availability) : [],
     serviceHours: normalizeOptionalText(providerValues.serviceHours),
     businessAddress: normalizeOptionalText(providerValues.businessAddress),
     businessAddressNumber: normalizeOptionalText(providerValues.businessAddressNumber),
     businessNeighborhood: normalizeOptionalText(providerValues.businessNeighborhood),
     businessState: normalizeOptionalText(providerValues.businessState),
     businessComplement: normalizeOptionalText(providerValues.businessComplement),
-    baptismYear: baptismYear ? Number.parseInt(baptismYear, 10) : null,
+    baptismYear: baptismYear ? Number.parseInt(baptismYear, 10) : undefined,
   };
 };
