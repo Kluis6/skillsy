@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { UserService } from "@/services/user-service";
 import { UserProfile } from "@/models/types";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   ArrowLeft,
@@ -65,6 +66,27 @@ import { FaTelegramPlane } from "react-icons/fa";
 interface ProfileDetailClientProps {
   id: string;
   initialProfile: UserProfile | null;
+}
+
+interface BusinessAddressMapProps {
+  query: string;
+}
+
+function BusinessAddressMap({ query }: BusinessAddressMapProps) {
+  const encodedQuery = encodeURIComponent(query);
+  const mapsEmbedUrl = `https://www.google.com/maps?q=${encodedQuery}&z=15&output=embed`;
+
+  return (
+    <div className="overflow-hidden rounded-md border border-border-subtle ">
+      <iframe
+        title={`Mapa de ${query}`}
+        src={mapsEmbedUrl}
+        className="h-60 w-full"
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+      />
+    </div>
+  );
 }
 
 export function ProfileDetailClient({
@@ -459,7 +481,7 @@ export function ProfileDetailClient({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
+          className="space-y-2"
         >
           {/* Top Profile Card */}
           <div className="border-border-subtle border-b bg-white dark:bg-card">
@@ -482,9 +504,6 @@ export function ProfileDetailClient({
                 {/* Avatar Overlap */}
                 <div className="flex items-center md:py-4 py-2 justify-end">
                   <div className="text-center bg-surface rounded-sm border px-2 py-1 space-y-2 flex sm:hidden">
-                    {/* <p className="text-[10px] font-bold text-text-muted uppercase">
-                      {targetProfile.reviewCount || 0} avaliações
-                    </p> */}
                     <div className="flex items-baseline justify-center space-x-2">
                       <Star
                         size={14}
@@ -578,15 +597,26 @@ export function ProfileDetailClient({
                       {targetProfile.companyName &&
                         ` na ${targetProfile.companyName}`}
                     </p>
+                    <div className="flex  space-x-2">
+                      {targetProfile.companyName && (
+                        <div className="flex items-center space-x-2">
+                          <Building2 size={18} className="text-gray-800" />
+                          <p className="text-sm font-normal text-gray-800">
+                            {targetProfile.companyName}
+                          </p>
+                        </div>
+                      )}
+                      <div className="border-l border-gray-700"></div>
+                      {targetProfile.category && (
+                        <Badge
+                          variant="secondary"
+                          className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                        >
+                          {targetProfile.category}
+                        </Badge>
+                      )}
+                    </div>
 
-                    {targetProfile.companyName && (
-                      <div className="flex items-center space-x-2">
-                        <Building2 size={18} className="text-gray-800" />
-                        <p className="text-sm font-normal text-gray-800">
-                          {targetProfile.companyName}
-                        </p>
-                      </div>
-                    )}
                     {targetProfile.location && (
                       <div className="flex items-center space-x-2">
                         <LuMapPin size={18} className="text-gray-800" />
@@ -595,7 +625,7 @@ export function ProfileDetailClient({
                         </p>
                       </div>
                     )}
-                    <div className="flex space-x-2 ">
+                    <div className="flex space-x-2">
                       {targetProfile.ward && (
                         <div className="flex items-center space-x-2">
                           <Church size={18} className="text-primary" />
@@ -631,14 +661,6 @@ export function ProfileDetailClient({
                           {targetProfile.rating || "0.0"}
                         </p>
                       </div>
-
-                      {/* <div className="flex items-center justify-center gap-0.5 text-highlight py-1">
-                        <Star size={12} fill="currentColor" />
-                        <Star size={12} fill="currentColor" />
-                        <Star size={12} fill="currentColor" />
-                        <Star size={12} fill="currentColor" />
-                        <Star size={12} className="text-border-subtle" />
-                      </div> */}
                     </div>
                     <div className="flex flex-col gap-2 sm:hidden ">
                       <div className="flex gap-2 justify-end">
@@ -702,23 +724,158 @@ export function ProfileDetailClient({
           </div>
 
           {/* About Section */}
-          <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
-            <h3 className="text-xl font-bold mb-4 text-text-main">Sobre</h3>
-            <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap max-w-3xl">
-              {targetProfile.bio ||
-                "Este membro ainda não adicionou uma descrição detalhada."}
-            </p>
-            {targetProfile.website && (
-              <a
-                href={formatUrl(targetProfile.website)}
-                target="_blank"
-                className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:underline"
-              >
-                {targetProfile.website.replace(/^https?:\/\//, "")}{" "}
-                <ArrowLeft size={14} className="rotate-135" />
-              </a>
-            )}
+          <section className="bg-white dark:bg-card border-y border-border-subtle ">
+            <div className="mx-auto container p-4 space-y-4">
+              <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                Sobre membro
+              </h3>
+              <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap max-w-3xl">
+                {targetProfile.bio ||
+                  "Este membro ainda não adicionou uma descrição detalhada."}
+              </p>
+            </div>
           </section>
+
+          {/* Contact Section */}
+          <div className="grid grid-cols-12 gap-2 w-full h-full">
+            {hasContactInfo && (
+              <div className="col-span-12  border-y border-border-subtle bg-white dark:bg-card border-r ">
+                <div className="mx-auto container p-4">
+                  <div className=" space-y-4">
+                    <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                      Contato e Redes
+                    </h3>
+                    <div className="space-y-3">
+                      {targetProfile.whatsapp && (
+                        <button
+                          type="button"
+                          onClick={handleWhatsApp}
+                          className="flex w-full items-center gap-2.5 bg-surface px-3 py-2 text-left"
+                        >
+                          <MessageCircle size={16} className="text-green-600" />
+                          <span className="text-sm font-medium text-gray-700">
+                            {targetProfile.whatsapp}
+                          </span>
+                        </button>
+                      )}
+                      {targetProfile.phone && (
+                        <button
+                          type="button"
+                          onClick={handlePhoneCall}
+                          className="flex w-full items-center gap-2.5 bg-surface px-3 py-2 text-left "
+                        >
+                          <Phone size={16} className="text-primary" />
+                          <span className="text-sm font-medium text-gray-700">
+                            {targetProfile.phone}
+                          </span>
+                        </button>
+                      )}
+                      {targetProfile.instagram && (
+                        <a
+                          href={formatUrl(
+                            `instagram.com/${targetProfile.instagram.replace(/^@/, "")}`,
+                          )}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-2.5 bg-surface px-3 py-2"
+                        >
+                          <Instagram size={16} className="text-pink-600" />
+                          <span className="text-sm font-medium text-gray-700 break-all">
+                            {targetProfile.instagram}
+                          </span>
+                        </a>
+                      )}
+                      {targetProfile.facebook && (
+                        <a
+                          href={formatUrl(targetProfile.facebook)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-2.5 bg-surface px-3 py-2"
+                        >
+                          <Facebook size={16} className="text-blue-600" />
+                          <span className="text-sm font-medium text-gray-700 break-all">
+                            {targetProfile.facebook}
+                          </span>
+                        </a>
+                      )}
+                      {targetProfile.linkedin && (
+                        <a
+                          href={formatUrl(targetProfile.linkedin)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-2.5 bg-surface px-3 py-2"
+                        >
+                          <Linkedin size={16} className="text-sky-700" />
+                          <span className="text-sm font-medium text-gray-700 break-all">
+                            {targetProfile.linkedin}
+                          </span>
+                        </a>
+                      )}
+                      {targetProfile.website && (
+                        <a
+                          href={formatUrl(targetProfile.website)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-2.5 bg-surface px-3 py-2"
+                        >
+                          <Globe size={16} className="text-primary" />
+                          <span className="text-sm font-medium text-gray-700 break-all">
+                            {targetProfile.website}
+                          </span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {hasBusinessAddress && (
+              <div className="col-span-12 border-y border-border-subtle bg-white dark:bg-card flex flex-col">
+                <div className=" mx-auto container p-4 space-y-4">
+                  <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                    Endereço Comercial
+                  </h3>
+                  <div className="flex flex-col md:flex-row gap-4 w-full">
+                    <div className="w-full">
+                      {(targetProfile.businessAddress ||
+                        targetProfile.businessAddressNumber) && (
+                        <p className="text-sm text-text-main font-medium leading-tight">
+                          {[
+                            targetProfile.businessAddress,
+                            targetProfile.businessAddressNumber,
+                          ]
+                            .filter(Boolean)
+                            .join(", ")}
+                        </p>
+                      )}
+                      {targetProfile.businessComplement && (
+                        <p className="text-xs text-text-muted">
+                          {targetProfile.businessComplement}
+                        </p>
+                      )}
+                      {targetProfile.businessNeighborhood && (
+                        <p className="text-xs text-text-muted">
+                          {targetProfile.businessNeighborhood}
+                        </p>
+                      )}
+                      {targetProfile.businessState && (
+                        <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
+                          {targetProfile.businessState}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="w-full h-full">
+                      {businessAddressQuery && (
+                        <BusinessAddressMap query={businessAddressQuery} />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Gallery Section */}
           {(targetProfile.gallery && targetProfile.gallery.length > 0) ||
@@ -916,326 +1073,9 @@ export function ProfileDetailClient({
             </div>
           </section>
         </motion.div>
-
-        {/* Sidebar */}
-        <aside className="mt-4 md:mt-0 space-y-4">
-          {hasContactInfo && (
-            <Card className="rounded-xl border border-border-subtle bg-white dark:bg-card shadow-sm p-4">
-              <h3 className="text-sm font-bold text-text-main mb-3 flex items-center gap-2">
-                <Users size={16} className="text-primary" /> Contato e Redes
-              </h3>
-              <div className="space-y-3">
-                {targetProfile.whatsapp && (
-                  <button
-                    type="button"
-                    onClick={handleWhatsApp}
-                    className="flex w-full items-center gap-2.5 rounded-lg bg-surface px-3 py-2 text-left hover:bg-primary/5"
-                  >
-                    <MessageCircle size={16} className="text-green-600" />
-                    <span className="text-sm font-medium text-text-main">
-                      {targetProfile.whatsapp}
-                    </span>
-                  </button>
-                )}
-                {targetProfile.phone && (
-                  <button
-                    type="button"
-                    onClick={handlePhoneCall}
-                    className="flex w-full items-center gap-2.5 rounded-lg bg-surface px-3 py-2 text-left hover:bg-primary/5"
-                  >
-                    <Phone size={16} className="text-primary" />
-                    <span className="text-sm font-medium text-text-main">
-                      {targetProfile.phone}
-                    </span>
-                  </button>
-                )}
-                {targetProfile.instagram && (
-                  <a
-                    href={formatUrl(
-                      `instagram.com/${targetProfile.instagram.replace(/^@/, "")}`,
-                    )}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2.5 rounded-lg bg-surface px-3 py-2 hover:bg-primary/5"
-                  >
-                    <Instagram size={16} className="text-pink-600" />
-                    <span className="text-sm font-medium text-text-main">
-                      {targetProfile.instagram}
-                    </span>
-                  </a>
-                )}
-                {targetProfile.facebook && (
-                  <a
-                    href={formatUrl(targetProfile.facebook)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2.5 rounded-lg bg-surface px-3 py-2 hover:bg-primary/5"
-                  >
-                    <Facebook size={16} className="text-blue-600" />
-                    <span className="text-sm font-medium text-text-main break-all">
-                      {targetProfile.facebook}
-                    </span>
-                  </a>
-                )}
-                {targetProfile.linkedin && (
-                  <a
-                    href={formatUrl(targetProfile.linkedin)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2.5 rounded-lg bg-surface px-3 py-2 hover:bg-primary/5"
-                  >
-                    <Linkedin size={16} className="text-sky-700" />
-                    <span className="text-sm font-medium text-text-main break-all">
-                      {targetProfile.linkedin}
-                    </span>
-                  </a>
-                )}
-                {targetProfile.website && (
-                  <a
-                    href={formatUrl(targetProfile.website)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2.5 rounded-lg bg-surface px-3 py-2 hover:bg-primary/5"
-                  >
-                    <Globe size={16} className="text-primary" />
-                    <span className="text-sm font-medium text-text-main break-all">
-                      {targetProfile.website}
-                    </span>
-                  </a>
-                )}
-              </div>
-            </Card>
-          )}
-
-          {hasBusinessAddress && (
-            <Card className="rounded-xl border border-border-subtle bg-white dark:bg-card shadow-sm p-4">
-              <h3 className="text-sm font-bold text-text-main mb-3 flex items-center gap-2">
-                <MapPin size={16} className="text-primary" /> Endereço Comercial
-              </h3>
-              <div className="space-y-1.5 min-w-0">
-                {(targetProfile.businessAddress ||
-                  targetProfile.businessAddressNumber) && (
-                  <p className="text-sm text-text-main font-medium leading-tight">
-                    {[
-                      targetProfile.businessAddress,
-                      targetProfile.businessAddressNumber,
-                    ]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </p>
-                )}
-                {targetProfile.businessComplement && (
-                  <p className="text-xs text-text-muted">
-                    {targetProfile.businessComplement}
-                  </p>
-                )}
-                {targetProfile.businessNeighborhood && (
-                  <p className="text-xs text-text-muted">
-                    {targetProfile.businessNeighborhood}
-                  </p>
-                )}
-                {targetProfile.businessState && (
-                  <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
-                    {targetProfile.businessState}
-                  </p>
-                )}
-                {businessAddressQuery && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full mt-3 h-8 rounded-lg text-xs font-bold border-primary/20 text-primary hover:bg-primary/5"
-                    onClick={() =>
-                      window.open(
-                        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(businessAddressQuery)}`,
-                        "_blank",
-                      )
-                    }
-                  >
-                    <Navigation size={12} className="mr-1.5" /> Ver no Mapa
-                  </Button>
-                )}
-              </div>
-            </Card>
-          )}
-
-          <Card className="rounded-xl border border-border-subtle bg-white dark:bg-card shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-border-subtle">
-              <h3 className="text-sm font-bold text-text-main">
-                Pessoas que talvez você conheça
-              </h3>
-            </div>
-            <div className="p-4 space-y-4">
-              {[
-                {
-                  name: "Ricardo Silva",
-                  role: "Carpinteiro na Ala Sul",
-                  avatar: "https://picsum.photos/seed/ricardo/40/40",
-                },
-                {
-                  name: "Ana Souza",
-                  role: "Designer em SP",
-                  avatar: "https://picsum.photos/seed/ana/40/40",
-                },
-                {
-                  name: "Marcos Oliveira",
-                  role: "Encanador na Ala Oeste",
-                  avatar: "https://picsum.photos/seed/marcos/40/40",
-                },
-              ].map((person, idx) => (
-                <div key={idx} className="flex gap-2.5 items-start">
-                  <Avatar className="w-10 h-10 shrink-0">
-                    <AvatarImage src={person.avatar} />
-                    <AvatarFallback>{person.name[0]}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-text-main leading-none mb-1 truncate group-hover:underline cursor-pointer">
-                      {person.name}
-                    </p>
-                    <p className="text-xs text-text-muted line-clamp-2 leading-snug">
-                      {person.role}
-                    </p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-2 h-7 rounded-full text-xs border-[1.5px] border-text-muted/60 text-text-muted font-bold hover:bg-surface"
-                    >
-                      <UserPlus size={14} className="mr-1.5" /> Conectar
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              <div className="pt-2">
-                <Button
-                  variant="ghost"
-                  className="w-full h-8 text-xs font-bold text-text-muted hover:bg-surface rounded-md"
-                >
-                  Exibir mais <ChevronRight size={14} className="ml-1" />
-                </Button>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="rounded-xl border border-border-subtle bg-white dark:bg-card shadow-sm p-4">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-xs font-bold text-text-muted uppercase tracking-widest">
-                Contatos diretos
-              </p>
-              <Users size={14} className="text-primary/40" />
-            </div>
-            <div className="flex gap-1.5">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Avatar
-                  key={i}
-                  className="w-8 h-8 border-2 border-white dark:border-card -ml-2 first:ml-0"
-                >
-                  <AvatarImage
-                    src={`https://picsum.photos/seed/${i * 123}/32/32`}
-                  />
-                  <AvatarFallback>?</AvatarFallback>
-                </Avatar>
-              ))}
-              <div className="w-8 h-8 rounded-full bg-surface border-2 border-white dark:border-card -ml-2 flex items-center justify-center text-[10px] font-bold text-text-muted">
-                +12
-              </div>
-            </div>
-          </Card>
-
-          <div className="px-4 py-2">
-            <p className="text-[10px] text-text-muted font-medium text-center">
-              Skillsy © 2026 • Privacidade e Termos de Uso
-            </p>
-          </div>
-        </aside>
       </main>
       {/* Lightbox Dialog */}
-      <Dialog open={contactInfoOpen} onOpenChange={setContactInfoOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogTitle>Informações de contato</DialogTitle>
-          <DialogDescription>
-            Canais disponíveis para falar com este profissional.
-          </DialogDescription>
-          <div className="flex flex-col gap-3 pt-2">
-            {targetProfile.whatsapp && (
-              <button
-                type="button"
-                onClick={handleWhatsApp}
-                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 text-left hover:bg-primary/5"
-              >
-                <MessageCircle size={18} className="text-green-600" />
-                <span className="text-sm font-medium text-text-main">
-                  {targetProfile.whatsapp}
-                </span>
-              </button>
-            )}
-            {targetProfile.phone && (
-              <button
-                type="button"
-                onClick={handlePhoneCall}
-                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 text-left hover:bg-primary/5"
-              >
-                <Phone size={18} className="text-primary" />
-                <span className="text-sm font-medium text-text-main">
-                  {targetProfile.phone}
-                </span>
-              </button>
-            )}
-            {targetProfile.instagram && (
-              <a
-                href={formatUrl(
-                  `instagram.com/${targetProfile.instagram.replace(/^@/, "")}`,
-                )}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 hover:bg-primary/5"
-              >
-                <Instagram size={18} className="text-pink-600" />
-                <span className="text-sm font-medium text-text-main">
-                  {targetProfile.instagram}
-                </span>
-              </a>
-            )}
-            {targetProfile.facebook && (
-              <a
-                href={formatUrl(targetProfile.facebook)}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 hover:bg-primary/5"
-              >
-                <Facebook size={18} className="text-blue-600" />
-                <span className="text-sm font-medium text-text-main break-all">
-                  {targetProfile.facebook}
-                </span>
-              </a>
-            )}
-            {targetProfile.linkedin && (
-              <a
-                href={formatUrl(targetProfile.linkedin)}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 hover:bg-primary/5"
-              >
-                <Linkedin size={18} className="text-sky-700" />
-                <span className="text-sm font-medium text-text-main break-all">
-                  {targetProfile.linkedin}
-                </span>
-              </a>
-            )}
-            {targetProfile.website && (
-              <a
-                href={formatUrl(targetProfile.website)}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 hover:bg-primary/5"
-              >
-                <Globe size={18} className="text-primary" />
-                <span className="text-sm font-medium text-text-main break-all">
-                  {targetProfile.website}
-                </span>
-              </a>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+ 
       <Dialog
         open={selectedImage !== null}
         onOpenChange={(open) => !open && setSelectedImage(null)}
