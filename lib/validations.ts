@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AVAILABILITY_OPTIONS, PROVIDER_CATEGORIES, type ProfileFormValues } from '@/lib/profile-form';
 
 const currentYear = new Date().getFullYear();
 
@@ -34,7 +35,10 @@ export const profileSchema = z.object({
   location: optionalTextField(100, 'Localização deve ter no máximo 100 caracteres'),
   ward: optionalTextField(100, 'Ala/Ramo deve ter no máximo 100 caracteres'),
   serviceType: optionalTextField(100, 'Serviço deve ter no máximo 100 caracteres'),
-  category: optionalTextField(50, 'Categoria inválida'),
+  category: z
+    .union([z.literal(''), z.enum(PROVIDER_CATEGORIES)])
+    .nullable()
+    .optional(),
   companyName: optionalTextField(100, 'Nome da empresa deve ter no máximo 100 caracteres'),
   businessAddress: optionalTextField(150, 'Endereço deve ter no máximo 150 caracteres'),
   businessAddressNumber: optionalTextField(20, 'Número deve ter no máximo 20 caracteres'),
@@ -90,21 +94,41 @@ export const profileSchema = z.object({
     ])
     .nullable()
     .optional(),
-  availability: z.array(z.string()).optional(),
+  availability: z.array(z.enum(AVAILABILITY_OPTIONS)).optional(),
   serviceHours: optionalTextField(100, 'Horário muito longo'),
   photoURL: z.string().nullable().optional(),
   bannerURL: z.string().nullable().optional(),
   gallery: z
     .array(
       z.object({
-        url: z.string(),
+        url: z.string().trim().min(1, 'A foto precisa ter uma URL válida'),
         description: z.string().max(200, 'Descrição da foto muito longa').nullable().optional()
       }),
     )
     .max(5, 'Você pode enviar no máximo 5 fotos para a galeria'),
+}).superRefine((data, ctx) => {
+  if (!data.isProvider) {
+    return;
+  }
+
+  if (!data.category) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['category'],
+      message: 'Selecione uma categoria para anunciar seus serviços',
+    });
+  }
+
+  if (!data.serviceType || data.serviceType.trim().length < 2) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['serviceType'],
+      message: 'Descreva sua especialidade para aparecer nas buscas',
+    });
+  }
 });
 
-export type ProfileFormData = z.infer<typeof profileSchema>;
+export type ProfileFormData = ProfileFormValues;
 
 export const loginSchema = z.object({
   email: z.string()

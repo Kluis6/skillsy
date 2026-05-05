@@ -202,7 +202,27 @@ export const UserService = {
         ),
       );
 
+      const createdAt =
+        currentData.createdAt !== undefined ? currentData.createdAt : serverTimestamp();
+
       const nextData = {
+        uid,
+        name:
+          (safeIncomingData.name as string | undefined) ??
+          (currentData.name as string | undefined) ??
+          auth.currentUser?.displayName ??
+          'Membro Skillsy',
+        email:
+          (currentData.email as string | undefined) ??
+          auth.currentUser?.email ??
+          '',
+        isProvider:
+          (safeIncomingData.isProvider as boolean | undefined) ??
+          (currentData.isProvider as boolean | undefined) ??
+          false,
+        role: (currentData.role as UserProfile['role'] | undefined) ?? 'user',
+        contacts: (currentData.contacts as string[] | undefined) ?? [],
+        createdAt,
         ...currentData,
         ...safeIncomingData,
       };

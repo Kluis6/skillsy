@@ -88,6 +88,52 @@ service cloud.firestore {
       return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
 
+    function isValidCategory(category) {
+      return category in [
+        'Tecnologia', 'Design', 'Marketing', 'Consultoria', 'Cozinha', 'Limpeza',
+        'Manutenção', 'Beleza', 'Educação', 'Saúde', 'Eventos', 'Jurídico',
+        'Financeiro', 'Assistência', 'Reformas', 'Automotivo', 'Moda',
+        'Bem Estar', 'Pet Care', 'Fotografia', 'Música', 'Idiomas',
+        'Esportes', 'Festas', 'Transporte', 'Outros'
+      ];
+    }
+
+    function isValidAvailabilityItem(day) {
+      return day in ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    }
+
+    function isValidAvailabilityList(items) {
+      return items is list &&
+             items.size() <= 7 &&
+             (!((0 in items)) || isValidAvailabilityItem(items[0])) &&
+             (!((1 in items)) || isValidAvailabilityItem(items[1])) &&
+             (!((2 in items)) || isValidAvailabilityItem(items[2])) &&
+             (!((3 in items)) || isValidAvailabilityItem(items[3])) &&
+             (!((4 in items)) || isValidAvailabilityItem(items[4])) &&
+             (!((5 in items)) || isValidAvailabilityItem(items[5])) &&
+             (!((6 in items)) || isValidAvailabilityItem(items[6]));
+    }
+
+    function isValidGalleryItem(item) {
+      return item is map &&
+             item.keys().hasAll(['url']) &&
+             item.keys().hasOnly(['url', 'description']) &&
+             item.url is string &&
+             item.url.size() > 0 &&
+             item.url.size() <= 1000000 &&
+             (!('description' in item) || item.description == null || (item.description is string && item.description.size() <= 200));
+    }
+
+    function isValidGallery(items) {
+      return items is list &&
+             items.size() <= 5 &&
+             (!((0 in items)) || isValidGalleryItem(items[0])) &&
+             (!((1 in items)) || isValidGalleryItem(items[1])) &&
+             (!((2 in items)) || isValidGalleryItem(items[2])) &&
+             (!((3 in items)) || isValidGalleryItem(items[3])) &&
+             (!((4 in items)) || isValidGalleryItem(items[4]));
+    }
+
     function isValidUser(data) {
       let allowedFields = [
         'id', 'uid', 'name', 'email', 'photoURL', 'bannerURL', 'bio', 
@@ -110,7 +156,7 @@ service cloud.firestore {
              (!('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 1000000)) &&
              (!('bannerURL' in data) || data.bannerURL == null || (data.bannerURL is string && data.bannerURL.size() <= 1000000)) &&
              (!('bio' in data) || data.bio == null || (data.bio is string && data.bio.size() <= 2000)) &&
-             (!('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100)) &&
+             (!('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100 && isValidCategory(data.category))) &&
              (!('contacts' in data) || data.contacts == null || data.contacts is list) &&
              (!('whatsapp' in data) || data.whatsapp == null || (data.whatsapp is string && data.whatsapp.size() <= 30)) &&
              (!('phone' in data) || data.phone == null || (data.phone is string && data.phone.size() <= 30)) &&
@@ -123,12 +169,12 @@ service cloud.firestore {
              (!('location' in data) || data.location == null || (data.location is string && data.location.size() <= 200)) &&
              (!('ward' in data) || data.ward == null || (data.ward is string && data.ward.size() <= 200)) &&
              (!('companyName' in data) || data.companyName == null || (data.companyName is string && data.companyName.size() <= 200)) &&
-             (!('gallery' in data) || data.gallery == null || (data.gallery is list && data.gallery.size() <= 5)) &&
+             (!('gallery' in data) || data.gallery == null || isValidGallery(data.gallery)) &&
              (!('rating' in data) || data.rating is number) &&
              (!('reviewCount' in data) || data.reviewCount is number) &&
              (!('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
              (!('baptismYear' in data) || data.baptismYear == null || data.baptismYear is number) &&
-             (!('availability' in data) || data.availability == null || data.availability is list) &&
+             (!('availability' in data) || data.availability == null || isValidAvailabilityList(data.availability)) &&
              (!('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200)) &&
              (!('businessAddress' in data) || data.businessAddress == null || (data.businessAddress is string && data.businessAddress.size() <= 200)) &&
              (!('businessAddressNumber' in data) || data.businessAddressNumber == null || (data.businessAddressNumber is string && data.businessAddressNumber.size() <= 20)) &&
@@ -163,6 +209,10 @@ service cloud.firestore {
              data.keys().hasOnly(['providerId', 'votedAt']) &&
              data.providerId == providerId &&
              data.votedAt is timestamp;
+    }
+
+    function voteDocPath(userId, providerId) {
+      return /databases/$(database)/documents/users/$(userId)/votes/$(providerId);
     }
 
     function isValidNotification(data) {
@@ -212,10 +262,13 @@ service cloud.firestore {
       // Update: Owner can update their info, Admin anything, 
       // OR a non-owner can perform a rating update if paired with a vote record
       allow update: if (isOwner(userId) && isValidUser(request.resource.data) && 
-                        request.resource.data.role == resource.data.role &&
+                        ((!('role' in resource.data) && request.resource.data.role == 'user') ||
+                         request.resource.data.role == resource.data.role) &&
                         (!('isBlocked' in request.resource.data) || request.resource.data.isBlocked == resource.data.isBlocked) &&
-                        request.resource.data.uid == resource.data.uid &&
-                        request.resource.data.createdAt == resource.data.createdAt) 
+                        ((!('uid' in resource.data) && request.resource.data.uid == userId) ||
+                         request.resource.data.uid == resource.data.uid) &&
+                        ((!('createdAt' in resource.data) && request.resource.data.createdAt is timestamp) ||
+                         request.resource.data.createdAt == resource.data.createdAt)) 
                     || 
                     (isAuthenticated() && isNotBlocked() && request.auth.uid != userId && 
                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount']) &&
@@ -223,7 +276,7 @@ service cloud.firestore {
                      request.resource.data.reviewCount is number &&
                      ((!('reviewCount' in resource.data) && request.resource.data.reviewCount == 1) ||
                       (request.resource.data.reviewCount == resource.data.reviewCount + 1)) &&
-                     getAfter(/databases/$(database)/documents/users/$(request.auth.uid)/votes/$(userId)) != null)
+                     existsAfter(voteDocPath(request.auth.uid, userId)))
                     || isAdmin();
       
       // Delete: Only Admin
@@ -231,7 +284,10 @@ service cloud.firestore {
 
       // Private data subcollection
       match /votes/{providerId} {
-        allow read, write: if isOwner(userId) && isValidVoteRecord(request.resource.data, providerId);
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) &&
+                        !exists(voteDocPath(userId, providerId)) &&
+                        isValidVoteRecord(request.resource.data, providerId);
       }
     }
 
@@ -256,7 +312,7 @@ service cloud.firestore {
       // Create: Only authenticated users who are not blocked and not rating themselves
       // MUST also create a private vote record to prevent spam while staying anonymous
       allow create: if isAuthenticated() && isNotBlocked() && isValidRating(request.resource.data) &&
-                      getAfter(/databases/$(database)/documents/users/$(request.auth.uid)/votes/$(request.resource.data.toId)) != null;
+                      existsAfter(voteDocPath(request.auth.uid, request.resource.data.toId));
 
       // Update/Delete: Only Admin (for moderation)
       allow update, delete: if isAdmin();

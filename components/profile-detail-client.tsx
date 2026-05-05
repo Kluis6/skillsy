@@ -7,7 +7,6 @@ import { UserService } from "@/services/user-service";
 import { UserProfile } from "@/models/types";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
 import {
   ArrowLeft,
   UserPlus,
@@ -24,30 +23,49 @@ import {
   ChevronRight,
   Navigation,
   Camera,
+  Globe,
+  Instagram,
+  Facebook,
+  Linkedin,
+  MessageCircle,
+  Copy,
+  Calendar,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-
-interface ProfileDetailClientProps {
-  id: string;
-  initialProfile: UserProfile | null;
-}
-
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Navbar } from "./navbar";
+import { LuMapPin, LuPencil, LuUserMinus } from "react-icons/lu";
+import { TooltipContent, Tooltip, TooltipTrigger } from "./ui/tooltip";
+import { FaWhatsapp } from "react-icons/fa";
+import { PiShareFat } from "react-icons/pi";
+import { BsWhatsapp } from "react-icons/bs";
+import { FaTelegramPlane } from "react-icons/fa";
+
+interface ProfileDetailClientProps {
+  id: string;
+  initialProfile: UserProfile | null;
+}
 
 export function ProfileDetailClient({
   id,
@@ -69,6 +87,16 @@ export function ProfileDetailClient({
   const [ratingHover, setRatingHover] = useState(0);
   const [submittingRating, setSubmittingRating] = useState(false);
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [contactInfoOpen, setContactInfoOpen] = useState(false);
+
+  const shareUrl = targetProfile
+    ? typeof window === "undefined"
+      ? `/profile/${targetProfile.uid}`
+      : `${window.location.origin}/profile/${targetProfile.uid}`
+    : "";
+
+  const canUseNativeShare =
+    typeof navigator !== "undefined" && "share" in navigator;
 
   useEffect(() => {
     // We only need to fetch if we don't have the profile yet or to get fresh data
@@ -133,10 +161,197 @@ export function ProfileDetailClient({
     );
   };
 
+  const handleCopyLink = async () => {
+    if (!shareUrl) return;
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Link copiado", {
+        description: "Agora você pode compartilhar este perfil.",
+      });
+    } catch {
+      toast.error("Não foi possível copiar o link");
+    }
+  };
+
+  const handleNativeShare = async () => {
+    if (!targetProfile || !shareUrl || !canUseNativeShare) return;
+
+    try {
+      await navigator.share({
+        title: targetProfile.name,
+        text: `Confira o perfil de ${targetProfile.name} no Skillsy.`,
+        url: shareUrl,
+      });
+    } catch {
+      // Usuario cancelou ou o navegador bloqueou a acao.
+    }
+  };
+
+  const handleWhatsAppShare = () => {
+    if (!targetProfile || !shareUrl) return;
+
+    const message = `Confira o perfil de ${targetProfile.name} no Skillsy: ${shareUrl}`;
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(message)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+
+  const handleTelegramShare = () => {
+    if (!targetProfile || !shareUrl) return;
+
+    const message = `Confira o perfil de ${targetProfile.name} no Skillsy: ${shareUrl}`;
+    window.open(
+      `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(message)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+
+  const shareActions = [
+    {
+      label: "Compartilhar no WhatsApp",
+      description: "Envie o perfil no WhatsApp.",
+      icon: BsWhatsapp,
+      onClick: handleWhatsAppShare,
+      className: "text-green-600",
+    },
+    {
+      label: "Compartilhar no Telegram",
+      description: "Envie o perfil no Telegram.",
+      icon: FaTelegramPlane,
+      onClick: handleTelegramShare,
+      className: "text-sky-500",
+    },
+    {
+      label: "Copiar link",
+      description: "Copia o link para a area de transferencia.",
+      icon: Copy,
+      onClick: handleCopyLink,
+      className: "text-sky-600",
+    },
+  ];
+
+  const renderShareSheet = () => (
+    <SheetContent side="bottom" className="rounded-t-lg">
+      <SheetHeader className="text-left">
+        <SheetTitle>Compartilhar perfil</SheetTitle>
+        <SheetDescription>
+          Envie o perfil de <strong>{targetProfile?.name}</strong> por:
+        </SheetDescription>
+      </SheetHeader>
+      <div className="flex w-full flex-col gap-2 p-4 md:flex-row">
+        {shareActions.map((action) => {
+          const Icon = action.icon;
+
+          return (
+            <SheetClose
+              key={action.label}
+              render={
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-auto w-full justify-start gap-3 p-4 text-left md:w-1/3"
+                  onClick={action.onClick}
+                />
+              }
+            >
+              <span className={action.className}>
+                <Icon className="size-5" />
+              </span>
+              <span className="flex min-w-0 flex-col items-start">
+                <span className="font-semibold text-gray-800">
+                  {action.label}
+                </span>
+                <span className="whitespace-normal text-xs text-muted-foreground">
+                  {action.description}
+                </span>
+              </span>
+            </SheetClose>
+          );
+        })}
+      </div>
+    </SheetContent>
+  );
+
+  const renderShareButton = (className?: string) => {
+    if (canUseNativeShare) {
+      return (
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="outline"
+                size="icon"
+                className={className}
+                onClick={handleNativeShare}
+              />
+            }
+          >
+            <PiShareFat className="text-gray-700" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Compartilhar</p>
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+
+    return (
+      <Sheet>
+        <Tooltip>
+          <SheetTrigger
+            render={
+              <TooltipTrigger
+                render={
+                  <Button variant="outline" size="icon" className={className} />
+                }
+              >
+                <PiShareFat className="text-gray-700" />
+              </TooltipTrigger>
+            }
+          />
+          <TooltipContent>
+            <p>Compartilhar</p>
+          </TooltipContent>
+        </Tooltip>
+        {renderShareSheet()}
+      </Sheet>
+    );
+  };
+
   const handlePhoneCall = () => {
     if (!targetProfile?.phone) return;
     window.open(`tel:${targetProfile.phone.replace(/\D/g, "")}`, "_self");
   };
+
+  const hasContactInfo = Boolean(
+    targetProfile?.whatsapp ||
+    targetProfile?.phone ||
+    targetProfile?.instagram ||
+    targetProfile?.facebook ||
+    targetProfile?.linkedin ||
+    targetProfile?.website,
+  );
+
+  const hasBusinessAddress = Boolean(
+    targetProfile?.businessAddress ||
+    targetProfile?.businessAddressNumber ||
+    targetProfile?.businessNeighborhood ||
+    targetProfile?.businessState ||
+    targetProfile?.businessComplement,
+  );
+
+  const businessAddressQuery = [
+    targetProfile?.businessAddress,
+    targetProfile?.businessAddressNumber,
+    targetProfile?.businessNeighborhood,
+    targetProfile?.businessState,
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   const handleRate = async (score: number) => {
     if (!user) {
@@ -240,7 +455,7 @@ export function ProfileDetailClient({
     <>
       <Navbar user={user} profile={profile} logout={logout} />
 
-      <main className=" gap-6">
+      <main className="w-full h-full">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -263,10 +478,79 @@ export function ProfileDetailClient({
             </div>
 
             <section className="mx-auto container px-4 pb-4">
-              <div className="relative flex flex-col pt-0">
+              <div className="relative flex flex-col">
                 {/* Avatar Overlap */}
-                <div className="-mt-14 md:-mt-22 mb-4 relative z-10 size-28 md:size-40">
-                  <Avatar className="w-full h-full border-4 border-white dark:border-card bg-white dark:bg-card shadow-sm shadow-black/30">
+                <div className="flex items-center md:py-4 py-2 justify-end">
+                  <div className="text-center bg-surface rounded-sm border px-2 py-1 space-y-2 flex sm:hidden">
+                    {/* <p className="text-[10px] font-bold text-text-muted uppercase">
+                      {targetProfile.reviewCount || 0} avaliações
+                    </p> */}
+                    <div className="flex items-baseline justify-center space-x-2">
+                      <Star
+                        size={14}
+                        fill="currentColor"
+                        className="text-highlight"
+                      />
+                      <p className="text-base font-medium text-primary ">
+                        {targetProfile.rating || "0.0"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="sm:flex space-x-2 hidden ">
+                    {renderShareButton("size-10 rounded-md")}
+                    {user?.uid === targetProfile.uid ? (
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={
+                            <Link
+                              className="rounded-md size-10 flex border justify-center items-center hover:bg-neutral-100 transition-colors"
+                              href="/profile"
+                            >
+                              <LuPencil className="text-gray-700" />
+                            </Link>
+                          }
+                        />
+                        <TooltipContent>
+                          <p>Editar perfil</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      <>
+                        {user?.uid !== targetProfile.uid && (
+                          <Button
+                            variant={isContact ? "destructive" : "default"}
+                            onClick={handleToggleContact}
+                            className={`rounded-md h-10 px-6 font-bold transition-all ${
+                              isContact
+                                ? ""
+                                : "bg-blue-500 text-white hover:bg-blue-600"
+                            }`}
+                          >
+                            {isContact ? (
+                              <>
+                                <LuUserMinus /> Desconectar
+                              </>
+                            ) : (
+                              <>
+                                <UserPlus size={18} className="mr-2" /> Conectar
+                              </>
+                            )}
+                          </Button>
+                        )}
+                      </>
+                    )}
+
+                    <Button
+                      onClick={handleWhatsApp}
+                      variant="default"
+                      className="h-10 px-6 bg-green-500 rounded-md hover:bg-green-600 active:bg-green-700 text-white font-bold"
+                    >
+                      <FaWhatsapp /> <p>WhatsApp</p>
+                    </Button>
+                  </div>
+                </div>
+                <div className="-mt-28 sm:-mt-34 md:-mt-38 mb-4 relative z-10 size-28 sm:size-32 md:size-40">
+                  <Avatar className="w-full h-full border-6 border-white dark:border-card bg-white dark:bg-card shadow-sm shadow-black/30">
                     <AvatarImage
                       src={targetProfile.photoURL}
                       className="object-cover"
@@ -276,9 +560,8 @@ export function ProfileDetailClient({
                     </AvatarFallback>
                   </Avatar>
                 </div>
-
-                <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-                  <div className="space-y-1">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
+                  <div className="md:space-y-2 space-y-1">
                     <div className="flex items-center gap-2">
                       <h2 className="text-xl md:text-3xl font-bold text-text-main leading-tight">
                         {targetProfile.name}
@@ -288,7 +571,7 @@ export function ProfileDetailClient({
                       )}
                     </div>
 
-                    <p className="text-sm text-text-main font-regular leading-relaxed max-w-xl">
+                    <p className="text-base text-gray-600 font-normal">
                       {targetProfile.serviceType ||
                         targetProfile.category ||
                         "Membro da Comunidade Skillsy"}
@@ -296,101 +579,123 @@ export function ProfileDetailClient({
                         ` na ${targetProfile.companyName}`}
                     </p>
 
-                    <p className="text-sm text-text-muted pt-1">
-                      {targetProfile.location && (
-                        <span>{targetProfile.location}</span>
-                      )}
-                      {targetProfile.location &&
-                        (targetProfile.instagram ||
-                          targetProfile.website ||
-                          targetProfile.phone) && (
-                          <span className="mx-1.5 text-text-muted/40">•</span>
-                        )}
-                      {targetProfile.phone && (
-                        <button
-                          onClick={handlePhoneCall}
-                          className="text-text-main font-bold hover:text-primary transition-colors flex items-center gap-1 mr-2"
-                        >
-                          <Phone size={14} /> {targetProfile.phone}
-                        </button>
-                      )}
-                      {(targetProfile.instagram || targetProfile.website) && (
-                        <button className="text-primary font-bold hover:underline">
-                          Informações de contato
-                        </button>
-                      )}
-                    </p>
-
-               
-                  </div>
-
-                  <div className="flex flex-col gap-3 w-full md:w-auto">
                     {targetProfile.companyName && (
-                      <div className="flex items-center gap-2.5 group cursor-pointer">
-                        <div className="size-8 rounded bg-surface flex items-center justify-center border border-border-subtle group-hover:bg-primary/5 transition-colors">
-                          <Building2 size={16} className="text-blue-600" />
-                        </div>
-                        <p className="text-sm font-medium text-text-main">
+                      <div className="flex items-center space-x-2">
+                        <Building2 size={18} className="text-gray-800" />
+                        <p className="text-sm font-normal text-gray-800">
                           {targetProfile.companyName}
                         </p>
                       </div>
                     )}
-                    {targetProfile.ward && (
-                      <div className="flex items-center gap-2.5 group cursor-pointer">
-                        <div className="w-8 h-8 rounded bg-surface flex items-center justify-center border border-border-subtle group-hover:bg-primary/5 transition-colors text-primary">
-                          <Church size={16} />
-                        </div>
-                        <span className="text-sm font-bold text-text-main hover:text-primary transition-colors underline-offset-2 hover:underline">
-                          {targetProfile.ward}
-                        </span>
+                    {targetProfile.location && (
+                      <div className="flex items-center space-x-2">
+                        <LuMapPin size={18} className="text-gray-800" />
+                        <p className="text-sm text-gray-800 font-normal">
+                          {targetProfile.location}
+                        </p>
                       </div>
                     )}
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3 mt-6">
-                  {user?.uid === targetProfile.uid ? (
-                    <Link href="/profile">
-                      <Button className="rounded-full h-10 px-6 font-bold bg-primary text-white hover:bg-primary/90 shadow-none">
-                        Editar perfil
-                      </Button>
-                    </Link>
-                  ) : (
-                    <>
-                      {user?.uid !== targetProfile.uid && (
-                        <Button
-                          onClick={handleToggleContact}
-                          className={`rounded-full h-10 px-6 font-bold shadow-none ${
-                            isContact
-                              ? "border-2 border-primary text-primary hover:bg-primary/5 bg-transparent"
-                              : "bg-primary text-white hover:bg-primary/90"
-                          }`}
-                        >
-                          {isContact ? (
-                            <>Em sua rede</>
-                          ) : (
-                            <>
-                              <UserPlus size={18} className="mr-2" /> Conectar
-                            </>
-                          )}
-                        </Button>
+                    <div className="flex space-x-2 ">
+                      {targetProfile.ward && (
+                        <div className="flex items-center space-x-2">
+                          <Church size={18} className="text-primary" />
+                          <p className="text-sm text-primary font-medium">
+                            {targetProfile.ward}
+                          </p>
+                        </div>
                       )}
-                    </>
-                  )}
+                      <div className="border-l border-gray-700"></div>
+                      {targetProfile.baptismYear && (
+                        <p className="text-sm text-gray-800 font-normal">
+                          {targetProfile.baptismYear ===
+                          new Date().getFullYear()
+                            ? `Membro desde ${targetProfile.baptismYear}`
+                            : `Membro há ${new Date().getFullYear() - targetProfile.baptismYear} anos`}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-                  <Button
-                    onClick={handleWhatsApp}
-                    variant="outline"
-                    className="rounded-full h-10 px-6 border-2 border-primary text-primary hover:bg-primary/5 font-bold"
-                  >
-                    Mensagem
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="rounded-full h-10 px-4 border-2 border-text-muted/40 text-text-muted hover:bg-surface font-bold"
-                  >
-                    Mais
-                  </Button>
+                  <div className="flex flex-col w-full sm:w-auto">
+                    <div className="text-center bg-surface rounded-sm border p-4 space-y-2 hidden sm:block">
+                      <p className="text-[10px] font-bold text-text-muted uppercase">
+                        {targetProfile.reviewCount || 0} avaliações
+                      </p>
+                      <div className="flex items-baseline justify-center space-x-2">
+                        <Star
+                          size={18}
+                          fill="currentColor"
+                          className="text-highlight"
+                        />
+                        <p className="text-3xl font-bold text-primary ">
+                          {targetProfile.rating || "0.0"}
+                        </p>
+                      </div>
+
+                      {/* <div className="flex items-center justify-center gap-0.5 text-highlight py-1">
+                        <Star size={12} fill="currentColor" />
+                        <Star size={12} fill="currentColor" />
+                        <Star size={12} fill="currentColor" />
+                        <Star size={12} fill="currentColor" />
+                        <Star size={12} className="text-border-subtle" />
+                      </div> */}
+                    </div>
+                    <div className="flex flex-col gap-2 sm:hidden ">
+                      <div className="flex gap-2 justify-end">
+                        {renderShareButton("size-10 rounded-sm")}
+                        {user?.uid === targetProfile.uid ? (
+                          <Tooltip>
+                            <TooltipTrigger
+                              render={
+                                <Link
+                                  className="rounded-md size-10 flex border justify-center items-center hover:bg-neutral-100 transition-colors"
+                                  href="/profile"
+                                >
+                                  <LuPencil className="text-gray-700" />
+                                </Link>
+                              }
+                            />
+                            <TooltipContent>
+                              <p>Editar perfil</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          <>
+                            {user?.uid !== targetProfile.uid && (
+                              <Button
+                                variant={isContact ? "destructive" : "default"}
+                                onClick={handleToggleContact}
+                                className={`rounded-sm h-10 px-6 flex-1 font-bold transition-all ${
+                                  isContact
+                                    ? ""
+                                    : "bg-blue-500 text-white hover:bg-blue-600"
+                                }`}
+                              >
+                                {isContact ? (
+                                  <>
+                                    <LuUserMinus /> Desconectar
+                                  </>
+                                ) : (
+                                  <>
+                                    <UserPlus size={18} className="mr-2" />
+                                    Conectar
+                                  </>
+                                )}
+                              </Button>
+                            )}
+                          </>
+                        )}
+                      </div>
+
+                      <Button
+                        onClick={handleWhatsApp}
+                        variant="default"
+                        className="h-10 px-6 w-full bg-green-500 rounded-sm hover:bg-green-600 active:bg-green-700 text-white font-bold"
+                      >
+                        <FaWhatsapp /> <p>WhatsApp</p>
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
@@ -491,7 +796,7 @@ export function ProfileDetailClient({
           ) : null}
 
           {/* Experience Section (Simulated based on image) */}
-          <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
+          {/* <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-text-main">Experiência</h3>
               <Button
@@ -552,7 +857,7 @@ export function ProfileDetailClient({
                 </div>
               </div>
             </div>
-          </section>
+          </section> */}
 
           {/* Verification / Trust Section */}
           <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
@@ -614,40 +919,141 @@ export function ProfileDetailClient({
 
         {/* Sidebar */}
         <aside className="mt-4 md:mt-0 space-y-4">
-          {targetProfile.businessAddress && (
+          {hasContactInfo && (
+            <Card className="rounded-xl border border-border-subtle bg-white dark:bg-card shadow-sm p-4">
+              <h3 className="text-sm font-bold text-text-main mb-3 flex items-center gap-2">
+                <Users size={16} className="text-primary" /> Contato e Redes
+              </h3>
+              <div className="space-y-3">
+                {targetProfile.whatsapp && (
+                  <button
+                    type="button"
+                    onClick={handleWhatsApp}
+                    className="flex w-full items-center gap-2.5 rounded-lg bg-surface px-3 py-2 text-left hover:bg-primary/5"
+                  >
+                    <MessageCircle size={16} className="text-green-600" />
+                    <span className="text-sm font-medium text-text-main">
+                      {targetProfile.whatsapp}
+                    </span>
+                  </button>
+                )}
+                {targetProfile.phone && (
+                  <button
+                    type="button"
+                    onClick={handlePhoneCall}
+                    className="flex w-full items-center gap-2.5 rounded-lg bg-surface px-3 py-2 text-left hover:bg-primary/5"
+                  >
+                    <Phone size={16} className="text-primary" />
+                    <span className="text-sm font-medium text-text-main">
+                      {targetProfile.phone}
+                    </span>
+                  </button>
+                )}
+                {targetProfile.instagram && (
+                  <a
+                    href={formatUrl(
+                      `instagram.com/${targetProfile.instagram.replace(/^@/, "")}`,
+                    )}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2.5 rounded-lg bg-surface px-3 py-2 hover:bg-primary/5"
+                  >
+                    <Instagram size={16} className="text-pink-600" />
+                    <span className="text-sm font-medium text-text-main">
+                      {targetProfile.instagram}
+                    </span>
+                  </a>
+                )}
+                {targetProfile.facebook && (
+                  <a
+                    href={formatUrl(targetProfile.facebook)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2.5 rounded-lg bg-surface px-3 py-2 hover:bg-primary/5"
+                  >
+                    <Facebook size={16} className="text-blue-600" />
+                    <span className="text-sm font-medium text-text-main break-all">
+                      {targetProfile.facebook}
+                    </span>
+                  </a>
+                )}
+                {targetProfile.linkedin && (
+                  <a
+                    href={formatUrl(targetProfile.linkedin)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2.5 rounded-lg bg-surface px-3 py-2 hover:bg-primary/5"
+                  >
+                    <Linkedin size={16} className="text-sky-700" />
+                    <span className="text-sm font-medium text-text-main break-all">
+                      {targetProfile.linkedin}
+                    </span>
+                  </a>
+                )}
+                {targetProfile.website && (
+                  <a
+                    href={formatUrl(targetProfile.website)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2.5 rounded-lg bg-surface px-3 py-2 hover:bg-primary/5"
+                  >
+                    <Globe size={16} className="text-primary" />
+                    <span className="text-sm font-medium text-text-main break-all">
+                      {targetProfile.website}
+                    </span>
+                  </a>
+                )}
+              </div>
+            </Card>
+          )}
+
+          {hasBusinessAddress && (
             <Card className="rounded-xl border border-border-subtle bg-white dark:bg-card shadow-sm p-4">
               <h3 className="text-sm font-bold text-text-main mb-3 flex items-center gap-2">
                 <MapPin size={16} className="text-primary" /> Endereço Comercial
               </h3>
               <div className="space-y-1.5 min-w-0">
-                <p className="text-sm text-text-main font-medium leading-tight">
-                  {targetProfile.businessAddress},{" "}
-                  {targetProfile.businessAddressNumber}
-                </p>
+                {(targetProfile.businessAddress ||
+                  targetProfile.businessAddressNumber) && (
+                  <p className="text-sm text-text-main font-medium leading-tight">
+                    {[
+                      targetProfile.businessAddress,
+                      targetProfile.businessAddressNumber,
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </p>
+                )}
                 {targetProfile.businessComplement && (
                   <p className="text-xs text-text-muted">
                     {targetProfile.businessComplement}
                   </p>
                 )}
-                <p className="text-xs text-text-muted">
-                  {targetProfile.businessNeighborhood}
-                </p>
-                <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
-                  {targetProfile.businessState}
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full mt-3 h-8 rounded-lg text-xs font-bold border-primary/20 text-primary hover:bg-primary/5"
-                  onClick={() =>
-                    window.open(
-                      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${targetProfile.businessAddress}, ${targetProfile.businessAddressNumber}, ${targetProfile.businessNeighborhood}, ${targetProfile.businessState}`)}`,
-                      "_blank",
-                    )
-                  }
-                >
-                  <Navigation size={12} className="mr-1.5" /> Ver no Mapa
-                </Button>
+                {targetProfile.businessNeighborhood && (
+                  <p className="text-xs text-text-muted">
+                    {targetProfile.businessNeighborhood}
+                  </p>
+                )}
+                {targetProfile.businessState && (
+                  <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
+                    {targetProfile.businessState}
+                  </p>
+                )}
+                {businessAddressQuery && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full mt-3 h-8 rounded-lg text-xs font-bold border-primary/20 text-primary hover:bg-primary/5"
+                    onClick={() =>
+                      window.open(
+                        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(businessAddressQuery)}`,
+                        "_blank",
+                      )
+                    }
+                  >
+                    <Navigation size={12} className="mr-1.5" /> Ver no Mapa
+                  </Button>
+                )}
               </div>
             </Card>
           )}
@@ -742,6 +1148,94 @@ export function ProfileDetailClient({
         </aside>
       </main>
       {/* Lightbox Dialog */}
+      <Dialog open={contactInfoOpen} onOpenChange={setContactInfoOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogTitle>Informações de contato</DialogTitle>
+          <DialogDescription>
+            Canais disponíveis para falar com este profissional.
+          </DialogDescription>
+          <div className="flex flex-col gap-3 pt-2">
+            {targetProfile.whatsapp && (
+              <button
+                type="button"
+                onClick={handleWhatsApp}
+                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 text-left hover:bg-primary/5"
+              >
+                <MessageCircle size={18} className="text-green-600" />
+                <span className="text-sm font-medium text-text-main">
+                  {targetProfile.whatsapp}
+                </span>
+              </button>
+            )}
+            {targetProfile.phone && (
+              <button
+                type="button"
+                onClick={handlePhoneCall}
+                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 text-left hover:bg-primary/5"
+              >
+                <Phone size={18} className="text-primary" />
+                <span className="text-sm font-medium text-text-main">
+                  {targetProfile.phone}
+                </span>
+              </button>
+            )}
+            {targetProfile.instagram && (
+              <a
+                href={formatUrl(
+                  `instagram.com/${targetProfile.instagram.replace(/^@/, "")}`,
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 hover:bg-primary/5"
+              >
+                <Instagram size={18} className="text-pink-600" />
+                <span className="text-sm font-medium text-text-main">
+                  {targetProfile.instagram}
+                </span>
+              </a>
+            )}
+            {targetProfile.facebook && (
+              <a
+                href={formatUrl(targetProfile.facebook)}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 hover:bg-primary/5"
+              >
+                <Facebook size={18} className="text-blue-600" />
+                <span className="text-sm font-medium text-text-main break-all">
+                  {targetProfile.facebook}
+                </span>
+              </a>
+            )}
+            {targetProfile.linkedin && (
+              <a
+                href={formatUrl(targetProfile.linkedin)}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 hover:bg-primary/5"
+              >
+                <Linkedin size={18} className="text-sky-700" />
+                <span className="text-sm font-medium text-text-main break-all">
+                  {targetProfile.linkedin}
+                </span>
+              </a>
+            )}
+            {targetProfile.website && (
+              <a
+                href={formatUrl(targetProfile.website)}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 hover:bg-primary/5"
+              >
+                <Globe size={18} className="text-primary" />
+                <span className="text-sm font-medium text-text-main break-all">
+                  {targetProfile.website}
+                </span>
+              </a>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
       <Dialog
         open={selectedImage !== null}
         onOpenChange={(open) => !open && setSelectedImage(null)}

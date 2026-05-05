@@ -58,7 +58,7 @@ export function Navbar({
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle ">
-      <div className="container mx-auto flex justify-between items-center px-4 py-2.5">
+      <div className="container mx-auto flex justify-between items-center px-4 md:py-2 py-1">
         <div className="flex items-center space-x-4">
           {shouldShowBackButton ? (
             <></>
@@ -303,7 +303,7 @@ export function Navbar({
           </Drawer>
 
           {user ? (
-            <Avatar className="size-7 ring-2 ring-offset-2 ring-zinc-400 md:ml-1.5">
+            <Avatar className="size-7 ring-2 ring-offset-2 ring-zinc-400 md:ml-1.5 mr-1">
               <AvatarImage src={user.photoURL || undefined} />
               <AvatarFallback>
                 <UserIcon className="size-7" />

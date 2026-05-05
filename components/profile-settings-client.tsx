@@ -42,6 +42,14 @@ import imageCompression from 'browser-image-compression';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { profileSchema, type ProfileFormData } from '@/lib/validations';
+import {
+  AVAILABILITY_OPTIONS,
+  PROVIDER_CATEGORIES,
+  clearProviderFields,
+  getProfileFormDefaults,
+  profileToFormValues,
+  toProfileUpdatePayload,
+} from '@/lib/profile-form';
 
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -63,70 +71,19 @@ export function ProfileSettingsClient() {
     setValue,
     watch,
     reset,
-    formState: { errors, touchedFields, dirtyFields }
+    getValues,
+    formState: { errors, touchedFields, isDirty }
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     mode: 'onChange',
-    defaultValues: {
-      name: '',
-      bio: '',
-      location: '',
-      ward: '',
-      serviceType: '',
-      category: '',
-      companyName: '',
-      isProvider: false,
-      whatsapp: '',
-      phone: '',
-      instagram: '',
-      facebook: '',
-      linkedin: '',
-      website: '',
-      baptismYear: '',
-      availability: [],
-      serviceHours: '',
-      photoURL: '',
-      bannerURL: '',
-      gallery: [],
-      businessAddress: '',
-      businessAddressNumber: '',
-      businessNeighborhood: '',
-      businessState: '',
-      businessComplement: ''
-    }
+    defaultValues: getProfileFormDefaults(),
   });
 
   const formData = watch();
 
   useEffect(() => {
     if (profile) {
-      reset({
-        name: profile.name || '',
-        bio: profile.bio || '',
-        location: profile.location || '',
-        ward: profile.ward || '',
-        serviceType: profile.serviceType || '',
-        category: profile.category || '',
-        companyName: profile.companyName || '',
-        isProvider: profile.isProvider || false,
-        whatsapp: profile.whatsapp || '',
-        phone: profile.phone || '',
-        instagram: profile.instagram || '',
-        facebook: profile.facebook || '',
-        linkedin: profile.linkedin || '',
-        website: profile.website || '',
-        baptismYear: profile.baptismYear ? String(profile.baptismYear) : '',
-        availability: profile.availability || [],
-        serviceHours: profile.serviceHours || '',
-        photoURL: profile.photoURL || '',
-        bannerURL: profile.bannerURL || '',
-        gallery: profile.gallery || [],
-        businessAddress: profile.businessAddress || '',
-        businessAddressNumber: profile.businessAddressNumber || '',
-        businessNeighborhood: profile.businessNeighborhood || '',
-        businessState: profile.businessState || '',
-        businessComplement: profile.businessComplement || ''
-      });
+      reset(profileToFormValues(profile));
     }
   }, [profile, reset]);
 
@@ -147,34 +104,9 @@ export function ProfileSettingsClient() {
 
   const onFormSubmit = async (data: ProfileFormData) => {
     setLoading(true);
-    
-    // Clean data: convert empty strings to null for the database
-    const cleanedData = { ...data };
-    const fieldsToNullify = [
-      'instagram', 'facebook', 'linkedin', 'website', 'whatsapp', 'phone',
-      'bio', 'location', 'ward', 'companyName', 'serviceType', 
-      'category', 'photoURL', 'bannerURL', 'baptismYear', 'serviceHours',
-      'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'businessComplement'
-    ];
-    
-    fieldsToNullify.forEach(field => {
-      if ((cleanedData as any)[field] === '') {
-        (cleanedData as any)[field] = null;
-      }
-    });
-
-    if (!cleanedData.availability?.length) {
-      cleanedData.availability = [];
-    }
-
-    cleanedData.gallery = (cleanedData.gallery || []).filter((item) => item?.url);
-
-    if (cleanedData.baptismYear) {
-      (cleanedData as any).baptismYear = parseInt(cleanedData.baptismYear, 10);
-    }
 
     try {
-      await updateProfile(cleanedData as any);
+      await updateProfile(toProfileUpdatePayload(data));
       toast.success('Perfil atualizado com sucesso!');
     } catch (error: any) {
       console.error('Error updating profile:', error);
@@ -320,8 +252,9 @@ export function ProfileSettingsClient() {
           <div className="flex items-center gap-4">
             <ThemeToggle />
             <Button 
-              onClick={handleSubmit(onFormSubmit)} 
-              disabled={loading}
+              type="submit"
+              form="profile-settings-form"
+              disabled={loading || uploading !== null || !isDirty}
               className="bg-primary text-white hover:bg-primary/90 rounded-2xl px-6 font-bold shadow-lg shadow-primary/20 h-11"
             >
               {loading ? 'Salvando...' : <><Save size={18} className="mr-2" /> Salvar</>}
@@ -331,6 +264,7 @@ export function ProfileSettingsClient() {
       </nav>
 
       <main className="max-w-5xl mx-auto px-6 mt-10">
+        <form id="profile-settings-form" onSubmit={handleSubmit(onFormSubmit)}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Avatar & Basic Info */}
           <div className="space-y-8">
@@ -404,12 +338,19 @@ export function ProfileSettingsClient() {
                   </div>
                   <Switch 
                     checked={formData.isProvider}
-                    onCheckedChange={(checked) =>
+                    onCheckedChange={(checked) => {
+                      if (!checked) {
+                        reset(clearProviderFields(getValues()), {
+                          keepDirty: true,
+                          keepTouched: true,
+                        });
+                      }
+
                       setValue('isProvider', checked, {
                         shouldDirty: true,
                         shouldValidate: true,
-                      })
-                    }
+                      });
+                    }}
                   />
                 </div>
                 
@@ -434,32 +375,11 @@ export function ProfileSettingsClient() {
                           className={`w-full bg-surface border-none rounded-2xl h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none ${errors.category ? 'ring-2 ring-red-500' : ''}`}
                         >
                           <option value="">Selecione uma categoria</option>
-                          <option value="Tecnologia">Tecnologia</option>
-                          <option value="Design">Design</option>
-                          <option value="Marketing">Marketing</option>
-                          <option value="Consultoria">Consultoria</option>
-                          <option value="Cozinha">Cozinha</option>
-                          <option value="Limpeza">Limpeza</option>
-                          <option value="Manutenção">Manutenção</option>
-                          <option value="Beleza">Beleza</option>
-                          <option value="Educação">Educação</option>
-                          <option value="Saúde">Saúde</option>
-                          <option value="Eventos">Eventos</option>
-                          <option value="Jurídico">Jurídico</option>
-                          <option value="Financeiro">Financeiro</option>
-                          <option value="Assistência">Assistência Técnica</option>
-                          <option value="Reformas">Reformas e Reparos</option>
-                          <option value="Automotivo">Automotivo</option>
-                          <option value="Moda">Moda</option>
-                          <option value="Bem Estar">Bem Estar</option>
-                          <option value="Pet Care">Pet Care</option>
-                          <option value="Fotografia">Fotografia</option>
-                          <option value="Música">Música</option>
-                          <option value="Idiomas">Idiomas</option>
-                          <option value="Esportes">Esportes</option>
-                          <option value="Festas">Festas</option>
-                          <option value="Transporte">Transporte</option>
-                          <option value="Outros">Outros</option>
+                          {PROVIDER_CATEGORIES.map((category) => (
+                            <option key={category} value={category}>
+                              {category}
+                            </option>
+                          ))}
                         </select>
                       </div>
                       {errors.category && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.category.message}</p>}
@@ -479,7 +399,7 @@ export function ProfileSettingsClient() {
                         <CalendarDays size={12} /> Disponibilidade
                       </Label>
                       <div className="flex flex-wrap gap-2">
-                        {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].map((day) => {
+                        {AVAILABILITY_OPTIONS.map((day) => {
                           const isSelected = formData.availability?.includes(day);
                           return (
                             <button
@@ -778,7 +698,7 @@ export function ProfileSettingsClient() {
                   <div key={index} className="flex flex-col gap-2">
                     <div className="relative aspect-square rounded-2xl overflow-hidden group border border-border-subtle">
                       <Image 
-                        src={typeof photo === 'string' ? photo : photo.url} 
+                        src={photo.url} 
                         alt={`Galeria ${index}`} 
                         fill 
                         className="object-cover transition-transform group-hover:scale-110"
@@ -798,15 +718,11 @@ export function ProfileSettingsClient() {
                     </div>
                     <Textarea
                       placeholder="Comentário (opcional)"
-                      value={typeof photo === 'string' ? '' : photo.description || ''}
+                      value={photo.description || ''}
                       onChange={(e) => {
                         const newGallery = [...formData.gallery];
                         const photoItem = formData.gallery[index];
-                        if (typeof photoItem === 'string') {
-                           newGallery[index] = { url: photoItem, description: e.target.value };
-                        } else {
-                           newGallery[index] = { ...photoItem, description: e.target.value };
-                        }
+                        newGallery[index] = { ...photoItem, description: e.target.value };
                         setValue('gallery', newGallery, {
                           shouldDirty: true,
                           shouldValidate: true,
@@ -826,6 +742,7 @@ export function ProfileSettingsClient() {
             </Card>
           </div>
         </div>
+        </form>
       </main>
     </div>
   );
