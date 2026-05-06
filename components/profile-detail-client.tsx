@@ -42,8 +42,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
-  DialogTitle,
   DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Sheet,
@@ -108,7 +110,6 @@ export function ProfileDetailClient({
   const [userRating, setUserRating] = useState(0);
   const [ratingHover, setRatingHover] = useState(0);
   const [submittingRating, setSubmittingRating] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [contactInfoOpen, setContactInfoOpen] = useState(false);
 
   const shareUrl = targetProfile
@@ -741,7 +742,7 @@ export function ProfileDetailClient({
             {hasContactInfo && (
               <div className="col-span-12  border-y border-border-subtle bg-white dark:bg-card border-r ">
                 <div className="mx-auto container p-4">
-                  <div className=" space-y-4">
+                  <div className="space-y-4">
                     <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
                       Contato e Redes
                     </h3>
@@ -892,30 +893,65 @@ export function ProfileDetailClient({
                 </div>
 
                 {targetProfile.gallery && targetProfile.gallery.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     {targetProfile.gallery.map((photo, index) => (
-                      <motion.div
-                        key={index}
-                        whileHover={{ scale: 1.02 }}
-                        onClick={() => setSelectedImage(index)}
-                        className={`relative rounded-xl overflow-hidden shadow-sm border border-border-subtle aspect-square cursor-pointer ${
-                          index === 0
-                            ? "col-span-2 md:col-span-2 md:row-span-2"
-                            : ""
-                        }`}
-                      >
-                        <Image
-                          src={typeof photo === "string" ? photo : photo.url}
-                          alt={
-                            typeof photo === "object" && photo.description
-                              ? photo.description
-                              : `Galeria ${index + 1}`
+                      <Dialog key={index}>
+                        <DialogTrigger
+                          nativeButton
+                          render={
+                            <button
+                              type="button"
+                              className={`relative rounded-xl overflow-hidden aspect-square cursor-pointer hover:shadow-lg shadow-gray-400 transition-all ${
+                                index === 0
+                                  ? "col-span-2 md:col-span-2 md:row-span-2"
+                                  : ""
+                              }`}
+                            />
                           }
-                          fill
-                          className="object-cover"
-                          referrerPolicy="no-referrer"
-                        />
-                      </motion.div>
+                        >
+                          <Image
+                            src={typeof photo === "string" ? photo : photo.url}
+                            alt={
+                              typeof photo === "object" && photo.description
+                                ? photo.description
+                                : `Galeria ${index + 1}`
+                            }
+                            fill
+                            className="object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        </DialogTrigger>
+                        <DialogContent className="gap-0 overflow-hidden border-none bg-black/95 p-0 sm:rounded-2xl ">
+                          <DialogTitle className="sr-only">
+                            Visualização de Foto
+                          </DialogTitle>
+                          <div className="relative flex h-[80vh] w-full items-center justify-center bg-black ">
+                            <Image
+                              src={
+                                typeof photo === "string" ? photo : photo.url
+                              }
+                              alt={
+                                typeof photo === "object" && photo.description
+                                  ? photo.description
+                                  : `Galeria ${index + 1}`
+                              }
+                              fill
+                              className="object-contain"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
+                          {typeof photo === "object" && photo.description && (
+                            <DialogFooter className="bg-white  dark:bg-card">
+                              <h4 className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                                Comentário
+                              </h4>
+                              <DialogDescription className="text-base leading-relaxed tracking-tight text-text-main">
+                                {photo.description}
+                              </DialogDescription>
+                            </DialogFooter>
+                          )}
+                        </DialogContent>
+                      </Dialog>
                     ))}
                   </div>
                 ) : (
@@ -957,30 +993,32 @@ export function ProfileDetailClient({
           ) : null}
 
           {/* Verification / Trust Section */}
-          <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
-            <h3 className="text-xl font-bold mb-4 text-text-main flex items-center gap-2">
+          <section className="bg-white dark:bg-card p-4 border border-border-subtle space-y-4 w-full">
+            <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
               Avaliações da Comunidade
             </h3>
-            <div className="flex items-center gap-4 mb-6">
-              <div className="text-center bg-surface rounded-2xl p-4 min-w-[100px]">
-                <p className="text-3xl font-black text-primary">
-                  {targetProfile.rating || "0.0"}
-                </p>
-                <div className="flex items-center justify-center gap-0.5 text-highlight py-1">
-                  <Star size={12} fill="currentColor" />
-                  <Star size={12} fill="currentColor" />
-                  <Star size={12} fill="currentColor" />
-                  <Star size={12} fill="currentColor" />
-                  <Star size={12} className="text-border-subtle" />
+            <div className="w-full h-full flex space-x-2 md:space-x-4">
+              <div className="text-center bg-surface rounded-lg border size-26 p-2 flex-none">
+                <div className="flex flex-col items-center justify-center h-full w-full">
+                  <p className="md:text-3xl text-2xl font-bold text-primary">
+                    {targetProfile.rating || "0.0"}
+                  </p>
+                  <div className="flex items-center justify-center gap-0.5 text-highlight py-1">
+                    <Star size={12} fill="currentColor" />
+                    <Star size={12} fill="currentColor" />
+                    <Star size={12} fill="currentColor" />
+                    <Star size={12} fill="currentColor" />
+                    <Star size={12} fill="currentColor" />
+                  </div>
+                  <p className="text-[10px] font-bold text-text-muted uppercase">
+                    {targetProfile.reviewCount || 0} avaliações
+                  </p>
                 </div>
-                <p className="text-[10px] font-bold text-text-muted uppercase">
-                  {targetProfile.reviewCount || 0} avaliações
-                </p>
               </div>
 
-              <div className="flex-grow space-y-1.5">
-                <p className="text-sm text-text-muted">
-                  Avalie a qualidade do serviço prestado por este membro.
+              <div className="flex flex-col space-y-1.5">
+                <p className="text-sm text-gray-700 font-medium">
+                  Avalie o serviço prestado por este membro.
                 </p>
                 <div className="flex items-center gap-1.5">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -1014,47 +1052,6 @@ export function ProfileDetailClient({
           </section>
         </motion.div>
       </main>
-      {/* Lightbox Dialog */}
-
-      <Dialog
-        open={selectedImage !== null}
-        onOpenChange={(open) => !open && setSelectedImage(null)}
-      >
-        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black/95 border-none sm:rounded-2xl gap-0">
-          {selectedImage !== null &&
-            targetProfile?.gallery?.[selectedImage] && (
-              <div className="flex flex-col">
-                <DialogTitle className="sr-only">
-                  Visualização de Foto
-                </DialogTitle>
-                <div className="relative aspect-square md:aspect-video w-full bg-black flex items-center justify-center">
-                  <Image
-                    src={
-                      typeof targetProfile.gallery[selectedImage] === "string"
-                        ? (targetProfile.gallery[selectedImage] as any)
-                        : targetProfile.gallery[selectedImage].url
-                    }
-                    alt="Preview"
-                    fill
-                    className="object-contain"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                {typeof targetProfile.gallery[selectedImage] === "object" &&
-                  targetProfile.gallery[selectedImage].description && (
-                    <div className="p-6 bg-white dark:bg-card">
-                      <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-2">
-                        Comentário
-                      </h4>
-                      <DialogDescription className="text-text-main text-base leading-relaxed tracking-tight">
-                        {targetProfile.gallery[selectedImage].description}
-                      </DialogDescription>
-                    </div>
-                  )}
-              </div>
-            )}
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
