@@ -222,7 +222,7 @@ export const toProfileUpdatePayload = (values: ProfileFormValues): Partial<UserP
     bannerURL: normalizeOptionalText(values.bannerURL),
     gallery: normalizeGallery(values.gallery).map((item): GalleryItem => ({
       url: item.url,
-      description: normalizeOptionalText(item.description),
+      description: normalizeOptionalText(item.description) || '',
     })),
     category: normalizeOptionalText(providerValues.category),
     companyName: normalizeOptionalText(providerValues.companyName),

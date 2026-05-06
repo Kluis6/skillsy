@@ -82,7 +82,10 @@ export default function RootLayout({
       className={cn("font-sans", inter.variable, outfit.variable)}
       suppressHydrationWarning
     >
-      <body className="antialiased transition-colors duration-300">
+      <body
+        className="antialiased transition-colors duration-300"
+        suppressHydrationWarning
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

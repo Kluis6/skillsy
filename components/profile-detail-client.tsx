@@ -750,24 +750,24 @@ export function ProfileDetailClient({
                         <button
                           type="button"
                           onClick={handleWhatsApp}
-                          className="flex w-full items-center gap-2.5 bg-surface px-3 py-2 text-left"
+                          className="flex w-full items-center gap-2.5 bg-surface md:px-3 px-1 py-2 text-left"
                         >
                           <MessageCircle size={16} className="text-green-600" />
-                          <span className="text-sm font-medium text-gray-700">
+                          <p className="md:text-sm text-xs font-normal text-gray-700">
                             {targetProfile.whatsapp}
-                          </span>
+                          </p>
                         </button>
                       )}
                       {targetProfile.phone && (
                         <button
                           type="button"
                           onClick={handlePhoneCall}
-                          className="flex w-full items-center gap-2.5 bg-surface px-3 py-2 text-left "
+                          className="flex w-full items-center gap-2 bg-surface md:px-3 px-1 py-2 text-left "
                         >
                           <Phone size={16} className="text-primary" />
-                          <span className="text-sm font-medium text-gray-700">
+                          <p className="md:text-sm text-xs font-normal text-gray-700">
                             {targetProfile.phone}
-                          </span>
+                          </p>
                         </button>
                       )}
                       {targetProfile.instagram && (
@@ -777,10 +777,10 @@ export function ProfileDetailClient({
                           )}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-2.5 bg-surface px-3 py-2"
+                          className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
                         >
                           <Instagram size={16} className="text-pink-600" />
-                          <span className="text-sm font-medium text-gray-700 break-all">
+                          <span className="md:text-sm text-xs font-normal text-gray-700 break-all">
                             {targetProfile.instagram}
                           </span>
                         </a>
@@ -790,12 +790,12 @@ export function ProfileDetailClient({
                           href={formatUrl(targetProfile.facebook)}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-2.5 bg-surface px-3 py-2"
+                          className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
                         >
                           <Facebook size={16} className="text-blue-600" />
-                          <span className="text-sm font-medium text-gray-700 break-all">
+                          <p className="md:text-sm text-xs font-normal text-gray-700 break-all">
                             {targetProfile.facebook}
-                          </span>
+                          </p>
                         </a>
                       )}
                       {targetProfile.linkedin && (
@@ -803,12 +803,12 @@ export function ProfileDetailClient({
                           href={formatUrl(targetProfile.linkedin)}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-2.5 bg-surface px-3 py-2"
+                          className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
                         >
                           <Linkedin size={16} className="text-sky-700" />
-                          <span className="text-sm font-medium text-gray-700 break-all">
+                          <p className="md:text-sm text-xs font-normal text-gray-700 break-all ">
                             {targetProfile.linkedin}
-                          </span>
+                          </p>
                         </a>
                       )}
                       {targetProfile.website && (
@@ -816,12 +816,12 @@ export function ProfileDetailClient({
                           href={formatUrl(targetProfile.website)}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-2.5 bg-surface px-3 py-2"
+                          className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
                         >
                           <Globe size={16} className="text-primary" />
-                          <span className="text-sm font-medium text-gray-700 break-all">
+                          <p className="md:text-sm text-xs font-normal text-gray-700 break-all">
                             {targetProfile.website}
-                          </span>
+                          </p>
                         </a>
                       )}
                     </div>
@@ -829,7 +829,7 @@ export function ProfileDetailClient({
                 </div>
               </div>
             )}
-
+            {/* section endereço comercial */}
             {hasBusinessAddress && (
               <div className="col-span-12 border-y border-border-subtle bg-white dark:bg-card flex flex-col">
                 <div className=" mx-auto container p-4 space-y-4">
@@ -837,10 +837,10 @@ export function ProfileDetailClient({
                     Endereço Comercial
                   </h3>
                   <div className="flex flex-col md:flex-row gap-4 w-full">
-                    <div className="w-full">
+                    <div className="w-full space-y-1">
                       {(targetProfile.businessAddress ||
                         targetProfile.businessAddressNumber) && (
-                        <p className="text-sm text-text-main font-medium leading-tight">
+                        <p className="text-sm md:text-base text-gray-700 font-medium leading-tight">
                           {[
                             targetProfile.businessAddress,
                             targetProfile.businessAddressNumber,
@@ -850,20 +850,23 @@ export function ProfileDetailClient({
                         </p>
                       )}
                       {targetProfile.businessComplement && (
-                        <p className="text-xs text-text-muted">
+                        <p className="text-xs md:text-sm font-normal text-gray-700">
                           {targetProfile.businessComplement}
                         </p>
                       )}
-                      {targetProfile.businessNeighborhood && (
-                        <p className="text-xs text-text-muted">
-                          {targetProfile.businessNeighborhood}
-                        </p>
-                      )}
-                      {targetProfile.businessState && (
-                        <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
-                          {targetProfile.businessState}
-                        </p>
-                      )}
+
+                      <div className="flex space-x-2">
+                        {targetProfile.businessNeighborhood && (
+                          <p className="text-xs md:text-sm font-normal text-gray-700">
+                            {targetProfile.businessNeighborhood}
+                          </p>
+                        )}
+                        {targetProfile.businessState && (
+                          <p className="text-xs md:text-sm font-bold text-gray-700 uppercase tracking-wider">
+                            {targetProfile.businessState}
+                          </p>
+                        )}
+                      </div>
                     </div>
 
                     <div className="w-full h-full">
@@ -880,141 +883,78 @@ export function ProfileDetailClient({
           {/* Gallery Section */}
           {(targetProfile.gallery && targetProfile.gallery.length > 0) ||
           user?.uid === targetProfile.uid ? (
-            <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm relative overflow-hidden">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <h3 className="text-xl font-bold text-text-main">
+            <section className="bg-white dark:bg-card border border-border-subtle relative overflow-hidden">
+              <div className="mx-auto container p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
                     Galeria de Fotos
                   </h3>
-                  {targetProfile.gallery &&
-                    targetProfile.gallery.length > 0 && (
-                      <span className="text-xs text-text-muted font-medium bg-surface px-2 py-0.5 rounded-full border border-border-subtle">
-                        {targetProfile.gallery.length}/5 fotos
-                      </span>
-                    )}
                 </div>
-                {user?.uid === targetProfile.uid && (
-                  <Link href="/profile">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs font-bold text-primary hover:bg-primary/5 h-8"
-                    >
-                      Gerenciar Galeria
-                    </Button>
-                  </Link>
-                )}
-              </div>
 
-              {targetProfile.gallery && targetProfile.gallery.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {targetProfile.gallery.map((photo, index) => (
-                    <motion.div
-                      key={index}
-                      whileHover={{ scale: 1.02 }}
-                      onClick={() => setSelectedImage(index)}
-                      className={`relative rounded-xl overflow-hidden shadow-sm border border-border-subtle aspect-square cursor-pointer ${
-                        index === 0
-                          ? "col-span-2 md:col-span-2 md:row-span-2"
-                          : ""
-                      }`}
-                    >
-                      <Image
-                        src={typeof photo === "string" ? photo : photo.url}
-                        alt={
-                          typeof photo === "object" && photo.description
-                            ? photo.description
-                            : `Galeria ${index + 1}`
-                        }
-                        fill
-                        className="object-cover"
-                        referrerPolicy="no-referrer"
-                      />
-                    </motion.div>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-border-subtle rounded-2xl bg-surface/50">
-                  <Camera className="w-12 h-12 text-text-muted/30 mb-4" />
-                  <p className="text-sm text-text-muted font-medium mb-4">
-                    Sua galeria ainda não possui fotos profissionais.
-                  </p>
-                  <Link href="/profile">
-                    <Button
-                      size="sm"
-                      className="bg-primary text-white font-bold h-9"
-                    >
-                      Adicionar fotos
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </section>
-          ) : null}
-
-          {/* Experience Section (Simulated based on image) */}
-          {/* <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-text-main">Experiência</h3>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full opacity-40"
-              >
-                <Plus size={20} />
-              </Button>
-            </div>
-
-            <div className="space-y-6">
-              <div className="flex gap-3">
-                <div className="w-12 h-12 rounded bg-surface flex items-center justify-center shrink-0 border border-border-subtle">
-                  <Briefcase size={24} className="text-text-muted/40" />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <h4 className="font-bold text-text-main">
-                    {targetProfile.serviceType || "Profissional"}
-                  </h4>
-                  <p className="text-sm text-text-main">
-                    {targetProfile.companyName || "Autônomo"}
-                  </p>
-                  <p className="text-xs text-text-muted">
-                    {targetProfile.experienceYears
-                      ? `há ${targetProfile.experienceYears} anos`
-                      : "Período não informado"}
-                  </p>
-                  <p className="text-xs text-text-muted italic">
-                    {targetProfile.location}
-                  </p>
-                  {targetProfile.bio && (
-                    <p className="text-xs text-text-muted mt-2 line-clamp-2">
-                      {targetProfile.bio}
+                {targetProfile.gallery && targetProfile.gallery.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {targetProfile.gallery.map((photo, index) => (
+                      <motion.div
+                        key={index}
+                        whileHover={{ scale: 1.02 }}
+                        onClick={() => setSelectedImage(index)}
+                        className={`relative rounded-xl overflow-hidden shadow-sm border border-border-subtle aspect-square cursor-pointer ${
+                          index === 0
+                            ? "col-span-2 md:col-span-2 md:row-span-2"
+                            : ""
+                        }`}
+                      >
+                        <Image
+                          src={typeof photo === "string" ? photo : photo.url}
+                          alt={
+                            typeof photo === "object" && photo.description
+                              ? photo.description
+                              : `Galeria ${index + 1}`
+                          }
+                          fill
+                          className="object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-border-subtle rounded-2xl bg-surface/50">
+                    <Camera className="w-12 h-12 text-text-muted/30 mb-4" />
+                    <p className="text-sm text-text-muted font-medium mb-4">
+                      Sua galeria ainda não possui fotos profissionais.
                     </p>
+                    <Link href="/profile">
+                      <Button
+                        size="sm"
+                        className="bg-primary text-white font-bold h-9"
+                      >
+                        Adicionar fotos
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+                <div className="flex justify-end items-center">
+                  {user?.uid === targetProfile.uid && (
+                    <div className="flex items-center gap-4">
+                      {targetProfile.gallery &&
+                        targetProfile.gallery.length > 0 && (
+                          <span className="text-xs text-text-muted font-medium bg-surface px-2 py-0.5 rounded-full border border-border-subtle">
+                            {targetProfile.gallery.length}/5 fotos
+                          </span>
+                        )}
+                      <Link
+                        href="/profile"
+                        className="text-xs font-bold text-white rounded-sm flex justify-center items-center px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 h-8"
+                      >
+                        Gerenciar Galeria
+                      </Link>
+                    </div>
                   )}
                 </div>
               </div>
-
-              <Separator className="bg-border-subtle/50" />
-
-              <div className="flex gap-3 opacity-60">
-                <div className="w-12 h-12 rounded bg-surface flex items-center justify-center shrink-0 border border-border-subtle">
-                  <Church size={24} className="text-text-muted/40" />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <h4 className="font-bold text-text-main">
-                    Membro voluntário
-                  </h4>
-                  <p className="text-sm text-text-main">
-                    {targetProfile.ward || "Comunidade Local"}
-                  </p>
-                  <p className="text-xs text-text-muted">
-                    {targetProfile.baptismYear
-                      ? `Desde ${targetProfile.baptismYear}`
-                      : "Período não informado"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section> */}
+            </section>
+          ) : null}
 
           {/* Verification / Trust Section */}
           <section className="bg-white dark:bg-card rounded-xl p-6 border border-border-subtle shadow-sm">
@@ -1075,7 +1015,7 @@ export function ProfileDetailClient({
         </motion.div>
       </main>
       {/* Lightbox Dialog */}
- 
+
       <Dialog
         open={selectedImage !== null}
         onOpenChange={(open) => !open && setSelectedImage(null)}

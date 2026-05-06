@@ -18,6 +18,7 @@ import {
 import { db, auth } from '@/lib/firebase';
 import { toPlainValue } from '@/lib/firestore-plain';
 import { UserProfile } from '@/models/types';
+import { AVAILABILITY_OPTIONS, PROVIDER_CATEGORIES } from '@/lib/profile-form';
 import { NotificationService } from './notification-service';
 
 enum OperationType {
@@ -69,6 +70,183 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
   }
   console.error('Firestore Error: ', JSON.stringify(errInfo));
   throw new Error(JSON.stringify(errInfo));
+}
+
+function removeUndefinedDeep<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => removeUndefinedDeep(item))
+      .filter((item) => item !== undefined) as T;
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .filter(([, nestedValue]) => nestedValue !== undefined)
+        .map(([key, nestedValue]) => [key, removeUndefinedDeep(nestedValue)]),
+    ) as T;
+  }
+
+  return value;
+}
+
+function normalizeOptionalFirestoreString(value: unknown) {
+  if (typeof value !== 'string') return value;
+
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function normalizeBoundedString(value: unknown, maxLength: number) {
+  const normalized = normalizeOptionalFirestoreString(value);
+
+  if (typeof normalized !== 'string') {
+    return undefined;
+  }
+
+  return normalized.length <= maxLength ? normalized : undefined;
+}
+
+function normalizeBoolean(value: unknown) {
+  return typeof value === 'boolean' ? value : undefined;
+}
+
+function normalizeFiniteNumber(value: unknown) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+
+function normalizeEmail(value: unknown) {
+  const normalized = normalizeBoundedString(value, 320);
+
+  if (typeof normalized !== 'string') {
+    return undefined;
+  }
+
+  return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(normalized)
+    ? normalized
+    : undefined;
+}
+
+function normalizeRole(value: unknown) {
+  return value === 'admin' || value === 'user' ? value : undefined;
+}
+
+function normalizeStringArray(value: unknown, maxItems?: number) {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const next = value.filter((item): item is string => typeof item === 'string');
+  if (maxItems !== undefined && next.length > maxItems) {
+    return next.slice(0, maxItems);
+  }
+
+  return next;
+}
+
+function normalizeAvailabilityForRules(value: unknown) {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const next = value.filter(
+    (item): item is (typeof AVAILABILITY_OPTIONS)[number] =>
+      typeof item === 'string' &&
+      (AVAILABILITY_OPTIONS as readonly string[]).includes(item),
+  );
+
+  return next.slice(0, 7);
+}
+
+function normalizeGalleryForRules(value: unknown) {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const next = value
+    .map((item) => {
+      if (!item || typeof item !== 'object') {
+        return null;
+      }
+
+      const maybeItem = item as { url?: unknown; description?: unknown };
+      const url = normalizeBoundedString(maybeItem.url, 1000000);
+      if (!url) {
+        return null;
+      }
+
+      const description = normalizeBoundedString(maybeItem.description, 200);
+      return description ? { url, description } : { url };
+    })
+    .filter((item): item is { url: string; description?: string } => item !== null)
+    .slice(0, 5);
+
+  return next;
+}
+
+function normalizeUserDocumentForRules(source: Record<string, unknown>) {
+  const normalized = removeUndefinedDeep({ ...source }) as Record<string, unknown>;
+
+  normalized.uid = normalizeBoundedString(normalized.uid, 128);
+  normalized.name = normalizeBoundedString(normalized.name, 100);
+  normalized.email = normalizeEmail(normalized.email);
+  normalized.role = normalizeRole(normalized.role);
+  normalized.photoURL = normalizeBoundedString(normalized.photoURL, 1000000);
+  normalized.bannerURL = normalizeBoundedString(normalized.bannerURL, 1000000);
+  normalized.bio = normalizeBoundedString(normalized.bio, 2000);
+  normalized.whatsapp = normalizeBoundedString(normalized.whatsapp, 30);
+  normalized.phone = normalizeBoundedString(normalized.phone, 30);
+  normalized.instagram = normalizeBoundedString(normalized.instagram, 100);
+  normalized.facebook = normalizeBoundedString(normalized.facebook, 100);
+  normalized.linkedin = normalizeBoundedString(normalized.linkedin, 100);
+  normalized.website = normalizeBoundedString(normalized.website, 200);
+  normalized.serviceType = normalizeBoundedString(normalized.serviceType, 200);
+  normalized.location = normalizeBoundedString(normalized.location, 200);
+  normalized.ward = normalizeBoundedString(normalized.ward, 200);
+  normalized.companyName = normalizeBoundedString(normalized.companyName, 200);
+  normalized.serviceHours = normalizeBoundedString(normalized.serviceHours, 200);
+  normalized.businessAddress = normalizeBoundedString(normalized.businessAddress, 200);
+  normalized.businessAddressNumber = normalizeBoundedString(
+    normalized.businessAddressNumber,
+    20,
+  );
+  normalized.businessNeighborhood = normalizeBoundedString(
+    normalized.businessNeighborhood,
+    100,
+  );
+  normalized.businessState = normalizeBoundedString(normalized.businessState, 100);
+  normalized.businessComplement = normalizeBoundedString(
+    normalized.businessComplement,
+    100,
+  );
+
+  const category = normalizeBoundedString(normalized.category, 100);
+  normalized.category =
+    typeof category === 'string' &&
+    (PROVIDER_CATEGORIES as readonly string[]).includes(category)
+      ? category
+      : undefined;
+
+  normalized.contacts = normalizeStringArray(normalized.contacts);
+  normalized.phones = normalizeStringArray(normalized.phones);
+  normalized.availability = normalizeAvailabilityForRules(normalized.availability);
+  normalized.gallery = normalizeGalleryForRules(normalized.gallery);
+
+  normalized.rating = normalizeFiniteNumber(normalized.rating);
+  normalized.reviewCount = normalizeFiniteNumber(normalized.reviewCount);
+  normalized.experienceYears = normalizeFiniteNumber(normalized.experienceYears);
+
+  const baptismYear = normalizeFiniteNumber(normalized.baptismYear);
+  normalized.baptismYear =
+    baptismYear !== undefined && baptismYear >= 1830 && baptismYear <= new Date().getFullYear()
+      ? baptismYear
+      : undefined;
+
+  normalized.verifiedMember = normalizeBoolean(normalized.verifiedMember);
+  normalized.isBlocked = normalizeBoolean(normalized.isBlocked);
+  normalized.isProvider = normalizeBoolean(normalized.isProvider);
+
+  return removeUndefinedDeep(normalized);
 }
 
 export const UserService = {
@@ -191,8 +369,12 @@ export const UserService = {
         throw new Error('Perfil não encontrado para atualização');
       }
 
-      const currentData = sanitizeData(currentSnapshot.data() as Record<string, unknown>);
-      const incomingData = sanitizeData(data as Record<string, unknown>);
+      const currentData = normalizeUserDocumentForRules(
+        sanitizeData(currentSnapshot.data() as Record<string, unknown>),
+      );
+      const incomingData = normalizeUserDocumentForRules(
+        sanitizeData(data as Record<string, unknown>),
+      );
 
       const safeIncomingData = Object.fromEntries(
         Object.entries(incomingData).filter(
@@ -208,26 +390,27 @@ export const UserService = {
       const nextData = {
         uid,
         name:
-          (safeIncomingData.name as string | undefined) ??
-          (currentData.name as string | undefined) ??
+          normalizeBoundedString(safeIncomingData.name, 100) ??
+          normalizeBoundedString(currentData.name, 100) ??
           auth.currentUser?.displayName ??
           'Membro Skillsy',
         email:
-          (currentData.email as string | undefined) ??
+          normalizeEmail(currentData.email) ??
+          normalizeEmail(safeIncomingData.email) ??
           auth.currentUser?.email ??
           '',
         isProvider:
           (safeIncomingData.isProvider as boolean | undefined) ??
           (currentData.isProvider as boolean | undefined) ??
           false,
-        role: (currentData.role as UserProfile['role'] | undefined) ?? 'user',
+        role: normalizeRole(currentData.role) ?? 'user',
         contacts: (currentData.contacts as string[] | undefined) ?? [],
         createdAt,
         ...currentData,
         ...safeIncomingData,
       };
 
-      await setDoc(docRef, nextData);
+      await setDoc(docRef, removeUndefinedDeep(nextData));
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
     }

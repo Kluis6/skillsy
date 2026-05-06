@@ -56,6 +56,35 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from '@/components/theme-toggle';
 import { LocationService } from '@/services/location-service';
 
+const MAX_IMAGE_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
+const MAX_INLINE_IMAGE_SIZE_BYTES = 100 * 1024;
+const SUPPORTED_IMAGE_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+]);
+
+const readFileAsDataURL = (file: Blob) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () =>
+      reject(new Error('Nao foi possivel ler a imagem selecionada.'));
+  });
+
+const getCompressionErrorMessage = (error: unknown) => {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  if (typeof error === 'string' && error) {
+    return error;
+  }
+
+  return 'Nao foi possivel processar essa imagem.';
+};
+
 export function ProfileSettingsClient() {
   const { user, profile, updateProfile, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -135,23 +164,63 @@ export function ProfileSettingsClient() {
       maxWidthOrHeight: 1024,
       useWebWorker: true,
     };
+
     try {
       const compressedFile = await imageCompression(file, options);
-      return new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(compressedFile);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = error => reject(error);
-      });
+      return await readFileAsDataURL(compressedFile);
     } catch (error) {
-      console.error('Compression error:', error);
-      throw error;
+      try {
+        const compressedFile = await imageCompression(file, {
+          ...options,
+          useWebWorker: false,
+        });
+        return await readFileAsDataURL(compressedFile);
+      } catch (retryError) {
+        console.warn('Compression failed:', {
+          message: getCompressionErrorMessage(retryError ?? error),
+          fileName: file.name,
+          fileType: file.type,
+          fileSize: file.size,
+        });
+
+        if (file.size <= MAX_INLINE_IMAGE_SIZE_BYTES) {
+          return await readFileAsDataURL(file);
+        }
+
+        throw new Error(
+          'Nao foi possivel comprimir a imagem. Tente uma foto JPG, PNG ou WEBP menor.',
+        );
+      }
     }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'banner' | 'gallery') => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Arquivo invalido', {
+        description: 'Selecione um arquivo de imagem.',
+      });
+      e.target.value = '';
+      return;
+    }
+
+    if (!SUPPORTED_IMAGE_TYPES.has(file.type)) {
+      toast.error('Formato nao suportado', {
+        description: 'Use uma imagem JPG, PNG ou WEBP.',
+      });
+      e.target.value = '';
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_UPLOAD_SIZE_BYTES) {
+      toast.error('Imagem muito grande', {
+        description: 'Escolha uma imagem de ate 10 MB.',
+      });
+      e.target.value = '';
+      return;
+    }
 
     setUploading(type);
     try {
@@ -174,7 +243,9 @@ export function ProfileSettingsClient() {
         toast.success('Foto adicionada à galeria!');
       }
     } catch (error) {
-      toast.error('Erro ao carregar imagem');
+      toast.error('Erro ao carregar imagem', {
+        description: getCompressionErrorMessage(error),
+      });
     } finally {
       setUploading(null);
       e.target.value = ''; // Reset input
