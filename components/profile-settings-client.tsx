@@ -308,10 +308,10 @@ export function ProfileSettingsClient() {
   }
 
   return (
-    <div className="min-h-screen bg-surface pb-20">
+    <div className="min-h-screen bg-surface">
       {/* Header */}
       <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle px-6 md:px-10 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Link href="/">
               <Button variant="ghost" size="icon" className="rounded-full hover:bg-surface">
@@ -334,7 +334,7 @@ export function ProfileSettingsClient() {
         </div>
       </nav>
 
-      <main className="max-w-5xl mx-auto px-6 mt-10">
+      <main className="container mx-auto px-4">
         <form id="profile-settings-form" onSubmit={handleSubmit(onFormSubmit)}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Avatar & Basic Info */}

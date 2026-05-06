@@ -30,7 +30,8 @@ import {
   Linkedin,
   MessageCircle,
   Copy,
-  Calendar,
+  CalendarDays,
+  Clock,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
@@ -60,10 +61,17 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Navbar } from "./navbar";
 import { LuMapPin, LuPencil, LuUserMinus } from "react-icons/lu";
 import { TooltipContent, Tooltip, TooltipTrigger } from "./ui/tooltip";
-import { FaWhatsapp } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+  FaPhone,
+  FaWhatsapp,
+} from "react-icons/fa";
 import { PiShareFat } from "react-icons/pi";
 import { BsWhatsapp } from "react-icons/bs";
 import { FaTelegramPlane } from "react-icons/fa";
+import { AVAILABILITY_OPTIONS } from "@/lib/profile-form";
 
 interface ProfileDetailClientProps {
   id: string;
@@ -367,6 +375,14 @@ export function ProfileDetailClient({
     targetProfile?.businessComplement,
   );
 
+  const availabilityDays = (targetProfile?.availability || []).filter((day) =>
+    AVAILABILITY_OPTIONS.includes(day as (typeof AVAILABILITY_OPTIONS)[number]),
+  );
+
+  const hasAvailabilityInfo = Boolean(
+    availabilityDays.length || targetProfile?.serviceHours?.trim(),
+  );
+
   const businessAddressQuery = [
     targetProfile?.businessAddress,
     targetProfile?.businessAddressNumber,
@@ -485,7 +501,7 @@ export function ProfileDetailClient({
           className="space-y-2"
         >
           {/* Top Profile Card */}
-          <div className="border-border-subtle border-b bg-white dark:bg-card">
+          <section className="border-border-subtle border-b bg-white dark:bg-card">
             <div className="relative h-26 md:h-52 bg-gradient-to-r from-blue-400/20 to-indigo-400/20">
               {targetProfile.bannerURL ? (
                 <Image
@@ -722,7 +738,7 @@ export function ProfileDetailClient({
                 </div>
               </div>
             </section>
-          </div>
+          </section>
 
           {/* About Section */}
           <section className="bg-white dark:bg-card border-y border-border-subtle ">
@@ -737,11 +753,170 @@ export function ProfileDetailClient({
             </div>
           </section>
 
-          {/* Contact Section */}
-          <div className="grid grid-cols-12 gap-2 w-full h-full">
-            {hasContactInfo && (
-              <div className="col-span-12  border-y border-border-subtle bg-white dark:bg-card border-r ">
-                <div className="mx-auto container p-4">
+          {/* disponibilidade e avaliações */}
+          <div className="w-full flex flex-col md:flex-row gap-2">
+            {hasAvailabilityInfo && (
+              <div className=" bg-white w-full border-y md:border-r border-r-0 ">
+                <div className="h-full w-full md:ps-7 p-4 mx-auto container space-y-4">
+                  <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 md:text-xl">
+                    Disponibilidade
+                  </h3>
+
+                  {availabilityDays.length > 0 && (
+                    <div className="space-y-3">
+                      <div className=" flex items-center gap-1 ">
+                        <CalendarDays size={16} className="text-gray-600" />
+                        <p className="text-xs font-bold uppercase tracking-wider text-gray-600">
+                          Dias de atendimento
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {AVAILABILITY_OPTIONS.filter((day) =>
+                          availabilityDays.includes(day),
+                        ).map((day) => (
+                          <Badge key={day} variant="outline" className=" ">
+                            {day}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {targetProfile?.serviceHours?.trim() && (
+                    <div className="space-y-3 ">
+                      <div className="flex items-center gap-1 ">
+                        <Clock size={16} className="text-gray-600" />{" "}
+                        <p className="text-xs font-bold uppercase tracking-wider text-gray-600">
+                          Horário de atendimento
+                        </p>
+                      </div>
+                      <div className="bg-surface px-4 py-2">
+                        <p className="text-sm font-medium text-gray-700">
+                          {targetProfile.serviceHours}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            <div className=" bg-white w-full border-y md:border-l border-l-0 ">
+              <div className="h-full w-full p-4 mx-auto container md:pe-7 space-y-4">
+                <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                  Avaliações da Comunidade
+                </h3>
+                <div className="w-full h-full flex space-x-2 md:space-x-4">
+                  <div className="text-center bg-surface rounded-lg border size-26 p-2 flex-none">
+                    <div className="flex flex-col items-center justify-center h-full w-full">
+                      <p className="md:text-3xl text-2xl font-bold text-primary">
+                        {targetProfile.rating || "0.0"}
+                      </p>
+                      <div className="flex items-center justify-center gap-0.5 text-highlight py-1">
+                        <Star size={12} fill="currentColor" />
+                        <Star size={12} fill="currentColor" />
+                        <Star size={12} fill="currentColor" />
+                        <Star size={12} fill="currentColor" />
+                        <Star size={12} fill="currentColor" />
+                      </div>
+                      <p className="text-[10px] font-bold text-text-muted uppercase">
+                        {targetProfile.reviewCount || 0} avaliações
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col space-y-1.5">
+                    <p className="text-sm text-gray-700 font-medium">
+                      Avalie o serviço prestado por este membro.
+                    </p>
+                    <div className="flex items-center gap-1.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          disabled={
+                            submittingRating || user?.uid === targetProfile.uid
+                          }
+                          onMouseEnter={() => setRatingHover(star)}
+                          onMouseLeave={() => setRatingHover(0)}
+                          onClick={() => handleRate(star)}
+                          className={`transition-all ${
+                            (ratingHover || userRating || 0) >= star
+                              ? "text-highlight"
+                              : "text-border-subtle"
+                          } disabled:opacity-50`}
+                        >
+                          <Star
+                            size={24}
+                            fill={
+                              (ratingHover || userRating || 0) >= star
+                                ? "currentColor"
+                                : "none"
+                            }
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full flex flex-col md:flex-row gap-2">
+            {hasAvailabilityInfo && (
+              <div className=" bg-white w-full border-y md:border-r border-r-0">
+                <div className="h-full w-full md:ps-7 p-4 mx-auto container ">
+                  {hasBusinessAddress && (
+                    <div className="flex flex-col space-y-4">
+                      <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                        Endereço Comercial
+                      </h3>
+                      <div className="flex flex-col gap-4 w-full">
+                        <div className="w-full space-y-1">
+                          {(targetProfile.businessAddress ||
+                            targetProfile.businessAddressNumber) && (
+                            <p className="text-sm md:text-base text-gray-700 font-medium leading-tight">
+                              {[
+                                targetProfile.businessAddress,
+                                targetProfile.businessAddressNumber,
+                              ]
+                                .filter(Boolean)
+                                .join(", ")}
+                            </p>
+                          )}
+                          {targetProfile.businessComplement && (
+                            <p className="text-xs md:text-sm font-normal text-gray-700">
+                              {targetProfile.businessComplement}
+                            </p>
+                          )}
+
+                          <div className="flex space-x-2">
+                            {targetProfile.businessNeighborhood && (
+                              <p className="text-xs md:text-sm font-normal text-gray-700">
+                                {targetProfile.businessNeighborhood}
+                              </p>
+                            )}
+                            {targetProfile.businessState && (
+                              <p className="text-xs md:text-sm font-bold text-gray-700 uppercase tracking-wider">
+                                {targetProfile.businessState}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="w-full h-full">
+                          {businessAddressQuery && (
+                            <BusinessAddressMap query={businessAddressQuery} />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            <div className=" bg-white w-full border-y md:border-l border-l-0 ">
+              <div className="h-full w-full p-4 mx-auto container md:pe-7">
+                {hasContactInfo && (
                   <div className="space-y-4">
                     <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
                       Contato e Redes
@@ -753,7 +928,7 @@ export function ProfileDetailClient({
                           onClick={handleWhatsApp}
                           className="flex w-full items-center gap-2.5 bg-surface md:px-3 px-1 py-2 text-left"
                         >
-                          <MessageCircle size={16} className="text-green-600" />
+                          <FaWhatsapp size={16} className="text-green-600" />
                           <p className="md:text-sm text-xs font-normal text-gray-700">
                             {targetProfile.whatsapp}
                           </p>
@@ -765,7 +940,7 @@ export function ProfileDetailClient({
                           onClick={handlePhoneCall}
                           className="flex w-full items-center gap-2 bg-surface md:px-3 px-1 py-2 text-left "
                         >
-                          <Phone size={16} className="text-primary" />
+                          <FaPhone size={16} className="text-primary" />
                           <p className="md:text-sm text-xs font-normal text-gray-700">
                             {targetProfile.phone}
                           </p>
@@ -780,7 +955,7 @@ export function ProfileDetailClient({
                           rel="noreferrer"
                           className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
                         >
-                          <Instagram size={16} className="text-pink-600" />
+                          <FaInstagram size={16} className="text-pink-600" />
                           <span className="md:text-sm text-xs font-normal text-gray-700 break-all">
                             {targetProfile.instagram}
                           </span>
@@ -793,7 +968,7 @@ export function ProfileDetailClient({
                           rel="noreferrer"
                           className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
                         >
-                          <Facebook size={16} className="text-blue-600" />
+                          <FaFacebookF size={16} className="text-blue-600" />
                           <p className="md:text-sm text-xs font-normal text-gray-700 break-all">
                             {targetProfile.facebook}
                           </p>
@@ -806,7 +981,7 @@ export function ProfileDetailClient({
                           rel="noreferrer"
                           className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
                         >
-                          <Linkedin size={16} className="text-sky-700" />
+                          <FaLinkedinIn size={16} className="text-sky-700" />
                           <p className="md:text-sm text-xs font-normal text-gray-700 break-all ">
                             {targetProfile.linkedin}
                           </p>
@@ -827,58 +1002,9 @@ export function ProfileDetailClient({
                       )}
                     </div>
                   </div>
-                </div>
+                )}
               </div>
-            )}
-            {/* section endereço comercial */}
-            {hasBusinessAddress && (
-              <div className="col-span-12 border-y border-border-subtle bg-white dark:bg-card flex flex-col">
-                <div className=" mx-auto container p-4 space-y-4">
-                  <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
-                    Endereço Comercial
-                  </h3>
-                  <div className="flex flex-col md:flex-row gap-4 w-full">
-                    <div className="w-full space-y-1">
-                      {(targetProfile.businessAddress ||
-                        targetProfile.businessAddressNumber) && (
-                        <p className="text-sm md:text-base text-gray-700 font-medium leading-tight">
-                          {[
-                            targetProfile.businessAddress,
-                            targetProfile.businessAddressNumber,
-                          ]
-                            .filter(Boolean)
-                            .join(", ")}
-                        </p>
-                      )}
-                      {targetProfile.businessComplement && (
-                        <p className="text-xs md:text-sm font-normal text-gray-700">
-                          {targetProfile.businessComplement}
-                        </p>
-                      )}
-
-                      <div className="flex space-x-2">
-                        {targetProfile.businessNeighborhood && (
-                          <p className="text-xs md:text-sm font-normal text-gray-700">
-                            {targetProfile.businessNeighborhood}
-                          </p>
-                        )}
-                        {targetProfile.businessState && (
-                          <p className="text-xs md:text-sm font-bold text-gray-700 uppercase tracking-wider">
-                            {targetProfile.businessState}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="w-full h-full">
-                      {businessAddressQuery && (
-                        <BusinessAddressMap query={businessAddressQuery} />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
 
           {/* Gallery Section */}
@@ -991,65 +1117,6 @@ export function ProfileDetailClient({
               </div>
             </section>
           ) : null}
-
-          {/* Verification / Trust Section */}
-          <section className="bg-white dark:bg-card p-4 border border-border-subtle space-y-4 w-full">
-            <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
-              Avaliações da Comunidade
-            </h3>
-            <div className="w-full h-full flex space-x-2 md:space-x-4">
-              <div className="text-center bg-surface rounded-lg border size-26 p-2 flex-none">
-                <div className="flex flex-col items-center justify-center h-full w-full">
-                  <p className="md:text-3xl text-2xl font-bold text-primary">
-                    {targetProfile.rating || "0.0"}
-                  </p>
-                  <div className="flex items-center justify-center gap-0.5 text-highlight py-1">
-                    <Star size={12} fill="currentColor" />
-                    <Star size={12} fill="currentColor" />
-                    <Star size={12} fill="currentColor" />
-                    <Star size={12} fill="currentColor" />
-                    <Star size={12} fill="currentColor" />
-                  </div>
-                  <p className="text-[10px] font-bold text-text-muted uppercase">
-                    {targetProfile.reviewCount || 0} avaliações
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col space-y-1.5">
-                <p className="text-sm text-gray-700 font-medium">
-                  Avalie o serviço prestado por este membro.
-                </p>
-                <div className="flex items-center gap-1.5">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      disabled={
-                        submittingRating || user?.uid === targetProfile.uid
-                      }
-                      onMouseEnter={() => setRatingHover(star)}
-                      onMouseLeave={() => setRatingHover(0)}
-                      onClick={() => handleRate(star)}
-                      className={`transition-all ${
-                        (ratingHover || userRating || 0) >= star
-                          ? "text-highlight"
-                          : "text-border-subtle"
-                      } disabled:opacity-50`}
-                    >
-                      <Star
-                        size={24}
-                        fill={
-                          (ratingHover || userRating || 0) >= star
-                            ? "currentColor"
-                            : "none"
-                        }
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
         </motion.div>
       </main>
     </>
