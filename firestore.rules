@@ -185,6 +185,27 @@ service cloud.firestore {
              (!('isBlocked' in data) || data.isBlocked is bool);
     }
 
+    function keepsSameUserRole(data) {
+      return ((resource.data.role in ['admin', 'user']) && data.role == resource.data.role) ||
+             (!(resource.data.role in ['admin', 'user']) && data.role == 'user');
+    }
+
+    function keepsSameBlockedStatus(data) {
+      return !('isBlocked' in data) ||
+             !('isBlocked' in resource.data) ||
+             data.isBlocked == resource.data.isBlocked;
+    }
+
+    function keepsSameUid(userId, data) {
+      return ((resource.data.uid is string) && data.uid == resource.data.uid) ||
+             (!(resource.data.uid is string) && data.uid == userId);
+    }
+
+    function keepsSafeCreatedAt(data) {
+      return ((resource.data.createdAt is timestamp) && data.createdAt == resource.data.createdAt) ||
+             (!(resource.data.createdAt is timestamp) && data.createdAt is timestamp);
+    }
+
     function isValidService(data) {
       return data.keys().hasAll(['providerId', 'title', 'description', 'category']) &&
              data.providerId is string &&
@@ -262,13 +283,10 @@ service cloud.firestore {
       // Update: Owner can update their info, Admin anything, 
       // OR a non-owner can perform a rating update if paired with a vote record
       allow update: if (isOwner(userId) && isValidUser(request.resource.data) && 
-                        ((!('role' in resource.data) && request.resource.data.role == 'user') ||
-                         request.resource.data.role == resource.data.role) &&
-                        (!('isBlocked' in request.resource.data) || request.resource.data.isBlocked == resource.data.isBlocked) &&
-                        ((!('uid' in resource.data) && request.resource.data.uid == userId) ||
-                         request.resource.data.uid == resource.data.uid) &&
-                        ((!('createdAt' in resource.data) && request.resource.data.createdAt is timestamp) ||
-                         request.resource.data.createdAt == resource.data.createdAt)) 
+                        keepsSameUserRole(request.resource.data) &&
+                        keepsSameBlockedStatus(request.resource.data) &&
+                        keepsSameUid(userId, request.resource.data) &&
+                        keepsSafeCreatedAt(request.resource.data)) 
                     || 
                     (isAuthenticated() && isNotBlocked() && request.auth.uid != userId && 
                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount']) &&

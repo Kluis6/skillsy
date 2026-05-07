@@ -118,7 +118,7 @@ export function ProfileDetailClient({
   const [userRating, setUserRating] = useState(0);
   const [ratingHover, setRatingHover] = useState(0);
   const [submittingRating, setSubmittingRating] = useState(false);
-  const [contactInfoOpen, setContactInfoOpen] = useState(false);
+
 
   const shareUrl = targetProfile
     ? typeof window === "undefined"
