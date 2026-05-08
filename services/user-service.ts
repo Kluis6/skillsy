@@ -440,7 +440,10 @@ export const UserService = {
     }
   },
 
-  async searchProviders(term: string, location?: { city: string; state: string }): Promise<UserProfile[]> {
+  async searchProviders(
+    term: string,
+    location?: { city?: string; state?: string },
+  ): Promise<UserProfile[]> {
     const path = 'users';
     try {
       // Fetch all users to allow finding people by name even if not marked as provider
@@ -462,11 +465,17 @@ export const UserService = {
           );
         });
         
-        const matchesLocation = !location || 
-          (p.location && (
-            p.location.toLowerCase().includes(location.city.toLowerCase()) ||
-            p.location.toLowerCase().includes(location.state.toLowerCase())
-          )) || (!p.location && searchTokens.length > 0); // If searching by name specifically, ignore empty location
+        const normalizedLocation = p.location?.toLowerCase() || '';
+        const cityFilter = location?.city?.toLowerCase().trim();
+        const stateFilter = location?.state?.toLowerCase().trim();
+        const hasLocationFilter = Boolean(cityFilter || stateFilter);
+
+        const matchesCity = !cityFilter || normalizedLocation.includes(cityFilter);
+        const matchesState = !stateFilter || normalizedLocation.includes(stateFilter);
+        const matchesLocation =
+          !hasLocationFilter ||
+          (normalizedLocation && matchesCity && matchesState) ||
+          (!normalizedLocation && searchTokens.length > 0); // If searching by name specifically, ignore empty location
           
         return matchesSearch && matchesLocation;
       }).sort((a, b) => {

@@ -21,15 +21,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 
 interface NavbarProps {
   user: User | null;

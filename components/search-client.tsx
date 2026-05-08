@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/use-auth';
-import { UserService } from '@/services/user-service';
-import { UserProfile } from '@/models/types';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Search, 
-  MapPin, 
-  Star, 
+import React, { useEffect, useState, Suspense } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
+import { UserService } from "@/services/user-service";
+import { UserProfile } from "@/models/types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import {
+  Search,
+  MapPin,
+  Star,
   ShieldCheck,
   ChevronRight,
   X,
@@ -25,12 +25,14 @@ import {
   ChevronsRight,
   Clock,
   CalendarDays,
-  Church
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import Link from 'next/link';
-import { CepFilter } from '@/components/cep-filter';
-import { toast } from 'sonner';
+  Church,
+  UserIcon,
+  ArrowLeft,
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import Link from "next/link";
+import { CepFilter } from "@/components/cep-filter";
+import { toast } from "sonner";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -39,16 +41,39 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-import { ThemeToggle } from '@/components/theme-toggle';
+import { ThemeToggle } from "@/components/theme-toggle";
+import { AuthModal } from "./auth-modal";
+import { BRAZIL_STATES } from "@/lib/brazil-states";
+
+import { BsList, BsXLg } from "react-icons/bs";
+
+import {
+  Drawer,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerTrigger,
+  DrawerContent,
+  DrawerTitle,
+  DrawerDescription,
+} from "./ui/drawer";
 
 function SearchResultsContent() {
   const { profile, toggleContact } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const query = searchParams.get('q') || '';
-  const city = searchParams.get('city') || '';
-  const state = searchParams.get('state') || '';
+  const query = searchParams.get("q") || "";
+  const city = searchParams.get("city") || "";
+  const state = searchParams.get("state") || "";
+  const selectedStateLabel =
+    BRAZIL_STATES.find((item) => item.value === state)?.label || state;
 
   const [searchTerm, setSearchTerm] = useState(query);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -63,13 +88,16 @@ function SearchResultsContent() {
     const fetchResults = async () => {
       setLoading(true);
       try {
-        const location = city && state ? { city, state } : undefined;
+        const location = city || state ? { city, state } : undefined;
         let data = await UserService.searchProviders(query, location);
-        
+
         if (selectedCategory) {
-          data = data.filter(p => 
-            p.category === selectedCategory || 
-            p.serviceType?.toLowerCase().includes(selectedCategory.toLowerCase())
+          data = data.filter(
+            (p) =>
+              p.category === selectedCategory ||
+              p.serviceType
+                ?.toLowerCase()
+                .includes(selectedCategory.toLowerCase()),
           );
         }
 
@@ -77,7 +105,7 @@ function SearchResultsContent() {
 
         // If no results, fetch suggestions from the same location
         if (data.length === 0 && location) {
-          const suggestedData = await UserService.searchProviders('', location);
+          const suggestedData = await UserService.searchProviders("", location);
           setSuggestions(suggestedData.slice(0, 3));
         } else if (data.length === 0) {
           // If no location, fetch any featured providers
@@ -85,7 +113,7 @@ function SearchResultsContent() {
           setSuggestions(featured);
         }
       } catch (error) {
-        console.error('Error searching:', error);
+        console.error("Error searching:", error);
       } finally {
         setLoading(false);
       }
@@ -96,72 +124,250 @@ function SearchResultsContent() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams(searchParams.toString());
-    params.set('q', searchTerm);
+    params.set("q", searchTerm);
     router.push(`/search?${params.toString()}`);
   };
+  const auth = useAuth();
+  const user = profile;
+  const logout = auth.logout;
 
+  const pathname = usePathname();
+
+  const shouldShowBackButton =
+    pathname === "/profile" ||
+    pathname === "/contacts" ||
+    pathname.startsWith("/profile/") ||
+    pathname.startsWith("/contacts/");
   return (
-    <div className="min-h-screen bg-surface/30">
+    <div className="min-h-screen bg-surface/30 w-full space-y-2">
       {/* Header / Search Bar */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle px-4 md:px-8 py-4 shadow-sm">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-4 md:gap-8">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">S</span>
-            </div>
-            <h1 className="text-xl font-black text-text-main hidden sm:block tracking-tighter uppercase">Skillsy</h1>
+      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle">
+        <div className="container px-4 mx-auto flex items-center justify-between gap-4  py-2">
+          <Drawer direction="left">
+            <DrawerTrigger asChild className="flex md:hidden">
+              <Button size="icon" className="size-10" variant="ghost">
+                <BsList className="size-5 text-gray-700" />
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <DrawerHeader className="flex flex-row justify-between">
+                <div className="flex flex-col">
+                  <DrawerTitle className="text-primary text-base">
+                    Skillsy
+                  </DrawerTitle>
+                  <DrawerDescription>
+                    Onde talentos encontram oportunidades
+                  </DrawerDescription>
+                </div>
+                <DrawerTrigger asChild>
+                  <Button size="icon" className="bg-white hover:bg-zinc-100">
+                    <BsXLg className="text-gray-800" />
+                  </Button>
+                </DrawerTrigger>
+              </DrawerHeader>
+              <div className="px-4 space-y-4">
+                <h3 className="font-medium text-sm text-gray-800">Navegação</h3>
+                <ul className="w-full space-y-1">
+                  <li className=" p-2 hover:bg-surface">
+                    <Link
+                      href="/weareskillsy"
+                      className="flex text-sm font-normal text-gray-800"
+                    >
+                      O que é Skillsy?
+                    </Link>
+                  </li>
+                  <li className=" p-2 hover:bg-surface">
+                    <Link
+                      href="/join"
+                      className="flex text-sm font-normal text-gray-800"
+                    >
+                      Por que participar?
+                    </Link>
+                  </li>
+                  <li className=" p-2 hover:bg-surface">
+                    <Link
+                      href="/join"
+                      className="flex text-sm font-normal text-gray-800"
+                    >
+                      Privacidade
+                    </Link>
+                  </li>
+                  <li className=" p-2 hover:bg-surface">
+                    <Link
+                      href="/termos"
+                      className="flex text-sm font-normal text-gray-800"
+                    >
+                      Termos de uso
+                    </Link>
+                  </li>
+                </ul>
+
+                {user && (
+                  <>
+                    <h3 className="font-medium text-sm text-gray-800">
+                      Minha conta
+                    </h3>
+
+                    <ul className="space-y-1">
+                      <li className="hover:bg-surface p-2">
+                        <Link
+                          className="flex text-sm font-normal text-gray-800"
+                          href="/contacts"
+                        >
+                          Meus Contatos
+                        </Link>
+                      </li>
+                      <li className="hover:bg-surface p-2">
+                        <Link
+                          className="flex text-sm font-normal text-gray-800"
+                          href="/profile"
+                        >
+                          Configurações do Perfil
+                        </Link>
+                      </li>
+                      <li>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-gray-800 rounded-none"
+                          onClick={logout}
+                        >
+                          Sair da Conta
+                        </Button>
+                      </li>
+                    </ul>
+                  </>
+                )}
+              </div>
+
+              <DrawerFooter>
+                <Link
+                  className="text-center bg-primary p-2 font-medium text-sm text-white rounded-sm"
+                  href={"/donation"}
+                >
+                  Ajude o projeto
+                </Link>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
+          <Link href="/" className="">
+            <h1 className="text-xl font-bold text-primary tracking-tighter">
+              Skillsy
+            </h1>
           </Link>
 
-          <form onSubmit={handleSearch} className="flex-grow w-full max-w-3xl flex items-center gap-2 bg-surface rounded-2xl px-4 py-1 border border-transparent focus-within:border-primary/20 focus-within:bg-card focus-within:shadow-xl focus-within:shadow-primary/5 transition-all duration-300">
-            <Search className="text-text-muted/40 shrink-0" size={20} />
-            <Input 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Ex: Pintor, Advogado, Bolo de Pote..."
-              className="border-none bg-transparent focus-visible:ring-0 text-text-main h-12 font-semibold placeholder:text-text-muted/30"
-            />
-            <Button type="submit" size="sm" className="rounded-xl bg-primary hover:bg-primary/90 text-white px-8 h-10 font-bold hidden sm:flex shadow-lg shadow-primary/10 active:scale-95 transition-all">
-              Buscar
+          <form
+            onSubmit={handleSearch}
+            className="md:flex items-center gap-4 w-full max-w-2xl hidden"
+          >
+            <div className="relative w-full">
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300"
+                size={20}
+              />
+              <Input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Ex: Pintor, Advogado, Bolo de Pote..."
+                className="pl-12 h-10 w-full placeholder:text-gray-400 shadow-sm rounded-full "
+              />
+            </div>
+
+            <Button
+              type="submit"
+              size="sm"
+              className="rounded-sm bg-blue-500 hover:bg-blue-600 text-white px-6 h-10 font-bold hidden sm:flex transition-all"
+            >
+              Pesquisar
             </Button>
           </form>
-          <ThemeToggle />
-        </div>
-      </header>
 
-      <div className="bg-card border-b border-border-subtle py-4 px-4 md:px-8">
+          {user ? (
+            <Avatar className="size-7 ring-2 ring-offset-2 ring-zinc-400 md:ml-1.5 mr-1">
+              <AvatarImage src={user.photoURL || undefined} />
+              <AvatarFallback>
+                <UserIcon className="size-7" />
+              </AvatarFallback>
+            </Avatar>
+          ) : (
+            <AuthModal>
+              <Button variant="default" className="bg-blue-600 px-4">
+                Entrar
+              </Button>
+            </AuthModal>
+          )}
+        </div>
+        <div className="container px-4 mx-auto flex items-center justify-between gap-4  py-2 md:hidden">
+          <form
+            onSubmit={handleSearch}
+            className="md:hidden items-center gap-4 w-full max-w-2xl flex"
+          >
+            <div className="relative w-full">
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300"
+                size={20}
+              />
+              <Input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Ex: Pintor, Advogado, Bolo de Pote..."
+                className="pl-12 h-10 w-full placeholder:text-gray-400 shadow-sm rounded-full "
+              />
+            </div>
+
+            <Button
+              type="submit"
+              size="sm"
+              className="rounded-sm bg-blue-500 hover:bg-blue-600 text-white px-6 h-10 font-bold hidden sm:flex transition-all"
+            >
+              Pesquisar
+            </Button>
+          </form>
+        </div>
+      </nav>
+
+      {/* <div className="bg-card border-b border-border-subtle py-4 px-4 md:px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <CepFilter 
+            <CepFilter
               initialLocation={city && state ? { city, state } : null}
               onLocationChange={(loc) => {
                 const params = new URLSearchParams(searchParams.toString());
                 if (loc) {
-                  params.set('city', loc.city);
-                  params.set('state', loc.state);
+                  params.set("city", loc.city);
+                  params.set("state", loc.state);
                 } else {
-                  params.delete('city');
-                  params.delete('state');
+                  params.delete("city");
+                  params.delete("state");
                 }
                 router.push(`/search?${params.toString()}`);
-              }} 
+              }}
             />
           </div>
           <div className="hidden lg:flex items-center gap-4 border-l border-border-subtle pl-6 py-1">
             <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
-              Filtrando por: <span className="text-primary">{city && state ? `${city}, ${state}` : 'Todo o Brasil'}</span>
+              Filtrando por:{" "}
+              <span className="text-primary">
+                {city && state
+                  ? `${city}, ${state}`
+                  : state
+                    ? selectedStateLabel
+                    : "Todo o Brasil"}
+              </span>
             </p>
-            {city && state && (
+            {(city || state) && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger
                     render={
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => {
-                          const params = new URLSearchParams(searchParams.toString());
-                          params.delete('city');
-                          params.delete('state');
+                          const params = new URLSearchParams(
+                            searchParams.toString(),
+                          );
+                          params.delete("city");
+                          params.delete("state");
                           router.push(`/search?${params.toString()}`);
                         }}
                         className="h-8 w-8 rounded-full text-red-500 hover:bg-red-50 hover:text-red-600 transition-all"
@@ -178,36 +384,103 @@ function SearchResultsContent() {
             )}
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <main className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+      <main className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Sidebar / Filters */}
-          <aside className="w-full lg:w-72 shrink-0 space-y-8">
-            <div className="bg-card rounded-[2.5rem] p-8 border border-border-subtle shadow-sm">
+          <aside className="w-full lg:w-72 shrink-0 space-y-8 ">
+            <div className="bg-white p-4 border border-border-subtle">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-bold text-text-main flex items-center gap-2 font-heading">
-                  <SlidersHorizontal size={18} className="text-primary" /> Filtros
+                  <SlidersHorizontal size={18} className="text-primary" />{" "}
+                  Filtros
                 </h3>
               </div>
               <div className="space-y-6">
                 <div>
-                  <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4">Categorias</p>
+                  <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4">
+                    Estado
+                  </p>
+                  <Select
+                    value={state || "all"}
+                    onValueChange={(selectedState) => {
+                      const params = new URLSearchParams(
+                        searchParams.toString(),
+                      );
+
+                      if (selectedState === "all") {
+                        params.delete("state");
+                        params.delete("city");
+                      } else {
+                        params.set("state", selectedState);
+                        if (selectedState !== state) {
+                          params.delete("city");
+                        }
+                      }
+
+                      router.push(`/search?${params.toString()}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-full rounded-2xl border-border-subtle bg-surface h-12 text-sm">
+                      <SelectValue placeholder="Selecione um estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BRAZIL_STATES.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4">
+                    Categorias
+                  </p>
                   <div className="space-y-3">
                     {[
-                      'Tecnologia', 'Design', 'Marketing', 'Consultoria', 'Cozinha', 
-                      'Limpeza', 'Manutenção', 'Beleza', 'Educação', 'Saúde', 
-                      'Eventos', 'Jurídico', 'Financeiro', 'Assistência', 'Reformas', 
-                      'Automotivo', 'Moda', 'Bem Estar', 'Pet Care', 'Fotografia', 
-                      'Música', 'Idiomas', 'Esportes', 'Festas', 'Transporte'
-                    ].map(cat => (
-                      <label key={cat} className="flex items-center gap-3 text-sm font-medium text-text-muted hover:text-primary cursor-pointer transition-colors group">
-                        <div className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${
-                          selectedCategory === cat ? 'border-primary bg-primary/5' : 'border-border-subtle group-hover:border-primary/30'
-                        }`}>
-                          <input 
-                            type="checkbox" 
-                            className="hidden" 
+                      "Tecnologia",
+                      "Design",
+                      "Marketing",
+                      "Consultoria",
+                      "Cozinha",
+                      "Limpeza",
+                      "Manutenção",
+                      "Beleza",
+                      "Educação",
+                      "Saúde",
+                      "Eventos",
+                      "Jurídico",
+                      "Financeiro",
+                      "Assistência",
+                      "Reformas",
+                      "Automotivo",
+                      "Moda",
+                      "Bem Estar",
+                      "Pet Care",
+                      "Fotografia",
+                      "Música",
+                      "Idiomas",
+                      "Esportes",
+                      "Festas",
+                      "Transporte",
+                    ].map((cat) => (
+                      <label
+                        key={cat}
+                        className="flex items-center gap-3 text-sm font-medium text-text-muted hover:text-primary cursor-pointer transition-colors group"
+                      >
+                        <div
+                          className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${
+                            selectedCategory === cat
+                              ? "border-primary bg-primary/5"
+                              : "border-border-subtle group-hover:border-primary/30"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="hidden"
                             checked={selectedCategory === cat}
                             onChange={(e) => {
                               if (e.target.checked) {
@@ -217,9 +490,13 @@ function SearchResultsContent() {
                               }
                             }}
                           />
-                          <div className={`w-2.5 h-2.5 bg-primary rounded-sm transition-opacity ${
-                            selectedCategory === cat ? 'opacity-100' : 'opacity-0 group-hover:opacity-10'
-                          }`} />
+                          <div
+                            className={`w-2.5 h-2.5 bg-primary rounded-sm transition-opacity ${
+                              selectedCategory === cat
+                                ? "opacity-100"
+                                : "opacity-0 group-hover:opacity-10"
+                            }`}
+                          />
                         </div>
                         {cat}
                       </label>
@@ -234,127 +511,179 @@ function SearchResultsContent() {
           <div className="flex-grow space-y-8">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-text-muted uppercase tracking-widest">
-                {loading ? 'Buscando membros...' : `${results.length} resultados encontrados`}
+                {loading
+                  ? "Buscando membros..."
+                  : `${results.length} resultados encontrados`}
               </p>
             </div>
 
             <AnimatePresence mode="popLayout">
               {loading ? (
                 <div className="space-y-6">
-                  {[1, 2, 3, 4].map(i => (
-                    <Skeleton key={i} className="h-48 w-full rounded-[2.5rem]" />
+                  {[1, 2, 3, 4].map((i) => (
+                    <Skeleton
+                      key={i}
+                      className="h-48 w-full rounded-[2.5rem]"
+                    />
                   ))}
                 </div>
               ) : results.length > 0 ? (
                 <div className="space-y-6">
-                  {results.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((p, idx) => (
-                    <motion.div
-                      key={p.uid}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                    >
-                      <Link href={`/profile/${p.uid}`}>
-                        <Card className="group flex flex-col md:flex-row gap-6 p-8 rounded-[2.5rem] border-border-subtle hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300 bg-card cursor-pointer relative overflow-hidden">
-                          <div className="absolute top-0 right-0 w-32 h-32 bg-surface rounded-bl-[4rem] -mr-16 -mt-16 transition-all group-hover:bg-primary/5" />
-                          
-                          <div className="shrink-0 flex flex-col items-center gap-4">
-                            <Avatar className="w-24 h-24 border-4 border-surface shadow-sm">
-                              <AvatarImage src={p.photoURL} />
-                              <AvatarFallback className="bg-primary/10 text-primary font-bold text-3xl">{p.name[0]}</AvatarFallback>
-                            </Avatar>
-                            <div className="flex items-center gap-1 text-highlight font-bold text-sm">
-                              <Star size={16} fill="currentColor" /> {p.rating || '0.0'}
-                            </div>
-                          </div>
+                  {results
+                    .slice(
+                      (currentPage - 1) * ITEMS_PER_PAGE,
+                      currentPage * ITEMS_PER_PAGE,
+                    )
+                    .map((p, idx) => (
+                      <motion.div
+                        key={p.uid}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                      >
+                        <Link href={`/profile/${p.uid}`}>
+                          <div className="group flex flex-col md:flex-row gap-6 p-8 border border-border-subtle hover:border-primary/20 hover:shadow-2xl transition-all duration-300 bg-card cursor-pointer relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-surface rounded-bl-[4rem] -mr-16 -mt-16 transition-all group-hover:bg-primary/5" />
 
-                          <div className="flex-grow space-y-4">
-                            <div className="flex flex-wrap items-start justify-between gap-4">
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <CardTitle className="text-2xl font-bold text-text-main group-hover:text-primary transition-colors font-heading">
-                                    {p.name}
-                                  </CardTitle>
-                                  {p.verifiedMember && <ShieldCheck size={20} className="text-primary" />}
-                                </div>
-                                <p className="text-sm font-bold text-primary mt-1 uppercase tracking-wider flex items-center gap-2">
-                                  {p.companyName && <span className="text-text-main/60 normal-case font-medium">{p.companyName} • </span>}
-                                  {p.serviceType || p.category || 'Profissional'}
-                                </p>
+                            <div className="shrink-0 flex flex-col items-center gap-4">
+                              <Avatar className="w-24 h-24 border-4 border-surface shadow-sm">
+                                <AvatarImage src={p.photoURL} />
+                                <AvatarFallback className="bg-primary/10 text-primary font-bold text-3xl">
+                                  {p.name[0]}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex items-center gap-1 text-highlight font-bold text-sm">
+                                <Star size={16} fill="currentColor" />{" "}
+                                {p.rating || "0.0"}
                               </div>
-                              <Badge variant="outline" className="bg-surface border-border-subtle text-text-muted rounded-full px-4 py-1 font-bold text-[10px] uppercase tracking-widest">
-                                <MapPin size={12} className="mr-2" /> {p.location || 'Brasil'}
-                              </Badge>
                             </div>
 
-                            <p className="text-text-muted text-sm leading-relaxed line-clamp-2 max-w-2xl">
-                              {p.bio || 'Este membro da comunidade oferece serviços de alta qualidade com valores compartilhados. Clique para ver mais detalhes e entrar em contato.'}
-                            </p>
+                            <div className="flex-grow space-y-4">
+                              <div className="flex flex-wrap items-start justify-between gap-4">
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <h3 className="text-2xl font-bold text-text-main group-hover:text-primary transition-colors font-heading">
+                                      {p.name}
+                                    </h3>
+                                    {p.verifiedMember && (
+                                      <ShieldCheck
+                                        size={20}
+                                        className="text-primary"
+                                      />
+                                    )}
+                                  </div>
+                                  <p className="text-sm font-bold text-primary mt-1 uppercase tracking-wider flex items-center gap-2">
+                                    {p.companyName && (
+                                      <span className="text-text-main/60 normal-case font-medium">
+                                        {p.companyName} •{" "}
+                                      </span>
+                                    )}
+                                    {p.serviceType ||
+                                      p.category ||
+                                      "Profissional"}
+                                  </p>
+                                </div>
+                                <Badge
+                                  variant="outline"
+                                  className="bg-surface border-border-subtle text-text-muted rounded-full px-4 py-1 font-bold text-[10px] uppercase tracking-widest"
+                                >
+                                  <MapPin size={12} className="mr-2" />
+                                  {p.location || "Brasil"}
+                                </Badge>
+                              </div>
 
-                            <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
-                              {p.baptismYear && (
-                                <div className="flex items-center gap-1.5">
-                                  <Church size={12} className="text-primary/60" />
-                                  <span>Membro há {new Date().getFullYear() - p.baptismYear} anos</span>
-                                </div>
-                              )}
-                              {p.availability && p.availability.length > 0 && (
-                                <div className="flex items-center gap-1.5">
-                                  <CalendarDays size={12} className="text-primary/60" />
-                                  <span>{p.availability.join(', ')}</span>
-                                </div>
-                              )}
-                              {p.serviceHours && (
-                                <div className="flex items-center gap-1.5">
-                                  <Clock size={12} className="text-primary/60" />
-                                  <span>{p.serviceHours}</span>
-                                </div>
-                              )}
-                            </div>
+                              <p className="text-text-muted text-sm leading-relaxed line-clamp-2 max-w-2xl">
+                                {p.bio ||
+                                  "Este membro da comunidade oferece serviços de alta qualidade com valores compartilhados. Clique para ver mais detalhes e entrar em contato."}
+                              </p>
 
-                            <div className="flex flex-wrap gap-3 pt-2">
-                              <Badge className="bg-surface text-text-muted hover:bg-primary/5 hover:text-primary border-none rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors">
-                                Atendimento Local
-                              </Badge>
-                              <div className="flex-grow" />
-                              <Button 
-                                size="sm" 
-                                variant="ghost" 
-                                className="h-8 rounded-lg text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/5"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  toggleContact(p.uid).then(() => {
-                                    if (profile) toast.success('Lista de contatos atualizada');
-                                  }).catch(() => {});
-                                }}
-                              >
-                                {profile?.contacts?.includes(p.uid) ? (
-                                  <><UserMinus size={14} className="mr-1.5" /> Remover</>
-                                ) : (
-                                  <><UserPlus size={14} className="mr-1.5" /> Adicionar</>
+                              <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
+                                {p.baptismYear && (
+                                  <div className="flex items-center gap-1.5">
+                                    <Church
+                                      size={12}
+                                      className="text-primary/60"
+                                    />
+                                    <span>
+                                      Membro há{" "}
+                                      {new Date().getFullYear() - p.baptismYear}{" "}
+                                      anos
+                                    </span>
+                                  </div>
                                 )}
-                              </Button>
-                            </div>
-                          </div>
+                                {p.availability &&
+                                  p.availability.length > 0 && (
+                                    <div className="flex items-center gap-1.5">
+                                      <CalendarDays
+                                        size={12}
+                                        className="text-primary/60"
+                                      />
+                                      <span>{p.availability.join(", ")}</span>
+                                    </div>
+                                  )}
+                                {p.serviceHours && (
+                                  <div className="flex items-center gap-1.5">
+                                    <Clock
+                                      size={12}
+                                      className="text-primary/60"
+                                    />
+                                    <span>{p.serviceHours}</span>
+                                  </div>
+                                )}
+                              </div>
 
-                          <div className="flex items-center justify-center md:border-l border-border-subtle md:pl-8">
-                            <div className="w-12 h-12 rounded-2xl bg-surface flex items-center justify-center text-text-muted group-hover:bg-primary group-hover:text-white group-hover:rotate-45 transition-all duration-500">
-                              <ChevronRight size={24} />
+                              <div className="flex flex-wrap gap-3 pt-2">
+                                <Badge className="bg-surface text-text-muted hover:bg-primary/5 hover:text-primary border-none rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors">
+                                  Atendimento Local
+                                </Badge>
+                                <div className="flex-grow" />
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-8 rounded-lg text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/5"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    toggleContact(p.uid)
+                                      .then(() => {
+                                        if (profile)
+                                          toast.success(
+                                            "Lista de contatos atualizada",
+                                          );
+                                      })
+                                      .catch(() => {});
+                                  }}
+                                >
+                                  {profile?.contacts?.includes(p.uid) ? (
+                                    <>
+                                      <UserMinus size={14} className="mr-1.5" />{" "}
+                                      Remover
+                                    </>
+                                  ) : (
+                                    <>
+                                      <UserPlus size={14} className="mr-1.5" />{" "}
+                                      Adicionar
+                                    </>
+                                  )}
+                                </Button>
+                              </div>
                             </div>
+
+                   
                           </div>
-                        </Card>
-                      </Link>
-                    </motion.div>
-                  ))}
+                        </Link>
+                      </motion.div>
+                    ))}
 
                   {/* Pagination Component */}
                   {results.length > ITEMS_PER_PAGE && (
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-10 pb-20 border-t border-border-subtle mt-10">
                       <p className="text-sm font-bold text-text-muted uppercase tracking-widest">
-                        Página <span className="text-primary">{currentPage}</span> de {Math.ceil(results.length / ITEMS_PER_PAGE)}
+                        Página
+                        <span className="text-primary">{currentPage}</span> de
+                        {Math.ceil(results.length / ITEMS_PER_PAGE)}
                       </p>
-                      
+
                       <div className="flex items-center gap-2">
                         <Button
                           variant="outline"
@@ -368,7 +697,9 @@ function SearchResultsContent() {
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                          onClick={() =>
+                            setCurrentPage((prev) => Math.max(1, prev - 1))
+                          }
                           disabled={currentPage === 1}
                           className="h-10 w-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
                         >
@@ -377,23 +708,31 @@ function SearchResultsContent() {
 
                         {/* Mobile pagination simplified, Desktop shows numbers */}
                         <div className="hidden sm:flex items-center gap-1">
-                          {Array.from({ length: Math.ceil(results.length / ITEMS_PER_PAGE) }).map((_, i) => {
+                          {Array.from({
+                            length: Math.ceil(results.length / ITEMS_PER_PAGE),
+                          }).map((_, i) => {
                             const pageNum = i + 1;
                             // Show first, last, current, and neighbors
                             if (
-                              pageNum === 1 || 
-                              pageNum === Math.ceil(results.length / ITEMS_PER_PAGE) ||
-                              (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                              pageNum === 1 ||
+                              pageNum ===
+                                Math.ceil(results.length / ITEMS_PER_PAGE) ||
+                              (pageNum >= currentPage - 1 &&
+                                pageNum <= currentPage + 1)
                             ) {
                               return (
                                 <Button
                                   key={pageNum}
-                                  variant={currentPage === pageNum ? "default" : "outline"}
+                                  variant={
+                                    currentPage === pageNum
+                                      ? "default"
+                                      : "outline"
+                                  }
                                   onClick={() => setCurrentPage(pageNum)}
                                   className={`h-10 w-10 rounded-xl transition-all font-bold ${
-                                    currentPage === pageNum 
-                                      ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-110 z-10' 
-                                      : 'border-border-subtle hover:border-primary/50'
+                                    currentPage === pageNum
+                                      ? "bg-primary text-white shadow-lg shadow-primary/20 scale-110 z-10"
+                                      : "border-border-subtle hover:border-primary/50"
                                   }`}
                                 >
                                   {pageNum}
@@ -401,9 +740,18 @@ function SearchResultsContent() {
                               );
                             } else if (
                               (pageNum === currentPage - 2 && pageNum > 1) ||
-                              (pageNum === currentPage + 2 && pageNum < Math.ceil(results.length / ITEMS_PER_PAGE))
+                              (pageNum === currentPage + 2 &&
+                                pageNum <
+                                  Math.ceil(results.length / ITEMS_PER_PAGE))
                             ) {
-                              return <span key={pageNum} className="px-1 text-text-muted">...</span>;
+                              return (
+                                <span
+                                  key={pageNum}
+                                  className="px-1 text-text-muted"
+                                >
+                                  ...
+                                </span>
+                              );
                             }
                             return null;
                           })}
@@ -417,8 +765,18 @@ function SearchResultsContent() {
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() => setCurrentPage(prev => Math.min(Math.ceil(results.length / ITEMS_PER_PAGE), prev + 1))}
-                          disabled={currentPage === Math.ceil(results.length / ITEMS_PER_PAGE)}
+                          onClick={() =>
+                            setCurrentPage((prev) =>
+                              Math.min(
+                                Math.ceil(results.length / ITEMS_PER_PAGE),
+                                prev + 1,
+                              ),
+                            )
+                          }
+                          disabled={
+                            currentPage ===
+                            Math.ceil(results.length / ITEMS_PER_PAGE)
+                          }
                           className="h-10 w-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
                         >
                           <ChevronRight size={18} />
@@ -426,8 +784,15 @@ function SearchResultsContent() {
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() => setCurrentPage(Math.ceil(results.length / ITEMS_PER_PAGE))}
-                          disabled={currentPage === Math.ceil(results.length / ITEMS_PER_PAGE)}
+                          onClick={() =>
+                            setCurrentPage(
+                              Math.ceil(results.length / ITEMS_PER_PAGE),
+                            )
+                          }
+                          disabled={
+                            currentPage ===
+                            Math.ceil(results.length / ITEMS_PER_PAGE)
+                          }
                           className="h-10 w-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
                         >
                           <ChevronsRight size={18} />
@@ -440,17 +805,30 @@ function SearchResultsContent() {
                 <div className="space-y-12">
                   <div className="text-center py-20 bg-card rounded-[3rem] border-2 border-dashed border-slate-200">
                     <Search className="mx-auto h-16 w-16 text-slate-200 mb-6" />
-                    <h4 className="text-2xl font-bold text-slate-900 mb-2">Nenhum resultado exato encontrado</h4>
+                    <h4 className="text-2xl font-bold text-slate-900 mb-2">
+                      Nenhum resultado exato encontrado
+                    </h4>
                     <p className="text-slate-500 mb-8 max-w-md mx-auto">
-                      Não encontramos profissionais para &quot;{query}&quot;{city ? ` em ${city}` : ''}. 
-                      Tente termos mais genéricos ou veja as sugestões abaixo.
+                      Não encontramos profissionais para &quot;{query}&quot;
+                      {city
+                        ? ` em ${city}, ${state}`
+                        : state
+                          ? ` em ${selectedStateLabel}`
+                          : ""}
+                      . Tente termos mais genéricos ou veja as sugestões abaixo.
                     </p>
-                    <Button onClick={() => {
-                      setSearchTerm('');
-                      const params = new URLSearchParams(searchParams.toString());
-                      params.delete('q');
-                      router.push(`/search?${params.toString()}`);
-                    }} variant="outline" className="rounded-xl px-8">
+                    <Button
+                      onClick={() => {
+                        setSearchTerm("");
+                        const params = new URLSearchParams(
+                          searchParams.toString(),
+                        );
+                        params.delete("q");
+                        router.push(`/search?${params.toString()}`);
+                      }}
+                      variant="outline"
+                      className="rounded-xl px-8"
+                    >
                       Limpar Filtro de Busca
                     </Button>
                   </div>
@@ -460,7 +838,11 @@ function SearchResultsContent() {
                       <div className="flex items-center gap-4">
                         <div className="h-px flex-grow bg-slate-200" />
                         <h3 className="text-lg font-bold text-slate-400 uppercase tracking-widest shrink-0">
-                          {city ? `Membros em ${city}` : 'Membros em Destaque'}
+                          {city
+                            ? `Membros em ${city}`
+                            : state
+                              ? `Membros em ${selectedStateLabel}`
+                              : "Membros em Destaque"}
                         </h3>
                         <div className="h-px flex-grow bg-slate-200" />
                       </div>
@@ -468,28 +850,40 @@ function SearchResultsContent() {
                       <div className="grid grid-cols-1 gap-4">
                         {suggestions.map((p) => (
                           <Link href={`/profile/${p.uid}`} key={p.uid}>
-                            <Card className="group p-6 rounded-[2rem] border-slate-200 hover:border-primary/20 hover:shadow-lg transition-all bg-card cursor-pointer flex items-center gap-6">
+                            <div className="group p-6 rounded-[2rem]  hover:shadow-lg transition-all bg-white cursor-pointer flex items-center gap-6">
                               <Avatar className="w-16 h-16 border-2 border-slate-50">
                                 <AvatarImage src={p.photoURL} />
-                                <AvatarFallback className="bg-primary/5 text-primary font-bold">{p.name[0]}</AvatarFallback>
+                                <AvatarFallback className="bg-primary/5 text-primary font-bold">
+                                  {p.name[0]}
+                                </AvatarFallback>
                               </Avatar>
                               <div className="flex-grow">
-                                <h4 className="font-bold text-slate-900 group-hover:text-primary transition-colors">{p.name}</h4>
+                                <h4 className="font-bold text-slate-900 group-hover:text-primary transition-colors">
+                                  {p.name}
+                                </h4>
                                 <p className="text-sm text-primary font-medium">
-                                  {p.companyName && <span className="text-slate-500 font-normal">{p.companyName} • </span>}
+                                  {p.companyName && (
+                                    <span className="text-slate-500 font-normal">
+                                      {p.companyName} •{" "}
+                                    </span>
+                                  )}
                                   {p.serviceType || p.category}
                                 </p>
                                 <div className="flex items-center gap-3 mt-1">
                                   <div className="flex items-center gap-1 text-highlight font-bold text-xs">
-                                    <Star size={12} fill="currentColor" /> {p.rating || '0.0'}
+                                    <Star size={12} fill="currentColor" />{" "}
+                                    {p.rating || "0.0"}
                                   </div>
                                   <div className="text-[10px] text-slate-400 flex items-center gap-1">
                                     <MapPin size={10} /> {p.location}
                                   </div>
                                 </div>
                               </div>
-                              <ChevronRight size={20} className="text-slate-300 group-hover:text-primary transition-all" />
-                            </Card>
+                              <ChevronRight
+                                size={20}
+                                className="text-slate-300 group-hover:text-primary transition-all"
+                              />
+                            </div>
                           </Link>
                         ))}
                       </div>
@@ -507,28 +901,30 @@ function SearchResultsContent() {
 
 export function SearchClient() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-surface p-6 md:p-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-10">
-            <Skeleton className="h-10 w-40 rounded-xl" />
-            <Skeleton className="h-10 w-10 rounded-full" />
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
-            <div className="lg:col-span-1 space-y-6">
-              <Skeleton className="h-40 w-full rounded-3xl" />
-              <Skeleton className="h-64 w-full rounded-3xl" />
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-surface p-6 md:p-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex justify-between items-center mb-10">
+              <Skeleton className="h-10 w-40 rounded-xl" />
+              <Skeleton className="h-10 w-10 rounded-full" />
             </div>
-            <div className="lg:col-span-3 space-y-8">
-              <Skeleton className="h-16 w-full rounded-full" />
-              {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className="h-40 w-full rounded-[2rem]" />
-              ))}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+              <div className="lg:col-span-1 space-y-6">
+                <Skeleton className="h-40 w-full rounded-3xl" />
+                <Skeleton className="h-64 w-full rounded-3xl" />
+              </div>
+              <div className="lg:col-span-3 space-y-8">
+                <Skeleton className="h-16 w-full rounded-full" />
+                {[...Array(4)].map((_, i) => (
+                  <Skeleton key={i} className="h-40 w-full rounded-[2rem]" />
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <SearchResultsContent />
     </Suspense>
   );
