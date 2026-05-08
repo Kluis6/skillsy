@@ -47,7 +47,7 @@ export function ContactsAside({
   };
 
   return (
-    <aside className="w-full bg-card flex flex-col h-screen overflow-hidden">
+    <aside className="w-full bg-white flex flex-col h-screen overflow-hidden ">
       <div className="px-4 py-2.5 border-b border-border-s flex flex-col space-y-4">
         <div className="w-full flex justify-between items-center ">
           <Link
@@ -67,14 +67,14 @@ export function ContactsAside({
           />
           <Input
             placeholder="Buscar contatos..."
-            className="pl-10 h-10 text-sm focus:bg-white placeholder:text-gray-400 rounded-sm"
+            className="pl-10 h-10 text-sm focus:bg-white placeholder:text-gray-400 rounded-full"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
       </div>
 
-      <div className="h-full overflow-y-auto custom-scrollbar">
+      <div className="h-full overflow-y-auto custom-scrollbar bg-surface">
         {loading ? (
           <div className="p-4 space-y-4">
             {[1, 2, 3, 4].map((i) => (
@@ -88,7 +88,7 @@ export function ContactsAside({
                 key={c.uid}
                 onClick={() => handleSelectContact(c.uid)}
                 className={`w-full p-4 flex items-center gap-4 transition-all hover:bg-primary/5 text-left relative group ${
-                  selectedContactId === c.uid ? "bg-primary/5" : ""
+                  selectedContactId === c.uid ? "bg-primary/5" : "bg-white"
                 }`}
               >
                 {selectedContactId === c.uid && (

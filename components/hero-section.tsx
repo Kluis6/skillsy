@@ -57,7 +57,7 @@ export function HeroSection({
               <Input
                 name="q"
                 placeholder="O que você procura? Pintor, Advogado, Bolo de Pote..."
-                className="pl-12 h-12 w-full placeholder:text-gray-400"
+                className="pl-12 h-12 w-full placeholder:text-gray-400 shadow-sm rounded-full"
                 defaultValue={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />

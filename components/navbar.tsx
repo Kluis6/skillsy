@@ -58,7 +58,7 @@ export function Navbar({
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle ">
-      <div className="container mx-auto flex justify-between items-center px-4 md:py-2 py-1">
+      <div className="container mx-auto flex justify-between items-center px-4 py-2">
         <div className="flex items-center space-x-4">
           {shouldShowBackButton ? (
             <></>
@@ -66,13 +66,13 @@ export function Navbar({
             <Drawer direction="left">
               <DrawerTrigger asChild className="flex md:hidden">
                 <Button size="icon" className="size-10" variant="ghost">
-                  <BsList className="size-5" />
+                  <BsList className="size-5 text-gray-700" />
                 </Button>
               </DrawerTrigger>
               <DrawerContent>
-                <DrawerHeader className="flex flex-row justify-between ">
+                <DrawerHeader className="flex flex-row justify-between">
                   <div className="flex flex-col">
-                    <DrawerTitle className="text-primary">Skillsy</DrawerTitle>
+                    <DrawerTitle className="text-primary text-base">Skillsy</DrawerTitle>
                     <DrawerDescription>
                       Onde talentos encontram oportunidades
                     </DrawerDescription>
@@ -200,11 +200,11 @@ export function Navbar({
           <Drawer direction="left">
             <DrawerTrigger asChild className="hidden md:flex">
               <Button size="icon" className="size-10" variant="ghost">
-                <BsList className="size-5" />
+                <BsList className="size-5 text-gray-700" />
               </Button>
             </DrawerTrigger>
             <DrawerContent>
-              <DrawerHeader className="flex flex-row justify-between ">
+              <DrawerHeader className="flex flex-row justify-between">
                 <div className="flex flex-col">
                   <DrawerTitle className="text-primary">Skillsy</DrawerTitle>
                   <DrawerDescription>
@@ -220,7 +220,7 @@ export function Navbar({
               <div className="px-4 space-y-4">
                 <h3 className="font-medium text-sm text-gray-800">Navegação</h3>
                 <ul className="w-full space-y-1">
-                  <li className=" p-2 hover:bg-surface">
+                  <li className="p-2 hover:bg-surface">
                     <Link
                       href="/weareskillsy"
                       className="flex text-sm font-normal text-gray-800"
@@ -228,7 +228,7 @@ export function Navbar({
                       O que é Skillsy?
                     </Link>
                   </li>
-                  <li className=" p-2 hover:bg-surface">
+                  <li className="p-2 hover:bg-surface">
                     <Link
                       href="/join"
                       className="flex text-sm font-normal text-gray-800"
@@ -236,7 +236,7 @@ export function Navbar({
                       Por que participar?
                     </Link>
                   </li>
-                  <li className=" p-2 hover:bg-surface">
+                  <li className="p-2 hover:bg-surface">
                     <Link
                       href="/join"
                       className="flex text-sm font-normal text-gray-800"
@@ -244,7 +244,7 @@ export function Navbar({
                       Privacidade
                     </Link>
                   </li>
-                  <li className=" p-2 hover:bg-surface">
+                  <li className="p-2 hover:bg-surface">
                     <Link
                       href="/termos"
                       className="flex text-sm font-normal text-gray-800"

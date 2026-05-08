@@ -136,21 +136,21 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
       description: "Envie o contato no WhatsApp.",
       icon: BsWhatsapp,
       onClick: handleWhatsAppShare,
-      className: "text-green-600",
+      className: "text-green-600 ",
     },
     {
       label: "Compartilhar no Telegram",
       description: "Envie o contato no Telegram.",
       icon: FaTelegramPlane,
       onClick: handleTelegramShare,
-      className: "text-sky-500",
+      className: "text-sky-500 ",
     },
     {
       label: "Copiar link",
       description: "Copia o link para a area de transferencia.",
       icon: Copy,
       onClick: handleCopyLink,
-      className: "text-sky-600",
+      className: "text-sky-600 ",
     },
   ];
 
@@ -168,7 +168,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
               />
             }
           >
-            <PiShareFat className="text-gray-700" />
+            <PiShareFat className="text-gray-700 " />
           </TooltipTrigger>
           <TooltipContent>
             <p>Compartilhar</p>
@@ -223,7 +223,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-auto w-full md:w-1/3 justify-start gap-3 p-4 text-left"
+                  className="h-auto w-full md:w-1/3 justify-start gap-3 p-4 text-left rounded-sm"
                   onClick={action.onClick}
                 />
               }
@@ -259,7 +259,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 0, transition: { duration: 0 } }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="w-full h-full space-y-4 "
+            className="w-full h-full space-y-2"
           >
             {/* Profile Hero (LinkedIn Style) */}
 
@@ -284,13 +284,13 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                 </Avatar>
                 <div className="flex justify-end p-4 gap-x-2">
                   {renderShareButton(
-                    "hidden md:flex justify-center items-center size-10",
+                    "hidden md:flex justify-center items-center size-10 rounded-sm",
                   )}
 
                   <Button
                     type="button"
                     onClick={handleWhatsApp}
-                    className="h-10 px-6 hidden md:flex bg-green-500 text-white hover:bg-green-600 font-bold space-x-1"
+                    className="h-10 px-6 hidden rounded-sm md:flex bg-green-500 text-white hover:bg-green-600 font-bold space-x-1"
                   >
                     <BsWhatsapp className="size-4" /> <p>WhatsApp</p>
                   </Button>
@@ -363,12 +363,12 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   </div>
 
                   <div className="flex md:hidden flex-wrap justify-center gap-2">
-                    {renderShareButton("size-10")}
+                    {renderShareButton("size-10 rounded-sm")}
 
                     <Button
                       type="button"
                       onClick={handleWhatsApp}
-                      className="h-10 px-6 flex bg-green-500 text-white hover:bg-green-600 font-bold space-x-1"
+                      className="h-10 px-6 flex bg-green-500 text-white hover:bg-green-600 font-bold space-x-1 rounded-sm"
                     >
                       <BsWhatsapp className="size-4" /> <p>WhatsApp</p>
                     </Button>
@@ -444,12 +444,12 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   });
                 }}
                 variant="destructive"
-                className="h-10 md:w-1/2 w-full font-bold space-x-2"
+                className="h-10 md:w-1/2 w-full font-bold space-x-2 rounded-sm"
               >
                 <UserMinus size={18} /> <p>Remover contato</p>
               </Button>
               <Link
-                className="h-10 w-full flex justify-center items-center space-x-2 text-white font-bold bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-lg"
+                className="h-10 w-full flex justify-center items-center space-x-2 text-white font-bold bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-sm"
                 href={`/profile/${selectedContact.uid}`}
               >
                 <LuUserRound size={18} /> <p className="text-sm">Ver contato</p>

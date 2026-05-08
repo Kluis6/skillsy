@@ -35,6 +35,12 @@ import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
 
 const categories = [
+    {
+    name: "Idiomas",
+    icon: Languages,
+    color: "text-blue-500",
+    bg: "bg-surface",
+  },
   {
     name: "Tecnologia",
     icon: Laptop,
@@ -121,12 +127,7 @@ const categories = [
     color: "text-blue-500",
     bg: "bg-surface",
   },
-  {
-    name: "Idiomas",
-    icon: Languages,
-    color: "text-blue-500",
-    bg: "bg-surface",
-  },
+
   {
     name: "Esportes",
     icon: Dumbbell,
