@@ -75,6 +75,7 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { Label } from "./ui/label";
+import { Separator } from "./ui/separator";
 
 function SearchResultsContent() {
   const { profile, toggleContact } = useAuth();
@@ -279,7 +280,7 @@ function SearchResultsContent() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Ex: Pintor, Advogado, Bolo de Pote..."
-                className="pl-12 h-10 w-full placeholder:text-gray-400 shadow-sm rounded-full "
+                className="pl-12 h-10 w-full bg-white placeholder:text-gray-400 shadow-sm rounded-full "
               />
             </div>
 
@@ -321,7 +322,7 @@ function SearchResultsContent() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Ex: Pintor, Advogado, Bolo de Pote..."
-                className="pl-12 h-10 w-full placeholder:text-gray-400 shadow-sm rounded-full "
+                className="pl-12 h-10 w-full bg-white placeholder:text-gray-400 shadow-sm rounded-full "
               />
             </div>
 
@@ -686,25 +687,27 @@ function SearchResultsContent() {
                         transition={{ delay: idx * 0.05 }}
                       >
                         <Link href={`/profile/${p.uid}`}>
-                          <div className="group flex flex-row gap-6 p-4 md:p-8 border border-border-subtle  hover:shadow-2xl transition-all duration-300 bg-white cursor-pointer relative overflow-hidden">
-                            <div className="shrink-0 flex flex-col items-center gap-4">
-                              <Avatar className="md:size-24 size-12 border-2 md:border-4 border-surface shadow-sm">
+                          <div className="flex flex-row gap-6 p-4 md:p-8 border border-border-subtle  hover:shadow-2xl transition-all duration-300 bg-white cursor-pointer relative overflow-hidden">
+                            <div className="shrink-0 flex flex-col items-center gap-2.5 md:gap-3">
+                              <Avatar className="md:size-24 size-12 border-1 md:border-4 border-surface shadow-sm">
                                 <AvatarImage src={p.photoURL} />
                                 <AvatarFallback className="bg-primary/10 text-primary font-bold text-3xl">
                                   {p.name[0]}
                                 </AvatarFallback>
                               </Avatar>
-                              <div className="flex items-center gap-1 text-highlight font-bold text-sm">
-                                <Star size={16} fill="currentColor" />{" "}
-                                {p.rating || "0.0"}
+                              <div className="flex items-center gap-1 text-highlight ">
+                                <Star size={14} fill="currentColor" />
+                                <p className="text-sm font-semibold">
+                                  {p.rating || "0.0"}
+                                </p>
                               </div>
                             </div>
 
-                            <div className="flex-grow space-y-4">
+                            <div className="flex-grow md:space-y-4">
                               <div className="flex flex-wrap items-start justify-between gap-4">
                                 <div>
                                   <div className="flex items-center gap-2">
-                                    <h3 className=" text-base md:text-2xl font-bold text-text-main  font-heading">
+                                    <h3 className="text-base md:text-2xl font-bold text-text-main  font-heading">
                                       {p.name}
                                     </h3>
                                     {p.verifiedMember && (
@@ -714,33 +717,42 @@ function SearchResultsContent() {
 
                                   <div className="">
                                     {p.companyName && (
-                                      <p className="font-medium text-sm text-gray-700">
+                                      <p className="font-medium text-xs md:text-sm text-gray-700">
                                         {p.companyName}
                                       </p>
                                     )}
 
-                                    <p className="text-gray-500 font-normal text-sm">
+                                    <p className="text-gray-500 font-normal text-xs md:text-sm">
                                       {p.serviceType ||
                                         p.category ||
                                         "Profissional"}
                                     </p>
+                                    <div className="flex items-center space-x-1">
+                                      <p className="text-gray-700 block md:hidden font-medium text-xs md:text-sm">
+                                        {p.location || "Brasil"}
+                                      </p>
+                                      <span className="font-bold block md:hidden">·</span>
+                                      <p className="text-gray-700 font-medium text-xs md:text-sm">
+                                        {p.ward}
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
-                                {/* <Badge
+                                <Badge
                                   variant="secondary"
-                                  className="py-2 px-3"
+                                  className="py-2 px-3 hidden md:flex"
                                 >
                                   <MapPin size={12} className="mr-2" />
                                   {p.location || "Brasil"}
-                                </Badge> */}
+                                </Badge>
                               </div>
                               <div className="hidden md:flex">
-                                <p className="text-text-muted text-sm leading-relaxed line-clamp-2 max-w-2xl">
+                                <p className="text-text-muted text-sm line-clamp-2 max-w-2xl">
                                   {p.bio ||
                                     "Este membro da comunidade oferece serviços de alta qualidade com valores compartilhados. Clique para ver mais detalhes e entrar em contato."}
                                 </p>
 
-                                <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
+                                {/* <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
                                   {p.baptismYear && (
                                     <div className="flex items-center gap-1.5">
                                       <Church
@@ -774,10 +786,10 @@ function SearchResultsContent() {
                                       <span>{p.serviceHours}</span>
                                     </div>
                                   )}
-                                </div>
+                                </div> */}
                               </div>
 
-                              <div className="flex flex-wrap gap-3 pt-2">
+                              {/* <div className="flex flex-wrap gap-3 pt-2">
                                 <div className="flex-grow" />
                                 <Button
                                   size="sm"
@@ -813,7 +825,7 @@ function SearchResultsContent() {
                                     </>
                                   )}
                                 </Button>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         </Link>

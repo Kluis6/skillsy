@@ -111,7 +111,7 @@ export function HomeClient({
             exit={{ opacity: 0, y: -20 }}
           >
             <div className="text-center my-24">
-              <h3 className="text-3xl font-bold text-text-main mb-4">
+              <h3 className="text-2xl md:text-3xl font-bold text-text-main mb-4">
                 Membros em Destaque
               </h3>
               <p className="text-text-muted">
@@ -148,7 +148,7 @@ export function HomeClient({
                         </div>
                         <div className="absolute z-30 bottom-4 left-4">
                           {p.companyName && (
-                            <p className="text-sm font-bold text-white  uppercase tracking-wider drop-shadow-xl">
+                            <p className="text-sm font-bold text-white uppercase tracking-wider drop-shadow-xl">
                               {p.companyName}
                             </p>
                           )}
