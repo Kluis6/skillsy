@@ -657,12 +657,6 @@ function SearchResultsContent() {
                       </div>
                     </div>
                   </section>
-                  <SheetFooter>
-                    {/* <Button type="submit">Save changes</Button>
-                    <SheetClose
-                      render={<Button variant="outline">Close</Button>}
-                    /> */}
-                  </SheetFooter>
                 </SheetContent>
               </Sheet>
             </div>
@@ -692,9 +686,9 @@ function SearchResultsContent() {
                         transition={{ delay: idx * 0.05 }}
                       >
                         <Link href={`/profile/${p.uid}`}>
-                          <div className="group flex flex-col md:flex-row gap-6 p-8 border border-border-subtle  hover:shadow-2xl transition-all duration-300 bg-white cursor-pointer relative overflow-hidden">
+                          <div className="group flex flex-row gap-6 p-4 md:p-8 border border-border-subtle  hover:shadow-2xl transition-all duration-300 bg-white cursor-pointer relative overflow-hidden">
                             <div className="shrink-0 flex flex-col items-center gap-4">
-                              <Avatar className="w-24 h-24 border-4 border-surface shadow-sm">
+                              <Avatar className="md:size-24 size-12 border-2 md:border-4 border-surface shadow-sm">
                                 <AvatarImage src={p.photoURL} />
                                 <AvatarFallback className="bg-primary/10 text-primary font-bold text-3xl">
                                   {p.name[0]}
@@ -710,74 +704,77 @@ function SearchResultsContent() {
                               <div className="flex flex-wrap items-start justify-between gap-4">
                                 <div>
                                   <div className="flex items-center gap-2">
-                                    <h3 className="text-2xl font-bold text-text-main group-hover:text-primary transition-colors font-heading">
+                                    <h3 className=" text-base md:text-2xl font-bold text-text-main  font-heading">
                                       {p.name}
                                     </h3>
                                     {p.verifiedMember && (
-                                      <ShieldCheck
-                                        size={20}
-                                        className="text-primary"
-                                      />
+                                      <ShieldCheck className="text-primary size-4 md:size-8" />
                                     )}
                                   </div>
-                                  <p className="text-sm font-bold text-primary mt-1 uppercase tracking-wider flex items-center gap-2">
+
+                                  <div className="">
                                     {p.companyName && (
-                                      <span className="text-text-main/60 normal-case font-medium">
-                                        {p.companyName} •{" "}
-                                      </span>
+                                      <p className="font-medium text-sm text-gray-700">
+                                        {p.companyName}
+                                      </p>
                                     )}
-                                    {p.serviceType ||
-                                      p.category ||
-                                      "Profissional"}
-                                  </p>
+
+                                    <p className="text-gray-500 font-normal text-sm">
+                                      {p.serviceType ||
+                                        p.category ||
+                                        "Profissional"}
+                                    </p>
+                                  </div>
                                 </div>
-                                <Badge
+                                {/* <Badge
                                   variant="secondary"
                                   className="py-2 px-3"
                                 >
                                   <MapPin size={12} className="mr-2" />
                                   {p.location || "Brasil"}
-                                </Badge>
+                                </Badge> */}
                               </div>
+                              <div className="hidden md:flex">
+                                <p className="text-text-muted text-sm leading-relaxed line-clamp-2 max-w-2xl">
+                                  {p.bio ||
+                                    "Este membro da comunidade oferece serviços de alta qualidade com valores compartilhados. Clique para ver mais detalhes e entrar em contato."}
+                                </p>
 
-                              <p className="text-text-muted text-sm leading-relaxed line-clamp-2 max-w-2xl">
-                                {p.bio ||
-                                  "Este membro da comunidade oferece serviços de alta qualidade com valores compartilhados. Clique para ver mais detalhes e entrar em contato."}
-                              </p>
-
-                              <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
-                                {p.baptismYear && (
-                                  <div className="flex items-center gap-1.5">
-                                    <Church
-                                      size={12}
-                                      className="text-primary/60"
-                                    />
-                                    <span>
-                                      Membro há{" "}
-                                      {new Date().getFullYear() - p.baptismYear}{" "}
-                                      anos
-                                    </span>
-                                  </div>
-                                )}
-                                {p.availability &&
-                                  p.availability.length > 0 && (
+                                <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
+                                  {p.baptismYear && (
                                     <div className="flex items-center gap-1.5">
-                                      <CalendarDays
+                                      <Church
                                         size={12}
                                         className="text-primary/60"
                                       />
-                                      <span>{p.availability.join(", ")}</span>
+                                      <span>
+                                        Membro há{" "}
+                                        {new Date().getFullYear() -
+                                          p.baptismYear}{" "}
+                                        anos
+                                      </span>
                                     </div>
                                   )}
-                                {p.serviceHours && (
-                                  <div className="flex items-center gap-1.5">
-                                    <Clock
-                                      size={12}
-                                      className="text-primary/60"
-                                    />
-                                    <span>{p.serviceHours}</span>
-                                  </div>
-                                )}
+                                  {p.availability &&
+                                    p.availability.length > 0 && (
+                                      <div className="flex items-center gap-1.5">
+                                        <CalendarDays
+                                          size={12}
+                                          className="text-primary/60"
+                                        />
+                                        <span>{p.availability.join(", ")}</span>
+                                      </div>
+                                    )}
+                                  {p.serviceHours && (
+                                    <div className="flex items-center gap-1.5">
+                                      <Clock
+                                        size={12}
+                                        className="text-primary/60"
+                                      />
+                                      <span>{p.serviceHours}</span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
 
                               <div className="flex flex-wrap gap-3 pt-2">
@@ -805,13 +802,14 @@ function SearchResultsContent() {
                                 >
                                   {profile?.contacts?.includes(p.uid) ? (
                                     <>
-                                      <UserMinus size={14} className="mr-1.5" />{" "}
-                                      Remover
+                                      <UserMinus size={14} className="md:mr-1.5" />
+                                      <p className="hidden md:block">Remover</p>
+                                      
                                     </>
                                   ) : (
                                     <>
-                                      <UserPlus size={14} className="mr-1.5" />{" "}
-                                      Conectar
+                                      <UserPlus size={14} className="md:mr-1.5" />
+                                      <p className="hidden md:block">Conectar</p>
                                     </>
                                   )}
                                 </Button>
