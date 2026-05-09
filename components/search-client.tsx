@@ -76,6 +76,7 @@ import {
 } from "./ui/sheet";
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
+import { LuLogIn } from "react-icons/lu";
 
 function SearchResultsContent() {
   const { profile, toggleContact } = useAuth();
@@ -302,8 +303,12 @@ function SearchResultsContent() {
             </Avatar>
           ) : (
             <AuthModal>
-              <Button variant="default" className="bg-blue-600 px-4">
-                Entrar
+              <Button
+                title="Faça login ou cria sua conta"
+                className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 w-10 md:w-auto md:px-4 h-10 rounded-sm"
+              >
+                <LuLogIn />
+                <p className="hidden md:block"> Entrar</p>
               </Button>
             </AuthModal>
           )}
@@ -533,8 +538,9 @@ function SearchResultsContent() {
                   render={
                     <Button
                       size="icon"
-                      className="rounded-sm md:hidden "
+                      className="rounded-sm md:hidden  size-10"
                       variant="outline"
+                      title="Filtros"
                     >
                       <SlidersHorizontal size={18} className="text-gray-700" />
                     </Button>
@@ -666,10 +672,7 @@ function SearchResultsContent() {
               {loading ? (
                 <div className="space-y-6">
                   {[1, 2, 3, 4].map((i) => (
-                    <Skeleton
-                      key={i}
-                      className="h-48 w-full rounded-sm"
-                    />
+                    <Skeleton key={i} className="h-48 w-full rounded-sm" />
                   ))}
                 </div>
               ) : results.length > 0 ? (
@@ -731,7 +734,9 @@ function SearchResultsContent() {
                                       <p className="text-gray-700 block md:hidden font-medium text-xs md:text-sm">
                                         {p.location || "Brasil"}
                                       </p>
-                                      <span className="font-bold block md:hidden">·</span>
+                                      <span className="font-bold block md:hidden">
+                                        ·
+                                      </span>
                                       <p className="text-gray-700 font-medium text-xs md:text-sm">
                                         {p.ward}
                                       </p>
