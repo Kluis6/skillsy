@@ -544,7 +544,7 @@ function SearchResultsContent() {
                     <SheetTitle> Filtros</SheetTitle>
                   </SheetHeader>
                   <section className="w-full">
-                    <div className="px-4 no-scrollbar overflow-y-auto h-[70dvh]">
+                    <div className="px-4  h-full">
                       <div className="space-y-6">
                         <div>
                           <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4">
@@ -586,8 +586,8 @@ function SearchResultsContent() {
                           </Select>
                         </div>
 
-                        <div>
-                          <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4">
+                        <div className="no-scrollbar space-y-6 overflow-y-auto h-[60dvh]">
+                          <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] ">
                             Categorias
                           </p>
                           <div className="space-y-3">
