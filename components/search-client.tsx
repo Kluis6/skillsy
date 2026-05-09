@@ -64,6 +64,17 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from "./ui/drawer";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
+import { Label } from "./ui/label";
 
 function SearchResultsContent() {
   const { profile, toggleContact } = useAuth();
@@ -387,9 +398,9 @@ function SearchResultsContent() {
       </div> */}
 
       <main className="container mx-auto px-4">
-        <div className="flex flex-col lg:flex-row gap-10">
+        <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar / Filters */}
-          <aside className="w-full lg:w-72 shrink-0 space-y-8 ">
+          <aside className="w-full lg:w-72 shrink-0 space-y-8 hidden lg:block">
             <div className="bg-white p-4 border border-border-subtle">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-bold text-text-main flex items-center gap-2 font-heading">
@@ -409,7 +420,7 @@ function SearchResultsContent() {
                         searchParams.toString(),
                       );
 
-                      if (selectedState === "all") {
+                      if (selectedState === "all" || selectedState == null) {
                         params.delete("state");
                         params.delete("city");
                       } else {
@@ -508,13 +519,152 @@ function SearchResultsContent() {
           </aside>
 
           {/* Results List */}
-          <div className="flex-grow space-y-8">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-text-muted uppercase tracking-widest">
+          <div className="flex-grow space-y-6">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold text-text-muted tracking-widest">
                 {loading
                   ? "Buscando membros..."
-                  : `${results.length} resultados encontrados`}
+                  : `${results.length} Resultados encontrados`}
               </p>
+
+              <Sheet>
+                <SheetTrigger
+                  render={
+                    <Button
+                      size="icon"
+                      className="rounded-sm"
+                      variant="outline"
+                    >
+                      <SlidersHorizontal size={18} className="text-gray-700" />
+                    </Button>
+                  }
+                />
+                <SheetContent side="bottom">
+                  <SheetHeader>
+                    <SheetTitle> Filtros</SheetTitle>
+                  </SheetHeader>
+                  <section className="w-full">
+                    <div className="px-4 no-scrollbar overflow-y-auto h-[70dvh]">
+                      <div className="space-y-6">
+                        <div>
+                          <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4">
+                            Estado
+                          </p>
+                          <Select
+                            value={state || "all"}
+                            onValueChange={(selectedState) => {
+                              const params = new URLSearchParams(
+                                searchParams.toString(),
+                              );
+
+                              if (
+                                selectedState === "all" ||
+                                selectedState == null
+                              ) {
+                                params.delete("state");
+                                params.delete("city");
+                              } else {
+                                params.set("state", selectedState);
+                                if (selectedState !== state) {
+                                  params.delete("city");
+                                }
+                              }
+
+                              router.push(`/search?${params.toString()}`);
+                            }}
+                          >
+                            <SelectTrigger className="w-full rounded-2xl border-border-subtle bg-surface h-12 text-sm">
+                              <SelectValue placeholder="Selecione um estado" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {BRAZIL_STATES.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                  {item.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4">
+                            Categorias
+                          </p>
+                          <div className="space-y-3">
+                            {[
+                              "Tecnologia",
+                              "Design",
+                              "Marketing",
+                              "Consultoria",
+                              "Cozinha",
+                              "Limpeza",
+                              "Manutenção",
+                              "Beleza",
+                              "Educação",
+                              "Saúde",
+                              "Eventos",
+                              "Jurídico",
+                              "Financeiro",
+                              "Assistência",
+                              "Reformas",
+                              "Automotivo",
+                              "Moda",
+                              "Bem Estar",
+                              "Pet Care",
+                              "Fotografia",
+                              "Música",
+                              "Idiomas",
+                              "Esportes",
+                              "Festas",
+                              "Transporte",
+                            ].map((cat) => (
+                              <label
+                                key={cat}
+                                className="flex items-center gap-3 text-sm font-medium text-text-muted hover:text-primary cursor-pointer transition-colors group"
+                              >
+                                <div
+                                  className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${
+                                    selectedCategory === cat
+                                      ? "border-primary bg-primary/5"
+                                      : "border-border-subtle group-hover:border-primary/30"
+                                  }`}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    className="hidden"
+                                    checked={selectedCategory === cat}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setSelectedCategory(cat);
+                                      } else {
+                                        setSelectedCategory(null);
+                                      }
+                                    }}
+                                  />
+                                  <div
+                                    className={`w-2.5 h-2.5 bg-primary rounded-sm transition-opacity ${
+                                      selectedCategory === cat
+                                        ? "opacity-100"
+                                        : "opacity-0 group-hover:opacity-10"
+                                    }`}
+                                  />
+                                </div>
+                                {cat}
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <SheetFooter>
+                    {/* <Button type="submit">Save changes</Button>
+                    <SheetClose
+                      render={<Button variant="outline">Close</Button>}
+                    /> */}
+                  </SheetFooter>
+                </SheetContent>
+              </Sheet>
             </div>
 
             <AnimatePresence mode="popLayout">
@@ -542,9 +692,7 @@ function SearchResultsContent() {
                         transition={{ delay: idx * 0.05 }}
                       >
                         <Link href={`/profile/${p.uid}`}>
-                          <div className="group flex flex-col md:flex-row gap-6 p-8 border border-border-subtle hover:border-primary/20 hover:shadow-2xl transition-all duration-300 bg-card cursor-pointer relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-surface rounded-bl-[4rem] -mr-16 -mt-16 transition-all group-hover:bg-primary/5" />
-
+                          <div className="group flex flex-col md:flex-row gap-6 p-8 border border-border-subtle  hover:shadow-2xl transition-all duration-300 bg-white cursor-pointer relative overflow-hidden">
                             <div className="shrink-0 flex flex-col items-center gap-4">
                               <Avatar className="w-24 h-24 border-4 border-surface shadow-sm">
                                 <AvatarImage src={p.photoURL} />
@@ -584,8 +732,8 @@ function SearchResultsContent() {
                                   </p>
                                 </div>
                                 <Badge
-                                  variant="outline"
-                                  className="bg-surface border-border-subtle text-text-muted rounded-full px-4 py-1 font-bold text-[10px] uppercase tracking-widest"
+                                  variant="secondary"
+                                  className="py-2 px-3"
                                 >
                                   <MapPin size={12} className="mr-2" />
                                   {p.location || "Brasil"}
@@ -633,14 +781,15 @@ function SearchResultsContent() {
                               </div>
 
                               <div className="flex flex-wrap gap-3 pt-2">
-                                <Badge className="bg-surface text-text-muted hover:bg-primary/5 hover:text-primary border-none rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors">
-                                  Atendimento Local
-                                </Badge>
                                 <div className="flex-grow" />
                                 <Button
                                   size="sm"
-                                  variant="ghost"
-                                  className="h-8 rounded-lg text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/5"
+                                  variant={
+                                    profile?.contacts?.includes(p.uid)
+                                      ? "destructive"
+                                      : "default"
+                                  }
+                                  className={`h-8 rounded-sm text-[10px] font-bold  tracking-widest transition-all ${profile?.contacts?.includes(p.uid) ? "" : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"}`}
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -662,14 +811,12 @@ function SearchResultsContent() {
                                   ) : (
                                     <>
                                       <UserPlus size={14} className="mr-1.5" />{" "}
-                                      Adicionar
+                                      Conectar
                                     </>
                                   )}
                                 </Button>
                               </div>
                             </div>
-
-                   
                           </div>
                         </Link>
                       </motion.div>
