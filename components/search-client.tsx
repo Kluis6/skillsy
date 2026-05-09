@@ -279,8 +279,8 @@ function SearchResultsContent() {
               <Input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Ex: Pintor, Advogado, Bolo de Pote..."
-                className="pl-12 h-10 w-full bg-white placeholder:text-gray-400 shadow-sm rounded-full "
+                placeholder="O que você procura? Pintor, Advogado, Bolo de Pote..."
+                className="pl-12 h-10 w-full bg-white placeholder:text-gray-400 shadow-sm rounded-full placeholder:sm:text-sm "
               />
             </div>
 
@@ -321,8 +321,8 @@ function SearchResultsContent() {
               <Input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Ex: Pintor, Advogado, Bolo de Pote..."
-                className="pl-12 h-10 w-full bg-white placeholder:text-gray-400 shadow-sm rounded-full "
+                placeholder="O que você procura? Pintor, Advogado, Bolo de Pote..."
+                className="pl-12 h-10 w-full bg-white placeholder:text-gray-400 shadow-sm rounded-full placeholder:text-xs"
               />
             </div>
 
@@ -434,10 +434,10 @@ function SearchResultsContent() {
                       router.push(`/search?${params.toString()}`);
                     }}
                   >
-                    <SelectTrigger className="w-full rounded-2xl border-border-subtle bg-surface h-12 text-sm">
+                    <SelectTrigger className="w-full rounded-sm border-border-subtle bg-plate-100 h-12 text-sm">
                       <SelectValue placeholder="Selecione um estado" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent alignItemWithTrigger={false}>
                       {BRAZIL_STATES.map((item) => (
                         <SelectItem key={item.value} value={item.value}>
                           {item.label}
@@ -533,7 +533,7 @@ function SearchResultsContent() {
                   render={
                     <Button
                       size="icon"
-                      className="rounded-sm"
+                      className="rounded-sm md:hidden "
                       variant="outline"
                     >
                       <SlidersHorizontal size={18} className="text-gray-700" />
@@ -574,7 +574,7 @@ function SearchResultsContent() {
                               router.push(`/search?${params.toString()}`);
                             }}
                           >
-                            <SelectTrigger className="w-full rounded-2xl border-border-subtle bg-surface h-12 text-sm">
+                            <SelectTrigger className="w-full rounded-sm bg-surface h-12 text-sm">
                               <SelectValue placeholder="Selecione um estado" />
                             </SelectTrigger>
                             <SelectContent>
@@ -668,12 +668,12 @@ function SearchResultsContent() {
                   {[1, 2, 3, 4].map((i) => (
                     <Skeleton
                       key={i}
-                      className="h-48 w-full rounded-[2.5rem]"
+                      className="h-48 w-full rounded-sm"
                     />
                   ))}
                 </div>
               ) : results.length > 0 ? (
-                <div className="space-y-6">
+                <div className="space-y-2 md:space-y-6">
                   {results
                     .slice(
                       (currentPage - 1) * ITEMS_PER_PAGE,
@@ -706,12 +706,12 @@ function SearchResultsContent() {
                             <div className="flex-grow md:space-y-4">
                               <div className="flex flex-wrap items-start justify-between gap-4">
                                 <div>
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-1">
                                     <h3 className="text-base md:text-2xl font-bold text-text-main  font-heading">
                                       {p.name}
                                     </h3>
                                     {p.verifiedMember && (
-                                      <ShieldCheck className="text-primary size-4 md:size-8" />
+                                      <ShieldCheck className="text-primary size-4 md:size-6" />
                                     )}
                                   </div>
 
