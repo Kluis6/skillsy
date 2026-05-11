@@ -305,7 +305,7 @@ function SearchResultsContent() {
             <AuthModal>
               <Button
                 title="Faça login ou cria sua conta"
-                className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 w-10 md:w-auto md:px-4 h-10 rounded-sm"
+                className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 w-10 md:w-auto md:px-4 h-10 "
               >
                 <LuLogIn />
                 <p className="hidden md:block"> Entrar</p>

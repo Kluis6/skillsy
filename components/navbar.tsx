@@ -20,8 +20,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-
-
+import { LuLogIn } from "react-icons/lu";
 
 interface NavbarProps {
   user: User | null;
@@ -64,7 +63,9 @@ export function Navbar({
               <DrawerContent>
                 <DrawerHeader className="flex flex-row justify-between">
                   <div className="flex flex-col">
-                    <DrawerTitle className="text-primary text-base">Skillsy</DrawerTitle>
+                    <DrawerTitle className="text-primary text-base">
+                      Skillsy
+                    </DrawerTitle>
                     <DrawerDescription>
                       Onde talentos encontram oportunidades
                     </DrawerDescription>
@@ -303,8 +304,12 @@ export function Navbar({
             </Avatar>
           ) : (
             <AuthModal>
-              <Button variant="default" className="bg-blue-600 px-4">
-                Entrar
+              <Button
+                title="Faça login ou cria sua conta"
+                className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 w-10 md:w-auto md:px-4 h-10 "
+              >
+                <LuLogIn />
+                <p className="hidden md:block"> Entrar</p>
               </Button>
             </AuthModal>
           )}
