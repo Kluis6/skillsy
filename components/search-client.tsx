@@ -66,17 +66,14 @@ import {
 } from "./ui/drawer";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
-  SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Label } from "./ui/label";
-import { Separator } from "./ui/separator";
+
 import { LuLogIn } from "react-icons/lu";
+import { Footer } from "./footer";
 
 function SearchResultsContent() {
   const { profile, toggleContact } = useAuth();
@@ -939,7 +936,7 @@ function SearchResultsContent() {
                             currentPage ===
                             Math.ceil(results.length / ITEMS_PER_PAGE)
                           }
-                          className="h-10 w-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                          className="size-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
                         >
                           <ChevronRight size={18} />
                         </Button>
@@ -965,20 +962,24 @@ function SearchResultsContent() {
                 </div>
               ) : (
                 <div className="space-y-12">
-                  <div className="text-center py-20 bg-card rounded-[3rem] border-2 border-dashed border-slate-200">
-                    <Search className="mx-auto h-16 w-16 text-slate-200 mb-6" />
-                    <h4 className="text-2xl font-bold text-slate-900 mb-2">
-                      Nenhum resultado exato encontrado
-                    </h4>
-                    <p className="text-slate-500 mb-8 max-w-md mx-auto">
-                      Não encontramos profissionais para &quot;{query}&quot;
-                      {city
-                        ? ` em ${city}, ${state}`
-                        : state
-                          ? ` em ${selectedStateLabel}`
-                          : ""}
-                      . Tente termos mais genéricos ou veja as sugestões abaixo.
-                    </p>
+                  <div className="text-center py-20 space-y-6">
+                    <div className="space-y-2">
+                      <Search className="mx-auto size-10 md:size-16 text-blue-300 " />
+                      <h4 className="text-xl md:text-2xl font-bold text-gray-900 ">
+                        Nenhum resultado exato encontrado
+                      </h4>
+                      <p className="text-slate-500  max-w-md mx-auto">
+                        Não encontramos profissionais para &quot;{query}&quot;
+                        {city
+                          ? ` em ${city}, ${state}`
+                          : state
+                            ? ` em ${selectedStateLabel}`
+                            : ""}
+                        . Tente termos mais genéricos ou veja as sugestões
+                        abaixo.
+                      </p>
+                    </div>
+
                     <Button
                       onClick={() => {
                         setSearchTerm("");
@@ -989,7 +990,7 @@ function SearchResultsContent() {
                         router.push(`/search?${params.toString()}`);
                       }}
                       variant="outline"
-                      className="rounded-xl px-8"
+                      className=" px-4 h-10 "
                     >
                       Limpar Filtro de Busca
                     </Button>
@@ -999,7 +1000,7 @@ function SearchResultsContent() {
                     <div className="space-y-6">
                       <div className="flex items-center gap-4">
                         <div className="h-px flex-grow bg-slate-200" />
-                        <h3 className="text-lg font-bold text-slate-400 uppercase tracking-widest shrink-0">
+                        <h3 className="md:text-lg text-base font-bold text-gray-500 tracking-widest shrink-0">
                           {city
                             ? `Membros em ${city}`
                             : state
@@ -1012,39 +1013,148 @@ function SearchResultsContent() {
                       <div className="grid grid-cols-1 gap-4">
                         {suggestions.map((p) => (
                           <Link href={`/profile/${p.uid}`} key={p.uid}>
-                            <div className="group p-6 rounded-[2rem]  hover:shadow-lg transition-all bg-white cursor-pointer flex items-center gap-6">
-                              <Avatar className="w-16 h-16 border-2 border-slate-50">
-                                <AvatarImage src={p.photoURL} />
-                                <AvatarFallback className="bg-primary/5 text-primary font-bold">
-                                  {p.name[0]}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="flex-grow">
-                                <h4 className="font-bold text-slate-900 group-hover:text-primary transition-colors">
-                                  {p.name}
-                                </h4>
-                                <p className="text-sm text-primary font-medium">
-                                  {p.companyName && (
-                                    <span className="text-slate-500 font-normal">
-                                      {p.companyName} •{" "}
-                                    </span>
-                                  )}
-                                  {p.serviceType || p.category}
-                                </p>
-                                <div className="flex items-center gap-3 mt-1">
-                                  <div className="flex items-center gap-1 text-highlight font-bold text-xs">
-                                    <Star size={12} fill="currentColor" />{" "}
+                            <div className="flex flex-row gap-6 p-4 md:p-8 border border-border-subtle  hover:shadow-2xl transition-all duration-300 bg-white cursor-pointer relative overflow-hidden">
+                              <div className="shrink-0 flex flex-col items-center gap-2.5 md:gap-3">
+                                <Avatar className="md:size-24 size-12 border-1 md:border-4 border-surface shadow-sm">
+                                  <AvatarImage src={p.photoURL} />
+                                  <AvatarFallback className="bg-primary/10 text-primary font-bold text-3xl">
+                                    {p.name[0]}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="flex items-center gap-1 text-highlight ">
+                                  <Star size={14} fill="currentColor" />
+                                  <p className="text-sm font-semibold">
                                     {p.rating || "0.0"}
-                                  </div>
-                                  <div className="text-[10px] text-slate-400 flex items-center gap-1">
-                                    <MapPin size={10} /> {p.location}
-                                  </div>
+                                  </p>
                                 </div>
                               </div>
-                              <ChevronRight
-                                size={20}
-                                className="text-slate-300 group-hover:text-primary transition-all"
-                              />
+
+                              <div className="flex-grow md:space-y-4">
+                                <div className="flex flex-wrap items-start justify-between gap-4">
+                                  <div>
+                                    <div className="flex items-center gap-1">
+                                      <h3 className="text-base md:text-2xl font-bold text-text-main  font-heading">
+                                        {p.name}
+                                      </h3>
+                                      {p.verifiedMember && (
+                                        <ShieldCheck className="text-primary size-4 md:size-6" />
+                                      )}
+                                    </div>
+
+                                    <div className="">
+                                      {p.companyName && (
+                                        <p className="font-medium text-xs md:text-sm text-gray-700">
+                                          {p.companyName}
+                                        </p>
+                                      )}
+
+                                      <p className="text-gray-500 font-normal text-xs md:text-sm">
+                                        {p.serviceType ||
+                                          p.category ||
+                                          "Profissional"}
+                                      </p>
+                                      <div className="flex items-center space-x-1">
+                                        <p className="text-gray-700 block md:hidden font-medium text-xs md:text-sm">
+                                          {p.location || "Brasil"}
+                                        </p>
+                                        <span className="font-bold block md:hidden">
+                                          ·
+                                        </span>
+                                        <p className="text-gray-700 font-medium text-xs md:text-sm">
+                                          {p.ward}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <Badge
+                                    variant="secondary"
+                                    className="py-2 px-3 hidden md:flex"
+                                  >
+                                    <MapPin size={12} className="mr-2" />
+                                    {p.location || "Brasil"}
+                                  </Badge>
+                                </div>
+                                <div className="hidden md:flex">
+                                  <p className="text-text-muted text-sm line-clamp-2 max-w-2xl">
+                                    {p.bio ||
+                                      "Este membro da comunidade oferece serviços de alta qualidade com valores compartilhados. Clique para ver mais detalhes e entrar em contato."}
+                                  </p>
+
+                                  {/* <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
+                                  {p.baptismYear && (
+                                    <div className="flex items-center gap-1.5">
+                                      <Church
+                                        size={12}
+                                        className="text-primary/60"
+                                      />
+                                      <span>
+                                        Membro há{" "}
+                                        {new Date().getFullYear() -
+                                          p.baptismYear}{" "}
+                                        anos
+                                      </span>
+                                    </div>
+                                  )}
+                                  {p.availability &&
+                                    p.availability.length > 0 && (
+                                      <div className="flex items-center gap-1.5">
+                                        <CalendarDays
+                                          size={12}
+                                          className="text-primary/60"
+                                        />
+                                        <span>{p.availability.join(", ")}</span>
+                                      </div>
+                                    )}
+                                  {p.serviceHours && (
+                                    <div className="flex items-center gap-1.5">
+                                      <Clock
+                                        size={12}
+                                        className="text-primary/60"
+                                      />
+                                      <span>{p.serviceHours}</span>
+                                    </div>
+                                  )}
+                                </div> */}
+                                </div>
+
+                                {/* <div className="flex flex-wrap gap-3 pt-2">
+                                <div className="flex-grow" />
+                                <Button
+                                  size="sm"
+                                  variant={
+                                    profile?.contacts?.includes(p.uid)
+                                      ? "destructive"
+                                      : "default"
+                                  }
+                                  className={`h-8 rounded-sm text-[10px] font-bold  tracking-widest transition-all ${profile?.contacts?.includes(p.uid) ? "" : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"}`}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    toggleContact(p.uid)
+                                      .then(() => {
+                                        if (profile)
+                                          toast.success(
+                                            "Lista de contatos atualizada",
+                                          );
+                                      })
+                                      .catch(() => {});
+                                  }}
+                                >
+                                  {profile?.contacts?.includes(p.uid) ? (
+                                    <>
+                                      <UserMinus size={14} className="md:mr-1.5" />
+                                      <p className="hidden md:block">Remover</p>
+                                      
+                                    </>
+                                  ) : (
+                                    <>
+                                      <UserPlus size={14} className="md:mr-1.5" />
+                                      <p className="hidden md:block">Conectar</p>
+                                    </>
+                                  )}
+                                </Button>
+                              </div> */}
+                              </div>
                             </div>
                           </Link>
                         ))}
@@ -1057,6 +1167,8 @@ function SearchResultsContent() {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
