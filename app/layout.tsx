@@ -27,6 +27,11 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Skillsy Community" }],
   creator: "Skillsy",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/apple-icon.svg",
+  },
   alternates: {
     canonical: "/",
   },
