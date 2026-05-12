@@ -24,6 +24,7 @@ import {
   type LoginFormData,
   type SignUpFormData,
 } from "@/lib/validations";
+import Image from "next/image";
 
 export function AuthModal({ children }: { children: React.ReactElement }) {
   const { signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth();
@@ -111,45 +112,85 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
       <DialogTrigger render={children} nativeButton />
       <DialogContent className="">
         <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-6 bg-linear-to-l from-white to-blue-600 rounded-md p-4">
+          <div className="col-span-12 md:col-span-6 bg-linear-to-l from-white to-blue-400 rounded-l-md p-4 hidden md:flex">
             <div className="grid grid-cols-12 gap-4 w-full h-full">
-              <div className="col-span-8 bg-amber-400 rounded-xl relative">
-                ww
+              <div className="col-span-8 rounded-xl relative w-full h-full overflow-hidden">
+                <Image
+                  src={"/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png"}
+                  alt={"Ilustracao de criacao colaborativa"}
+                  fill
+                  className="object-cover bg-cover"
+                />
               </div>
-              <div className="col-span-4 bg-amber-400 rounded-xl relative">
-                ww
+              <div className="col-span-4 rounded-xl overflow-hidden relative w-full h-full">
+                <Image
+                  src={"/Gemini_Generated_Image_81npfy81npfy81np.png"}
+                  alt={"Ilustracao de aprendizado digital"}
+                  fill
+                  className="object-cover bg-cover"
+                />
               </div>
-              <div className="col-span-4 bg-amber-400 rounded-xl relative">
-                ww
+              <div className="col-span-4 rounded-xl relative overflow-hidden">
+                <Image
+                  src={"/Gemini_Generated_Image_m9c1ibm9c1ibm9c1.png"}
+                  alt={"Ilustracao de networking profissional"}
+                  fill
+                  className="object-cover bg-cover"
+                />
               </div>
-              <div className="col-span-4 bg-amber-400 rounded-xl relative">
-                ww
+              <div className="col-span-4 rounded-xl relative overflow-hidden">
+                <Image
+                  src={"/Gemini_Generated_Image_xfqkexfqkexfqkex.png"}
+                  alt={"Ilustracao de estudo online"}
+                  fill
+                  className="object-cover bg-cover"
+                />
+              </div>
+              <div className="col-span-4 rounded-xl relative overflow-hidden">
+                <Image
+                  src={"/Gemini_Generated_Image_ez45xsez45xsez45.png"}
+                  alt={"Ilustracao de comunidade criativa"}
+                  fill
+                  className="object-cover bg-cover"
+                />
               </div>
 
-              <div className="col-span-4 bg-amber-400 rounded-xl relative">
-                ww
+              <div className="col-span-4 rounded-xl relative overflow-hidden">
+                <Image
+                  src={"/Gemini_Generated_Image_2guq8v2guq8v2guq.png"}
+                  alt={"Ilustracao de portfolio digital"}
+                  fill
+                  className="object-cover bg-cover"
+                />
               </div>
-              <div className="col-span-4 bg-amber-400 rounded-xl relative">
-                ww
-              </div>
-              <div className="col-span-8 bg-amber-400 rounded-xl relative">
-                ww
+              <div className="col-span-8 rounded-xl relative overflow-hidden">
+                <Image
+                  src={"/Gemini_Generated_Image_cjqsrjcjqsrjcjqs.png"}
+                  alt={"Ilustracao de ensino e troca de habilidades"}
+                  fill
+                  className="object-cover bg-cover"
+                />
               </div>
             </div>
           </div>
-          <div className="col-span-12 md:col-span-6 flex flex-col items-start justify-center gap-2">
+          <div className="col-span-12 md:col-span-6 flex flex-col items-start justify-between gap-2">
             <div>
-              <h1 className="text-4xl font-bold text-primary mb-2">Skillsy</h1>
-              <h2 className="text-xl font-medium text-gray-700 mb-1">
+              <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2">
+                Skillsy
+              </h1>
+              <h2 className="text-base md:text-xl font-medium text-gray-700 mb-1">
                 Bem-vindo de volta!
               </h2>
-              <p className="text-sm text-text-muted mb-6">
-                Faça login ou crie uma conta para continuar explorando suas
+              <p className="text-xs font-normal md:text-sm text-text-muted mb-6">
+                Faça login ou crie uma conta para continuar compartilhado suas
                 habilidades.
               </p>
             </div>
 
-            <Tabs defaultValue="login" className="w-full h-full space-y-6">
+            <Tabs
+              defaultValue="login"
+              className="w-full sm:h-full space-y-6 transition-all"
+            >
               <TabsList className="w-full">
                 <TabsTrigger value="login">Entrar</TabsTrigger>
                 <TabsTrigger value="signup">Cadastrar</TabsTrigger>
@@ -295,7 +336,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
             <div className="flex items-center gap-4 w-full">
               <div className="h-px flex-grow bg-slate-300" />
               <h3 className="md:text-base text-base font-bold text-gray-500  shrink-0">
-                sasasa
+                ou
               </h3>
               <div className="h-px flex-grow bg-slate-300" />
             </div>
