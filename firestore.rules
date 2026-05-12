@@ -141,7 +141,7 @@ service cloud.firestore {
         'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 'phone', 
         'phones', 'location', 'ward', 'companyName', 'gallery', 
         'rating', 'reviewCount', 'verifiedMember', 'experienceYears', 'baptismYear',
-        'isBlocked', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
+        'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
         'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'businessComplement'
       ];
       
@@ -182,7 +182,10 @@ service cloud.firestore {
              (!('businessState' in data) || data.businessState == null || (data.businessState is string && data.businessState.size() <= 100)) &&
              (!('businessComplement' in data) || data.businessComplement == null || (data.businessComplement is string && data.businessComplement.size() <= 100)) &&
              (!('verifiedMember' in data) || data.verifiedMember is bool) &&
-             (!('isBlocked' in data) || data.isBlocked is bool);
+             (!('isBlocked' in data) || data.isBlocked is bool) &&
+             (!('isDeleted' in data) || data.isDeleted is bool) &&
+             (!('deletedByUser' in data) || data.deletedByUser is bool) &&
+             (!('deletedAt' in data) || data.deletedAt is timestamp);
     }
 
     function keepsSameUserRole(data) {

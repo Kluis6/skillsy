@@ -244,6 +244,8 @@ function normalizeUserDocumentForRules(source: Record<string, unknown>) {
 
   normalized.verifiedMember = normalizeBoolean(normalized.verifiedMember);
   normalized.isBlocked = normalizeBoolean(normalized.isBlocked);
+  normalized.isDeleted = normalizeBoolean(normalized.isDeleted);
+  normalized.deletedByUser = normalizeBoolean(normalized.deletedByUser);
   normalized.isProvider = normalizeBoolean(normalized.isProvider);
 
   return removeUndefinedDeep(normalized);
@@ -332,6 +334,9 @@ export const UserService = {
         'verifiedMember',
         'baptismYear',
         'isBlocked',
+        'isDeleted',
+        'deletedByUser',
+        'deletedAt',
         'createdAt',
         'socialLinks',
         'availability',
@@ -433,7 +438,10 @@ export const UserService = {
     try {
       const q = query(collection(db, 'users'), where('isProvider', '==', true), limit(limitCount));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map((doc) => toPlainValue(doc.data() as UserProfile));
+      return querySnapshot.docs
+        .map((doc) => toPlainValue(doc.data() as UserProfile))
+        .filter((profile) => !profile.isDeleted)
+        .slice(0, limitCount);
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
@@ -449,7 +457,9 @@ export const UserService = {
       // Fetch all users to allow finding people by name even if not marked as provider
       const q = query(collection(db, 'users'));
       const querySnapshot = await getDocs(q);
-      const all = querySnapshot.docs.map((doc) => toPlainValue(doc.data() as UserProfile));
+      const all = querySnapshot.docs
+        .map((doc) => toPlainValue(doc.data() as UserProfile))
+        .filter((profile) => !profile.isDeleted);
 
       const searchTokens = term.toLowerCase().split(' ').filter(t => t.length > 0);
 
@@ -497,7 +507,9 @@ export const UserService = {
     try {
       const q = query(collection(db, 'users'), where('isProvider', '==', true));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map((doc) => toPlainValue(doc.data() as UserProfile));
+      return querySnapshot.docs
+        .map((doc) => toPlainValue(doc.data() as UserProfile))
+        .filter((profile) => !profile.isDeleted);
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
@@ -510,7 +522,9 @@ export const UserService = {
     try {
       const q = query(collection(db, 'users'), where('uid', 'in', uids.slice(0, 10)));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map((doc) => toPlainValue(doc.data() as UserProfile));
+      return querySnapshot.docs
+        .map((doc) => toPlainValue(doc.data() as UserProfile))
+        .filter((profile) => !profile.isDeleted);
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
@@ -536,6 +550,63 @@ export const UserService = {
       // Remove 'id' if it exists in the data to avoid Firestore rule violations
       const { id, ...updateData } = data as any;
       await updateDoc(docRef, updateData);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, path);
+    }
+  },
+
+  async cancelOwnAccount(uid: string, email: string): Promise<void> {
+    const path = `users/${uid}`;
+    try {
+      const docRef = doc(db, 'users', uid);
+      const currentSnapshot = await getDoc(docRef);
+
+      if (!currentSnapshot.exists()) {
+        throw new Error('Perfil não encontrado para cancelamento');
+      }
+
+      const currentData = toPlainValue(currentSnapshot.data() as UserProfile);
+      const placeholderName =
+        currentData.role === 'admin'
+          ? 'Conta administrativa desativada'
+          : 'Conta desativada';
+
+      const nextData = removeUndefinedDeep({
+        ...currentData,
+        uid,
+        email,
+        name: placeholderName,
+        photoURL: '',
+        bannerURL: '',
+        bio: '',
+        category: '',
+        isProvider: false,
+        contacts: [],
+        location: '',
+        whatsapp: '',
+        instagram: '',
+        facebook: '',
+        linkedin: '',
+        website: '',
+        serviceType: '',
+        phone: '',
+        phones: [],
+        ward: '',
+        companyName: '',
+        businessAddress: '',
+        businessAddressNumber: '',
+        businessNeighborhood: '',
+        businessState: '',
+        businessComplement: '',
+        gallery: [],
+        availability: [],
+        serviceHours: '',
+        isDeleted: true,
+        deletedByUser: true,
+        deletedAt: serverTimestamp(),
+      });
+
+      await setDoc(docRef, nextData);
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
     }

@@ -39,6 +39,9 @@ export interface UserProfile {
   serviceHours?: string;
   verifiedMember?: boolean;
   isBlocked?: boolean;
+  isDeleted?: boolean;
+  deletedByUser?: boolean;
+  deletedAt?: any;
   createdAt: any;
 }
 

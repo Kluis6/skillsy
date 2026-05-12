@@ -26,6 +26,7 @@ interface AuthContextType {
   signInWithEmail: (email: string, pass: string) => Promise<void>;
   toggleContact: (contactId: string) => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
+  cancelAccount: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -78,6 +79,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
           }
           setProfile(userProfile);
+
+          if (userProfile?.isDeleted) {
+            setProfile(null);
+            await signOut(auth);
+            if (pathname !== '/') {
+              router.push('/');
+            }
+            return;
+          }
 
           // Blocked user redirection
           if (userProfile?.isBlocked && pathname !== '/blocked') {
@@ -189,6 +199,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const cancelAccount = async () => {
+    if (!user) return;
+    try {
+      await UserService.cancelOwnAccount(user.uid, user.email || '');
+      setProfile(null);
+      await signOut(auth);
+      router.replace('/');
+      router.refresh();
+    } catch (error) {
+      console.error('Error canceling account:', error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await signOut(auth);
@@ -198,7 +222,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, signUpWithEmail, signInWithEmail, toggleContact, updateProfile, logout }}>
+    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, signUpWithEmail, signInWithEmail, toggleContact, updateProfile, cancelAccount, logout }}>
       {children}
     </AuthContext.Provider>
   );

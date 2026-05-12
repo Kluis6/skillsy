@@ -93,8 +93,15 @@ const getCompressionErrorMessage = (error: unknown) => {
 };
 
 export function ProfileSettingsClient() {
-  const { user, profile, updateProfile, loading: authLoading } = useAuth();
+  const {
+    user,
+    profile,
+    updateProfile,
+    cancelAccount,
+    loading: authLoading,
+  } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [cancelingAccount, setCancelingAccount] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -291,6 +298,28 @@ export function ProfileSettingsClient() {
         shouldValidate: true,
       },
     );
+  };
+
+  const handleCancelAccount = async () => {
+    const confirmed = window.confirm(
+      "Tem certeza que deseja cancelar sua conta? Seu perfil sera desativado e voce saira da plataforma.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setCancelingAccount(true);
+    try {
+      await cancelAccount();
+      toast.success("Conta cancelada com sucesso.");
+    } catch (error: any) {
+      toast.error("Nao foi possivel cancelar a conta.", {
+        description: error?.message || "Tente novamente em alguns instantes.",
+      });
+    } finally {
+      setCancelingAccount(false);
+    }
   };
 
   if (authLoading) {
@@ -584,7 +613,7 @@ export function ProfileSettingsClient() {
                 </section>
               </div>
               {/* aqui */}
-              <div className="md:border border-y bg-white p-4 md:p-8  space-y-6">
+              <div className="md:border border-y bg-white p-4 md:p-8 space-y-6">
                 <div className="flex flex-col md:flex-row gap-4 justify-between items-start">
                   <div className="space-y-1">
                     <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
@@ -801,7 +830,7 @@ export function ProfileSettingsClient() {
                 </div>
               </div>
 
-              <div className=" bg-white md:p-8 p-4 md:border border-y space-y-6">
+              <div className="bg-white md:p-8 p-4 md:border border-y space-y-6">
                 <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
                   Redes Sociais & Contato
                 </h3>
@@ -903,7 +932,7 @@ export function ProfileSettingsClient() {
               </div>
 
               <div className="bg-white md:border border-y md:p-8 p-4 space-y-6">
-                <div className="flex items-center justify-between ">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
                       Galeria de Fotos
@@ -988,8 +1017,8 @@ export function ProfileSettingsClient() {
                   )}
                 </div>
 
-                <div className="flex justify-end ">
-                                   <Button
+                <div className="flex justify-end">
+                  <Button
                     variant="default"
                     onClick={handleAddPhoto}
                     disabled={uploading === "gallery"}
@@ -1002,6 +1031,47 @@ export function ProfileSettingsClient() {
                     )}{" "}
                     Adicionar Foto
                   </Button>
+                </div>
+              </div>
+
+              <div className="bg-white md:border border-y md:p-8 p-4 space-y-6">
+                <div className="space-y-1">
+                  <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                    Zona de Perigo
+                  </h3>
+                  <p className="text-xs font-normal text-gray-500">
+                    Cancelar sua conta da plataforma.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-4 rounded-sm border border-red-200 bg-red-50 p-4 md:p-5">
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold text-red-700">
+                      Cancelar minha conta
+                    </p>
+                    <p className="text-xs text-red-600">
+                     todos seus dados serão apagados na plataforma, deseja continuar?
+                    </p>
+                  </div>
+
+                  <div className="flex justify-start">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={handleCancelAccount}
+                      disabled={cancelingAccount || loading}
+                      className="rounded-sm h-10 px-4"
+                    >
+                      {cancelingAccount ? (
+                        <>
+                          <Loader2 size={16} className="mr-2 animate-spin" />
+                          Cancelando conta...
+                        </>
+                      ) : (
+                        "Cancelar conta"
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
