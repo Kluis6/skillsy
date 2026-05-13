@@ -140,11 +140,11 @@ export const signUpSchema = z.object({
   email: z.string()
     .min(1, 'E-mail é obrigatório')
     .email('E-mail inválido')
-    .max(100, 'E-mail muito longo'),
+    .max(100, 'O e-mail deve ter no máximo 100 caracteres'),
   password: z.string()
     .min(1, 'Senha é obrigatória')
     .min(6, 'A senha deve ter pelo menos 6 caracteres')
-    .max(50, 'Senha muito longa (máximo 50 caracteres)'),
+    .max(50, 'A senha deve ter no máximo 50 caracteres'),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;

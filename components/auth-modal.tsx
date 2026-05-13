@@ -15,7 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogIn, Mail, Lock, User as UserIcon, Loader2 } from "lucide-react";
+import { AlertCircle, Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +26,38 @@ import {
   type SignUpFormData,
 } from "@/lib/validations";
 import Image from "next/image";
+
+const profileLimits = {
+  avatarAndBannerMaxSizeMb: 10,
+  galleryMaxItems: 5,
+  supportedFormats: "JPG, PNG ou WEBP",
+};
+
+function getSignUpErrorMessage(error: unknown) {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    typeof (error as { code?: unknown }).code === "string"
+  ) {
+    switch ((error as { code: string }).code) {
+      case "auth/email-already-in-use":
+        return "Este e-mail já está em uso. Entre com ele ou use outro endereço.";
+      case "auth/invalid-email":
+        return "Digite um e-mail válido com até 100 caracteres.";
+      case "auth/weak-password":
+        return "A senha precisa ter entre 6 e 50 caracteres.";
+      case "auth/network-request-failed":
+        return "Não foi possível concluir o cadastro por causa da conexão. Tente novamente.";
+      case "auth/too-many-requests":
+        return "Muitas tentativas em pouco tempo. Aguarde um instante e tente novamente.";
+      default:
+        break;
+    }
+  }
+
+  return "Não foi possível criar a conta. Revise os campos e tente novamente.";
+}
 
 const authGalleryImages = [
   {
@@ -84,6 +116,11 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
     formState: { errors: loginErrors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    mode: "onBlur",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   // Sign Up Form
@@ -93,6 +130,12 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
     formState: { errors: signUpErrors },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
+    mode: "onBlur",
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
   });
 
   const handleGoogleLogin = async () => {
@@ -147,7 +190,9 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
       setOpen(false);
       toast.success("Conta criada com sucesso!");
     } catch (error: any) {
-      toast.error("Erro ao criar conta. Verifique os dados.");
+      toast.error("Erro ao criar conta", {
+        description: getSignUpErrorMessage(error),
+      });
     } finally {
       setLoading(false);
     }
@@ -209,6 +254,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                 <form
                   onSubmit={handleSubmitLogin(handleEmailLogin)}
                   className="space-y-4"
+                  noValidate
                 >
                   <div className="space-y-2">
                     <Label
@@ -221,11 +267,16 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                       id="email"
                       type="email"
                       placeholder="seu@email.com"
+                      aria-invalid={Boolean(loginErrors.email)}
+                      aria-describedby={loginErrors.email ? "login-email-error" : undefined}
                       className={`h-10 border-border-subtle focus-visible:ring-accent ${loginErrors.email ? "ring-2 ring-red-500" : ""}`}
                       {...registerLogin("email")}
                     />
                     {loginErrors.email && (
-                      <p className="text-[10px] text-red-500 font-bold ml-1">
+                      <p
+                        id="login-email-error"
+                        className="text-[10px] text-red-500 font-bold ml-1"
+                      >
                         {loginErrors.email.message}
                       </p>
                     )}
@@ -240,11 +291,16 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     <Input
                       id="password"
                       type="password"
+                      aria-invalid={Boolean(loginErrors.password)}
+                      aria-describedby={loginErrors.password ? "login-password-error" : undefined}
                       className={`h-10 border-border-subtle focus-visible:ring-accent ${loginErrors.password ? "ring-2 ring-red-500" : ""}`}
                       {...registerLogin("password")}
                     />
                     {loginErrors.password && (
-                      <p className="text-[10px] text-red-500 font-bold ml-1">
+                      <p
+                        id="login-password-error"
+                        className="text-[10px] text-red-500 font-bold ml-1"
+                      >
                         {loginErrors.password.message}
                       </p>
                     )}
@@ -267,7 +323,26 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                 <form
                   onSubmit={handleSubmitSignUp(handleEmailSignUp)}
                   className="space-y-4"
+                  noValidate
                 >
+                  <div className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-xs text-slate-700 space-y-2">
+                    <p className="font-semibold text-slate-900">
+                      Cadastro rápido e sem foto obrigatória
+                    </p>
+                    <p>
+                      Nome: 2 a 50 caracteres. E-mail: até 100 caracteres.
+                      Senha: 6 a 50 caracteres.
+                    </p>
+                    <p className="flex items-start gap-2">
+                      <Camera className="mt-0.5 size-3.5 shrink-0 text-blue-600" />
+                      <span>
+                        Fotos são adicionadas depois no perfil: avatar e banner
+                        de até {profileLimits.avatarAndBannerMaxSizeMb} MB, com
+                        galeria de até {profileLimits.galleryMaxItems} imagens em{" "}
+                        {profileLimits.supportedFormats}.
+                      </span>
+                    </p>
+                  </div>
                   <div className="space-y-2">
                     <Label
                       htmlFor="signup-name"
@@ -277,12 +352,24 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     </Label>
                     <Input
                       id="signup-name"
-                      placeholder="Seu nome"
+                      placeholder="Como você quer aparecer no Skillsy"
+                      aria-invalid={Boolean(signUpErrors.name)}
+                      aria-describedby={
+                        signUpErrors.name
+                          ? "signup-name-error"
+                          : "signup-name-help"
+                      }
                       className={`h-10 border-border-subtle focus-visible:ring-accent ${signUpErrors.name ? "ring-2 ring-red-500" : ""}`}
                       {...registerSignUp("name")}
                     />
+                    <p id="signup-name-help" className="text-[11px] text-text-muted ml-1">
+                      Use entre 2 e 50 caracteres.
+                    </p>
                     {signUpErrors.name && (
-                      <p className="text-[10px] text-red-500 font-bold ml-1">
+                      <p
+                        id="signup-name-error"
+                        className="text-[10px] text-red-500 font-bold ml-1"
+                      >
                         {signUpErrors.name.message}
                       </p>
                     )}
@@ -298,11 +385,23 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                       id="signup-email"
                       type="email"
                       placeholder="seu@email.com"
+                      aria-invalid={Boolean(signUpErrors.email)}
+                      aria-describedby={
+                        signUpErrors.email
+                          ? "signup-email-error"
+                          : "signup-email-help"
+                      }
                       className={`h-10 border-border-subtle focus-visible:ring-accent ${signUpErrors.email ? "ring-2 ring-red-500" : ""}`}
                       {...registerSignUp("email")}
                     />
+                    <p id="signup-email-help" className="text-[11px] text-text-muted ml-1">
+                      Use um e-mail válido com até 100 caracteres.
+                    </p>
                     {signUpErrors.email && (
-                      <p className="text-[10px] text-red-500 font-bold ml-1">
+                      <p
+                        id="signup-email-error"
+                        className="text-[10px] text-red-500 font-bold ml-1"
+                      >
                         {signUpErrors.email.message}
                       </p>
                     )}
@@ -318,15 +417,39 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                       <Input
                         id="signup-password"
                         type="password"
+                        placeholder="Crie uma senha segura"
+                        aria-invalid={Boolean(signUpErrors.password)}
+                        aria-describedby={
+                          signUpErrors.password
+                            ? "signup-password-error"
+                            : "signup-password-help"
+                        }
                         className={`h-10 border-border-subtle focus-visible:ring-accent ${signUpErrors.password ? "ring-2 ring-red-500" : ""}`}
                         {...registerSignUp("password")}
                       />
                     </div>
+                    <p
+                      id="signup-password-help"
+                      className="text-[11px] text-text-muted ml-1"
+                    >
+                      A senha deve ter entre 6 e 50 caracteres.
+                    </p>
                     {signUpErrors.password && (
-                      <p className="text-[10px] text-red-500 font-bold ml-1">
+                      <p
+                        id="signup-password-error"
+                        className="text-[10px] text-red-500 font-bold ml-1"
+                      >
                         {signUpErrors.password.message}
                       </p>
                     )}
+                  </div>
+                  <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-900">
+                    <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+                    <p>
+                      Depois do cadastro, você poderá completar o perfil com bio,
+                      contatos e fotos. Se um campo tiver limite, ele será exibido
+                      no formulário antes do envio.
+                    </p>
                   </div>
                   <Button
                     type="submit"

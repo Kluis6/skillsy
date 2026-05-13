@@ -11,6 +11,12 @@ import { contactSchema, ContactFormData } from "@/lib/validations";
 import { UserService } from "@/services/user-service";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
+const CONTACT_LIMITS = {
+  name: 50,
+  email: 100,
+  message: 1000,
+};
+
 export function ContactCTA() {
   const {
     register,
@@ -69,10 +75,23 @@ export function ContactCTA() {
                
               </CardHeader>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-[11px] text-slate-700 space-y-1">
+                  <p className="font-semibold text-slate-900">
+                    Antes de enviar
+                  </p>
+                  <p>
+                    Nome: até {CONTACT_LIMITS.name} caracteres. E-mail: até{" "}
+                    {CONTACT_LIMITS.email} caracteres.
+                  </p>
+                  <p>
+                    Mensagem: entre 10 e {CONTACT_LIMITS.message} caracteres.
+                  </p>
+                </div>
                 <div className="space-y-1">
                   <div className="relative">
                     <Input
                       placeholder="Nome *"
+                      maxLength={CONTACT_LIMITS.name}
                       {...register("name")}
                       className={` border-1 h-12 border-gray-300  text-text-main placeholder:text-text-muted/50 transition-all ${
                         errors.name
@@ -95,6 +114,9 @@ export function ContactCTA() {
                       {errors.name.message}
                     </p>
                   )}
+                  <p className="text-[10px] text-text-muted ml-2">
+                    Use até {CONTACT_LIMITS.name} caracteres.
+                  </p>
                 </div>
 
                 <div className="space-y-1">
@@ -102,6 +124,7 @@ export function ContactCTA() {
                     <Input
                       placeholder="E-mail *"
                       type="email"
+                      maxLength={CONTACT_LIMITS.email}
                       {...register("email")}
                       className={`border-1 h-12  border-gray-300 text-text-main placeholder:text-text-muted/50 transition-all ${
                         errors.email
@@ -124,6 +147,9 @@ export function ContactCTA() {
                       {errors.email.message}
                     </p>
                   )}
+                  <p className="text-[10px] text-text-muted ml-2">
+                    Informe um e-mail válido com até {CONTACT_LIMITS.email} caracteres.
+                  </p>
                 </div>
 
                 <div className="space-y-1">
@@ -134,7 +160,7 @@ export function ContactCTA() {
                     <span
                       className={`text-[10px] font-bold ${messageText?.length > 1000 ? "text-red-500" : "text-text-muted"}`}
                     >
-                      {messageText?.length || 0} / 1000
+                      {messageText?.length || 0} / {CONTACT_LIMITS.message}
                     </span>
                   </div>
                   <div className="relative">
@@ -148,7 +174,7 @@ export function ContactCTA() {
                             ? "border-green-500/50 focus:border-green-500"
                             : "focus:border-primary/20"
                       }`}
-                      maxLength={1000}
+                      maxLength={CONTACT_LIMITS.message}
                     />
                     <div className="absolute right-3 top-3 pointer-events-none">
                       {errors.message ? (
@@ -163,6 +189,9 @@ export function ContactCTA() {
                       {errors.message.message}
                     </p>
                   )}
+                  <p className="text-[10px] text-text-muted ml-2">
+                    Descreva sua dúvida com pelo menos 10 caracteres.
+                  </p>
                 </div>
                 <Button
                   type="submit"

@@ -94,6 +94,20 @@ import {
 import { LocationService } from '@/services/location-service';
 import { BRAZIL_STATES } from '@/lib/brazil-states';
 
+const ADMIN_FORM_LIMITS = {
+  name: 50,
+  location: 100,
+  ward: 100,
+  serviceType: 100,
+  address: 150,
+  addressNumber: 20,
+  neighborhood: 100,
+  state: 100,
+  complement: 100,
+  serviceHours: 100,
+  adminEmail: 100,
+};
+
 export function AdminUsersClient() {
   const { profile, loading: authLoading } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -117,10 +131,30 @@ export function AdminUsersClient() {
 
   const editForm = useForm<AdminEditUserFormData>({
     resolver: zodResolver(adminEditUserSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      name: '',
+      location: '',
+      ward: '',
+      serviceType: '',
+      businessAddress: '',
+      businessAddressNumber: '',
+      businessNeighborhood: '',
+      businessState: '',
+      businessComplement: '',
+      baptismYear: null,
+      availability: [],
+      serviceHours: '',
+      role: 'user',
+      isProvider: false,
+      verifiedMember: false,
+      isBlocked: false,
+    }
   });
 
   const adminForm = useForm<AdminCreateAdminFormData>({
     resolver: zodResolver(adminCreateAdminSchema),
+    mode: 'onBlur',
     defaultValues: { name: '', email: '' }
   });
 
@@ -636,14 +670,25 @@ export function AdminUsersClient() {
           
           <form onSubmit={editForm.handleSubmit(onSaveEdit)}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
+              <div className="md:col-span-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] text-amber-900 space-y-1">
+                <p className="font-semibold text-sm">Atenção aos limites</p>
+                <p>
+                  Campos longos demais ou em formato inválido podem ser rejeitados
+                  pelas validações e pelas regras do Firestore.
+                </p>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome Completo</Label>
                 <Input 
                   id="name" 
                   placeholder="Ex: João da Silva"
                   {...editForm.register('name')}
+                  maxLength={ADMIN_FORM_LIMITS.name}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
+                <p className="text-[10px] text-text-muted ml-2">
+                  Entre 2 e {ADMIN_FORM_LIMITS.name} caracteres.
+                </p>
                 {editForm.formState.errors.name && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.name.message}</p>}
               </div>
               <div className="space-y-2">
@@ -662,6 +707,7 @@ export function AdminUsersClient() {
                     id="location" 
                     placeholder="Ex: São Paulo, SP"
                     {...editForm.register('location')}
+                    maxLength={ADMIN_FORM_LIMITS.location}
                     className="bg-surface border-none rounded-2xl h-12 flex-grow"
                   />
                   <Button
@@ -676,6 +722,10 @@ export function AdminUsersClient() {
                     {detectingLocation ? <Loader2 size={18} className="animate-spin" /> : <Navigation size={18} />}
                   </Button>
                 </div>
+                <p className="text-[10px] text-text-muted ml-2">
+                  Até {ADMIN_FORM_LIMITS.location} caracteres.
+                </p>
+                {editForm.formState.errors.location && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.location.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="ward" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Ala / Ramo</Label>
@@ -683,8 +733,13 @@ export function AdminUsersClient() {
                   id="ward" 
                   placeholder="Ex: Ala Centro"
                   {...editForm.register('ward')}
+                  maxLength={ADMIN_FORM_LIMITS.ward}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
+                <p className="text-[10px] text-text-muted ml-2">
+                  Até {ADMIN_FORM_LIMITS.ward} caracteres.
+                </p>
+                {editForm.formState.errors.ward && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.ward.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="serviceType" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Serviço / Categoria</Label>
@@ -692,8 +747,13 @@ export function AdminUsersClient() {
                   id="serviceType" 
                   placeholder="Ex: Pintura Residencial"
                   {...editForm.register('serviceType')}
+                  maxLength={ADMIN_FORM_LIMITS.serviceType}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
+                <p className="text-[10px] text-text-muted ml-2">
+                  Até {ADMIN_FORM_LIMITS.serviceType} caracteres.
+                </p>
+                {editForm.formState.errors.serviceType && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.serviceType.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Papel no Sistema</Label>
@@ -715,6 +775,7 @@ export function AdminUsersClient() {
                   {...editForm.register('baptismYear', { valueAsNumber: true })}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
+                {editForm.formState.errors.baptismYear && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.baptismYear.message}</p>}
               </div>
 
               <div className="md:col-span-2 space-y-4 pt-2">
@@ -725,40 +786,50 @@ export function AdminUsersClient() {
                     <Input 
                       placeholder="Ex: Rua das Flores"
                       {...editForm.register('businessAddress')}
+                      maxLength={ADMIN_FORM_LIMITS.address}
                       className="bg-surface border-none rounded-2xl h-12"
                     />
+                    {editForm.formState.errors.businessAddress && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.businessAddress.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Número</Label>
                     <Input 
                       placeholder="Ex: 123"
                       {...editForm.register('businessAddressNumber')}
+                      maxLength={ADMIN_FORM_LIMITS.addressNumber}
                       className="bg-surface border-none rounded-2xl h-12"
                     />
+                    {editForm.formState.errors.businessAddressNumber && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.businessAddressNumber.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Bairro</Label>
                     <Input 
                       placeholder="Ex: Centro"
                       {...editForm.register('businessNeighborhood')}
+                      maxLength={ADMIN_FORM_LIMITS.neighborhood}
                       className="bg-surface border-none rounded-2xl h-12"
                     />
+                    {editForm.formState.errors.businessNeighborhood && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.businessNeighborhood.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Estado</Label>
                     <Input 
                       placeholder="Ex: SP"
                       {...editForm.register('businessState')}
+                      maxLength={ADMIN_FORM_LIMITS.state}
                       className="bg-surface border-none rounded-2xl h-12"
                     />
+                    {editForm.formState.errors.businessState && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.businessState.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Complemento</Label>
                     <Input 
                       placeholder="Ex: Sala 10, Bloco B"
                       {...editForm.register('businessComplement')}
+                      maxLength={ADMIN_FORM_LIMITS.complement}
                       className="bg-surface border-none rounded-2xl h-12"
                     />
+                    {editForm.formState.errors.businessComplement && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.businessComplement.message}</p>}
                   </div>
                 </div>
               </div>
@@ -800,8 +871,13 @@ export function AdminUsersClient() {
                 <Input 
                   {...editForm.register('serviceHours')}
                   placeholder="Ex: 08:00 - 18:00 ou Por agendamento"
+                  maxLength={ADMIN_FORM_LIMITS.serviceHours}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
+                <p className="text-[10px] text-text-muted ml-2">
+                  Até {ADMIN_FORM_LIMITS.serviceHours} caracteres.
+                </p>
+                {editForm.formState.errors.serviceHours && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.serviceHours.message}</p>}
               </div>
             </div>
 
@@ -856,15 +932,28 @@ export function AdminUsersClient() {
           
           <form onSubmit={adminForm.handleSubmit(onCreateAdmin)}>
             <div className="space-y-6 py-6">
+              <div className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-[11px] text-slate-700 space-y-1">
+                <p className="font-semibold text-slate-900">
+                  Regras do pré-cadastro administrativo
+                </p>
+                <p>
+                  Nome entre 2 e {ADMIN_FORM_LIMITS.name} caracteres e e-mail
+                  válido com até {ADMIN_FORM_LIMITS.adminEmail} caracteres.
+                </p>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="new-name" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome</Label>
                 <Input 
                   id="new-name" 
                   placeholder="Ex: João Silva"
                   {...adminForm.register('name')}
+                  maxLength={ADMIN_FORM_LIMITS.name}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
                 {adminForm.formState.errors.name && <p className="text-[10px] text-red-500 font-bold ml-2">{adminForm.formState.errors.name.message}</p>}
+                <p className="text-[10px] text-text-muted ml-2">
+                  Até {ADMIN_FORM_LIMITS.name} caracteres.
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="new-email" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">E-mail</Label>
@@ -873,9 +962,13 @@ export function AdminUsersClient() {
                   type="email"
                   placeholder="Ex: joao@exemplo.com"
                   {...adminForm.register('email')}
+                  maxLength={ADMIN_FORM_LIMITS.adminEmail}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
                 {adminForm.formState.errors.email && <p className="text-[10px] text-red-500 font-bold ml-2">{adminForm.formState.errors.email.message}</p>}
+                <p className="text-[10px] text-text-muted ml-2">
+                  Use um e-mail válido com até {ADMIN_FORM_LIMITS.adminEmail} caracteres.
+                </p>
               </div>
             </div>
 

@@ -70,6 +70,29 @@ const SUPPORTED_IMAGE_TYPES = new Set([
   "image/png",
   "image/webp",
 ]);
+const SUPPORTED_IMAGE_FORMATS_LABEL = "JPG, PNG ou WEBP";
+const PROFILE_LIMITS = {
+  name: 50,
+  location: 100,
+  ward: 100,
+  bio: 500,
+  serviceType: 100,
+  companyName: 100,
+  address: 150,
+  addressNumber: 20,
+  neighborhood: 100,
+  state: 100,
+  complement: 100,
+  whatsappDigitsMin: 10,
+  whatsappDigitsMax: 15,
+  phoneDigitsMax: 15,
+  socialHandle: 50,
+  socialUrl: 100,
+  website: 150,
+  serviceHours: 100,
+  galleryMaxItems: 5,
+  galleryDescription: 200,
+};
 
 const readFileAsDataURL = (file: Blob) =>
   new Promise<string>((resolve, reject) => {
@@ -433,7 +456,7 @@ export function ProfileSettingsClient() {
                     onChange={(e) => handleFileChange(e, "banner")}
                   />
                 </div>
-                <div className="pt-10 pb-8 flex flex-col items-center -mt-16">
+                <div className="pt-10 pb-4 px-4 flex flex-col items-center -mt-16">
                   <div className="relative group mb-6">
                     <Avatar className="w-32 h-32 border-4 border-surface shadow-xl">
                       <AvatarImage src={formData.photoURL || undefined} />
@@ -444,7 +467,7 @@ export function ProfileSettingsClient() {
                     <button
                       onClick={() => avatarInputRef.current?.click()}
                       disabled={uploading === "avatar"}
-                      className="absolute bottom-0 right-0 bg-primary text-white p-2.5 rounded-2xl shadow-lg hover:scale-110 transition-transform disabled:opacity-50"
+                      className="absolute bottom-0 right-0 bg-blue-500 text-white p-2.5 rounded-2xl shadow-lg hover:scale-110 transition-transform disabled:opacity-50"
                     >
                       {uploading === "avatar" ? (
                         <Loader2 size={18} className="animate-spin" />
@@ -469,6 +492,15 @@ export function ProfileSettingsClient() {
                       <ShieldCheck size={14} /> Membro Verificado
                     </Badge>
                   )}
+                  <div className="mt-4 space-y-1  w-full rounded-md  border bg-amber-50 p-4 text-xs text-amber-700">
+                    <p className="font-semibold text-amber-900">
+                      Limites de imagem
+                    </p>
+                    <p className="text-[10px] md:text-xs">
+                      Avatar e banner: até 10 MB por arquivo em{" "}
+                      {SUPPORTED_IMAGE_FORMATS_LABEL}.
+                    </p>
+                  </div>
                 </div>
               </div>
               {/* status profissional */}
@@ -476,6 +508,20 @@ export function ProfileSettingsClient() {
 
             {/* Right Column: Detailed Info */}
             <div className="lg:col-span-2 space-y-2">
+              <div className="md:rounded-md   border-y md:border bg-amber-50 px-4 py-4 md:px-8">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="mt-0.5 size-4 shrink-0 text-amber-700" />
+                  <div className="space-y-1">
+                    <p className="font-semibold text-xs md:text-sm text-amber-900">
+                      Preencha dentro dos limites para evitar erro ao salvar
+                    </p>
+                    <p className="text-[10px] md:text-xs text-amber-700">
+                      Textos longos, links inválidos e imagens fora do padrão
+                      podem ser bloqueados pelas validações do app.
+                    </p>
+                  </div>
+                </div>
+              </div>
               <div className="bg-white md:p-8 p-4 md:border border-y space-y-6 ">
                 <div className="space-y-1 ">
                   <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
@@ -494,6 +540,7 @@ export function ProfileSettingsClient() {
                       <div className="relative">
                         <Input
                           {...register("name")}
+                          maxLength={PROFILE_LIMITS.name}
                           className={`bg-surface focus:bg-white rounded-sm text-sm h-12 transition-all ${
                             errors.name
                               ? "border-red-500/50 focus:border-red-500 ring-0"
@@ -513,6 +560,9 @@ export function ProfileSettingsClient() {
                           ) : null}
                         </div>
                       </div>
+                      <p className="text-[10px] text-text-muted ml-1">
+                        Use entre 2 e {PROFILE_LIMITS.name} caracteres.
+                      </p>
                       {errors.name && (
                         <p className="text-[10px] text-red-500 font-bold ml-1">
                           {errors.name.message}
@@ -527,6 +577,7 @@ export function ProfileSettingsClient() {
                         <Input
                           {...register("location")}
                           placeholder="Ex: São Paulo, SP"
+                          maxLength={PROFILE_LIMITS.location}
                           className={`bg-surface focus:bg-white transition-all rounded-sm text-sm h-12 flex-grow ${errors.location ? "ring-2 ring-red-500" : ""}`}
                         />
                         <Button
@@ -549,6 +600,9 @@ export function ProfileSettingsClient() {
                           {errors.location.message}
                         </p>
                       )}
+                      <p className="text-[10px] text-text-muted ml-1">
+                        Até {PROFILE_LIMITS.location} caracteres.
+                      </p>
                     </div>
                     <div className="space-y-2 ">
                       <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -557,8 +611,12 @@ export function ProfileSettingsClient() {
                       <Input
                         {...register("ward")}
                         placeholder="Ex: Ala Centro, Estaca Brasil"
+                        maxLength={PROFILE_LIMITS.ward}
                         className={`bg-surface focus:bg-white transition-all text-sm rounded-sm h-12 ${errors.ward ? "ring-2 ring-red-500" : ""}`}
                       />
+                      <p className="text-[10px] text-text-muted ml-1">
+                        Até {PROFILE_LIMITS.ward} caracteres.
+                      </p>
                       {errors.ward && (
                         <p className="text-[10px] text-red-500 font-bold ml-1">
                           {errors.ward.message}
@@ -602,8 +660,11 @@ export function ProfileSettingsClient() {
                       {...register("bio")}
                       placeholder="Conte um pouco sobre você e seus talentos..."
                       className={`bg-surface focus:bg-white transition-all text-sm rounded-sm min-h-[150px] p-4 focus:ring-2 focus:ring-primary/20 ${errors.bio ? "ring-2 ring-red-500" : ""}`}
-                      maxLength={500}
+                      maxLength={PROFILE_LIMITS.bio}
                     />
+                    <p className="text-[10px] text-text-muted ml-1">
+                      Até {PROFILE_LIMITS.bio} caracteres.
+                    </p>
                     {errors.bio && (
                       <p className="text-[10px] text-red-500 font-bold ml-1">
                         {errors.bio.message}
@@ -677,6 +738,9 @@ export function ProfileSettingsClient() {
                             {errors.category.message}
                           </p>
                         )}
+                        <p className="text-[10px] text-text-muted ml-1">
+                          Escolha uma categoria para aparecer nas buscas.
+                        </p>
                       </div>
                       <div className="space-y-2">
                         <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -685,8 +749,12 @@ export function ProfileSettingsClient() {
                         <Input
                           {...register("serviceType")}
                           placeholder="Ex: Eletricista, Professor de Inglês, etc."
+                          maxLength={PROFILE_LIMITS.serviceType}
                           className={`bg-surface focus:bg-white text-sm transition-all rounded-sm h-12 ${errors.serviceType ? "ring-2 ring-red-500" : ""}`}
                         />
+                        <p className="text-[10px] text-text-muted ml-1">
+                          Até {PROFILE_LIMITS.serviceType} caracteres.
+                        </p>
                         {errors.serviceType && (
                           <p className="text-[10px] text-red-500 font-bold ml-1">
                             {errors.serviceType.message}
@@ -704,6 +772,7 @@ export function ProfileSettingsClient() {
                         <Input
                           {...register("companyName")}
                           placeholder="Ex: Silva Construções"
+                          maxLength={PROFILE_LIMITS.companyName}
                           className={`bg-surface focus:bg-white transition-all text-sm rounded-sm h-12 ${errors.companyName ? "ring-2 ring-red-500" : ""}`}
                         />
                         {errors.companyName && (
@@ -753,8 +822,13 @@ export function ProfileSettingsClient() {
                         <Input
                           {...register("serviceHours")}
                           placeholder="Ex: 08:00 - 18:00 ou Por agendamento"
+                          maxLength={PROFILE_LIMITS.serviceHours}
                           className={`bg-surface focus:bg-white transition-all text-sm rounded-sm h-12 ${errors.serviceHours ? "ring-2 ring-red-500" : ""}`}
                         />
+                        <p className="text-[10px] text-text-muted ml-1">
+                          Horário ou disponibilidade resumida, até{" "}
+                          {PROFILE_LIMITS.serviceHours} caracteres.
+                        </p>
                         {errors.serviceHours && (
                           <p className="text-[10px] text-red-500 font-bold ml-1">
                             {errors.serviceHours.message}
@@ -782,6 +856,7 @@ export function ProfileSettingsClient() {
                         <Input
                           {...register("businessAddress")}
                           placeholder="Ex: Rua das Flores"
+                          maxLength={PROFILE_LIMITS.address}
                           className={`bg-surface focus:bg-white transition-all rounded-sm h-12 ${errors.businessAddress ? "ring-2 ring-red-500" : ""}`}
                         />
                       </div>
@@ -792,6 +867,7 @@ export function ProfileSettingsClient() {
                         <Input
                           {...register("businessAddressNumber")}
                           placeholder="Ex: 123"
+                          maxLength={PROFILE_LIMITS.addressNumber}
                           className={`bg-surface focus:bg-white transition-all rounded-sm h-12 ${errors.businessAddressNumber ? "ring-2 ring-red-500" : ""}`}
                         />
                       </div>
@@ -802,6 +878,7 @@ export function ProfileSettingsClient() {
                         <Input
                           {...register("businessNeighborhood")}
                           placeholder="Ex: Centro"
+                          maxLength={PROFILE_LIMITS.neighborhood}
                           className={`bg-surface focus:bg-white transition-all rounded-sm h-12 ${errors.businessNeighborhood ? "ring-2 ring-red-500" : ""}`}
                         />
                       </div>
@@ -812,6 +889,7 @@ export function ProfileSettingsClient() {
                         <Input
                           {...register("businessState")}
                           placeholder="Ex: SP"
+                          maxLength={PROFILE_LIMITS.state}
                           className={`focus:bg-white bg-surface rounded-sm text-sm h-12 ${errors.businessState ? "ring-2 ring-red-500" : ""}`}
                         />
                       </div>
@@ -822,6 +900,7 @@ export function ProfileSettingsClient() {
                         <Input
                           {...register("businessComplement")}
                           placeholder="Ex: Sala 10, Bloco B"
+                          maxLength={PROFILE_LIMITS.complement}
                           className={`focus:bg-white bg-surface rounded-sm text-sm h-12 ${errors.businessComplement ? "ring-2 ring-red-500" : ""}`}
                         />
                       </div>
@@ -842,8 +921,14 @@ export function ProfileSettingsClient() {
                     <Input
                       {...register("whatsapp")}
                       placeholder="Ex: 11999999999"
+                      inputMode="numeric"
+                      maxLength={PROFILE_LIMITS.whatsappDigitsMax}
                       className={`bg-surface rounded-sm text-sm h-12 ${errors.whatsapp ? "ring-2 ring-red-500" : ""}`}
                     />
+                    <p className="text-[10px] text-text-muted ml-1">
+                      Somente números, de {PROFILE_LIMITS.whatsappDigitsMin} a{" "}
+                      {PROFILE_LIMITS.whatsappDigitsMax} dígitos.
+                    </p>
                     {errors.whatsapp && (
                       <p className="text-[10px] text-red-500 font-bold ml-1">
                         {errors.whatsapp.message}
@@ -860,8 +945,13 @@ export function ProfileSettingsClient() {
                     <Input
                       {...register("phone")}
                       placeholder="Ex: 1133334444"
+                      inputMode="numeric"
+                      maxLength={PROFILE_LIMITS.phoneDigitsMax}
                       className={`bg-surface rounded-sm text-sm h-12 ${errors.phone ? "ring-2 ring-red-500" : ""}`}
                     />
+                    <p className="text-[10px] text-text-muted ml-1">
+                      Somente números, até {PROFILE_LIMITS.phoneDigitsMax} dígitos.
+                    </p>
                     {errors.phone && (
                       <p className="text-[10px] text-red-500 font-bold ml-1">
                         {errors.phone.message}
@@ -875,8 +965,12 @@ export function ProfileSettingsClient() {
                     <Input
                       {...register("instagram")}
                       placeholder="@seuusuario"
+                      maxLength={PROFILE_LIMITS.socialHandle}
                       className={`bg-surface rounded-sm text-sm h-12 ${errors.instagram ? "ring-2 ring-red-500" : ""}`}
                     />
+                    <p className="text-[10px] text-text-muted ml-1">
+                      Usuário do Instagram com até {PROFILE_LIMITS.socialHandle} caracteres.
+                    </p>
                     {errors.instagram && (
                       <p className="text-[10px] text-red-500 font-bold ml-1">
                         {errors.instagram.message}
@@ -890,6 +984,7 @@ export function ProfileSettingsClient() {
                     <Input
                       {...register("facebook")}
                       placeholder="Link do perfil"
+                      maxLength={PROFILE_LIMITS.socialUrl}
                       className={`bg-surface rounded-sm text-sm h-12 ${errors.facebook ? "ring-2 ring-red-500" : ""}`}
                     />
                     {errors.facebook && (
@@ -905,6 +1000,7 @@ export function ProfileSettingsClient() {
                     <Input
                       {...register("linkedin")}
                       placeholder="Link do perfil"
+                      maxLength={PROFILE_LIMITS.socialUrl}
                       className={`bg-surface rounded-sm text-sm h-12 ${errors.linkedin ? "ring-2 ring-red-500" : ""}`}
                     />
                     {errors.linkedin && (
@@ -920,8 +1016,12 @@ export function ProfileSettingsClient() {
                     <Input
                       {...register("website")}
                       placeholder="https://exemplo.com"
+                      maxLength={PROFILE_LIMITS.website}
                       className={`bg-surface rounded-sm h-12 text-sm  ${errors.website ? "ring-2 ring-red-500" : ""}`}
                     />
+                    <p className="text-[10px] text-text-muted ml-1">
+                      URL completa com `https://`, até {PROFILE_LIMITS.website} caracteres.
+                    </p>
                     {errors.website && (
                       <p className="text-[10px] text-red-500 font-bold ml-1">
                         {errors.website.message}
@@ -938,9 +1038,9 @@ export function ProfileSettingsClient() {
                       Galeria de Fotos
                     </h3>
                     <Badge
-                      className={`text-xs font-bold px-2 py-0.5 ${formData.gallery.length >= 5 ? "bg-red-50 text-red-500 border-red-100" : "bg-primary/5 text-primary border-primary/10"}`}
+                      className={`text-xs font-bold px-2 py-0.5 ${formData.gallery.length >= PROFILE_LIMITS.galleryMaxItems ? "bg-red-50 text-red-500 border-red-100" : "bg-primary/5 text-primary border-primary/10"}`}
                     >
-                      {formData.gallery.length}/5
+                      {formData.gallery.length}/{PROFILE_LIMITS.galleryMaxItems}
                     </Badge>
                   </div>
                   <Button
@@ -963,6 +1063,19 @@ export function ProfileSettingsClient() {
                     accept="image/*"
                     onChange={(e) => handleFileChange(e, "gallery")}
                   />
+                </div>
+                <div className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-[11px] text-slate-700 space-y-1">
+                  <p className="font-semibold text-slate-900">
+                    Regras da galeria
+                  </p>
+                  <p>
+                    Até {PROFILE_LIMITS.galleryMaxItems} fotos em{" "}
+                    {SUPPORTED_IMAGE_FORMATS_LABEL}, com até 10 MB por arquivo.
+                  </p>
+                  <p>
+                    Cada descrição é opcional e pode ter até{" "}
+                    {PROFILE_LIMITS.galleryDescription} caracteres.
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -991,6 +1104,7 @@ export function ProfileSettingsClient() {
                       <Textarea
                         placeholder="Comentário (opcional)"
                         value={photo.description || ""}
+                        maxLength={PROFILE_LIMITS.galleryDescription}
                         onChange={(e) => {
                           const newGallery = [...formData.gallery];
                           const photoItem = formData.gallery[index];
@@ -1005,6 +1119,10 @@ export function ProfileSettingsClient() {
                         }}
                         className="text-[10px] min-h-[50px] h-auto p-2 bg-surface border-none resize-none rounded-xl"
                       />
+                      <p className="text-[10px] text-text-muted ml-1">
+                        {(photo.description || "").length}/
+                        {PROFILE_LIMITS.galleryDescription}
+                      </p>
                     </div>
                   ))}
                   {formData.gallery.length === 0 && (
