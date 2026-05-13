@@ -51,14 +51,14 @@ export function ContactCTA() {
   };
 
   return (
-    <section className="my-24 bg-primary  py-6 px-4 md:px-10 md:py-10 rounded-2xl">
-      <div className="grid grid-cols-12 gap-y-8 md:gap-8">
-        <div className="col-span-12 md:col-span-7 flex flex-col justify-center">
-          <div className="text-center md:text-left">
-            <h3 className="text-3xl md:text-5xl font-extrabold mb-6 leading-tight text-white">
+    <section className="my-24 bg-primary  py-4 px-4 md:px-10 md:py-10 rounded-2xl">
+      <div className="grid grid-cols-12 gap-y-12 md:gap-8">
+        <div className="col-span-12 md:col-span-7 w-full h-full">
+          <div className=" space-y-4 justify-center mt-4 md:mt-0 items-center md:items-start flex flex-col w-full h-full">
+            <h3 className="text-2xl md:text-5xl font-extrabold  leading-tight text-white">
               Dúvidas ou Sugestões?
             </h3>
-            <p className="text-white/80 text-lg mb-8">
+            <p className="text-white text-sm md:text-lg ">
               Estamos aqui para ajudar você a encontrar o melhor serviço ou a
               divulgar o seu talento. Faça parte da nossa rede de excelência.
             </p>
@@ -75,25 +75,14 @@ export function ContactCTA() {
                
               </CardHeader>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-[11px] text-slate-700 space-y-1">
-                  <p className="font-semibold text-slate-900">
-                    Antes de enviar
-                  </p>
-                  <p>
-                    Nome: até {CONTACT_LIMITS.name} caracteres. E-mail: até{" "}
-                    {CONTACT_LIMITS.email} caracteres.
-                  </p>
-                  <p>
-                    Mensagem: entre 10 e {CONTACT_LIMITS.message} caracteres.
-                  </p>
-                </div>
+           
                 <div className="space-y-1">
                   <div className="relative">
                     <Input
                       placeholder="Nome *"
                       maxLength={CONTACT_LIMITS.name}
                       {...register("name")}
-                      className={` border-1 h-12 border-gray-300  text-text-main placeholder:text-text-muted/50 transition-all ${
+                      className={` border-1 h-10 md:h-12  text-text-main placeholder:text-text-muted/50 transition-all ${
                         errors.name
                           ? "border-red-500/50 focus:border-red-500"
                           : touchedFields.name && !errors.name
@@ -115,7 +104,7 @@ export function ContactCTA() {
                     </p>
                   )}
                   <p className="text-[10px] text-text-muted ml-2">
-                    Use até {CONTACT_LIMITS.name} caracteres.
+                    Limite de {CONTACT_LIMITS.name} caracteres.
                   </p>
                 </div>
 
@@ -126,7 +115,7 @@ export function ContactCTA() {
                       type="email"
                       maxLength={CONTACT_LIMITS.email}
                       {...register("email")}
-                      className={`border-1 h-12  border-gray-300 text-text-main placeholder:text-text-muted/50 transition-all ${
+                      className={`border-1 h-10 md:h-12 border-gray-300 text-text-main placeholder:text-text-muted/50 transition-all ${
                         errors.email
                           ? "border-red-500/50 focus:border-red-500"
                           : touchedFields.email && !errors.email
@@ -148,7 +137,7 @@ export function ContactCTA() {
                     </p>
                   )}
                   <p className="text-[10px] text-text-muted ml-2">
-                    Informe um e-mail válido com até {CONTACT_LIMITS.email} caracteres.
+                    Informe um e-mail válido.
                   </p>
                 </div>
 
@@ -167,7 +156,7 @@ export function ContactCTA() {
                     <textarea
                       placeholder="Conte-nos como podemos ajudar..."
                       {...register("message")}
-                      className={`w-full border-1 border-gray-300 rounded-md p-4 text-text-main placeholder:text-text-muted/50 h-32 outline-none transition-all ${
+                      className={`w-full border rounded-md p-4 text-text-main placeholder:text-text-muted/50 h-32 outline-none transition-all ${
                         errors.message
                           ? "border-red-500/50 focus:border-red-500"
                           : touchedFields.message && !errors.message
@@ -190,13 +179,13 @@ export function ContactCTA() {
                     </p>
                   )}
                   <p className="text-[10px] text-text-muted ml-2">
-                    Descreva sua dúvida com pelo menos 10 caracteres.
+                    Descreva sua dúvida, mínimo de 10 caracteres.
                   </p>
                 </div>
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 transition-colors text-white h-10  font-bold "
+                  className="w-full rounded-md bg-blue-500 hover:bg-blue-600 active:bg-blue-700 transition-colors text-white h-10 md:h-12  font-bold "
                 >
                   {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
                 </Button>

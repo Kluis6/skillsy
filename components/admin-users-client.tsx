@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { UserService } from '@/services/user-service';
-import { UserProfile } from '@/models/types';
+import { UserProfile, UserReport } from '@/models/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
@@ -19,6 +19,7 @@ import {
   Search, 
   ShieldAlert, 
   ShieldCheck, 
+  AlertTriangle,
   Edit3, 
   Ban, 
   CheckCircle,
@@ -93,6 +94,7 @@ import {
 } from '@/components/ui/tooltip';
 import { LocationService } from '@/services/location-service';
 import { BRAZIL_STATES } from '@/lib/brazil-states';
+import { REPORT_REASON_LABELS } from '@/lib/reporting';
 
 const ADMIN_FORM_LIMITS = {
   name: 50,
@@ -112,11 +114,13 @@ export function AdminUsersClient() {
   const { profile, loading: authLoading } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([]);
+  const [reports, setReports] = useState<UserReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterWard, setFilterWard] = useState('');
   const [filterState, setFilterState] = useState('all');
   const [filterHasServices, setFilterHasServices] = useState(false);
+  const [filterReported, setFilterReported] = useState(false);
   const [filterRecent, setFilterRecent] = useState(false);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   
@@ -159,6 +163,25 @@ export function AdminUsersClient() {
   });
 
   const [detectingLocation, setDetectingLocation] = useState(false);
+  const reportCountsByUser = useMemo(
+    () =>
+      reports.reduce<Record<string, number>>((acc, report) => {
+        acc[report.reportedUserId] = (acc[report.reportedUserId] || 0) + 1;
+        return acc;
+      }, {}),
+    [reports],
+  );
+
+  const latestReportByUser = useMemo(
+    () =>
+      reports.reduce<Record<string, UserReport>>((acc, report) => {
+        if (!acc[report.reportedUserId]) {
+          acc[report.reportedUserId] = report;
+        }
+        return acc;
+      }, {}),
+    [reports],
+  );
 
   const handleDetectLocation = async () => {
     setDetectingLocation(true);
@@ -176,8 +199,12 @@ export function AdminUsersClient() {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const allUsers = await UserService.getAllUsers();
+      const [allUsers, allReports] = await Promise.all([
+        UserService.getAllUsers(),
+        UserService.getAllReports(),
+      ]);
       setUsers(allUsers);
+      setReports(allReports);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast.error('Erro ao carregar usuários');
@@ -211,6 +238,10 @@ export function AdminUsersClient() {
       result = result.filter(u => u.isProvider);
     }
 
+    if (filterReported) {
+      result = result.filter(u => (reportCountsByUser[u.uid] || 0) > 0);
+    }
+
     if (filterRecent) {
       result.sort((a, b) => {
         const dateA = a.createdAt?.seconds || 0;
@@ -228,7 +259,7 @@ export function AdminUsersClient() {
 
     setFilteredUsers(result);
     setCurrentPage(1); // Reset to first page when filters change
-  }, [users, searchTerm, filterWard, filterState, filterHasServices, filterRecent, sortOrder]);
+  }, [users, searchTerm, filterWard, filterState, filterHasServices, filterReported, filterRecent, sortOrder, reportCountsByUser]);
 
   useEffect(() => {
     if (profile?.role === 'admin') {
@@ -422,7 +453,7 @@ export function AdminUsersClient() {
               </div>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full lg:w-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full lg:w-auto">
               <div className="space-y-2">
                 <Label className="text-xs font-bold text-text-muted uppercase ml-1">Ala/Ramo</Label>
                 <Input 
@@ -455,6 +486,16 @@ export function AdminUsersClient() {
                 />
                 <Label htmlFor="providers-only" className="text-sm font-medium cursor-pointer">Apenas Prestadores</Label>
               </div>
+              <div className="flex items-center gap-3 h-12 px-4 bg-surface rounded-2xl">
+                <Switch
+                  id="reported-only"
+                  checked={filterReported}
+                  onCheckedChange={setFilterReported}
+                />
+                <Label htmlFor="reported-only" className="text-sm font-medium cursor-pointer">
+                  Apenas Denunciados
+                </Label>
+              </div>
             </div>
           </div>
         </Card>
@@ -479,6 +520,7 @@ export function AdminUsersClient() {
                   </TableHead>
                   <TableHead className="font-bold text-text-muted uppercase text-[10px] tracking-widest">Localização / Ala</TableHead>
                   <TableHead className="font-bold text-text-muted uppercase text-[10px] tracking-widest">Status</TableHead>
+                  <TableHead className="font-bold text-text-muted uppercase text-[10px] tracking-widest">Denúncias</TableHead>
                   <TableHead className="font-bold text-text-muted uppercase text-[10px] tracking-widest">Avaliação</TableHead>
                   <TableHead className="text-right pr-8 font-bold text-text-muted uppercase text-[10px] tracking-widest">Ações</TableHead>
                 </TableRow>
@@ -486,7 +528,7 @@ export function AdminUsersClient() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="py-20 text-center text-text-muted">Carregando dados...</TableCell>
+                    <TableCell colSpan={6} className="py-20 text-center text-text-muted">Carregando dados...</TableCell>
                   </TableRow>
                 ) : filteredUsers.length > 0 ? (
                   filteredUsers.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((u) => (
@@ -531,6 +573,25 @@ export function AdminUsersClient() {
                             <Badge className="bg-red-50 text-red-600 border-red-100 text-[10px]">Bloqueado</Badge>
                           )}
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        {reportCountsByUser[u.uid] ? (
+                          <div className="space-y-1">
+                            <Badge className="bg-red-50 text-red-600 border-red-100 text-[10px] inline-flex items-center gap-1">
+                              <AlertTriangle size={12} />
+                              {reportCountsByUser[u.uid]} denúncia{reportCountsByUser[u.uid] > 1 ? 's' : ''}
+                            </Badge>
+                            <p className="text-[11px] text-text-muted max-w-[220px] line-clamp-2">
+                              Última: {latestReportByUser[u.uid]
+                                ? REPORT_REASON_LABELS[
+                                    latestReportByUser[u.uid].reason as keyof typeof REPORT_REASON_LABELS
+                                  ] || latestReportByUser[u.uid].reason
+                                : 'Sem detalhes'}
+                            </p>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-text-muted">Nenhuma</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1 font-bold text-highlight text-sm">
@@ -593,7 +654,7 @@ export function AdminUsersClient() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="py-20 text-center text-text-muted">Nenhum usuário encontrado com estes filtros.</TableCell>
+                    <TableCell colSpan={6} className="py-20 text-center text-text-muted">Nenhum usuário encontrado com estes filtros.</TableCell>
                   </TableRow>
                 )}
               </TableBody>

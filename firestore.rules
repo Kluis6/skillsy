@@ -261,6 +261,23 @@ service cloud.firestore {
              (!('read' in data) || data.read is bool);
     }
 
+    function isValidReport(data) {
+      let allowed = ['reportedUserId', 'reportedUserName', 'reporterId', 'reporterEmail', 'reason', 'details', 'status', 'createdAt'];
+      return data.keys().hasAll(['reportedUserId', 'reporterId', 'reporterEmail', 'reason', 'status']) &&
+             data.keys().hasOnly(allowed) &&
+             data.reportedUserId is string &&
+             data.reportedUserId.size() > 0 &&
+             data.reportedUserId != request.auth.uid &&
+             (!('reportedUserName' in data) || data.reportedUserName == null || (data.reportedUserName is string && data.reportedUserName.size() <= 100)) &&
+             data.reporterId is string &&
+             data.reporterId == request.auth.uid &&
+             isValidEmail(data.reporterEmail) &&
+             data.reason in ['informacao_falsa', 'conteudo_ofensivo', 'spam', 'golpe_ou_fraude', 'conduta_inadequada', 'outro'] &&
+             (!('details' in data) || data.details == null || (data.details is string && data.details.size() <= 1000)) &&
+             data.status in ['new', 'reviewed', 'resolved'] &&
+             (!('createdAt' in data) || data.createdAt is timestamp);
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
@@ -274,6 +291,14 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
       // Allow creation by any authenticated user (e.g. on signup or reporting)
       allow create: if isAuthenticated() && isValidNotification(request.resource.data);
+    }
+
+    match /reports/{reportId} {
+      allow create: if isAuthenticated() &&
+                      isNotBlocked() &&
+                      isValidReport(request.resource.data) &&
+                      request.resource.data.status == 'new';
+      allow read, update, delete: if isAdmin();
     }
 
     match /users/{userId} {

@@ -32,6 +32,7 @@ import {
   Copy,
   CalendarDays,
   Clock,
+  Flag,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
@@ -40,9 +41,11 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
   DialogDescription,
   DialogFooter,
   DialogTitle,
@@ -72,6 +75,10 @@ import { PiShareFat } from "react-icons/pi";
 import { BsWhatsapp } from "react-icons/bs";
 import { FaTelegramPlane } from "react-icons/fa";
 import { AVAILABILITY_OPTIONS } from "@/lib/profile-form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { reportUserSchema, type ReportUserFormData } from "@/lib/validations";
+import { REPORT_REASON_LABELS, REPORT_REASON_OPTIONS } from "@/lib/reporting";
 
 interface ProfileDetailClientProps {
   id: string;
@@ -118,6 +125,16 @@ export function ProfileDetailClient({
   const [userRating, setUserRating] = useState(0);
   const [ratingHover, setRatingHover] = useState(0);
   const [submittingRating, setSubmittingRating] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+
+  const reportForm = useForm<ReportUserFormData>({
+    resolver: zodResolver(reportUserSchema),
+    mode: "onBlur",
+    defaultValues: {
+      reason: "informacao_falsa",
+      details: "",
+    },
+  });
 
   const shareUrl = targetProfile
     ? typeof window === "undefined"
@@ -127,6 +144,7 @@ export function ProfileDetailClient({
 
   const canUseNativeShare =
     typeof navigator !== "undefined" && "share" in navigator;
+  const canReportProfile = Boolean(targetProfile && targetProfile.uid !== user?.uid);
 
   useEffect(() => {
     // We only need to fetch if we don't have the profile yet or to get fresh data
@@ -215,6 +233,43 @@ export function ProfileDetailClient({
       });
     } catch {
       // Usuario cancelou ou o navegador bloqueou a acao.
+    }
+  };
+
+  const handleSubmitReport = async (data: ReportUserFormData) => {
+    if (!user) {
+      toast.error("Login necessário", {
+        description: "Você precisa estar logado para denunciar um perfil.",
+      });
+      return;
+    }
+
+    if (!targetProfile || user.uid === targetProfile.uid) {
+      toast.error("Ação inválida", {
+        description: "Você não pode denunciar o próprio perfil.",
+      });
+      return;
+    }
+
+    try {
+      await UserService.submitUserReport({
+        reportedUserId: targetProfile.uid,
+        reportedUserName: targetProfile.name,
+        reason: data.reason,
+        details: data.details?.trim(),
+      });
+
+      toast.success("Denúncia enviada", {
+        description: "Nossa equipe administrativa poderá revisar esse perfil.",
+      });
+      reportForm.reset({
+        reason: "informacao_falsa",
+        details: "",
+      });
+      setReportDialogOpen(false);
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      toast.error("Não foi possível enviar a denúncia.");
     }
   };
 
@@ -349,6 +404,104 @@ export function ProfileDetailClient({
         </Tooltip>
         {renderShareSheet()}
       </Sheet>
+    );
+  };
+
+  const renderReportButton = (className?: string) => {
+    if (!canReportProfile) {
+      return null;
+    }
+
+    return (
+      <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="outline"
+                size="icon"
+                className={className}
+                onClick={() => setReportDialogOpen(true)}
+              />
+            }
+          >
+            <Flag className="text-red-500" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Denunciar perfil</p>
+          </TooltipContent>
+        </Tooltip>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Denunciar perfil</DialogTitle>
+            <DialogDescription>
+              Informe o motivo da denúncia. Isso será enviado para o painel administrativo.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={reportForm.handleSubmit(handleSubmitReport)}
+            className="space-y-4"
+          >
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] text-amber-900">
+              Use a denúncia apenas para casos reais de conteúdo inadequado, fraude, spam ou informações enganosas.
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-text-main">
+                Motivo
+              </label>
+              <select
+                {...reportForm.register("reason")}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                {REPORT_REASON_OPTIONS.map((reason) => (
+                  <option key={reason} value={reason}>
+                    {REPORT_REASON_LABELS[reason]}
+                  </option>
+                ))}
+              </select>
+              {reportForm.formState.errors.reason && (
+                <p className="text-[10px] font-bold text-red-500">
+                  {reportForm.formState.errors.reason.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-text-main">
+                Detalhes adicionais
+              </label>
+              <Textarea
+                {...reportForm.register("details")}
+                placeholder="Descreva o problema com até 1000 caracteres."
+                maxLength={1000}
+                className="min-h-28"
+              />
+              <div className="flex items-center justify-between text-[10px] text-text-muted">
+                <span>Opcional, mas ajuda na análise.</span>
+                <span>
+                  {(reportForm.watch("details") || "").length}/1000
+                </span>
+              </div>
+              {reportForm.formState.errors.details && (
+                <p className="text-[10px] font-bold text-red-500">
+                  {reportForm.formState.errors.details.message}
+                </p>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setReportDialogOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={reportForm.formState.isSubmitting}>
+                {reportForm.formState.isSubmitting ? "Enviando..." : "Enviar denúncia"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     );
   };
 
@@ -533,6 +686,7 @@ export function ProfileDetailClient({
                   </div>
                   <div className="sm:flex space-x-2 hidden ">
                     {renderShareButton("size-10 rounded-md")}
+                    {renderReportButton("size-10 rounded-md")}
                     {user?.uid === targetProfile.uid ? (
                       <Tooltip>
                         <TooltipTrigger
@@ -681,6 +835,7 @@ export function ProfileDetailClient({
                     <div className="flex flex-col gap-2 sm:hidden ">
                       <div className="flex gap-2 justify-end">
                         {renderShareButton("size-10 rounded-sm")}
+                        {renderReportButton("size-10 rounded-sm")}
                         {user?.uid === targetProfile.uid ? (
                           <Tooltip>
                             <TooltipTrigger

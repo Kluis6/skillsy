@@ -3,6 +3,7 @@ import {
   query, 
   getDocs, 
   where, 
+  orderBy,
   limit, 
   doc, 
   getDoc, 
@@ -17,7 +18,7 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import { toPlainValue } from '@/lib/firestore-plain';
-import { UserProfile } from '@/models/types';
+import { UserProfile, UserReport } from '@/models/types';
 import { AVAILABILITY_OPTIONS, PROVIDER_CATEGORIES } from '@/lib/profile-form';
 import { NotificationService } from './notification-service';
 
@@ -802,6 +803,55 @@ export const UserService = {
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  },
+
+  async submitUserReport(data: {
+    reportedUserId: string;
+    reportedUserName?: string;
+    reason: string;
+    details?: string;
+  }): Promise<void> {
+    const path = 'reports';
+    if (!auth.currentUser) {
+      throw new Error('Usuário não autenticado');
+    }
+
+    try {
+      await addDoc(collection(db, 'reports'), {
+        reportedUserId: data.reportedUserId,
+        reportedUserName: data.reportedUserName || '',
+        reporterId: auth.currentUser.uid,
+        reporterEmail: auth.currentUser.email || '',
+        reason: data.reason,
+        details: data.details || '',
+        status: 'new',
+        createdAt: serverTimestamp(),
+      });
+
+      await NotificationService.createNotification({
+        title: 'Nova denúncia de perfil',
+        message: `${auth.currentUser.email || 'Um usuário'} denunciou o perfil de ${data.reportedUserName || data.reportedUserId}.`,
+        type: 'report',
+        read: false,
+        link: '/admin/usuarios',
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  },
+
+  async getAllReports(): Promise<UserReport[]> {
+    const path = 'reports';
+    try {
+      const q = query(collection(db, 'reports'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map((reportDoc) =>
+        toPlainValue({ id: reportDoc.id, ...reportDoc.data() } as UserReport),
+      );
+    } catch (error) {
+      handleFirestoreError(error, OperationType.LIST, path);
+      return [];
     }
   }
 };

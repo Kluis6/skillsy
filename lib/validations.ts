@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { AVAILABILITY_OPTIONS, PROVIDER_CATEGORIES } from '@/lib/profile-form';
+import { REPORT_REASON_OPTIONS } from '@/lib/reporting';
 
 const currentYear = new Date().getFullYear();
 
@@ -194,3 +195,17 @@ export const adminCreateAdminSchema = z.object({
 });
 
 export type AdminCreateAdminFormData = z.infer<typeof adminCreateAdminSchema>;
+
+export const reportUserSchema = z.object({
+  reason: z.enum(REPORT_REASON_OPTIONS, {
+    message: 'Selecione um motivo para a denúncia',
+  }),
+  details: z
+    .string()
+    .trim()
+    .max(1000, 'A descrição deve ter no máximo 1000 caracteres')
+    .optional()
+    .or(z.literal('')),
+});
+
+export type ReportUserFormData = z.infer<typeof reportUserSchema>;

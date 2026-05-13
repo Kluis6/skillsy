@@ -62,3 +62,15 @@ export interface Rating {
   comment?: string;
   createdAt: any;
 }
+
+export interface UserReport {
+  id?: string;
+  reportedUserId: string;
+  reportedUserName?: string;
+  reporterId: string;
+  reporterEmail: string;
+  reason: string;
+  details?: string;
+  status: 'new' | 'reviewed' | 'resolved';
+  createdAt: any;
+}
