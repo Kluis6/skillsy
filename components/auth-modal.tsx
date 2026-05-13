@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "motion/react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,51 @@ import {
   type SignUpFormData,
 } from "@/lib/validations";
 import Image from "next/image";
+
+const authGalleryImages = [
+  {
+    src: "/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png",
+    alt: "Ilustracao de criacao colaborativa",
+    className: "col-span-8",
+    delay: 0,
+  },
+  {
+    src: "/Gemini_Generated_Image_81npfy81npfy81np.png",
+    alt: "Ilustracao de aprendizado digital",
+    className: "col-span-4",
+    delay: 0.06,
+  },
+  {
+    src: "/Gemini_Generated_Image_m9c1ibm9c1ibm9c1.png",
+    alt: "Ilustracao de networking profissional",
+    className: "col-span-4",
+    delay: 0.12,
+  },
+  {
+    src: "/Gemini_Generated_Image_xfqkexfqkexfqkex.png",
+    alt: "Ilustracao de estudo online",
+    className: "col-span-4",
+    delay: 0.18,
+  },
+  {
+    src: "/Gemini_Generated_Image_ez45xsez45xsez45.png",
+    alt: "Ilustracao de comunidade criativa",
+    className: "col-span-4",
+    delay: 0.24,
+  },
+  {
+    src: "/Gemini_Generated_Image_2guq8v2guq8v2guq.png",
+    alt: "Ilustracao de portfolio digital",
+    className: "col-span-4",
+    delay: 0.3,
+  },
+  {
+    src: "/Gemini_Generated_Image_cjqsrjcjqsrjcjqs.png",
+    alt: "Ilustracao de ensino e troca de habilidades",
+    className: "col-span-8",
+    delay: 0.36,
+  },
+];
 
 export function AuthModal({ children }: { children: React.ReactElement }) {
   const { signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth();
@@ -114,63 +160,26 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-12 md:col-span-6 bg-linear-to-l from-white to-blue-400 rounded-l-md p-4 hidden md:flex">
             <div className="grid grid-cols-12 gap-4 w-full h-full">
-              <div className="col-span-8 rounded-xl relative w-full h-full overflow-hidden">
-                <Image
-                  src={"/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png"}
-                  alt={"Ilustracao de criacao colaborativa"}
-                  fill
-                  className="object-cover bg-cover"
-                />
-              </div>
-              <div className="col-span-4 rounded-xl overflow-hidden relative w-full h-full">
-                <Image
-                  src={"/Gemini_Generated_Image_81npfy81npfy81np.png"}
-                  alt={"Ilustracao de aprendizado digital"}
-                  fill
-                  className="object-cover bg-cover"
-                />
-              </div>
-              <div className="col-span-4 rounded-xl relative overflow-hidden">
-                <Image
-                  src={"/Gemini_Generated_Image_m9c1ibm9c1ibm9c1.png"}
-                  alt={"Ilustracao de networking profissional"}
-                  fill
-                  className="object-cover bg-cover"
-                />
-              </div>
-              <div className="col-span-4 rounded-xl relative overflow-hidden">
-                <Image
-                  src={"/Gemini_Generated_Image_xfqkexfqkexfqkex.png"}
-                  alt={"Ilustracao de estudo online"}
-                  fill
-                  className="object-cover bg-cover"
-                />
-              </div>
-              <div className="col-span-4 rounded-xl relative overflow-hidden">
-                <Image
-                  src={"/Gemini_Generated_Image_ez45xsez45xsez45.png"}
-                  alt={"Ilustracao de comunidade criativa"}
-                  fill
-                  className="object-cover bg-cover"
-                />
-              </div>
-
-              <div className="col-span-4 rounded-xl relative overflow-hidden">
-                <Image
-                  src={"/Gemini_Generated_Image_2guq8v2guq8v2guq.png"}
-                  alt={"Ilustracao de portfolio digital"}
-                  fill
-                  className="object-cover bg-cover"
-                />
-              </div>
-              <div className="col-span-8 rounded-xl relative overflow-hidden">
-                <Image
-                  src={"/Gemini_Generated_Image_cjqsrjcjqsrjcjqs.png"}
-                  alt={"Ilustracao de ensino e troca de habilidades"}
-                  fill
-                  className="object-cover bg-cover"
-                />
-              </div>
+              {authGalleryImages.map((image) => (
+                <motion.div
+                  key={image.src}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: image.delay,
+                    ease: "easeOut",
+                  }}
+                  className={`${image.className} group relative w-full h-full overflow-hidden rounded-xl`}
+                >
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    fill
+                    className="object-cover bg-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </motion.div>
+              ))}
             </div>
           </div>
           <div className="col-span-12 md:col-span-6 flex flex-col items-start justify-between gap-2">
