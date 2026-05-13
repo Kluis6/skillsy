@@ -42,13 +42,10 @@ export function Navbar({
   const user = propUser !== undefined ? propUser : auth.user;
   const logout = propLogout !== undefined ? propLogout : auth.logout;
   const shouldShowBackButton =
-    pathname === "/profile" ||
-    pathname === "/contacts" ||
-    pathname.startsWith("/profile/") ||
-    pathname.startsWith("/contacts/");
+    pathname === "/profile" || pathname?.startsWith("/profile/");
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle ">
+    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle dark:border-slate-800">
       <div className="container mx-auto flex justify-between items-center px-4 py-2">
         <div className="flex items-center space-x-4">
           {shouldShowBackButton ? (
@@ -57,7 +54,7 @@ export function Navbar({
             <Drawer direction="left">
               <DrawerTrigger asChild className="flex md:hidden">
                 <Button size="icon" className="size-10" variant="ghost">
-                  <BsList className="size-5 text-gray-700" />
+                  <BsList className="size-5 text-gray-700 dark:text-white" />
                 </Button>
               </DrawerTrigger>
               <DrawerContent>
@@ -71,44 +68,64 @@ export function Navbar({
                     </DrawerDescription>
                   </div>
                   <DrawerTrigger asChild>
-                    <Button size="icon" className="bg-white hover:bg-zinc-100">
-                      <BsXLg className="text-gray-800" />
+                    <Button
+                      size="icon"
+                      className="bg-white dark:bg-accent dark:hover:bg-black/45 hover:bg-zinc-100"
+                    >
+                      <BsXLg className="text-gray-800 dark:text-white" />
                     </Button>
                   </DrawerTrigger>
                 </DrawerHeader>
                 <div className="px-4 space-y-4">
-                  <h3 className="font-medium text-sm text-gray-800">
+                  <h3 className="font-medium text-sm text-gray-800 dark:text-white">
                     Navegação
                   </h3>
                   <ul className="w-full space-y-1">
-                    <li className=" p-2 hover:bg-surface">
+                    <li className="p-2 hover:bg-surface">
+                      <Link
+                        href="/"
+                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                      >
+                        Inicial
+                      </Link>
+                    </li>
+                    <li className="p-2 hover:bg-surface">
                       <Link
                         href="/weareskillsy"
-                        className="flex text-sm font-normal text-gray-800"
+                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
                       >
                         O que é Skillsy?
                       </Link>
                     </li>
-                    <li className=" p-2 hover:bg-surface">
+                    <li className="p-2 hover:bg-surface">
+                      <Link
+                        href="/noticia"
+                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                      >
+                        Novidades e notícias
+                      </Link>
+                    </li>
+
+                    <li className="p-2 hover:bg-surface">
                       <Link
                         href="/join"
-                        className="flex text-sm font-normal text-gray-800"
+                        className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
                       >
                         Por que participar?
                       </Link>
                     </li>
-                    <li className=" p-2 hover:bg-surface">
+                    <li className="p-2 hover:bg-surface">
                       <Link
                         href="/privacidade"
-                        className="flex text-sm font-normal text-gray-800"
+                        className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
                       >
                         Privacidade
                       </Link>
                     </li>
-                    <li className=" p-2 hover:bg-surface">
+                    <li className="p-2 hover:bg-surface">
                       <Link
                         href="/termos"
-                        className="flex text-sm font-normal text-gray-800"
+                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
                       >
                         Termos de uso
                       </Link>
@@ -117,14 +134,14 @@ export function Navbar({
 
                   {user && (
                     <>
-                      <h3 className="font-medium text-sm text-gray-800">
+                      <h3 className="font-medium text-sm text-gray-800 dark:text-white">
                         Minha conta
                       </h3>
 
                       <ul className="space-y-1">
                         <li className="hover:bg-surface p-2">
                           <Link
-                            className="flex text-sm font-normal text-gray-800"
+                            className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
                             href="/contacts"
                           >
                             Meus Contatos
@@ -132,7 +149,7 @@ export function Navbar({
                         </li>
                         <li className="hover:bg-surface p-2">
                           <Link
-                            className="flex text-sm font-normal text-gray-800"
+                            className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
                             href="/profile"
                           >
                             Configurações do Perfil
@@ -140,8 +157,7 @@ export function Navbar({
                         </li>
                         <li>
                           <Button
-                            variant="ghost"
-                            className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-gray-800 rounded-none"
+                            className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-gray-700 dark:text-gray-50 rounded-none bg-transparent"
                             onClick={logout}
                           >
                             Sair da Conta
@@ -154,7 +170,7 @@ export function Navbar({
 
                 <DrawerFooter>
                   <Link
-                    className="text-center bg-primary p-2 font-medium text-sm text-white rounded-sm"
+                    className="text-center bg-primary hover:bg-blue-700 active:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 black:active:bg-blue-800 p-2 font-medium text-sm text-white rounded-md"
                     href={"/donation"}
                   >
                     Ajude o projeto
@@ -170,7 +186,7 @@ export function Navbar({
             <div className="md:flex hidden items-center gap-2">
               <Link
                 href="/weareskillsy"
-                className="text-sm font-normal text-gray-700 hover:text-gray-800 decoration-1 hover:underline transition-all underline-offset-2 decoration-gray-800"
+                className="text-sm font-normal text-gray-700 hover:text-gray-800 decoration-1 hover:underline transition-all underline-offset-2 decoration-gray-800 dark:decoration-white dark:text-white"
               >
                 O que é Skillsy
               </Link>
@@ -180,7 +196,7 @@ export function Navbar({
           {shouldShowBackButton && (
             <Button
               variant="ghost"
-              className="h-10 text-gray-700"
+              className="h-10 text-gray-700 dark:text-white"
               onClick={() => router.back()}
             >
               <ArrowLeft /> <p className="hidden md:flex">Voltar</p>
@@ -193,7 +209,7 @@ export function Navbar({
           <Drawer direction="left">
             <DrawerTrigger asChild className="hidden md:flex">
               <Button size="icon" className="size-10" variant="ghost">
-                <BsList className="size-5 text-gray-700" />
+                <BsList className="size-5 text-gray-700 dark:text-white" />
               </Button>
             </DrawerTrigger>
             <DrawerContent>
@@ -205,34 +221,55 @@ export function Navbar({
                   </DrawerDescription>
                 </div>
                 <DrawerTrigger asChild>
-                  <Button size="icon" className="bg-white hover:bg-zinc-100">
-                    <BsXLg className="text-gray-800" />
+                  <Button
+                    size="icon"
+                    className="bg-white dark:bg-accent dark:hover:bg-black/45 hover:bg-zinc-100"
+                  >
+                    <BsXLg className="text-gray-800 dark:text-white" />
                   </Button>
                 </DrawerTrigger>
               </DrawerHeader>
               <div className="px-4 space-y-4">
-                <h3 className="font-medium text-sm text-gray-800">Navegação</h3>
+                <h3 className="font-medium text-sm text-gray-800 dark:text-white">
+                  Navegação
+                </h3>
                 <ul className="w-full space-y-1">
                   <li className="p-2 hover:bg-surface">
                     <Link
+                      href="/"
+                      className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                    >
+                      Inicial
+                    </Link>
+                  </li>
+                  <li className="p-2 hover:bg-surface">
+                    <Link
                       href="/weareskillsy"
-                      className="flex text-sm font-normal text-gray-800"
+                      className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
                     >
                       O que é Skillsy?
                     </Link>
                   </li>
                   <li className="p-2 hover:bg-surface">
                     <Link
+                      href="/noticias"
+                      className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                    >
+                      Novidades e notícias
+                    </Link>
+                  </li>
+                  <li className="p-2 hover:bg-surface">
+                    <Link
                       href="/join"
-                      className="flex text-sm font-normal text-gray-800"
+                      className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
                     >
                       Por que participar?
                     </Link>
                   </li>
                   <li className="p-2 hover:bg-surface">
                     <Link
-                      href="/join"
-                      className="flex text-sm font-normal text-gray-800"
+                      href="/privacidade"
+                      className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
                     >
                       Privacidade
                     </Link>
@@ -240,7 +277,7 @@ export function Navbar({
                   <li className="p-2 hover:bg-surface">
                     <Link
                       href="/termos"
-                      className="flex text-sm font-normal text-gray-800"
+                      className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
                     >
                       Termos de uso
                     </Link>
@@ -249,14 +286,14 @@ export function Navbar({
 
                 {user && (
                   <>
-                    <h3 className="font-medium text-sm text-gray-800">
+                    <h3 className="font-medium text-sm text-gray-800 dark:text-white">
                       Minha conta
                     </h3>
 
                     <ul className="space-y-1">
                       <li className="hover:bg-surface p-2">
                         <Link
-                          className="flex text-sm font-normal text-gray-800"
+                          className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
                           href="/contacts"
                         >
                           Meus Contatos
@@ -264,7 +301,7 @@ export function Navbar({
                       </li>
                       <li className="hover:bg-surface p-2">
                         <Link
-                          className="flex text-sm font-normal text-gray-800"
+                          className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
                           href="/profile"
                         >
                           Configurações do Perfil
@@ -272,8 +309,7 @@ export function Navbar({
                       </li>
                       <li>
                         <Button
-                          variant="ghost"
-                          className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-gray-800 rounded-none"
+                          className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-gray-700 dark:text-gray-50 rounded-none bg-transparent"
                           onClick={logout}
                         >
                           Sair da Conta
@@ -286,7 +322,7 @@ export function Navbar({
 
               <DrawerFooter>
                 <Link
-                  className="text-center bg-primary p-2 font-medium text-sm text-white rounded-sm"
+                  className="text-center bg-primary hover:bg-blue-700 active:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 black:active:bg-blue-800 p-2 font-medium text-sm text-white rounded-md"
                   href={"/donation"}
                 >
                   Ajude o projeto
@@ -296,7 +332,7 @@ export function Navbar({
           </Drawer>
 
           {user ? (
-            <Avatar className="size-7 ring-2 ring-offset-2 ring-zinc-400 md:ml-1.5 mr-1">
+            <Avatar className="size-7 ring-2 ring-offset-2 ring-offset-white dark:ring-offset-black dark:ring-slate-700 ring-slate-400 md:ml-1.5 mr-1">
               <AvatarImage src={user.photoURL || undefined} />
               <AvatarFallback>
                 <UserIcon className="size-7" />
