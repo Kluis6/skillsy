@@ -1,20 +1,28 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { BsMoon, BsSun } from "react-icons/bs";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && theme === "dark";
 
   return (
     <Button
       variant="ghost"
       size="icon"
       className="size-10 transition-discrete"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
     >
-      {theme === "dark" ? <BsMoon /> : <BsSun className="text-gray-800" />}
+      {isDark ? <BsMoon /> : <BsSun className="text-gray-800" />}
 
       <span className="sr-only">Alternar tema</span>
     </Button>

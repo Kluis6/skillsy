@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSearchController } from "@/hooks/use-search-controller";
-import { useContactsController } from "@/hooks/use-contacts-controller";
+
 import {
   Card,
   CardAction,
@@ -25,8 +25,6 @@ import { ContactCTA } from "@/components/contact-cta";
 import { CategoryCarousel } from "@/components/category-carousel";
 import { AuthModal } from "@/components/auth-modal";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
 import { UserProfile } from "@/models/types";
 import Image from "next/image";
 
@@ -35,8 +33,7 @@ export function HomeClient({
 }: {
   initialProviders?: UserProfile[];
 }) {
-  const router = useRouter();
-  const { user, profile, logout, loading, toggleContact } = useAuth();
+  const { user, profile, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<"explore" | "contacts">("explore");
 
   // Controllers
@@ -48,35 +45,6 @@ export function HomeClient({
     providers,
     searching,
   } = useSearchController(initialProviders);
-
-  const { savedContacts } = useContactsController(profile, activeTab);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background p-6 md:p-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-12">
-            <Skeleton className="h-10 w-32 rounded-xl" />
-            <div className="flex gap-4">
-              <Skeleton className="h-10 w-24 rounded-full" />
-              <Skeleton className="h-10 w-10 rounded-full" />
-            </div>
-          </div>
-          <div className="max-w-3xl mx-auto text-center mb-20">
-            <Skeleton className="h-4 w-32 mx-auto mb-6 rounded-full" />
-            <Skeleton className="h-16 w-full mb-6 rounded-2xl" />
-            <Skeleton className="h-16 w-3/4 mx-auto mb-10 rounded-2xl" />
-            <Skeleton className="h-16 w-full rounded-full" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-[400px] w-full rounded-[2.5rem]" />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen w-full">
