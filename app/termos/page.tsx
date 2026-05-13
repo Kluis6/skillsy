@@ -3,7 +3,7 @@ import { TermsClient } from '@/components/terms-client';
 
 export const metadata: Metadata = {
   title: 'Termos de Uso',
-  description: 'Leia os termos de uso e responsabilidades da plataforma Skillsy.',
+  description: 'Entenda como a Skillsy funciona, os limites da plataforma e as responsabilidades de quem usa o serviço.',
 };
 
 export default function TermosPage() {

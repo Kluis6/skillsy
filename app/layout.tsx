@@ -8,12 +8,12 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading" });
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://skillsy.com.br";
 const defaultDescription =
-  "Conectando talentos e serviços na comunidade SUD. Uma plataforma para impulsionar pessoas.";
+  "Conectando talentos e serviços na comunidade de membros. Uma plataforma para impulsionar pessoas.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Skillsy | Network SUD",
+    default: "Skillsy | Network entre membros",
     template: "%s | Skillsy",
   },
   description: defaultDescription,
@@ -40,20 +40,20 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     url: "/",
     siteName: "Skillsy",
-    title: "Skillsy | Network SUD",
+    title: "Skillsy | Network entre membros",
     description: defaultDescription,
     images: [
       {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Skillsy - Network SUD",
+        alt: "Skillsy - Network entre membros",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Skillsy | Network SUD",
+    title: "Skillsy | Network entre membros",
     description: defaultDescription,
     images: ["/opengraph-image"],
   },

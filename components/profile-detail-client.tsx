@@ -119,7 +119,6 @@ export function ProfileDetailClient({
   const [ratingHover, setRatingHover] = useState(0);
   const [submittingRating, setSubmittingRating] = useState(false);
 
-
   const shareUrl = targetProfile
     ? typeof window === "undefined"
       ? `/profile/${targetProfile.uid}`
@@ -603,7 +602,7 @@ export function ProfileDetailClient({
                         {targetProfile.name}
                       </h2>
                       {targetProfile.verifiedMember && (
-                        <ShieldCheck className="text-primary size-5 md:size-8" />
+                        <ShieldCheck className="text-primary size-5 md:size-7" />
                       )}
                     </div>
 
@@ -614,7 +613,7 @@ export function ProfileDetailClient({
                       {targetProfile.companyName &&
                         ` na ${targetProfile.companyName}`}
                     </p>
-                    <div className="flex  space-x-2">
+                    <div className="flex items-center space-x-2">
                       {targetProfile.companyName && (
                         <div className="flex items-center space-x-2">
                           <Building2 size={18} className="text-gray-800" />
@@ -623,7 +622,7 @@ export function ProfileDetailClient({
                           </p>
                         </div>
                       )}
-                      <div className="border-l border-gray-700"></div>
+                      <span className="font-bold block  text-gray-900">·</span>
                       {targetProfile.category && (
                         <Badge
                           variant="secondary"
@@ -651,7 +650,7 @@ export function ProfileDetailClient({
                           </p>
                         </div>
                       )}
-                      <div className="border-l border-gray-700"></div>
+                      <span className="font-bold block text-gray-900">·</span>
                       {targetProfile.baptismYear && (
                         <p className="text-sm text-gray-800 font-normal">
                           {targetProfile.baptismYear ===

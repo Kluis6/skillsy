@@ -849,7 +849,7 @@ function SearchResultsContent() {
                           size="icon"
                           onClick={() => setCurrentPage(1)}
                           disabled={currentPage === 1}
-                          className="h-10 w-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                          className="h-10 w-10 rounded-sm border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
                         >
                           <ChevronsLeft size={18} />
                         </Button>
@@ -860,7 +860,7 @@ function SearchResultsContent() {
                             setCurrentPage((prev) => Math.max(1, prev - 1))
                           }
                           disabled={currentPage === 1}
-                          className="h-10 w-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                          className="size-10 rounded-sm border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
                         >
                           <ChevronLeft size={18} />
                         </Button>

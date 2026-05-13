@@ -21,13 +21,13 @@ export function Footer() {
           </Link>
           <Link
             href="/termos"
-            className="hover:text-blue-600 text-gray-700 transition-colors text-sm"
+            className="hover:text-blue-600 text-gray-700 transition-colors text-sm font-normal"
           >
             Termos
           </Link>
           <Link
             href="/privacidade"
-            className="hover:text-blue-600 text-gray-700 transition-colors text-sm"
+            className="hover:text-blue-600 text-gray-700 transition-colors text-sm font-normal"
           >
             Privacidade
           </Link>

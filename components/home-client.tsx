@@ -219,22 +219,17 @@ export function HomeClient({
         {/* CTA Section */}
         <ContactCTA />
 
-        <div className="my-24 text-center text-sm text-text-muted">
-          Possui uma empresa ou presta serviços?{" "}
-          {user ? (
-            !profile?.isProvider && (
-              <strong className="text-blue-600 cursor-pointer hover:underline">
-                Cadastre sua Skill agora
-              </strong>
-            )
-          ) : (
+        {!user && (
+          <div className="my-24 text-center text-sm text-text-muted flex w-full justify-center items-center space-x-2">
+            <p> Possui uma empresa ou presta serviços?</p>
+
             <AuthModal>
               <button className="text-accent font-bold cursor-pointer hover:underline bg-transparent border-none p-0">
                 Cadastre sua Skill agora
               </button>
             </AuthModal>
-          )}
-        </div>
+          </div>
+        )}
       </main>
 
       <Footer />

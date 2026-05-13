@@ -3,9 +3,9 @@ import { HomeClient } from '@/components/home-client';
 import { UserService } from '@/services/user-service';
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://skillsy.com.br';
-const pageTitle = 'Home';
+const pageTitle = 'Inicial';
 const pageDescription =
-  'Encontre profissionais e serviços de confiança na comunidade SUD. Uma rede de apoio mútuo 100% sem fins lucrativos.';
+  'Encontre profissionais e serviços de confiança na comunidade.';
 const socialImage = `${baseUrl}/opengraph-image`;
 
 export const metadata: Metadata = {
@@ -14,9 +14,9 @@ export const metadata: Metadata = {
   keywords: [
     'skillsy',
     'rede de confiança',
-    'comunidade SUD',
-    'profissionais SUD',
-    'serviços comunitários',
+    'comunidade ',
+    'profissionais ',
+    'serviços',
     'apoio mútuo',
     'prestadores de serviço',
     'indicações confiáveis',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   category: 'community platform',
-  classification: 'Serviços comunitários e diretório de profissionais',
+  classification: 'marketpĺace de serviços e diretório de profissionais',
   referrer: 'origin-when-cross-origin',
   robots: {
     index: true,
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
         url: socialImage,
         width: 1200,
         height: 630,
-        alt: 'Skillsy, rede de apoio comunitário com profissionais e serviços de confiança',
+        alt: 'Skillsy, rede de apoio a profissionais e serviços de confiança',
       },
     ],
   },

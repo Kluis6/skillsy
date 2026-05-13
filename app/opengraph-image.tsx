@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const alt = 'Skillsy - Rede de apoio comunitário com profissionais e serviços de confiança';
+export const alt = 'Skillsy - Rede de profissionais e serviços de confiança';
 export const size = {
   width: 1200,
   height: 630,
@@ -68,7 +68,7 @@ export default function OpenGraphImage() {
             >
               <div style={{ fontSize: '30px', fontWeight: 600 }}>Skillsy</div>
               <div style={{ fontSize: '22px', color: '#335c4c' }}>
-                Network SUD
+                Network entre membros
               </div>
             </div>
           </div>
@@ -82,11 +82,10 @@ export default function OpenGraphImage() {
             }}
           >
             <div style={{ fontSize: '68px', lineHeight: 1.05, fontWeight: 800 }}>
-              Encontre profissionais e servicos de confianca
+              Encontre profissionais e serviços de confiança
             </div>
             <div style={{ fontSize: '30px', lineHeight: 1.35, color: '#335c4c' }}>
-              Conectando talentos, indicações e apoio mutuo em uma plataforma sem fins
-              lucrativos.
+              Conectando talentos, indicações e apoio mutuo em uma plataforma grátis
             </div>
           </div>
 
@@ -100,7 +99,7 @@ export default function OpenGraphImage() {
             }}
           >
             <div>skillsy.com.br</div>
-            <div>Busca segura • Perfis públicos • Comunidade SUD</div>
+            <div>Busca segura • Perfis públicos • Comunidade de profissionais</div>
           </div>
         </div>
       </div>

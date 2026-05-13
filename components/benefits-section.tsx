@@ -62,19 +62,19 @@ export function BenefitsSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="text-4xl md:text-5xl font-black text-text-main leading-tight mb-6">
-                Por que fazer parte do{" "}
-                <span className="text-primary italic">Skillsy?</span>
+              <h2 className="text-3xl md:text-5xl font-bold text-text-main leading-tight mb-6 text-center md:text-start">
+                Por que fazer parte do
+                <span className="text-primary"> Skillsy ?</span>
               </h2>
-              <p className="text-lg text-text-muted leading-relaxed mb-8">
+              <p className="text-base md:text-lg text-text-muted leading-relaxed mb-8">
                 O Skillsy não é apenas uma plataforma de serviços. É uma rede de
                 confiança desenhada para fortalecer os laços profissionais e
                 comunitários.
               </p>
 
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-8 justify-center items-center">
                 <AuthModal>
-                  <Button className="w-fit bg-primary text-white hover:bg-primary/90 rounded-2xl px-10 h-14 font-bold text-lg shadow-xl shadow-primary/20 group">
+                  <Button className="w-fit bg-primary text-white shadow-2xl shadow-primary border-0 rounded-2xl px-10 h-12 md:h-14 font-bold text-base md:text-lg group">
                     Criar minha conta agora
                     <ArrowRight
                       size={20}
@@ -82,7 +82,7 @@ export function BenefitsSection() {
                     />
                   </Button>
                 </AuthModal>
-                <p className="text-xs font-bold text-text-muted uppercase tracking-widest ml-1">
+                <p className="text-xs font-bold text-text-muted uppercase tracking-widest text-center">
                   Junte-se a centenas de membros já cadastrados
                 </p>
               </div>
@@ -98,7 +98,7 @@ export function BenefitsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1, duration: 0.5 }}
-                className={`p-8 rounded-[2rem] border border-border-subtle bg-white hover:border-primary/20 transition-all hover:shadow-xl hover:shadow-primary/5 group ${idx % 3 === 0 ? "md:col-span-1" : ""}`}
+                className={`p-8 rounded-xl border border-border-subtle bg-white transition-all hover:shadow-xl hover:shadow-primary/5 group ${idx % 3 === 0 ? "md:col-span-1" : ""}`}
               >
                 <div
                   className={`size-14 ${benefit.bg} ${benefit.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}

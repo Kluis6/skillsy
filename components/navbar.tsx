@@ -99,7 +99,7 @@ export function Navbar({
                     </li>
                     <li className=" p-2 hover:bg-surface">
                       <Link
-                        href="/join"
+                        href="/privacidade"
                         className="flex text-sm font-normal text-gray-800"
                       >
                         Privacidade
@@ -169,7 +169,7 @@ export function Navbar({
           ) : (
             <div className="md:flex hidden items-center gap-2">
               <Link
-                href={"#"}
+                href="/weareskillsy"
                 className="text-sm font-normal text-gray-700 hover:text-gray-800 decoration-1 hover:underline transition-all underline-offset-2 decoration-gray-800"
               >
                 O que é Skillsy
