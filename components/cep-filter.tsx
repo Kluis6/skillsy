@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { MapPin, Loader2, X, Navigation } from "lucide-react";
+
+import { MapPin, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LocationService } from "@/services/location-service";
 import { toast } from "sonner";
@@ -108,7 +108,7 @@ export function CepFilter({
           className="flex justify-center items-center px-7 py-5 "
         >
           <X className="size-4 text-gray-700" />
-          <p className="text-gray-700">Remover localização</p>
+          <p className="text-gray-700 dark:text-white">Remover localização</p>
         </Button>
       ) : (
         <Button
@@ -124,9 +124,9 @@ export function CepFilter({
           ) : (
             <>
               <MapPin
-                className={`transition-colors ${error ? "text-red-500" : "text-gray-700"}`}
+                className={`transition-colors ${error ? "text-red-500" : "text-gray-700 dark:text-white"}`}
               />
-              <p>Sua localização</p>
+              <p className="dark:text-white">Sua localização</p>
             </>
           )}
         </Button>

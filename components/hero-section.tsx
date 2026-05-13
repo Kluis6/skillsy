@@ -31,7 +31,7 @@ export function HeroSection({
           animate={{ opacity: 1, y: 0 }}
           className="w-full space-y-4 text-center"
         >
-          <h2 className="font-black text-primary lg:text-9xl md:text-7xl text-5xl tracking-tighter">
+          <h2 className="font-black text-primary dark:text-blue-700 lg:text-9xl md:text-7xl text-5xl tracking-tighter">
             Skillsy
           </h2>
           <p className="text-text-main text-sm font-medium md:text-base">
@@ -72,9 +72,9 @@ export function HeroSection({
                 />
               </>
             )}
-            <p className="text-xs font-normal text-text-muted tracking-widest">
+            <p className="text-xs font-normal text-gray-700 dark:text-gray-50 tracking-widest">
               Localização atual:{" "}
-              <span className="text-blue-700 font-medium">
+              <span className="text-blue-700 dark:text-white font-medium">
                 {locationFilter
                   ? `${locationFilter.city}, ${locationFilter.state}`
                   : "Todo o Brasil"}
@@ -85,7 +85,7 @@ export function HeroSection({
               <Button
                 type="submit"
                 variant="default"
-                className="py-5 px-7 bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
+                className="py-5 px-7 bg-blue-500 hover:bg-blue-600 dark:text-white active:bg-blue-700"
               >
                 {searching ? "Pesquisando..." : "Pesquisar"}
               </Button>
