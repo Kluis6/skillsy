@@ -90,11 +90,13 @@ export function PostEditorClient({
   };
 
   const handleSubmitForReview = () => {
-    if (!initialPost?.id) return;
+    const postId = initialPost?.id;
+
+    if (!postId) return;
 
     startSubmitForReview(async () => {
       try {
-        await PostService.submitForReview(initialPost.id);
+        await PostService.submitForReview(postId);
         toast.success("Artigo enviado para revisão.");
         router.refresh();
       } catch (error) {
