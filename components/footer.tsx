@@ -14,6 +14,12 @@ export function Footer() {
         </p>
         <div className="flex gap-6 text-text-muted">
           <Link
+            href="/noticias"
+            className="hover:text-blue-600 text-gray-700 transition-colors text-sm font-normal"
+          >
+            Notícias
+          </Link>
+          <Link
             href="/join"
             className="hover:text-blue-600 text-gray-700 transition-colors text-sm font-normal"
           >
