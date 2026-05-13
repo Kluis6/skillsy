@@ -278,6 +278,65 @@ service cloud.firestore {
              (!('createdAt' in data) || data.createdAt is timestamp);
     }
 
+    function isValidPostStatus(status) {
+      return status in ['draft', 'pending_review', 'published', 'rejected'];
+    }
+
+    function isValidPost(data) {
+      let allowed = [
+        'authorId', 'authorName', 'authorEmail', 'title', 'slug', 'excerpt', 'content',
+        'coverImageUrl', 'tags', 'status', 'createdAt', 'updatedAt', 'publishedAt',
+        'reviewedAt', 'reviewedBy', 'rejectionReason', 'isFeatured'
+      ];
+
+      return data.keys().hasAll(['authorId', 'authorName', 'authorEmail', 'title', 'slug', 'excerpt', 'content', 'status']) &&
+             data.keys().hasOnly(allowed) &&
+             data.authorId is string &&
+             data.authorId.size() > 0 &&
+             data.authorName is string &&
+             data.authorName.size() > 0 &&
+             data.authorName.size() <= 100 &&
+             isValidEmail(data.authorEmail) &&
+             data.title is string &&
+             data.title.size() >= 5 &&
+             data.title.size() <= 120 &&
+             data.slug is string &&
+             data.slug.size() >= 3 &&
+             data.slug.size() <= 140 &&
+             data.slug.matches('^[a-z0-9-]+$') &&
+             data.excerpt is string &&
+             data.excerpt.size() >= 20 &&
+             data.excerpt.size() <= 240 &&
+             data.content is string &&
+             data.content.size() >= 100 &&
+             data.content.size() <= 20000 &&
+             (!('coverImageUrl' in data) || data.coverImageUrl == null || (data.coverImageUrl is string && data.coverImageUrl.size() <= 1000000)) &&
+             (!('tags' in data) || data.tags == null || (data.tags is list && data.tags.size() <= 5)) &&
+             isValidPostStatus(data.status) &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp) &&
+             (!('publishedAt' in data) || data.publishedAt is timestamp) &&
+             (!('reviewedAt' in data) || data.reviewedAt is timestamp) &&
+             (!('reviewedBy' in data) || data.reviewedBy == null || data.reviewedBy is string) &&
+             (!('rejectionReason' in data) || data.rejectionReason == null || (data.rejectionReason is string && data.rejectionReason.size() <= 300)) &&
+             (!('isFeatured' in data) || data.isFeatured is bool);
+    }
+
+    function isOwnPostAuthor(data) {
+      return isAuthenticated() && data.authorId == request.auth.uid;
+    }
+
+    function keepsSamePostAuthor(data) {
+      return data.authorId == resource.data.authorId &&
+             data.authorEmail == resource.data.authorEmail &&
+             data.authorName == resource.data.authorName;
+    }
+
+    function authorCanManageOwnPost(nextStatus) {
+      return ((resource.data.status in ['draft', 'rejected']) && (nextStatus in ['draft', 'pending_review'])) ||
+             (resource.data.status == 'pending_review' && nextStatus == 'pending_review');
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
@@ -299,6 +358,34 @@ service cloud.firestore {
                       isValidReport(request.resource.data) &&
                       request.resource.data.status == 'new';
       allow read, update, delete: if isAdmin();
+    }
+
+    match /posts/{postId} {
+      allow read: if isAdmin() ||
+                   (isAuthenticated() && resource.data.authorId == request.auth.uid) ||
+                   resource.data.status == 'published';
+
+      allow create: if isAuthenticated() &&
+                      isNotBlocked() &&
+                      isValidPost(request.resource.data) &&
+                      isOwnPostAuthor(request.resource.data) &&
+                      request.resource.data.status == 'draft' &&
+                      !('publishedAt' in request.resource.data) &&
+                      !('reviewedAt' in request.resource.data) &&
+                      !('reviewedBy' in request.resource.data);
+
+      allow update: if isAdmin() ||
+                      (isAuthenticated() &&
+                       isNotBlocked() &&
+                       resource.data.authorId == request.auth.uid &&
+                       isValidPost(request.resource.data) &&
+                       keepsSamePostAuthor(request.resource.data) &&
+                       authorCanManageOwnPost(request.resource.data.status));
+
+      allow delete: if isAdmin() ||
+                      (isAuthenticated() &&
+                       resource.data.authorId == request.auth.uid &&
+                       resource.data.status in ['draft', 'rejected']);
     }
 
     match /users/{userId} {

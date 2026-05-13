@@ -9,6 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '',
     '/search',
     '/contacts',
+    '/noticias',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -19,6 +20,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic profile routes
   try {
     const providers = await UserService.getAllProviders();
+    const { PostService } = await import('@/services/post-service');
+    const posts = await PostService.getPublishedPosts();
     const profileRoutes = providers.map((provider) => ({
       url: `${baseUrl}/profile/${provider.uid}`,
       lastModified: provider.createdAt?.seconds 
@@ -28,7 +31,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }));
 
-    return [...routes, ...profileRoutes];
+    const postRoutes = posts.map((post) => ({
+      url: `${baseUrl}/noticias/${post.slug}`,
+      lastModified: post.publishedAt?.seconds
+        ? new Date(post.publishedAt.seconds * 1000)
+        : new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }));
+
+    return [...routes, ...profileRoutes, ...postRoutes];
   } catch (error) {
     console.error('Error generating sitemap profile routes:', error);
     return routes;

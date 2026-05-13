@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   LayoutDashboard, 
   Users, 
+  FileText,
   ShieldCheck, 
   LogOut, 
   Home,
@@ -79,9 +80,14 @@ export function AdminNavbar() {
                 <LayoutDashboard size={14} /> Dashboard
               </Button>
             </Link>
-            <Link href="/admin/users">
+            <Link href="/admin/usuarios">
               <Button variant="ghost" size="sm" className="rounded-lg gap-2 font-bold text-xs h-9 px-4 text-text-muted hover:text-primary">
                 <Users size={14} /> Usuários
+              </Button>
+            </Link>
+            <Link href="/admin/artigos">
+              <Button variant="ghost" size="sm" className="rounded-lg gap-2 font-bold text-xs h-9 px-4 text-text-muted hover:text-primary">
+                <FileText size={14} /> Artigos
               </Button>
             </Link>
             <Link href="/">
@@ -169,8 +175,8 @@ export function AdminNavbar() {
                   )}
                 </ScrollArea>
                 <div className="p-3 bg-surface border-t border-border-subtle text-center">
-                  <Link href="/admin/users" className="text-[10px] font-bold text-text-muted hover:text-primary flex items-center justify-center gap-1">
-                    Ver todos os usuários <ChevronRight size={10} />
+                  <Link href="/admin/usuarios" className="text-[10px] font-bold text-text-muted hover:text-primary flex items-center justify-center gap-1">
+                    Ir para a área administrativa <ChevronRight size={10} />
                   </Link>
                 </div>
               </PopoverContent>

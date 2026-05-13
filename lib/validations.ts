@@ -209,3 +209,37 @@ export const reportUserSchema = z.object({
 });
 
 export type ReportUserFormData = z.infer<typeof reportUserSchema>;
+
+export const postEditorSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(5, 'O título deve ter pelo menos 5 caracteres')
+    .max(120, 'O título deve ter no máximo 120 caracteres'),
+  slug: z
+    .string()
+    .trim()
+    .min(3, 'O slug deve ter pelo menos 3 caracteres')
+    .max(140, 'O slug deve ter no máximo 140 caracteres')
+    .regex(/^[a-z0-9-]+$/, 'Use apenas letras minúsculas, números e hífens'),
+  excerpt: z
+    .string()
+    .trim()
+    .min(20, 'O resumo deve ter pelo menos 20 caracteres')
+    .max(240, 'O resumo deve ter no máximo 240 caracteres'),
+  content: z
+    .string()
+    .trim()
+    .min(100, 'O conteúdo deve ter pelo menos 100 caracteres')
+    .max(20000, 'O conteúdo deve ter no máximo 20000 caracteres'),
+  coverImageUrl: z
+    .union([
+      z.literal(''),
+      z.string().trim().url('Informe uma URL válida para a capa'),
+    ]),
+  tags: z
+    .string()
+    .max(120, 'As tags devem ter no máximo 120 caracteres'),
+});
+
+export type PostEditorFormData = z.infer<typeof postEditorSchema>;

@@ -74,3 +74,26 @@ export interface UserReport {
   status: 'new' | 'reviewed' | 'resolved';
   createdAt: any;
 }
+
+export type PostStatus = 'draft' | 'pending_review' | 'published' | 'rejected';
+
+export interface Post {
+  id?: string;
+  authorId: string;
+  authorName: string;
+  authorEmail: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  coverImageUrl?: string;
+  tags?: string[];
+  status: PostStatus;
+  createdAt: any;
+  updatedAt: any;
+  publishedAt?: any;
+  reviewedAt?: any;
+  reviewedBy?: string;
+  rejectionReason?: string;
+  isFeatured?: boolean;
+}

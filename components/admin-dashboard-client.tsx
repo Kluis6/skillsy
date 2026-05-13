@@ -9,7 +9,8 @@ import {
   ShieldCheck, 
   ArrowRight,
   Loader2,
-  ShieldAlert
+  ShieldAlert,
+  FileText
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -124,15 +125,20 @@ export function AdminDashboardClient() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="bg-card/50 border border-dashed border-border-subtle rounded-[2.5rem] p-8 h-full flex flex-col justify-center items-center text-center opacity-70">
-              <div className="w-14 h-14 bg-surface rounded-2xl flex items-center justify-center text-text-muted mb-6">
-                <ShieldCheck size={28} />
-              </div>
-              <h3 className="text-xl font-bold mb-2 font-heading">Relatórios (Em breve)</h3>
-              <p className="text-text-muted text-sm leading-relaxed max-w-xs">
-                Estatísticas detalhadas de crescimento, avaliações e interações na plataforma.
-              </p>
-            </Card>
+            <Link href="/admin/artigos">
+              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all rounded-[2.5rem] p-8 cursor-pointer h-full">
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                    <FileText size={28} />
+                  </div>
+                  <ArrowRight size={24} className="text-text-muted group-hover:translate-x-1 transition-transform" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 font-heading">Gerenciar Artigos</h3>
+                <p className="text-text-muted text-sm leading-relaxed">
+                  Revise conteúdos enviados por usuários, publique notícias e destaque artigos na área pública.
+                </p>
+              </Card>
+            </Link>
           </motion.div>
         </div>
       </div>
