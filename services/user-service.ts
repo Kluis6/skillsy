@@ -79,7 +79,7 @@ function removeUndefinedDeep<T>(value: T): T {
       .filter((item) => item !== undefined) as T;
   }
 
-  if (value && typeof value === 'object') {
+  if (value && typeof value === 'object' && isPlainObject(value)) {
     return Object.fromEntries(
       Object.entries(value)
         .filter(([, nestedValue]) => nestedValue !== undefined)
@@ -88,6 +88,15 @@ function removeUndefinedDeep<T>(value: T): T {
   }
 
   return value;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
 }
 
 function normalizeOptionalFirestoreString(value: unknown) {
