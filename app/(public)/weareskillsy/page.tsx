@@ -1,5 +1,5 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
+import type { Metadata } from "next";
+import Link from "next/link";
 import {
   ArrowRight,
   Compass,
@@ -8,66 +8,109 @@ import {
   ShieldCheck,
   Sparkles,
   Users,
-} from 'lucide-react';
-import { Navbar } from '@/components/navbar';
-import { Footer } from '@/components/footer';
+} from "lucide-react";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
+import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: 'O Que É o Skillsy',
+  title: "O Que É o Skillsy",
   description:
-    'Conheça a proposta do Skillsy, sua missão, valores e a forma como a plataforma busca fortalecer conexões de confiança na comunidade.',
+    "Conheça a proposta do Skillsy, sua missão, valores e a forma como a plataforma busca fortalecer conexões de confiança na comunidade.",
 };
 
 const principles = [
   {
-    title: 'Confiança',
+    title: "Confiança",
     description:
-      'Queremos facilitar conexões mais seguras, claras e respeitosas entre pessoas que buscam ou oferecem serviços.',
+      "Queremos facilitar conexões mais seguras, claras e respeitosas entre pessoas que buscam ou oferecem serviços.",
     icon: ShieldCheck,
-    tone: 'bg-primary/5 text-primary border-primary/10',
+    tone: "bg-primary/5 text-primary border-primary/10",
   },
   {
-    title: 'Serviço',
+    title: "Serviço",
     description:
-      'Acreditamos que trabalho bem-feito, disponibilidade para ajudar e responsabilidade prática fortalecem a vida em comunidade.',
+      "Acreditamos que trabalho bem-feito, disponibilidade para ajudar e responsabilidade prática fortalecem a vida em comunidade.",
     icon: HeartHandshake,
-    tone: 'bg-highlight/5 text-highlight border-highlight/10',
+    tone: "bg-highlight/5 text-highlight border-highlight/10",
   },
   {
-    title: 'Crescimento',
+    title: "Crescimento",
     description:
-      'A plataforma existe para abrir espaço para talentos locais, ampliar visibilidade e gerar oportunidades reais.',
+      "A plataforma existe para abrir espaço para talentos locais, ampliar visibilidade e gerar oportunidades reais.",
     icon: Sparkles,
-    tone: 'bg-surface text-text-main border-border-subtle',
+    tone: "bg-surface text-text-main border-border-subtle",
   },
 ];
 
 const values = [
   {
-    title: 'Honestidade nas relações',
+    title: "Honestidade nas relações",
     description:
-      'Perfis, preços, prazos e habilidades devem ser apresentados com clareza e verdade.',
+      "Perfis, preços, prazos e habilidades devem ser apresentados com clareza e verdade.",
     icon: Compass,
   },
   {
-    title: 'Respeito entre as pessoas',
+    title: "Respeito entre as pessoas",
     description:
-      'Toda conexão deve nascer de comunicação cordial, responsabilidade e consideração pelo outro.',
+      "Toda conexão deve nascer de comunicação cordial, responsabilidade e consideração pelo outro.",
     icon: Users,
   },
   {
-    title: 'Iniciativa com propósito',
+    title: "Iniciativa com propósito",
     description:
-      'O Skillsy valoriza o uso dos talentos para gerar apoio prático, renda digna e benefício coletivo.',
+      "O Skillsy valoriza o uso dos talentos para gerar apoio prático, renda digna e benefício coletivo.",
     icon: Lightbulb,
   },
 ];
 
 export default function WeAreSkillsyPage() {
   return (
-    <div className="min-h-screen w-full">
-      <Navbar />
-      
+    <main className="min-h-screen w-full">
+      <div className="md:h-[82vh] h-[78vh] relative w-full object-fill bg-cover bg-blend-multiply  bg-blue-600/70 bg-[url(public/Gemini_Generated_Image_d74ovcd74ovcd74o.png)]">
+        <div className="md:left-6 left-4 top-1/3 absolute -translate-y-1/2 w-xs md:w-2xl z-40">
+          <h1 className="font-heading text-2xl font-semibold tracking-tight text-white md:text-5xl drop-shadow-xl shadow-black">
+            O Skillsy é uma plataforma criada para transformar{" "}
+            <span className="text-red-500">talentos</span>,{" "}
+            <span className="text-amber-500">confiança</span> e{" "}
+            <span className="text-blue-500">serviços</span> em conexões reais.
+          </h1>
+        </div>
+        <div className="absolute bottom-0 right-0 md:right-6 w-full flex items-end justify-end">
+          <div className="w-48 z-30 h-36 relative rounded-t-full mr-12 overflow-hidden shadow-sm">
+            <Image
+              src={"/Gemini_Generated_Image_m9c1ibm9c1ibm9c1.png"}
+              alt={""}
+              className="object-cover"
+              fill
+            />
+          </div>
+          <div className="w-48 z-20 h-56 relative rounded-t-full -mr-84 overflow-hidden shadow">
+            <Image
+              src={"/Gemini_Generated_Image_1ugrvy1ugrvy1ugr.png"}
+              alt={""}
+              className="object-cover"
+              fill
+            />
+          </div>
+          <div className="w-48 z-40 h-74 relative rounded-t-full -mr-24 overflow-hidden shadow-2xl">
+            <Image
+              src={"/Gemini_Generated_Image_2qahju2qahju2qah.png"}
+              alt={""}
+              className="object-cover"
+              fill
+            />
+          </div>
+          <div className="w-48 z-10 h-92 relative rounded-t-full mr-12 overflow-hidden shadow-2xs">
+            <Image
+              src={"/Gemini_Generated_Image_wte2zrwte2zrwte2.png"}
+              alt={""}
+              className="object-cover"
+              fill
+            />
+          </div>
+        </div>
+      </div>
 
       <main className="">
         <div className="">
@@ -79,11 +122,10 @@ export default function WeAreSkillsyPage() {
                 Quem Somos
               </div>
               <h1 className="font-heading text-4xl font-black tracking-tight text-text-main md:text-6xl">
-                O Skillsy é uma plataforma criada para transformar{' '}
-                <span className="text-primary">talento</span>,{' '}
-                <span className="text-primary">confiança</span> e{' '}
-                <span className="text-primary">serviço</span> em conexões
-                reais.
+                O Skillsy é uma plataforma criada para transformar{" "}
+                <span className="text-primary">talento</span>,{" "}
+                <span className="text-primary">confiança</span> e{" "}
+                <span className="text-primary">serviço</span> em conexões reais.
               </h1>
               <p className="mt-6 max-w-3xl text-lg leading-relaxed text-text-muted md:text-xl">
                 Mais do que um diretório de profissionais, o Skillsy nasce como
@@ -131,10 +173,10 @@ export default function WeAreSkillsyPage() {
                 a comunidade.
               </p>
               <p className="mt-5 text-sm leading-relaxed text-text-muted">
-                Em termos práticos, isso significa aproximar pessoas,
-                incentivar relações mais responsáveis e tornar mais fácil
-                descobrir profissionais, serviços e oportunidades que talvez
-                já estejam perto, mas ainda não estejam conectados.
+                Em termos práticos, isso significa aproximar pessoas, incentivar
+                relações mais responsáveis e tornar mais fácil descobrir
+                profissionais, serviços e oportunidades que talvez já estejam
+                perto, mas ainda não estejam conectados.
               </p>
 
               <div className="mt-8 rounded-[2rem] border border-primary/10 bg-primary/5 p-6">
@@ -143,8 +185,8 @@ export default function WeAreSkillsyPage() {
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-text-muted">
                   Queremos fortalecer uma cultura de indicação responsável,
-                  reputação construída com experiência real, serviço prestado com
-                  integridade e oportunidades que circulam dentro da própria
+                  reputação construída com experiência real, serviço prestado
+                  com integridade e oportunidades que circulam dentro da própria
                   comunidade.
                 </p>
               </div>
@@ -282,6 +324,6 @@ export default function WeAreSkillsyPage() {
       </main>
 
       <Footer />
-    </div>
+    </main>
   );
 }
