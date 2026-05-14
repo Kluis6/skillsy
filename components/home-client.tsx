@@ -188,8 +188,8 @@ export function HomeClient({
         <ContactCTA />
 
         {!user && (
-          <div className="my-24 text-center text-sm text-text-muted flex w-full justify-center items-center space-x-2">
-            <p> Possui uma empresa ou presta serviços?</p>
+          <div className="my-24 text-center flex-col md:flex-row flex w-full justify-center items-center space-x-2 ">
+            <p className="text-sm text-text-muted"> Possui uma empresa ou presta serviços?</p>
 
             <AuthModal>
               <button className="text-accent font-bold cursor-pointer hover:underline bg-transparent border-none p-0">

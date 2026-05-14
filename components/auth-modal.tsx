@@ -229,13 +229,13 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
           </div>
           <div className="col-span-12 md:col-span-6 flex flex-col items-start justify-between gap-2">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2">
+              <h1 className="hidden 2xl:block text-3xl md:text-4xl font-bold text-primary mb-2">
                 Skillsy
               </h1>
               <h2 className="text-base md:text-xl font-medium text-gray-700 mb-1">
                 Bem-vindo de volta!
               </h2>
-              <p className="text-xs font-normal md:text-sm text-text-muted mb-6">
+              <p className="text-xs font-normal md:text-sm text-text-muted mb-2 xxl:mb-6">
                 Faça login ou crie uma conta para continuar compartilhado suas
                 habilidades.
               </p>
@@ -243,7 +243,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
 
             <Tabs
               defaultValue="login"
-              className="w-full sm:h-full space-y-6 transition-all"
+              className="w-full sm:h-full space-y-5 2xl:space-y-6 transition-all"
             >
               <TabsList className="w-full">
                 <TabsTrigger value="login">Entrar</TabsTrigger>
@@ -253,7 +253,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
               <TabsContent value="login">
                 <form
                   onSubmit={handleSubmitLogin(handleEmailLogin)}
-                  className="space-y-4"
+                  className="space-y-3 2xl:space-y-4"
                   noValidate
                 >
                   <div className="space-y-2">
@@ -268,7 +268,9 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                       type="email"
                       placeholder="seu@email.com"
                       aria-invalid={Boolean(loginErrors.email)}
-                      aria-describedby={loginErrors.email ? "login-email-error" : undefined}
+                      aria-describedby={
+                        loginErrors.email ? "login-email-error" : undefined
+                      }
                       className={`h-10 border-border-subtle focus-visible:ring-accent ${loginErrors.email ? "ring-2 ring-red-500" : ""}`}
                       {...registerLogin("email")}
                     />
@@ -292,7 +294,11 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                       id="password"
                       type="password"
                       aria-invalid={Boolean(loginErrors.password)}
-                      aria-describedby={loginErrors.password ? "login-password-error" : undefined}
+                      aria-describedby={
+                        loginErrors.password
+                          ? "login-password-error"
+                          : undefined
+                      }
                       className={`h-10 border-border-subtle focus-visible:ring-accent ${loginErrors.password ? "ring-2 ring-red-500" : ""}`}
                       {...registerLogin("password")}
                     />
@@ -325,24 +331,6 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                   className="space-y-4"
                   noValidate
                 >
-                  <div className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-xs text-slate-700 space-y-2">
-                    <p className="font-semibold text-slate-900">
-                      Cadastro rápido e sem foto obrigatória
-                    </p>
-                    <p>
-                      Nome: 2 a 50 caracteres. E-mail: até 100 caracteres.
-                      Senha: 6 a 50 caracteres.
-                    </p>
-                    <p className="flex items-start gap-2">
-                      <Camera className="mt-0.5 size-3.5 shrink-0 text-blue-600" />
-                      <span>
-                        Fotos são adicionadas depois no perfil: avatar e banner
-                        de até {profileLimits.avatarAndBannerMaxSizeMb} MB, com
-                        galeria de até {profileLimits.galleryMaxItems} imagens em{" "}
-                        {profileLimits.supportedFormats}.
-                      </span>
-                    </p>
-                  </div>
                   <div className="space-y-2">
                     <Label
                       htmlFor="signup-name"
@@ -362,7 +350,10 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                       className={`h-10 border-border-subtle focus-visible:ring-accent ${signUpErrors.name ? "ring-2 ring-red-500" : ""}`}
                       {...registerSignUp("name")}
                     />
-                    <p id="signup-name-help" className="text-[11px] text-text-muted ml-1">
+                    <p
+                      id="signup-name-help"
+                      className="text-[11px] text-text-muted ml-1"
+                    >
                       Use entre 2 e 50 caracteres.
                     </p>
                     {signUpErrors.name && (
@@ -394,8 +385,11 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                       className={`h-10 border-border-subtle focus-visible:ring-accent ${signUpErrors.email ? "ring-2 ring-red-500" : ""}`}
                       {...registerSignUp("email")}
                     />
-                    <p id="signup-email-help" className="text-[11px] text-text-muted ml-1">
-                      Use um e-mail válido com até 100 caracteres.
+                    <p
+                      id="signup-email-help"
+                      className="text-[11px] text-text-muted ml-1"
+                    >
+                      Use um e-mail válido com até 30 caracteres.
                     </p>
                     {signUpErrors.email && (
                       <p
@@ -432,7 +426,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                       id="signup-password-help"
                       className="text-[11px] text-text-muted ml-1"
                     >
-                      A senha deve ter entre 6 e 50 caracteres.
+                      A senha deve ter o mínimo de 6 caracteres.
                     </p>
                     {signUpErrors.password && (
                       <p
@@ -443,14 +437,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                       </p>
                     )}
                   </div>
-                  <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-900">
-                    <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
-                    <p>
-                      Depois do cadastro, você poderá completar o perfil com bio,
-                      contatos e fotos. Se um campo tiver limite, ele será exibido
-                      no formulário antes do envio.
-                    </p>
-                  </div>
+
                   <Button
                     type="submit"
                     disabled={loading}

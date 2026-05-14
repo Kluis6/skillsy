@@ -65,11 +65,12 @@ const values = [
 
 export default function WeAreSkillsyPage() {
   return (
-    <div className="min-h-screen bg-surface text-text-main">
+    <div className="min-h-screen w-full">
       <Navbar />
+      
 
-      <main className="px-4 pb-20 pt-32">
-        <div className="container mx-auto max-w-6xl">
+      <main className="">
+        <div className="">
           <section className="relative overflow-hidden rounded-[2.5rem] border border-border-subtle bg-card p-8 md:p-12 shadow-sm">
             <div className="absolute right-0 top-0 h-56 w-56 rounded-full bg-primary/8 blur-3xl" />
             <div className="relative z-10 max-w-4xl">

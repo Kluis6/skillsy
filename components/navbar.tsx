@@ -99,7 +99,7 @@ export function Navbar({
                     </li>
                     <li className="p-2 hover:bg-surface">
                       <Link
-                        href="/noticia"
+                        href="/noticias"
                         className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
                       >
                         Novidades e notícias

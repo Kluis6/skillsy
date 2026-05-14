@@ -62,9 +62,9 @@ export function BenefitsSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="text-3xl md:text-5xl font-bold text-text-main leading-tight mb-6 text-center md:text-start">
-                Por que fazer parte do
-                <span className="text-primary"> Skillsy ?</span>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-text-main leading-tight mb-6 text-center md:text-start">
+                Por que fazer parte do <br className="flex md:hidden" />
+                <span className="text-primary">Skillsy ?</span>
               </h2>
               <p className="text-base md:text-lg text-text-muted leading-relaxed mb-8">
                 O Skillsy não é apenas uma plataforma de serviços. É uma rede de

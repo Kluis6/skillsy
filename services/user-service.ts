@@ -736,6 +736,8 @@ export const UserService = {
 
   async submitRating(fromId: string, toId: string, score: number, comment?: string): Promise<void> {
     try {
+      const normalizedComment = comment?.trim();
+
       await runTransaction(db, async (transaction) => {
         const voteRef = doc(db, 'users', fromId, 'votes', toId);
         const voteSnap = await transaction.get(voteRef);
@@ -765,7 +767,7 @@ export const UserService = {
         transaction.set(ratingRef, {
           toId,
           score,
-          comment,
+          ...(normalizedComment ? { comment: normalizedComment } : {}),
           createdAt: serverTimestamp()
         });
         
