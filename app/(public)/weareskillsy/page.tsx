@@ -9,7 +9,6 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
-import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import Image from "next/image";
 
@@ -21,25 +20,25 @@ export const metadata: Metadata = {
 
 const principles = [
   {
-    title: "Confiança",
+    title: "Crescimento",
     description:
-      "Queremos facilitar conexões mais seguras, claras e respeitosas entre pessoas que buscam ou oferecem serviços.",
-    icon: ShieldCheck,
-    tone: "bg-primary/5 text-primary border-primary/10",
+      "A plataforma existe para abrir espaço para talentos locais, ampliar visibilidade e gerar oportunidades reais.",
+    icon: Sparkles,
+    tone: "bg-red-500/10 text-red-500 border-red-500/10",
   },
   {
     title: "Serviço",
     description:
       "Acreditamos que trabalho bem-feito, disponibilidade para ajudar e responsabilidade prática fortalecem a vida em comunidade.",
     icon: HeartHandshake,
-    tone: "bg-highlight/5 text-highlight border-highlight/10",
+    tone: "bg-yellow-500/15 text-yellow-500 border-yellow-500/10",
   },
   {
-    title: "Crescimento",
+    title: "Confiança",
     description:
-      "A plataforma existe para abrir espaço para talentos locais, ampliar visibilidade e gerar oportunidades reais.",
-    icon: Sparkles,
-    tone: "bg-surface text-text-main border-border-subtle",
+      "Queremos facilitar conexões mais seguras, claras e respeitosas entre pessoas que buscam ou oferecem serviços.",
+    icon: ShieldCheck,
+    tone: "bg-blue-500/15 text-blue-500 border-blue-500/10",
   },
 ];
 
@@ -67,47 +66,90 @@ const values = [
 export default function WeAreSkillsyPage() {
   return (
     <main className="min-h-screen w-full">
-      <div className="md:h-[82vh] h-[78vh] relative w-full object-fill bg-cover bg-blend-multiply  bg-blue-600/70 bg-[url(public/Gemini_Generated_Image_d74ovcd74ovcd74o.png)]">
-        <div className="md:left-6 left-4 top-1/3 absolute -translate-y-1/2 w-xs md:w-2xl z-40">
-          <h1 className="font-heading text-2xl font-semibold tracking-tight text-white md:text-5xl drop-shadow-xl shadow-black">
+      <div className="md:h-[82vh] h-[78vh] relative w-full object-fill bg-cover bg-blend-multiply  bg-blue-600/70 bg-[url(public/Gemini_Generated_Image_d74ovcd74ovcd74o.png)] z-0">
+        <div className="md:left-6 left-4 top-28 sm:top-25 xl:top-1/4  absolute -translate-y-1/2 w-xs md:w-sm z-40">
+          <h1 className="font-heading text-2xl md:text-3xl xl:text-4xl font-semibold tracking-tight text-white  drop-shadow-xl shadow-black">
             O Skillsy é uma plataforma criada para transformar{" "}
             <span className="text-red-500">talentos</span>,{" "}
             <span className="text-amber-500">confiança</span> e{" "}
             <span className="text-blue-500">serviços</span> em conexões reais.
           </h1>
         </div>
-        <div className="absolute bottom-0 right-0 md:right-6 w-full flex items-end justify-end">
-          <div className="w-48 z-30 h-36 relative rounded-t-full mr-12 overflow-hidden shadow-sm">
-            <Image
-              src={"/Gemini_Generated_Image_m9c1ibm9c1ibm9c1.png"}
-              alt={""}
-              className="object-cover"
-              fill
-            />
+        <div className="absolute bottom-0 w-full">
+          <div className="flex relative justify-end items-end">
+            <div className="absolute bottom-0 left-24 sm:left-4  xl:left-[48rem] ">
+              <div className="w-48  z-50 h-36 relative rounded-t-full overflow-hidden shadow-sm">
+                <Image
+                  src={"/Gemini_Generated_Image_m9c1ibm9c1ibm9c1.png"}
+                  alt={""}
+                  className="object-cover"
+                  fill
+                />
+              </div>
+            </div>
+            <div className="absolute bottom-0 right-4 sm:right-18 md:right-6 ">
+              <div className="w-48 z-20 h-56 relative flex-none rounded-t-full overflow-hidden shadow">
+                <Image
+                  src={"/Gemini_Generated_Image_1ugrvy1ugrvy1ugr.png"}
+                  alt={""}
+                  className="object-cover"
+                  fill
+                />
+              </div>
+            </div>
+            <div className="absolute bottom-0 left-4 sm:left-26   lg:left-28 xl:left-[55rem]">
+              <div className="w-48 z-40 h-74 relative rounded-t-full  overflow-hidden shadow-2xl">
+                <Image
+                  src={"/Gemini_Generated_Image_2qahju2qahju2qah.png"}
+                  alt={""}
+                  className="object-cover"
+                  fill
+                />
+              </div>
+            </div>
+            <div className="absolute bottom-0 right-12 sm:right-6 md:right-30 lg:right-32  xl:right-24">
+              <div className="w-48 z-10 h-92 relative rounded-t-full  overflow-hidden shadow-2xs">
+                <Image
+                  src={"/Gemini_Generated_Image_wte2zrwte2zrwte2.png"}
+                  alt={""}
+                  className="object-cover"
+                  fill
+                />
+              </div>
+            </div>
           </div>
-          <div className="w-48 z-20 h-56 relative rounded-t-full -mr-84 overflow-hidden shadow">
-            <Image
-              src={"/Gemini_Generated_Image_1ugrvy1ugrvy1ugr.png"}
-              alt={""}
-              className="object-cover"
-              fill
-            />
-          </div>
-          <div className="w-48 z-40 h-74 relative rounded-t-full -mr-24 overflow-hidden shadow-2xl">
-            <Image
-              src={"/Gemini_Generated_Image_2qahju2qahju2qah.png"}
-              alt={""}
-              className="object-cover"
-              fill
-            />
-          </div>
-          <div className="w-48 z-10 h-92 relative rounded-t-full mr-12 overflow-hidden shadow-2xs">
-            <Image
-              src={"/Gemini_Generated_Image_wte2zrwte2zrwte2.png"}
-              alt={""}
-              className="object-cover"
-              fill
-            />
+        </div>
+      </div>
+
+      <div className="mx-auto px-4 container w-full z-[99999] isolate -mt-8 mb-16">
+        <div className="w-full p-8 bg-white z-50 shadow-2xl  rounded-lg ">
+          <div className="grid grid-cols-12 gap-8">
+            <div className="col-span-12 space-y-2">
+              <h3 className="text-2xl font-bold text-gray-900">Ser Skillsy</h3>{" "}
+              <div className="w-full p-8 bg-amber-500 sm:bg-blue-500 md:bg-red-500 lg:bg-emerald-500 xl:bg-fuchsia-500 2xl:bg-orange-500"></div>
+              <p className="text-base font-normal text-gray-800">
+                Mais do que um diretório de profissionais, o Skillsy nasce como
+                uma iniciativa independente para aproximar pessoas, fortalecer
+                relacionamentos de confiança e facilitar o encontro entre quem
+                precisa de ajuda e quem pode servir com seu trabalho.
+              </p>
+            </div>
+            {principles.map((principle) => (
+              <div
+                key={principle.title}
+                className={`rounded-md ${principle.tone} col-span-12 md:col-span-4 p-4 border`}
+              >
+                <div className="mb-4 flex size-12 items-center justify-center rounded-sm bg-white/70">
+                  <principle.icon size={22} />
+                </div>
+                <h2 className="mb-3 text-xl font-bold text-text-main">
+                  {principle.title}
+                </h2>
+                <p className="text-sm leading-relaxed text-text-muted">
+                  {principle.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
