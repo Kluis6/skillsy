@@ -246,7 +246,7 @@ export default function WeAreSkillsyPage() {
       </div>
 
       <section className="container mx-auto px-4 my-24">
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-12 gap-4 md:gap-8">
           <div className="col-span-12 md:col-span-4">
             <div className=" space-y-4">
               <h2 className="text-xl 2xl:text-2xl font-bold text-gray-900">
@@ -339,6 +339,29 @@ export default function WeAreSkillsyPage() {
                 Apoiar o Skillsy
               </Link>
             </div>
+          </div>
+        </section>
+      </div>
+
+      <div className="container mx-auto px-4 mb-24">
+        <section className="rounded-xl border border-amber-200 bg-amber-50 p-6 md:p-8">
+          <div className="max-w-4xl space-y-3">
+            <h2 className="text-lg font-bold text-amber-900">
+              Comunicado importante
+            </h2>
+            <p className="text-sm leading-relaxed text-amber-950/90">
+              O Skillsy não possui vínculo institucional, administrativo ou
+              oficial com A Igreja de Jesus Cristo dos Santos dos Últimos Dias.
+              A plataforma nasceu como uma iniciativa independente de membros
+              que desejam incentivar conexões de confiança, apoio prático e
+              visibilidade para talentos da comunidade.
+            </p>
+            <p className="text-sm leading-relaxed text-amber-950/90">
+              Isso significa que o uso da plataforma, seus conteúdos e as
+              relações estabelecidas por meio dela não representam
+              posicionamentos oficiais da Igreja, nem substituem orientações
+              pastorais, institucionais ou decisões pessoais de quem participa.
+            </p>
           </div>
         </section>
       </div>
