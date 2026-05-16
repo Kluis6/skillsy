@@ -57,6 +57,7 @@ import { BsList, BsXLg } from "react-icons/bs";
 
 import {
   Drawer,
+  DrawerClose,
   DrawerHeader,
   DrawerFooter,
   DrawerTrigger,
@@ -142,18 +143,25 @@ function SearchResultsContent() {
   const logout = auth.logout;
 
   const pathname = usePathname();
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const shouldShowBackButton =
     pathname === "/profile" ||
     pathname === "/contacts" ||
     pathname.startsWith("/profile/") ||
     pathname.startsWith("/contacts/");
+
   return (
     <div className="min-h-screen bg-surface/30 w-full space-y-2">
       {/* Header / Search Bar */}
       <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle">
         <div className="container px-4 mx-auto flex items-center justify-between gap-4  py-2">
-          <Drawer direction="left">
+          <Drawer
+            key={`search-drawer-${pathname}`}
+            direction="left"
+            open={mobileDrawerOpen}
+            onOpenChange={setMobileDrawerOpen}
+          >
             <DrawerTrigger asChild className="flex md:hidden">
               <Button size="icon" className="size-10" variant="ghost">
                 <BsList className="size-5 text-gray-700" />
@@ -179,36 +187,44 @@ function SearchResultsContent() {
                 <h3 className="font-medium text-sm text-gray-800">Navegação</h3>
                 <ul className="w-full space-y-1">
                   <li className=" p-2 hover:bg-surface">
-                    <Link
-                      href="/weareskillsy"
-                      className="flex text-sm font-normal text-gray-800"
-                    >
-                      O que é Skillsy?
-                    </Link>
+                    <DrawerClose asChild>
+                      <Link
+                        href="/weareskillsy"
+                        className="flex text-sm font-normal text-gray-800"
+                      >
+                        O que é Skillsy?
+                      </Link>
+                    </DrawerClose>
                   </li>
                   <li className=" p-2 hover:bg-surface">
-                    <Link
-                      href="/join"
-                      className="flex text-sm font-normal text-gray-800"
-                    >
-                      Por que participar?
-                    </Link>
+                    <DrawerClose asChild>
+                      <Link
+                        href="/join"
+                        className="flex text-sm font-normal text-gray-800"
+                      >
+                        Por que participar?
+                      </Link>
+                    </DrawerClose>
                   </li>
                   <li className=" p-2 hover:bg-surface">
-                    <Link
-                      href="/join"
-                      className="flex text-sm font-normal text-gray-800"
-                    >
-                      Privacidade
-                    </Link>
+                    <DrawerClose asChild>
+                      <Link
+                        href="/privacidade"
+                        className="flex text-sm font-normal text-gray-800"
+                      >
+                        Privacidade
+                      </Link>
+                    </DrawerClose>
                   </li>
                   <li className=" p-2 hover:bg-surface">
-                    <Link
-                      href="/termos"
-                      className="flex text-sm font-normal text-gray-800"
-                    >
-                      Termos de uso
-                    </Link>
+                    <DrawerClose asChild>
+                      <Link
+                        href="/termos"
+                        className="flex text-sm font-normal text-gray-800"
+                      >
+                        Termos de uso
+                      </Link>
+                    </DrawerClose>
                   </li>
                 </ul>
 
@@ -220,20 +236,24 @@ function SearchResultsContent() {
 
                     <ul className="space-y-1">
                       <li className="hover:bg-surface p-2">
-                        <Link
-                          className="flex text-sm font-normal text-gray-800"
-                          href="/contacts"
-                        >
-                          Meus Contatos
-                        </Link>
+                        <DrawerClose asChild>
+                          <Link
+                            className="flex text-sm font-normal text-gray-800"
+                            href="/contacts"
+                          >
+                            Meus Contatos
+                          </Link>
+                        </DrawerClose>
                       </li>
                       <li className="hover:bg-surface p-2">
-                        <Link
-                          className="flex text-sm font-normal text-gray-800"
-                          href="/profile"
-                        >
-                          Configurações do Perfil
-                        </Link>
+                        <DrawerClose asChild>
+                          <Link
+                            className="flex text-sm font-normal text-gray-800"
+                            href="/profile"
+                          >
+                            Configurações do Perfil
+                          </Link>
+                        </DrawerClose>
                       </li>
                       <li>
                         <Button
@@ -250,12 +270,14 @@ function SearchResultsContent() {
               </div>
 
               <DrawerFooter>
-                <Link
-                  className="text-center bg-primary p-2 font-medium text-sm text-white rounded-sm"
-                  href={"/donation"}
-                >
-                  Ajude o projeto
-                </Link>
+                <DrawerClose asChild>
+                  <Link
+                    className="text-center bg-primary p-2 font-medium text-sm text-white rounded-sm"
+                    href={"/donation"}
+                  >
+                    Ajude o projeto
+                  </Link>
+                </DrawerClose>
               </DrawerFooter>
             </DrawerContent>
           </Drawer>

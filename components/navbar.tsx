@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { BsList, BsXLg } from "react-icons/bs";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
@@ -18,6 +19,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
+  DrawerClose,
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { LuLogIn } from "react-icons/lu";
@@ -38,11 +40,19 @@ export function Navbar({
   const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [desktopDrawerOpen, setDesktopDrawerOpen] = useState(false);
 
   const user = propUser !== undefined ? propUser : auth.user;
   const logout = propLogout !== undefined ? propLogout : auth.logout;
   const shouldShowBackButton =
     pathname === "/profile" || pathname?.startsWith("/profile/");
+
+  const handleLogout = async () => {
+    setMobileDrawerOpen(false);
+    setDesktopDrawerOpen(false);
+    await logout?.();
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle dark:border-slate-800">
@@ -51,7 +61,12 @@ export function Navbar({
           {shouldShowBackButton ? (
             <></>
           ) : (
-            <Drawer direction="left">
+            <Drawer
+              key={`mobile-drawer-${pathname}`}
+              direction="left"
+              open={mobileDrawerOpen}
+              onOpenChange={setMobileDrawerOpen}
+            >
               <DrawerTrigger asChild className="flex md:hidden">
                 <Button size="icon" className="size-10" variant="ghost">
                   <BsList className="size-5 text-gray-700 dark:text-white" />
@@ -82,53 +97,65 @@ export function Navbar({
                   </h3>
                   <ul className="w-full space-y-1">
                     <li className="p-2 hover:bg-surface">
-                      <Link
-                        href="/"
-                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
-                      >
-                        Inicial
-                      </Link>
+                      <DrawerClose asChild>
+                        <Link
+                          href="/"
+                          className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                        >
+                          Inicial
+                        </Link>
+                      </DrawerClose>
                     </li>
                     <li className="p-2 hover:bg-surface">
-                      <Link
-                        href="/weareskillsy"
-                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
-                      >
-                        O que é Skillsy?
-                      </Link>
+                      <DrawerClose asChild>
+                        <Link
+                          href="/weareskillsy"
+                          className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                        >
+                          O que é Skillsy?
+                        </Link>
+                      </DrawerClose>
                     </li>
                     <li className="p-2 hover:bg-surface">
-                      <Link
-                        href="/noticias"
-                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
-                      >
-                        Novidades e notícias
-                      </Link>
+                      <DrawerClose asChild>
+                        <Link
+                          href="/noticias"
+                          className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                        >
+                          Novidades e notícias
+                        </Link>
+                      </DrawerClose>
                     </li>
 
                     <li className="p-2 hover:bg-surface">
-                      <Link
-                        href="/join"
-                        className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
-                      >
-                        Por que participar?
-                      </Link>
+                      <DrawerClose asChild>
+                        <Link
+                          href="/join"
+                          className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
+                        >
+                          Por que participar?
+                        </Link>
+                      </DrawerClose>
                     </li>
                     <li className="p-2 hover:bg-surface">
-                      <Link
-                        href="/privacidade"
-                        className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
-                      >
-                        Privacidade
-                      </Link>
+                      <DrawerClose asChild>
+                        <Link
+                          href="/privacidade"
+                          className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
+                        >
+                          Privacidade
+                        </Link>
+                      </DrawerClose>
                     </li>
                     <li className="p-2 hover:bg-surface">
-                      <Link
-                        href="/termos"
-                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
-                      >
-                        Termos de uso
-                      </Link>
+                      <DrawerClose asChild>
+                        <Link
+                          href="/termos"
+                          className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                        >
+                          Termos de uso
+                        </Link>
+                      </DrawerClose>
                     </li>
                   </ul>
 
@@ -140,25 +167,29 @@ export function Navbar({
 
                       <ul className="space-y-1">
                         <li className="hover:bg-surface p-2">
-                          <Link
-                            className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
-                            href="/contacts"
-                          >
-                            Meus Contatos
-                          </Link>
+                          <DrawerClose asChild>
+                            <Link
+                              className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
+                              href="/contacts"
+                            >
+                              Meus Contatos
+                            </Link>
+                          </DrawerClose>
                         </li>
                         <li className="hover:bg-surface p-2">
-                          <Link
-                            className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
-                            href="/profile"
-                          >
-                            Configurações do Perfil
-                          </Link>
+                          <DrawerClose asChild>
+                            <Link
+                              className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
+                              href="/profile"
+                            >
+                              Configurações do Perfil
+                            </Link>
+                          </DrawerClose>
                         </li>
                         <li>
                           <Button
                             className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-gray-700 dark:text-gray-50 rounded-none bg-transparent"
-                            onClick={logout}
+                            onClick={handleLogout}
                           >
                             Sair da Conta
                           </Button>
@@ -169,12 +200,14 @@ export function Navbar({
                 </div>
 
                 <DrawerFooter>
-                  <Link
-                    className="text-center bg-primary hover:bg-blue-700 active:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 black:active:bg-blue-800 p-2 font-medium text-sm text-white rounded-md"
-                    href={"/donation"}
-                  >
-                    Ajude o projeto
-                  </Link>
+                  <DrawerClose asChild>
+                    <Link
+                      className="text-center bg-primary hover:bg-blue-700 active:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 black:active:bg-blue-800 p-2 font-medium text-sm text-white rounded-md"
+                      href={"/donation"}
+                    >
+                      Ajude o projeto
+                    </Link>
+                  </DrawerClose>
                 </DrawerFooter>
               </DrawerContent>
             </Drawer>
@@ -206,7 +239,12 @@ export function Navbar({
 
         <div className="flex items-center justify-between w-auto gap-x-2">
           {shouldShowBackButton ? <></> : <ThemeToggle />}
-          <Drawer direction="left">
+          <Drawer
+            key={`desktop-drawer-${pathname}`}
+            direction="left"
+            open={desktopDrawerOpen}
+            onOpenChange={setDesktopDrawerOpen}
+          >
             <DrawerTrigger asChild className="hidden md:flex">
               <Button size="icon" className="size-10" variant="ghost">
                 <BsList className="size-5 text-gray-700 dark:text-white" />
@@ -235,52 +273,64 @@ export function Navbar({
                 </h3>
                 <ul className="w-full space-y-1">
                   <li className="p-2 hover:bg-surface">
-                    <Link
-                      href="/"
-                      className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
-                    >
-                      Inicial
-                    </Link>
+                    <DrawerClose asChild>
+                      <Link
+                        href="/"
+                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                      >
+                        Inicial
+                      </Link>
+                    </DrawerClose>
                   </li>
                   <li className="p-2 hover:bg-surface">
-                    <Link
-                      href="/weareskillsy"
-                      className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
-                    >
-                      O que é Skillsy?
-                    </Link>
+                    <DrawerClose asChild>
+                      <Link
+                        href="/weareskillsy"
+                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                      >
+                        O que é Skillsy?
+                      </Link>
+                    </DrawerClose>
                   </li>
                   <li className="p-2 hover:bg-surface">
-                    <Link
-                      href="/noticias"
-                      className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
-                    >
-                      Novidades e notícias
-                    </Link>
+                    <DrawerClose asChild>
+                      <Link
+                        href="/noticias"
+                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                      >
+                        Novidades e notícias
+                      </Link>
+                    </DrawerClose>
                   </li>
                   <li className="p-2 hover:bg-surface">
-                    <Link
-                      href="/join"
-                      className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
-                    >
-                      Por que participar?
-                    </Link>
+                    <DrawerClose asChild>
+                      <Link
+                        href="/join"
+                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                      >
+                        Por que participar?
+                      </Link>
+                    </DrawerClose>
                   </li>
                   <li className="p-2 hover:bg-surface">
-                    <Link
-                      href="/privacidade"
-                      className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
-                    >
-                      Privacidade
-                    </Link>
+                    <DrawerClose asChild>
+                      <Link
+                        href="/privacidade"
+                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                      >
+                        Privacidade
+                      </Link>
+                    </DrawerClose>
                   </li>
                   <li className="p-2 hover:bg-surface">
-                    <Link
-                      href="/termos"
-                      className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
-                    >
-                      Termos de uso
-                    </Link>
+                    <DrawerClose asChild>
+                      <Link
+                        href="/termos"
+                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                      >
+                        Termos de uso
+                      </Link>
+                    </DrawerClose>
                   </li>
                 </ul>
 
@@ -292,25 +342,29 @@ export function Navbar({
 
                     <ul className="space-y-1">
                       <li className="hover:bg-surface p-2">
-                        <Link
-                          className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
-                          href="/contacts"
-                        >
-                          Meus Contatos
-                        </Link>
+                        <DrawerClose asChild>
+                          <Link
+                            className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                            href="/contacts"
+                          >
+                            Meus Contatos
+                          </Link>
+                        </DrawerClose>
                       </li>
                       <li className="hover:bg-surface p-2">
-                        <Link
-                          className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
-                          href="/profile"
-                        >
-                          Configurações do Perfil
-                        </Link>
+                        <DrawerClose asChild>
+                          <Link
+                            className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                            href="/profile"
+                          >
+                            Configurações do Perfil
+                          </Link>
+                        </DrawerClose>
                       </li>
                       <li>
                         <Button
                           className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-gray-700 dark:text-gray-50 rounded-none bg-transparent"
-                          onClick={logout}
+                          onClick={handleLogout}
                         >
                           Sair da Conta
                         </Button>
@@ -321,12 +375,14 @@ export function Navbar({
               </div>
 
               <DrawerFooter>
-                <Link
-                  className="text-center bg-primary hover:bg-blue-700 active:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 black:active:bg-blue-800 p-2 font-medium text-sm text-white rounded-md"
-                  href={"/donation"}
-                >
-                  Ajude o projeto
-                </Link>
+                <DrawerClose asChild>
+                  <Link
+                    className="text-center bg-primary hover:bg-blue-700 active:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 black:active:bg-blue-800 p-2 font-medium text-sm text-white rounded-md"
+                    href={"/donation"}
+                  >
+                    Ajude o projeto
+                  </Link>
+                </DrawerClose>
               </DrawerFooter>
             </DrawerContent>
           </Drawer>

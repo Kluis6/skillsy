@@ -11,6 +11,10 @@ import {
 } from "lucide-react";
 import { Footer } from "@/components/footer";
 import Image from "next/image";
+import HeaderSection, {
+  type HeaderImageItem,
+  type HeaderTextSegment,
+} from "@/components/headersection";
 
 export const metadata: Metadata = {
   title: "O Que É o Skillsy",
@@ -63,63 +67,56 @@ const values = [
   },
 ];
 
+const headerHeadlineSegments: HeaderTextSegment[] = [
+  { text: "O Skillsy é uma plataforma criada para transformar " },
+  { text: "talentos", className: "text-white" },
+  { text: ", " },
+  { text: "confiança", className: "text-white" },
+  { text: " e " },
+  { text: "serviços", className: "text-white" },
+  { text: " em conexões reais." },
+];
+
+const headerImageItems: HeaderImageItem[] = [
+  {
+    src: "/Gemini_Generated_Image_m9c1ibm9c1ibm9c1.png",
+    alt: "Profissional em destaque",
+    wrapperClassName:
+      "absolute bottom-0 left-24 sm:left-4 xl:left-[48rem] z-50 h-36 w-48",
+    delay: 0.1,
+  },
+  {
+    src: "/Gemini_Generated_Image_1ugrvy1ugrvy1ugr.png",
+    alt: "Pessoa atendendo com simpatia",
+    wrapperClassName:
+      "absolute bottom-0 right-4 sm:right-18 md:right-6 z-20 h-56 w-48",
+    delay: 0.18,
+  },
+  {
+    src: "/Gemini_Generated_Image_2qahju2qahju2qah.png",
+    alt: "Criadora apresentando seu trabalho",
+    wrapperClassName:
+      "absolute bottom-0 left-4 sm:left-26 lg:left-28 xl:left-[55rem] z-40 h-74 w-48",
+    delay: 0.26,
+  },
+  {
+    src: "/Gemini_Generated_Image_wte2zrwte2zrwte2.png",
+    alt: "Prestador de serviço em ambiente profissional",
+    wrapperClassName:
+      "absolute bottom-0 right-12 sm:right-6 md:right-30 lg:right-32 xl:right-24 z-10 h-92 w-48",
+    delay: 0.34,
+  },
+];
+
 export default function WeAreSkillsyPage() {
   return (
     <main className="min-h-screen w-full">
-      <div className="md:h-[82vh] h-[78vh] relative w-full object-fill bg-cover bg-blend-multiply  bg-blue-600/70 bg-[url(public/Gemini_Generated_Image_d74ovcd74ovcd74o.png)] z-0">
-        <div className="md:left-6 left-4 top-28 sm:top-25 xl:top-1/4  absolute -translate-y-1/2 w-xs md:w-sm z-40">
-          <h1 className="font-heading text-2xl md:text-3xl xl:text-4xl font-semibold tracking-tight text-white  drop-shadow-xl shadow-black">
-            O Skillsy é uma plataforma criada para transformar{" "}
-            <span className="text-red-500">talentos</span>,{" "}
-            <span className="text-amber-500">confiança</span> e{" "}
-            <span className="text-blue-500">serviços</span> em conexões reais.
-          </h1>
-        </div>
-        <div className="absolute bottom-0 w-full">
-          <div className="flex relative justify-end items-end">
-            <div className="absolute bottom-0 left-24 sm:left-4  xl:left-[48rem] ">
-              <div className="w-48  z-50 h-36 relative rounded-t-full overflow-hidden shadow-sm">
-                <Image
-                  src={"/Gemini_Generated_Image_m9c1ibm9c1ibm9c1.png"}
-                  alt={""}
-                  className="object-cover"
-                  fill
-                />
-              </div>
-            </div>
-            <div className="absolute bottom-0 right-4 sm:right-18 md:right-6 ">
-              <div className="w-48 z-20 h-56 relative flex-none rounded-t-full overflow-hidden shadow">
-                <Image
-                  src={"/Gemini_Generated_Image_1ugrvy1ugrvy1ugr.png"}
-                  alt={""}
-                  className="object-cover"
-                  fill
-                />
-              </div>
-            </div>
-            <div className="absolute bottom-0 left-4 sm:left-26   lg:left-28 xl:left-[55rem]">
-              <div className="w-48 z-40 h-74 relative rounded-t-full  overflow-hidden shadow-2xl">
-                <Image
-                  src={"/Gemini_Generated_Image_2qahju2qahju2qah.png"}
-                  alt={""}
-                  className="object-cover"
-                  fill
-                />
-              </div>
-            </div>
-            <div className="absolute bottom-0 right-12 sm:right-6 md:right-30 lg:right-32  xl:right-24">
-              <div className="w-48 z-10 h-92 relative rounded-t-full  overflow-hidden shadow-2xs">
-                <Image
-                  src={"/Gemini_Generated_Image_wte2zrwte2zrwte2.png"}
-                  alt={""}
-                  className="object-cover"
-                  fill
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <HeaderSection
+        backgroundImageSrc="/Gemini_Generated_Image_d74ovcd74ovcd74o.png"
+        backgroundImageAlt="Pessoas e serviços em contexto comunitário"
+        headlineSegments={headerHeadlineSegments}
+        imageItems={headerImageItems}
+      />
 
       <div className="mx-auto px-4 container w-full z-[99999] isolate -mt-8 mb-16">
         <div className="w-full xl:p-8 p-4 bg-white z-50 shadow-2xl rounded-lg ">
