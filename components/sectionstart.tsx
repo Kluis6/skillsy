@@ -36,13 +36,13 @@ const steps = [
 
 const authGalleryImages = [
   {
-    src: "/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png",
+    src: "/Gemini_Generated_Image_81npfy81npfy81np.png",
     alt: "Ilustracao de criacao colaborativa",
     className: "col-span-8",
     delay: 0,
   },
   {
-    src: "/Gemini_Generated_Image_81npfy81npfy81np.png",
+    src: "/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png",
     alt: "Ilustracao de aprendizado digital",
     className: "col-span-4",
     delay: 0.06,
@@ -76,34 +76,6 @@ const authGalleryImages = [
     alt: "Ilustracao de ensino e troca de habilidades",
     className: "col-span-8",
     delay: 0.36,
-  },
-];
-
-const galleryImages = [
-  {
-    src: "/Gemini_Generated_Image_oc5c5poc5c5poc5c.png",
-    alt: "Criadora mostrando seu trabalho",
-    className: "md:col-span-4 md:row-span-1 md:h-44",
-  },
-  {
-    src: "/Gemini_Generated_Image_xfqkexfqkexfqkex.png",
-    alt: "Pessoas em conversa durante atendimento",
-    className: "md:col-span-5 md:row-span-2 md:h-[15.5rem]",
-  },
-  {
-    src: "/Gemini_Generated_Image_ndy0l8ndy0l8ndy0.png",
-    alt: "Profissional em ambiente de trabalho",
-    className: "md:col-span-3 md:row-span-3 md:h-full",
-  },
-  {
-    src: "/Gemini_Generated_Image_sh3dqosh3dqosh3d.png",
-    alt: "Pessoa trabalhando com tecnologia",
-    className: "md:col-span-3 md:row-span-1 md:h-52",
-  },
-  {
-    src: "/Gemini_Generated_Image_mpk4kumpk4kumpk4.png",
-    alt: "Equipe reunida em colaboração",
-    className: "md:col-span-5 md:row-span-1 md:h-36",
   },
 ];
 
@@ -195,41 +167,6 @@ export default function Sectionstart() {
               ))}
             </div>
           </div>
-          {/* <div className="col-span-12 md:col-span-6">
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              className="grid grid-cols-12  gap-4 "
-            >
-              {galleryImages.map((image) => (
-                <motion.div
-                  key={image.src}
-                  initial={{ opacity: 0, y: 28, scale: 0.97 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ once: true, amount: 0.25 }}
-                  transition={{
-                    duration: 0.75,
-                    delay: image.delay,
-                    ease: "easeOut",
-                  }}
-                  className={`relative overflow-hidden  ${image.className}`}
-                >
-                  <div className="relative h-full w-full">
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/10 via-transparent to-white/10" />
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div> */}
         </div>
       </div>
     </section>
