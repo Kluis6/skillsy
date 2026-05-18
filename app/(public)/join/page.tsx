@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { ArrowRight, CheckCircle2, Heart, ShieldCheck, Star, Trophy, Users, Zap } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Heart,
+  ShieldCheck,
+  Star,
+  Trophy,
+  Users,
+  Zap,
+} from "lucide-react";
 import { AuthModal } from "@/components/auth-modal";
 import { Footer } from "@/components/footer";
 import HeaderSection, {
@@ -8,6 +17,7 @@ import HeaderSection, {
   type HeaderTextSegment,
 } from "@/components/headersection";
 import { Button } from "@/components/ui/button";
+import Sectionstart from "@/components/sectionstart";
 
 export const metadata: Metadata = {
   title: "Participe do Skillsy",
@@ -39,24 +49,6 @@ const benefits = [
   },
 ];
 
-const steps = [
-  {
-    title: "Crie seu perfil",
-    description:
-      "Apresente quem você é, o que você faz, onde atende e como pode ajudar.",
-  },
-  {
-    title: "Conecte-se com a comunidade",
-    description:
-      "Encontre profissionais, receba contatos e comece conversas com mais contexto.",
-  },
-  {
-    title: "Construa sua reputação",
-    description:
-      "Entregue um bom serviço, receba avaliações e fortaleça sua presença na plataforma.",
-  },
-];
-
 const highlights = [
   {
     title: "Conexões que continuam",
@@ -80,38 +72,38 @@ const highlights = [
 
 const headerHeadlineSegments: HeaderTextSegment[] = [
   { text: "Seu trabalho pode gerar " },
-  { text: "oportunidades", className: "text-red-500" },
-  { text: ", " },
-  { text: "confiança", className: "text-amber-400" },
+  { text: "oportunidades", className: "text-white" },
+  { text: ", conexões de " },
+  { text: "confiança", className: "text-white" },
   { text: " e " },
-  { text: "apoio real", className: "text-blue-300" },
+  { text: "apoio real", className: "text-white" },
   { text: " dentro da comunidade." },
 ];
 
 const headerImageItems: HeaderImageItem[] = [
   {
-    src: "/Gemini_Generated_Image_m9c1ibm9c1ibm9c1.png",
+    src: "/Gemini_Generated_Image_xfqkexfqkexfqkex.png",
     alt: "Profissional em atividade",
     wrapperClassName:
       "absolute bottom-0 left-24 sm:left-4 xl:left-[48rem] z-50 h-36 w-48",
     delay: 0.1,
   },
   {
-    src: "/Gemini_Generated_Image_1ugrvy1ugrvy1ugr.png",
+    src: "/Gemini_Generated_Image_sh3dqosh3dqosh3d.png",
     alt: "Pessoa sorrindo durante atendimento",
     wrapperClassName:
       "absolute bottom-0 right-4 sm:right-18 md:right-6 z-20 h-56 w-48",
     delay: 0.18,
   },
   {
-    src: "/Gemini_Generated_Image_2qahju2qahju2qah.png",
+    src: "/Gemini_Generated_Image_oc5c5poc5c5poc5c.png",
     alt: "Criadora mostrando seu trabalho",
     wrapperClassName:
       "absolute bottom-0 left-4 sm:left-26 lg:left-28 xl:left-[55rem] z-40 h-74 w-48",
     delay: 0.26,
   },
   {
-    src: "/Gemini_Generated_Image_wte2zrwte2zrwte2.png",
+    src: "/Gemini_Generated_Image_ndy0l8ndy0l8ndy0.png",
     alt: "Prestador de serviço em ambiente profissional",
     wrapperClassName:
       "absolute bottom-0 right-12 sm:right-6 md:right-30 lg:right-32 xl:right-24 z-10 h-92 w-48",
@@ -123,7 +115,7 @@ export default function JoinPage() {
   return (
     <main className="min-h-screen w-full">
       <HeaderSection
-        backgroundImageSrc="/Gemini_Generated_Image_d74ovcd74ovcd74o.png"
+        backgroundImageSrc="/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png"
         backgroundImageAlt="Pessoas e serviços em contexto comunitário"
         headlineSegments={headerHeadlineSegments}
         imageItems={headerImageItems}
@@ -134,20 +126,14 @@ export default function JoinPage() {
         <div className="w-full rounded-lg bg-white p-4 shadow-2xl xl:p-8">
           <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
             <div className="col-span-12 space-y-4">
-              <div className="inline-flex items-center gap-2 rounded-full bg-blue-600/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-blue-700">
-                <CheckCircle2 size={14} />
-                Cadastro gratuito
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">Participe do Skillsy</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Participe do Skillsy
+              </h2>
               <p className="text-base font-normal text-gray-800">
-                O Skillsy foi criado para ajudar pessoas a divulgar seus talentos, encontrar
-                profissionais com mais contexto e fortalecer uma rede de apoio baseada em
-                confiança, serviço e responsabilidade.
-              </p>
-              <p className="max-w-3xl text-sm leading-relaxed text-gray-700">
-                Iniciativa independente criada por membros da comunidade. O Skillsy não é
-                afiliado nem representa oficialmente A Igreja de Jesus Cristo dos Santos dos
-                Últimos Dias.
+                O Skillsy foi criado para ajudar pessoas a divulgar seus
+                talentos, encontrar profissionais com mais contexto e fortalecer
+                uma rede de apoio baseada em confiança, serviço e
+                responsabilidade.
               </p>
             </div>
 
@@ -159,8 +145,12 @@ export default function JoinPage() {
                 <div className="mb-4 flex size-12 items-center justify-center rounded-sm bg-white shadow-2xl">
                   <benefit.icon size={22} />
                 </div>
-                <h3 className="mb-3 text-xl font-bold text-text-main">{benefit.title}</h3>
-                <p className="text-sm leading-relaxed text-text-muted">{benefit.description}</p>
+                <h3 className="mb-3 text-xl font-bold text-text-main">
+                  {benefit.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-text-muted">
+                  {benefit.description}
+                </p>
               </div>
             ))}
 
@@ -182,47 +172,35 @@ export default function JoinPage() {
         </div>
       </div>
 
-      <section id="como-funciona" className="container mx-auto my-24 px-4 scroll-mt-24">
-        <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
-          <div className="col-span-12 text-center">
-            <h2 className="text-2xl font-bold text-gray-900">Como entrar e começar</h2>
-          </div>
-
-          {steps.map((step, index) => (
-            <div key={step.title} className="col-span-12 md:col-span-4">
-              <div className="h-full rounded-xl bg-blue-600 p-6 text-white">
-                <span className="text-sm font-bold uppercase tracking-[0.18em] text-blue-100">
-                  Etapa {index + 1}
-                </span>
-                <h3 className="mt-3 text-base font-bold">{step.title}</h3>
-                <p className="mt-2 text-sm font-normal text-blue-50">{step.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <Sectionstart />
 
       <section className="my-24 bg-surface">
         <div className="container mx-auto px-4 py-18">
           <div className="grid grid-cols-12 gap-4 gap-y-8">
             <div className="col-span-12 md:col-span-6">
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold text-gray-900">Por que vale a pena participar</h2>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Por que vale a pena participar
+                </h2>
                 <p className="text-base font-normal text-gray-800">
-                  Participar do Skillsy não é apenas criar um perfil. É abrir espaço para que
-                  seu trabalho seja visto, lembrado e recomendado com mais segurança.
+                  Participar do Skillsy não é apenas criar um perfil. É abrir
+                  espaço para que seu trabalho seja visto, lembrado e
+                  recomendado com mais segurança.
                 </p>
                 <p className="text-base font-normal text-gray-800">
-                  A plataforma foi pensada para facilitar encontros entre pessoas que precisam
-                  de ajuda prática e pessoas dispostas a servir com qualidade, honestidade e
-                  cuidado.
+                  A plataforma foi pensada para facilitar encontros entre
+                  pessoas que precisam de ajuda prática e pessoas dispostas a
+                  servir com qualidade, honestidade e cuidado.
                 </p>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-gray-700">O que você encontra aqui</h3>
+                  <h3 className="text-lg font-bold text-gray-700">
+                    O que você encontra aqui
+                  </h3>
                   <p className="text-base font-normal text-gray-800">
-                    Mais visibilidade para talentos locais, mais confiança na hora de contratar
-                    e uma rede que pode gerar novas conexões, indicações e oportunidades reais.
+                    Mais visibilidade para talentos locais, mais confiança na
+                    hora de contratar e uma rede que pode gerar novas conexões,
+                    indicações e oportunidades reais.
                   </p>
                 </div>
               </div>
@@ -250,8 +228,9 @@ export default function JoinPage() {
                 O que essa participação pode fortalecer
               </h2>
               <p className="text-base font-normal text-gray-800">
-                Cada perfil relevante, cada contratação bem-feita e cada recomendação
-                responsável ajudam a tornar o Skillsy mais útil para todos.
+                Cada perfil relevante, cada contratação bem-feita e cada
+                recomendação responsável ajudam a tornar o Skillsy mais útil
+                para todos.
               </p>
             </div>
           </div>
@@ -264,8 +243,12 @@ export default function JoinPage() {
                     <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700">
                       <item.icon size={22} />
                     </div>
-                    <h3 className="text-base font-bold text-gray-800">{item.title}</h3>
-                    <p className="text-sm font-normal text-gray-700">{item.description}</p>
+                    <h3 className="text-base font-bold text-gray-800">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm font-normal text-gray-700">
+                      {item.description}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -277,16 +260,18 @@ export default function JoinPage() {
       <div className="container mx-auto mb-24 px-4">
         <section className="rounded-xl border border-amber-200 bg-amber-50 p-6 md:p-8">
           <div className="max-w-4xl space-y-3">
-            <h2 className="text-lg font-bold text-amber-900">Comunicado importante</h2>
+            <h2 className="text-lg font-bold text-amber-900">
+              Comunicado importante
+            </h2>
             <p className="text-sm leading-relaxed text-amber-950/90">
-              O Skillsy não intermedeia pagamentos, não certifica tecnicamente os profissionais
-              cadastrados e não substitui a responsabilidade pessoal de avaliar um serviço antes
-              de contratar.
+              O Skillsy não intermedeia pagamentos, não certifica tecnicamente
+              os profissionais cadastrados e não substitui a responsabilidade
+              pessoal de avaliar um serviço antes de contratar.
             </p>
             <p className="text-sm leading-relaxed text-amber-950/90">
-              A plataforma existe para facilitar conexões com mais contexto e confiança, mas
-              acordos, valores, prazos e decisões finais continuam sendo definidos diretamente
-              entre as partes.
+              A plataforma existe para facilitar conexões com mais contexto e
+              confiança, mas acordos, valores, prazos e decisões finais
+              continuam sendo definidos diretamente entre as partes.
             </p>
           </div>
         </section>
@@ -298,8 +283,9 @@ export default function JoinPage() {
             Trabalho, confiança e serviço também fortalecem a comunidade.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-blue-50">
-            Ao entrar no Skillsy, você ajuda a transformar habilidades em apoio real e abre
-            espaço para que oportunidades circulem com mais clareza entre pessoas da mesma rede.
+            Ao entrar no Skillsy, você ajuda a transformar habilidades em apoio
+            real e abre espaço para que oportunidades circulem com mais clareza
+            entre pessoas da mesma rede.
           </p>
           <div className="mt-8 flex justify-center">
             <AuthModal>

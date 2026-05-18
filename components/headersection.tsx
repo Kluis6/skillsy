@@ -53,7 +53,7 @@ export default function HeaderSection({
         />
       </motion.div>
 
-      <div className={`absolute inset-0 bg-blue-900/60 brightness-50`} />
+      <div className={`absolute inset-0 bg-blue-700/30 brightness-60`} />
 
       <motion.div
         initial={{ opacity: 0, y: 22 }}
