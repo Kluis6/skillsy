@@ -99,7 +99,7 @@ const headerImageItems: HeaderImageItem[] = [
     delay: 0.18,
   },
   {
-    src: "/Gemini_Generated_Image_2qahju2qahju2qah.png",
+    src: "/Gemini_Generated_Image_2guq8v2guq8v2guq.png",
     alt: "Criadora apresentando seu trabalho",
     wrapperClassName:
       "absolute bottom-0 left-4 sm:left-26 lg:left-28 xl:left-[55rem] z-40 h-74 w-48",
