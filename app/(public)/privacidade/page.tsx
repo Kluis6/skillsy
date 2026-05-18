@@ -3,12 +3,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { Database, Eye, FileText, Lock, RefreshCcw, Share2, ShieldCheck, UserCheck } from "lucide-react";
 import { Footer } from "@/components/footer";
+import { createPublicMetadata } from "@/lib/public-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Política de Privacidade",
   description:
     "Entenda quais dados a Skillsy trata, como eles são usados e quais direitos você pode exercer em relação à sua privacidade.",
-};
+  path: "/privacidade",
+  imageTitle: "Política de Privacidade",
+  imageDescription:
+    "Veja como a Skillsy trata dados, protege informações e apresenta os direitos do titular com mais clareza.",
+  imageLabel: "Página jurídica",
+});
 
 const summaries = [
   {

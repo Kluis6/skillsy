@@ -15,12 +15,18 @@ import HeaderSection, {
   type HeaderImageItem,
   type HeaderTextSegment,
 } from "@/components/headersection";
+import { createPublicMetadata } from "@/lib/public-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "O Que É o Skillsy",
   description:
     "Conheça a proposta do Skillsy, sua missão, valores e a forma como a plataforma busca fortalecer conexões de confiança na comunidade.",
-};
+  path: "/weareskillsy",
+  imageTitle: "Conheça a proposta do Skillsy",
+  imageDescription:
+    "Entenda a missão, os valores e a visão da plataforma para fortalecer conexões de confiança.",
+  imageLabel: "Sobre o projeto",
+});
 
 const principles = [
   {

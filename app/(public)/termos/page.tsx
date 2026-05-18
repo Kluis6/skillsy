@@ -3,12 +3,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { AlertTriangle, FileText, Info, Mail, RefreshCcw, Scale, ShieldCheck, UserCheck } from "lucide-react";
 import { Footer } from "@/components/footer";
+import { createPublicMetadata } from "@/lib/public-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Termos de Uso",
   description:
     "Entenda como a Skillsy funciona, os limites da plataforma e as responsabilidades de quem usa o serviço.",
-};
+  path: "/termos",
+  imageTitle: "Termos de Uso do Skillsy",
+  imageDescription:
+    "Entenda as regras da plataforma, os limites do serviço e as responsabilidades de quem usa o Skillsy.",
+  imageLabel: "Página jurídica",
+});
 
 const pillars = [
   {

@@ -17,13 +17,19 @@ import HeaderSection, {
   type HeaderTextSegment,
 } from "@/components/headersection";
 import { Button } from "@/components/ui/button";
+import { createPublicMetadata } from "@/lib/public-metadata";
 import Sectionstart from "@/components/sectionstart";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Participe do Skillsy",
   description:
     "Cadastre-se no Skillsy para divulgar seu trabalho, encontrar oportunidades e fortalecer conexões de confiança na comunidade.",
-};
+  path: "/join",
+  imageTitle: "Participe do Skillsy",
+  imageDescription:
+    "Divulgue seu trabalho, fortaleça sua reputação e gere novas conexões dentro da comunidade.",
+  imageLabel: "Cadastro público",
+});
 
 const benefits = [
   {

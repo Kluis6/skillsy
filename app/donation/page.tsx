@@ -10,12 +10,18 @@ import {
 } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
+import { createPublicMetadata } from '@/lib/public-metadata';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: 'Apoie o Skillsy',
   description:
     'Contribua com o Skillsy e ajude a manter a plataforma, melhorar a experiência e fortalecer a comunidade.',
-};
+  path: '/donation',
+  imageTitle: 'Apoie o Skillsy',
+  imageDescription:
+    'Sua contribuição pode ajudar a manter a plataforma, ampliar melhorias e fortalecer a comunidade.',
+  imageLabel: 'Doação',
+});
 
 const PIX_BENEFICIARY = 'Nome do responsável ou da iniciativa';
 const PIX_KEY = 'sua-chave-pix-aqui';

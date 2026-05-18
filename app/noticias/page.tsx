@@ -2,12 +2,18 @@ import type { Metadata } from "next";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { PostListClient } from "@/components/posts/post-list-client";
+import { createPublicMetadata } from "@/lib/public-metadata";
 import { PostService } from "@/services/post-service";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Notícias e Artigos",
   description: "Conteúdo publicado pela comunidade Skillsy.",
-};
+  path: "/noticias",
+  imageTitle: "Notícias e artigos da comunidade Skillsy",
+  imageDescription:
+    "Acompanhe publicações, reflexões e novidades compartilhadas pela comunidade.",
+  imageLabel: "Conteúdo público",
+});
 
 export default async function NoticiasPage() {
   const posts = await PostService.getPublishedPosts();
