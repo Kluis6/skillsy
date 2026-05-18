@@ -144,7 +144,7 @@ export default function Sectionstart() {
             </div>
           </div>
           <div className="col-span-12 lg:col-span-6">
-            <div className="grid grid-cols-12 gap-4 w-full lg:h-full h-[72vh]">
+            {/* <div className="grid grid-cols-12 gap-4 w-full lg:h-full h-[72vh]">
               {authGalleryImages.map((image) => (
                 <motion.div
                   key={image.src}
@@ -165,7 +165,7 @@ export default function Sectionstart() {
                   />
                 </motion.div>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
