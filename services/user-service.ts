@@ -62,6 +62,10 @@ function isPermissionDeniedError(error: unknown) {
   );
 }
 
+function canUseLegacyPublicUsersFallback() {
+  return Boolean(auth.currentUser);
+}
+
 function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
@@ -368,16 +372,22 @@ export const UserService = {
         ? toPublicProfileModel(toPlainValue(legacyDocSnap.data() as UserProfile))
         : null;
     } catch (error) {
-      if (isPermissionDeniedError(error)) {
+      if (isPermissionDeniedError(error) && canUseLegacyPublicUsersFallback()) {
         try {
           const legacyDocSnap = await getDoc(doc(db, 'users', uid));
           return legacyDocSnap.exists()
             ? toPublicProfileModel(toPlainValue(legacyDocSnap.data() as UserProfile))
             : null;
         } catch (legacyError) {
-          handleFirestoreError(legacyError, OperationType.GET, `users/${uid}`);
+          if (!isPermissionDeniedError(legacyError)) {
+            handleFirestoreError(legacyError, OperationType.GET, `users/${uid}`);
+          }
           return null;
         }
+      }
+
+      if (isPermissionDeniedError(error)) {
+        return null;
       }
 
       handleFirestoreError(error, OperationType.GET, path);
@@ -618,7 +628,7 @@ export const UserService = {
         )
         .slice(0, limitCount);
     } catch (error) {
-      if (isPermissionDeniedError(error)) {
+      if (isPermissionDeniedError(error) && canUseLegacyPublicUsersFallback()) {
         const legacyPath = 'users';
 
         try {
@@ -634,9 +644,15 @@ export const UserService = {
             )
             .slice(0, limitCount);
         } catch (legacyError) {
-          handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
+          if (!isPermissionDeniedError(legacyError)) {
+            handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
+          }
           return [];
         }
+      }
+
+      if (isPermissionDeniedError(error)) {
+        return [];
       }
 
       handleFirestoreError(error, OperationType.LIST, path);
@@ -702,7 +718,7 @@ export const UserService = {
         return 0;
       });
     } catch (error) {
-      if (isPermissionDeniedError(error)) {
+      if (isPermissionDeniedError(error) && canUseLegacyPublicUsersFallback()) {
         const legacyPath = 'users';
 
         try {
@@ -746,9 +762,15 @@ export const UserService = {
             return 0;
           });
         } catch (legacyError) {
-          handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
+          if (!isPermissionDeniedError(legacyError)) {
+            handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
+          }
           return [];
         }
+      }
+
+      if (isPermissionDeniedError(error)) {
+        return [];
       }
 
       handleFirestoreError(error, OperationType.LIST, path);
@@ -782,7 +804,7 @@ export const UserService = {
             profile !== null && !profile.isDeleted && !profile.isBlocked,
         );
     } catch (error) {
-      if (isPermissionDeniedError(error)) {
+      if (isPermissionDeniedError(error) && canUseLegacyPublicUsersFallback()) {
         const legacyPath = 'users';
 
         try {
@@ -794,9 +816,15 @@ export const UserService = {
                 profile !== null && !profile.isDeleted && !profile.isBlocked,
             );
         } catch (legacyError) {
-          handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
+          if (!isPermissionDeniedError(legacyError)) {
+            handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
+          }
           return [];
         }
+      }
+
+      if (isPermissionDeniedError(error)) {
+        return [];
       }
 
       handleFirestoreError(error, OperationType.LIST, path);
@@ -831,7 +859,7 @@ export const UserService = {
             profile !== null && !profile.isDeleted && !profile.isBlocked,
         );
     } catch (error) {
-      if (isPermissionDeniedError(error)) {
+      if (isPermissionDeniedError(error) && canUseLegacyPublicUsersFallback()) {
         const legacyPath = 'users';
 
         try {
@@ -845,9 +873,15 @@ export const UserService = {
                 profile !== null && !profile.isDeleted && !profile.isBlocked,
             );
         } catch (legacyError) {
-          handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
+          if (!isPermissionDeniedError(legacyError)) {
+            handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
+          }
           return [];
         }
+      }
+
+      if (isPermissionDeniedError(error)) {
+        return [];
       }
 
       handleFirestoreError(error, OperationType.LIST, path);
