@@ -172,19 +172,19 @@ export function CategoryCarousel() {
   };
 
   return (
-    <div className="w-full h-[80vh]">
+    <div className="w-full h-[55vh]  sm:h-[80vh]  relative">
       <div className="relative group container mx-auto px-4">
-        <div className="flex justify-center items-center rounded-xl z-10 shadow-2xl object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)] ">
-          <div className="absolute top-39 sm:top-40  space-y-2 md:space-y-4 w-[19rem] sm:w-lg md:w-2xl lg:w-4xl xl:w-6xl rounded-xl z-40 bg-white p-4 sm:p-6 md:p-8 shadow-2xl">
+        <div className="flex justify-center items-center rounded-xl z-10 shadow-2xl object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)]">
+          <div className="absolute top-44 sm:top-40 space-y-2 md:space-y-4 w-[19rem] sm:w-lg md:w-2xl lg:w-4xl xl:w-6xl rounded-xl z-40 bg-white p-4 sm:p-6 md:p-8 shadow-2xl">
             <div className="w-full">
-              <h3 className="text-base md:text-xl lg:text-2xl font-bold text-text-main font-heading tracking-tight text-center">
-                Categoria mais populares
+              <h3 className="text-xl lg:text-2xl font-bold text-text-main font-heading tracking-tight text-center">
+                Categorias mais populares
               </h3>
             </div>
 
             <div
               ref={scrollRef}
-              className="flex gap-4 overflow-x-auto  py-4  custom-scrollbar scroll-smooth no-scrollbar"
+              className="flex gap-4 overflow-x-auto py-4 custom-scrollbar scroll-smooth no-scrollbar"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {categories.map((cat, idx) => (
@@ -194,7 +194,7 @@ export function CategoryCarousel() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => handleCategoryClick(cat.name)}
-                  className="flex flex-col items-center justify-between space-y-6  min-w-[100px]  md:min-w-[140px] p-4 bg-white rounded-xl border hover:shadow-md transition-all duration-300 group/card shrink-0"
+                  className="flex flex-col items-center justify-between space-y-6 min-w-[100px] md:min-w-[140px] p-4 bg-white rounded-xl border hover:shadow-md transition-all duration-300 group/card shrink-0"
                 >
                   <div
                     className={`size-12 md:size-14 lg:size-16 ${cat.bg} rounded-md flex items-center justify-center  group-hover/card:scale-110 transition-transform duration-300`}

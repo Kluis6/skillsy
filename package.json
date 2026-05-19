@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "clean": "next clean",
     "deploy:firestore-rules": "firebase deploy --only firestore --project gen-lang-client-0463625624",
-    "backfill:public-profiles": "node scripts/backfill-public-profiles.mjs"
+    "backfill:public-profiles": "node scripts/backfill-public-profiles.mjs",
+    "inspect:public-profiles": "node scripts/inspect-public-profiles.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",

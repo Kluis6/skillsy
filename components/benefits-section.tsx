@@ -1,16 +1,7 @@
 "use client";
 
-import React from "react";
 import { motion } from "motion/react";
-import {
-  ShieldCheck,
-  Star,
-  Users,
-  ArrowRight,
-  Zap,
-  Trophy,
-  Heart,
-} from "lucide-react";
+import { ShieldCheck, Star, Users, ArrowRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthModal } from "@/components/auth-modal";
 
@@ -22,7 +13,7 @@ export function BenefitsSection() {
         "Conecte-se com profissionais que compartilham os mesmos princípios e valores que você.",
       icon: ShieldCheck,
       color: "text-primary",
-      bg: "bg-primary/5",
+      bg: "bg-primary/10",
     },
     {
       title: "Visibilidade Total",
@@ -30,7 +21,7 @@ export function BenefitsSection() {
         "Tenha seu talento exposto para centenas de membros na sua ala, estaca e região.",
       icon: Zap,
       color: "text-accent",
-      bg: "bg-accent/5",
+      bg: "bg-accent/10",
     },
     {
       title: "Excelência Avaliada",
@@ -38,7 +29,7 @@ export function BenefitsSection() {
         "Sistema de avaliações anônimas que garante a qualidade e confiabilidade do serviço.",
       icon: Star,
       color: "text-highlight",
-      bg: "bg-highlight/5",
+      bg: "bg-highlight/10",
     },
     {
       title: "Networking Real",
@@ -46,35 +37,41 @@ export function BenefitsSection() {
         "Construa uma rede de contatos profissionais sólida dentro de uma rede de confiança.",
       icon: Users,
       color: "text-blue-500",
-      bg: "bg-blue-50",
+      bg: "bg-blue-100",
     },
   ];
 
   return (
-    <section className="w-full h-full bg-surface py-24">
+    <section className="w-full h-full bg-surface py-8 my-16">
       <section className="px-4 container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Side: Content */}
-          <div className="lg:col-span-5 space-y-8">
+          <div className="lg:col-span-5 w-full">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              className="lg:space-y-12 space-y-8 text-center lg:text-start justify-center lg:items-start flex flex-col w-full"
             >
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-text-main leading-tight mb-6 text-center md:text-start">
-                Por que fazer parte do <br className="flex md:hidden" />
-                <span className="text-primary">Skillsy ?</span>
-              </h2>
-              <p className="text-base md:text-lg text-text-muted leading-relaxed mb-8">
-                O Skillsy não é apenas uma plataforma de serviços. É uma rede de
-                confiança desenhada para fortalecer os laços profissionais e
-                comunitários.
-              </p>
+              <div className="space-y-2">
+                <h2 className="text-xl sm:text-2xl md:text-3xl xl:text-5xl font-bold text-text-main leading-tight text-center lg:text-start">
+                  Por que fazer <br className="hidden lg:flex" /> parte da
+                  <span className="text-primary"> Skillsy ?</span>
+                </h2>
+                <p className="text-base lg:text-lg text-text-muted leading-relaxed">
+                  O Skillsy não é apenas uma plataforma de serviços. É uma rede
+                  de confiança desenhada para fortalecer os laços profissionais
+                  e comunitários.
+                </p>
+              </div>
 
-              <div className="flex flex-col gap-8 justify-center items-center">
+              <div className="flex flex-col space-y-8 justify-center items-center w-full">
                 <AuthModal>
-                  <Button className="w-fit bg-primary text-white shadow-2xl shadow-primary border-0 rounded-2xl px-10 h-12 md:h-14 font-bold text-base md:text-lg group">
+                  <Button
+                    variant="default"
+                    className="w-fit bg-primary text-white shadow-2xl shadow-primary border-0 rounded-full px-10 h-12 md:h-14 font-bold text-base md:text-lg group"
+                  >
                     Criar minha conta agora
                     <ArrowRight
                       size={20}
@@ -101,7 +98,7 @@ export function BenefitsSection() {
                 className={`p-8 rounded-xl border border-border-subtle bg-white transition-all hover:shadow-xl hover:shadow-primary/5 group ${idx % 3 === 0 ? "md:col-span-1" : ""}`}
               >
                 <div
-                  className={`size-14 ${benefit.bg} ${benefit.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                  className={`size-14 ${benefit.bg} ${benefit.color} rounded-md flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
                 >
                   <benefit.icon size={28} />
                 </div>

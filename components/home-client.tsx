@@ -70,20 +70,21 @@ export function HomeClient({
       {!user && <BenefitsSection />}
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 my-12">
+      <main className="container mx-auto px-4">
         <AnimatePresence mode="wait">
           <motion.div
             key="explore"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
+            className="lg:space-y-12 space-y-8"
           >
-            <div className="text-center my-24">
-              <h3 className="text-2xl md:text-3xl font-bold text-text-main mb-4">
+            <div className="text-center space-y-2">
+              <h3 className="text-xl lg:text-2xl font-bold text-text-main font-heading tracking-tight text-center">
                 Membros em Destaque
               </h3>
-              <p className="text-text-muted">
-                Conheça os profissionais mais bem avaliados da nossa rede.
+              <p className="text-base font-normal text-gray-700">
+                Conheça os profissionais <br className="flex lg:hidden" /> mais bem avaliados da nossa rede.
               </p>
             </div>
 
