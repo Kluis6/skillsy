@@ -70,7 +70,7 @@ export function BenefitsSection() {
                 <AuthModal>
                   <Button
                     variant="default"
-                    className="w-fit bg-primary text-white shadow-2xl shadow-primary border-0 rounded-full px-10 h-12 md:h-14 font-bold text-base md:text-lg group"
+                    className="w-fit bg-primary text-white shadow-2xl shadow-primary border-0 rounded-full px-10 h-10 md:h-14 font-bold text-sm md:text-base lg:text-lg group"
                   >
                     Criar minha conta agora
                     <ArrowRight
@@ -95,19 +95,22 @@ export function BenefitsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1, duration: 0.5 }}
-                className={`p-8 rounded-xl border border-border-subtle bg-white transition-all hover:shadow-xl hover:shadow-primary/5 group ${idx % 3 === 0 ? "md:col-span-1" : ""}`}
+                className={`lg:p-8 md:p-6 p-4 flex flex-col space-y-4 md:space-y-6 rounded-xl border border-border-subtle bg-white transition-all hover:shadow-xl hover:shadow-primary/5 group ${idx % 3 === 0 ? "md:col-span-1" : ""}`}
               >
                 <div
-                  className={`size-14 ${benefit.bg} ${benefit.color} rounded-md flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                  className={`size-12 md:size-14 ${benefit.bg} ${benefit.color} rounded-md flex items-center justify-center  group-hover:scale-110 transition-transform duration-300`}
                 >
-                  <benefit.icon size={28} />
+                  <benefit.icon className="lg:size-9 size-7" />
                 </div>
-                <h4 className="text-xl font-bold text-text-main mb-3">
-                  {benefit.title}
-                </h4>
-                <p className="text-sm text-text-muted leading-relaxed">
-                  {benefit.description}
-                </p>
+
+                <div>
+                  <h4 className="text-xl font-bold text-text-main">
+                    {benefit.title}
+                  </h4>
+                  <p className="text-sm text-text-muted leading-relaxed">
+                    {benefit.description}
+                  </p>
+                </div>
               </motion.div>
             ))}
           </div>

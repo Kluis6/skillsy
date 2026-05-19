@@ -51,21 +51,21 @@ export function ContactCTA() {
   };
 
   return (
-    <section className="my-24 bg-primary  py-4 px-4 md:px-10 md:py-10 rounded-2xl">
+    <section className="my-24 bg-primary p-4 lg:p-6 xl:p-8  rounded-2xl">
       <div className="grid grid-cols-12 gap-y-12 md:gap-8">
-        <div className="col-span-12 md:col-span-7 w-full h-full">
-          <div className=" space-y-4 justify-center mt-4 md:mt-0 items-center md:items-start flex flex-col w-full h-full">
-            <h3 className="text-2xl md:text-5xl font-extrabold  leading-tight text-white">
+        <div className="col-span-12 lg:col-span-6 xl:col-span-7 w-full h-full">
+          <div className="space-y-4 justify-center pt-4 lg:pt-0 items-center md:items-start flex flex-col w-full h-full">
+            <h3 className="text-xl lg:text-3xl xl:text-4xl font-bold text-white font-heading tracking-tight text-center">
               Dúvidas ou Sugestões?
             </h3>
-            <p className="text-white text-sm md:text-lg ">
+            <p className="text-white text-center md:text-start font-normal text-sm md:text-base lg:text-lg">
               Estamos aqui para ajudar você a encontrar o melhor serviço ou a
               divulgar o seu talento. Faça parte da nossa rede de excelência.
             </p>
           </div>
         </div>
 
-        <div className="col-span-12 md:col-span-5 flex justify-end">
+        <div className="col-span-12 lg:col-span-6  xl:col-span-5 flex justify-end">
           <Card className="w-full lg:w-md">
             <CardContent>
               <CardHeader>

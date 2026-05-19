@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSearchController } from "@/hooks/use-search-controller";
-
 import {
   Card,
   CardAction,
@@ -47,7 +46,7 @@ export function HomeClient({
   } = useSearchController(initialProviders);
 
   return (
-    <div className="min-h-screen w-full">
+    <div className="h-full w-full">
       <Navbar
         user={user}
         profile={profile}
@@ -65,13 +64,13 @@ export function HomeClient({
       />
 
       {/* Categories Carousel */}
-      {/* <CategoryCarousel /> */}
+      <CategoryCarousel />
 
-      {/* {!user && <BenefitsSection />} */}
+      {!user && <BenefitsSection />}
 
       {/* Main Content */}
       <main className="container mx-auto px-4">
-        {/* <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait">
           <motion.div
             key="explore"
             initial={{ opacity: 0, y: 20 }}
@@ -98,7 +97,7 @@ export function HomeClient({
                     transition={{ delay: idx * 0.05 }}
                     className="col-span-12 md:col-span-6 xl:col-span-4"
                   >
-                    <Card className="relative mx-auto w-full h-fit bg-white pt-0">
+                    <Card className="relative mx-auto w-full h-full bg-white pt-0">
                       <div className="relative w-full h-25 md:h-40">
                         <div className="absolute inset-0 z-30 h-25 md:h-40 bg-black/25" />
                         {p.bannerURL ? (
@@ -183,10 +182,10 @@ export function HomeClient({
               </div>
             )}
           </motion.div>
-        </AnimatePresence> */}
+        </AnimatePresence>
 
         {/* CTA Section */}
-        {/* <ContactCTA /> */}
+        <ContactCTA />
 
         {!user && (
           <div className="my-24 text-center flex-col md:flex-row flex w-full justify-center items-center space-x-2 ">
