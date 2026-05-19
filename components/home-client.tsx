@@ -71,7 +71,7 @@ export function HomeClient({
 
       {/* Main Content */}
       <main className="container mx-auto px-4">
-        <AnimatePresence mode="wait">
+        {/* <AnimatePresence mode="wait">
           <motion.div
             key="explore"
             initial={{ opacity: 0, y: 20 }}
@@ -183,7 +183,7 @@ export function HomeClient({
               </div>
             )}
           </motion.div>
-        </AnimatePresence>
+        </AnimatePresence> */}
 
         {/* CTA Section */}
         <ContactCTA />

@@ -59,7 +59,7 @@ export function Navbar({
       <div className="container mx-auto flex justify-between items-center px-4 py-2">
         <div className="flex items-center space-x-4">
           {shouldShowBackButton ? (
-            <></>
+            <> </>
           ) : (
             <Drawer
               key={`mobile-drawer-${pathname}`}
