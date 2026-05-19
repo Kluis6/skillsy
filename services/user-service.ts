@@ -50,6 +50,18 @@ interface FirestoreErrorInfo {
   }
 }
 
+function isPermissionDeniedError(error: unknown) {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const message = error.message.toLowerCase();
+  return (
+    message.includes('missing or insufficient permissions') ||
+    message.includes('permission_denied')
+  );
+}
+
 function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
@@ -356,6 +368,18 @@ export const UserService = {
         ? toPublicProfileModel(toPlainValue(legacyDocSnap.data() as UserProfile))
         : null;
     } catch (error) {
+      if (isPermissionDeniedError(error)) {
+        try {
+          const legacyDocSnap = await getDoc(doc(db, 'users', uid));
+          return legacyDocSnap.exists()
+            ? toPublicProfileModel(toPlainValue(legacyDocSnap.data() as UserProfile))
+            : null;
+        } catch (legacyError) {
+          handleFirestoreError(legacyError, OperationType.GET, `users/${uid}`);
+          return null;
+        }
+      }
+
       handleFirestoreError(error, OperationType.GET, path);
       return null;
     }
@@ -594,6 +618,27 @@ export const UserService = {
         )
         .slice(0, limitCount);
     } catch (error) {
+      if (isPermissionDeniedError(error)) {
+        const legacyPath = 'users';
+
+        try {
+          const legacySnapshot = await getDocs(
+            query(collection(db, 'users'), where('isProvider', '==', true), limit(limitCount)),
+          );
+
+          return legacySnapshot.docs
+            .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
+            .filter(
+              (profile): profile is UserProfile =>
+                profile !== null && !profile.isDeleted && !profile.isBlocked,
+            )
+            .slice(0, limitCount);
+        } catch (legacyError) {
+          handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
+          return [];
+        }
+      }
+
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
     }
@@ -657,6 +702,55 @@ export const UserService = {
         return 0;
       });
     } catch (error) {
+      if (isPermissionDeniedError(error)) {
+        const legacyPath = 'users';
+
+        try {
+          const legacySnapshot = await getDocs(query(collection(db, 'users')));
+          const all = legacySnapshot.docs
+            .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
+            .filter(
+              (profile): profile is UserProfile =>
+                profile !== null && !profile.isDeleted && !profile.isBlocked,
+            );
+
+          const searchTokens = term.toLowerCase().split(' ').filter(t => t.length > 0);
+
+          return all.filter((p: UserProfile) => {
+            const matchesSearch = searchTokens.length === 0 || searchTokens.every(token => {
+              return (
+                p.name.toLowerCase().includes(token) ||
+                (p.category && p.category.toLowerCase().includes(token)) ||
+                (p.serviceType && p.serviceType.toLowerCase().includes(token)) ||
+                (p.companyName && p.companyName.toLowerCase().includes(token)) ||
+                (p.bio && p.bio.toLowerCase().includes(token))
+              );
+            });
+
+            const normalizedLocation = p.location?.toLowerCase() || '';
+            const cityFilter = location?.city?.toLowerCase().trim();
+            const stateFilter = location?.state?.toLowerCase().trim();
+            const hasLocationFilter = Boolean(cityFilter || stateFilter);
+
+            const matchesCity = !cityFilter || normalizedLocation.includes(cityFilter);
+            const matchesState = !stateFilter || normalizedLocation.includes(stateFilter);
+            const matchesLocation =
+              !hasLocationFilter ||
+              (normalizedLocation && matchesCity && matchesState) ||
+              (!normalizedLocation && searchTokens.length > 0);
+
+            return matchesSearch && matchesLocation;
+          }).sort((a, b) => {
+            if (a.isProvider && !b.isProvider) return -1;
+            if (!a.isProvider && b.isProvider) return 1;
+            return 0;
+          });
+        } catch (legacyError) {
+          handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
+          return [];
+        }
+      }
+
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
     }
@@ -688,6 +782,23 @@ export const UserService = {
             profile !== null && !profile.isDeleted && !profile.isBlocked,
         );
     } catch (error) {
+      if (isPermissionDeniedError(error)) {
+        const legacyPath = 'users';
+
+        try {
+          const legacySnapshot = await getDocs(query(collection(db, 'users'), where('isProvider', '==', true)));
+          return legacySnapshot.docs
+            .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
+            .filter(
+              (profile): profile is UserProfile =>
+                profile !== null && !profile.isDeleted && !profile.isBlocked,
+            );
+        } catch (legacyError) {
+          handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
+          return [];
+        }
+      }
+
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
     }
@@ -720,6 +831,25 @@ export const UserService = {
             profile !== null && !profile.isDeleted && !profile.isBlocked,
         );
     } catch (error) {
+      if (isPermissionDeniedError(error)) {
+        const legacyPath = 'users';
+
+        try {
+          const legacySnapshot = await getDocs(
+            query(collection(db, 'users'), where('uid', 'in', uids.slice(0, 10))),
+          );
+          return legacySnapshot.docs
+            .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
+            .filter(
+              (profile): profile is UserProfile =>
+                profile !== null && !profile.isDeleted && !profile.isBlocked,
+            );
+        } catch (legacyError) {
+          handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
+          return [];
+        }
+      }
+
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
     }
