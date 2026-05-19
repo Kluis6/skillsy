@@ -175,7 +175,7 @@ export function CategoryCarousel() {
     <div className="w-full h-[80vh]">
       <div className="relative group container mx-auto px-4">
         <div className="flex justify-center items-center rounded-xl z-10 shadow-2xl object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)] ">
-          <div className=" absolute top-50 sm:top-40  space-y-4 w-xs sm:w-lg md:w-2xl lg:w-4xl xl:w-6xl rounded-xl z-40 bg-white p-6 md:p-8 shadow-2xl">
+          <div className=" absolute top-50 sm:top-40  space-y-4 w-[19rem] sm:w-lg md:w-2xl lg:w-4xl xl:w-6xl rounded-xl z-40 bg-white p-4 sm:p-6 md:p-8 shadow-2xl">
             <div className="w-full">
               <h3 className="text-base md:text-xl font-bold text-text-main font-heading tracking-tight text-center">
                 Categoria mais populares
