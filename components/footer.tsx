@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { toast } from "sonner";
 import Link from "next/link";
+import { openCookiePreferences } from "@/lib/cookie-consent";
 
 export function Footer() {
   return (
@@ -37,6 +37,13 @@ export function Footer() {
           >
             Privacidade
           </Link>
+          <button
+            type="button"
+            onClick={openCookiePreferences}
+            className="hover:text-blue-600 text-gray-700 transition-colors text-sm font-normal"
+          >
+            Cookies
+          </button>
         </div>
       </div>
     </footer>

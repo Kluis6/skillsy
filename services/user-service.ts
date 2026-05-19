@@ -13,8 +13,8 @@ import {
   arrayRemove,
   serverTimestamp,
   addDoc,
-  increment,
-  runTransaction
+  runTransaction,
+  writeBatch,
 } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import { toPlainValue } from '@/lib/firestore-plain';
@@ -261,7 +261,106 @@ function normalizeUserDocumentForRules(source: Record<string, unknown>) {
   return removeUndefinedDeep(normalized);
 }
 
+const publicProfileDefaults: Pick<UserProfile, 'email' | 'role' | 'contacts'> = {
+  email: '',
+  role: 'user',
+  contacts: [],
+};
+
+function toPublicProfileModel(
+  source: Partial<UserProfile> | Record<string, unknown> | null | undefined,
+): UserProfile | null {
+  if (!source) {
+    return null;
+  }
+
+  const raw = source as Partial<UserProfile>;
+  if (!raw.uid || !raw.name) {
+    return null;
+  }
+
+  return {
+    uid: raw.uid,
+    name: raw.name,
+    isProvider: raw.isProvider ?? false,
+    createdAt: raw.createdAt ?? null,
+    ...publicProfileDefaults,
+    photoURL: raw.photoURL || '',
+    bannerURL: raw.bannerURL || '',
+    bio: raw.bio || '',
+    category: raw.category || '',
+    serviceType: raw.serviceType || '',
+    location: raw.location || '',
+    companyName: raw.companyName || '',
+    gallery: raw.gallery || [],
+    rating: raw.rating,
+    reviewCount: raw.reviewCount,
+    experienceYears: raw.experienceYears,
+    availability: raw.availability || [],
+    serviceHours: raw.serviceHours || '',
+    whatsapp: raw.whatsapp || '',
+    instagram: raw.instagram || '',
+    facebook: raw.facebook || '',
+    linkedin: raw.linkedin || '',
+    website: raw.website || '',
+    phone: raw.phone || '',
+    phones: raw.phones || [],
+    isBlocked: raw.isBlocked,
+    isDeleted: raw.isDeleted,
+  };
+}
+
+function buildPublicProfileData(source: Partial<UserProfile>) {
+  return removeUndefinedDeep({
+    uid: source.uid,
+    name: source.name,
+    photoURL: source.photoURL || '',
+    bannerURL: source.bannerURL || '',
+    bio: source.bio || '',
+    category: source.category || '',
+    isProvider: source.isProvider ?? false,
+    serviceType: source.serviceType || '',
+    location: source.location || '',
+    companyName: source.companyName || '',
+    gallery: source.gallery || [],
+    rating: source.rating,
+    reviewCount: source.reviewCount,
+    experienceYears: source.experienceYears,
+    availability: source.availability || [],
+    serviceHours: source.serviceHours || '',
+    whatsapp: source.whatsapp || '',
+    instagram: source.instagram || '',
+    facebook: source.facebook || '',
+    linkedin: source.linkedin || '',
+    website: source.website || '',
+    phone: source.phone || '',
+    phones: source.phones || [],
+    isBlocked: source.isBlocked ?? false,
+    isDeleted: source.isDeleted ?? false,
+    createdAt: source.createdAt,
+  });
+}
+
 export const UserService = {
+  async getPublicProfile(uid: string): Promise<UserProfile | null> {
+    const path = `public_profiles/${uid}`;
+    try {
+      const docRef = doc(db, 'public_profiles', uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        return toPublicProfileModel(toPlainValue(docSnap.data() as UserProfile));
+      }
+
+      const legacyDocSnap = await getDoc(doc(db, 'users', uid));
+      return legacyDocSnap.exists()
+        ? toPublicProfileModel(toPlainValue(legacyDocSnap.data() as UserProfile))
+        : null;
+    } catch (error) {
+      handleFirestoreError(error, OperationType.GET, path);
+      return null;
+    }
+  },
+
   async getProfile(uid: string): Promise<UserProfile | null> {
     const path = `users/${uid}`;
     try {
@@ -291,11 +390,24 @@ export const UserService = {
     if (!profile.uid) throw new Error('UID is required');
     const path = `users/${profile.uid}`;
     try {
-      const docRef = doc(db, 'users', profile.uid);
-      await setDoc(docRef, {
+      const createdAt = serverTimestamp();
+      const privateDocRef = doc(db, 'users', profile.uid);
+      const publicDocRef = doc(db, 'public_profiles', profile.uid);
+      const batch = writeBatch(db);
+      const nextPrivateProfile = {
         ...profile,
-        createdAt: serverTimestamp(),
-      });
+        createdAt,
+      };
+
+      batch.set(privateDocRef, nextPrivateProfile);
+      batch.set(
+        publicDocRef,
+        buildPublicProfileData({
+          ...nextPrivateProfile,
+          uid: profile.uid,
+        }),
+      );
+      await batch.commit();
 
       // Notify admins about the new user
       await NotificationService.createNotification({
@@ -424,8 +536,15 @@ export const UserService = {
         ...currentData,
         ...safeIncomingData,
       };
+      const sanitizedPrivateProfile = removeUndefinedDeep(nextData);
+      const batch = writeBatch(db);
 
-      await setDoc(docRef, removeUndefinedDeep(nextData));
+      batch.set(docRef, sanitizedPrivateProfile);
+      batch.set(
+        doc(db, 'public_profiles', uid),
+        buildPublicProfileData(sanitizedPrivateProfile as Partial<UserProfile>),
+      );
+      await batch.commit();
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
     }
@@ -444,13 +563,35 @@ export const UserService = {
   },
 
   async getProviders(limitCount: number = 10): Promise<UserProfile[]> {
-    const path = 'users';
+    const path = 'public_profiles';
     try {
-      const q = query(collection(db, 'users'), where('isProvider', '==', true), limit(limitCount));
+      const q = query(
+        collection(db, 'public_profiles'),
+        where('isProvider', '==', true),
+        where('isDeleted', '==', false),
+        where('isBlocked', '==', false),
+        limit(limitCount),
+      );
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs
-        .map((doc) => toPlainValue(doc.data() as UserProfile))
-        .filter((profile) => !profile.isDeleted)
+      const publicProfiles = querySnapshot.docs
+        .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
+        .filter((profile): profile is UserProfile => profile !== null)
+        .slice(0, limitCount);
+
+      if (publicProfiles.length > 0) {
+        return publicProfiles;
+      }
+
+      const legacySnapshot = await getDocs(
+        query(collection(db, 'users'), where('isProvider', '==', true), limit(limitCount)),
+      );
+
+      return legacySnapshot.docs
+        .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
+        .filter(
+          (profile): profile is UserProfile =>
+            profile !== null && !profile.isDeleted && !profile.isBlocked,
+        )
         .slice(0, limitCount);
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
@@ -462,14 +603,26 @@ export const UserService = {
     term: string,
     location?: { city?: string; state?: string },
   ): Promise<UserProfile[]> {
-    const path = 'users';
+    const path = 'public_profiles';
     try {
-      // Fetch all users to allow finding people by name even if not marked as provider
-      const q = query(collection(db, 'users'));
+      const q = query(collection(db, 'public_profiles'));
       const querySnapshot = await getDocs(q);
-      const all = querySnapshot.docs
-        .map((doc) => toPlainValue(doc.data() as UserProfile))
-        .filter((profile) => !profile.isDeleted);
+      let all = querySnapshot.docs
+        .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
+        .filter(
+          (profile): profile is UserProfile =>
+            profile !== null && !profile.isDeleted && !profile.isBlocked,
+        );
+
+      if (all.length === 0) {
+        const legacySnapshot = await getDocs(query(collection(db, 'users')));
+        all = legacySnapshot.docs
+          .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
+          .filter(
+            (profile): profile is UserProfile =>
+              profile !== null && !profile.isDeleted && !profile.isBlocked,
+          );
+      }
 
       const searchTokens = term.toLowerCase().split(' ').filter(t => t.length > 0);
 
@@ -480,8 +633,7 @@ export const UserService = {
             (p.category && p.category.toLowerCase().includes(token)) ||
             (p.serviceType && p.serviceType.toLowerCase().includes(token)) ||
             (p.companyName && p.companyName.toLowerCase().includes(token)) ||
-            (p.bio && p.bio.toLowerCase().includes(token)) ||
-            (p.email && p.email.toLowerCase().includes(token))
+            (p.bio && p.bio.toLowerCase().includes(token))
           );
         });
         
@@ -499,11 +651,9 @@ export const UserService = {
           
         return matchesSearch && matchesLocation;
       }).sort((a, b) => {
-        // Prioritize providers and verified members
+        // Prioritize providers in public search results.
         if (a.isProvider && !b.isProvider) return -1;
         if (!a.isProvider && b.isProvider) return 1;
-        if (a.verifiedMember && !b.verifiedMember) return -1;
-        if (!a.verifiedMember && b.verifiedMember) return 1;
         return 0;
       });
     } catch (error) {
@@ -513,13 +663,30 @@ export const UserService = {
   },
 
   async getAllProviders(): Promise<UserProfile[]> {
-    const path = 'users';
+    const path = 'public_profiles';
     try {
-      const q = query(collection(db, 'users'), where('isProvider', '==', true));
+      const q = query(
+        collection(db, 'public_profiles'),
+        where('isProvider', '==', true),
+        where('isDeleted', '==', false),
+        where('isBlocked', '==', false),
+      );
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs
-        .map((doc) => toPlainValue(doc.data() as UserProfile))
-        .filter((profile) => !profile.isDeleted);
+      const publicProfiles = querySnapshot.docs
+        .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
+        .filter((profile): profile is UserProfile => profile !== null);
+
+      if (publicProfiles.length > 0) {
+        return publicProfiles;
+      }
+
+      const legacySnapshot = await getDocs(query(collection(db, 'users'), where('isProvider', '==', true)));
+      return legacySnapshot.docs
+        .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
+        .filter(
+          (profile): profile is UserProfile =>
+            profile !== null && !profile.isDeleted && !profile.isBlocked,
+        );
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
@@ -528,13 +695,30 @@ export const UserService = {
 
   async getContacts(uids: string[]): Promise<UserProfile[]> {
     if (!uids || uids.length === 0) return [];
-    const path = 'users';
+    const path = 'public_profiles';
     try {
-      const q = query(collection(db, 'users'), where('uid', 'in', uids.slice(0, 10)));
+      const q = query(collection(db, 'public_profiles'), where('uid', 'in', uids.slice(0, 10)));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs
-        .map((doc) => toPlainValue(doc.data() as UserProfile))
-        .filter((profile) => !profile.isDeleted);
+      const publicProfiles = querySnapshot.docs
+        .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
+        .filter(
+          (profile): profile is UserProfile =>
+            profile !== null && !profile.isDeleted && !profile.isBlocked,
+        );
+
+      if (publicProfiles.length > 0) {
+        return publicProfiles;
+      }
+
+      const legacySnapshot = await getDocs(
+        query(collection(db, 'users'), where('uid', 'in', uids.slice(0, 10))),
+      );
+      return legacySnapshot.docs
+        .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
+        .filter(
+          (profile): profile is UserProfile =>
+            profile !== null && !profile.isDeleted && !profile.isBlocked,
+        );
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
@@ -557,9 +741,25 @@ export const UserService = {
     const path = `users/${uid}`;
     try {
       const docRef = doc(db, 'users', uid);
-      // Remove 'id' if it exists in the data to avoid Firestore rule violations
+      const currentSnapshot = await getDoc(docRef);
+      if (!currentSnapshot.exists()) {
+        throw new Error('Perfil não encontrado para atualização administrativa');
+      }
+
+      const currentData = toPlainValue(currentSnapshot.data() as UserProfile);
       const { id, ...updateData } = data as any;
-      await updateDoc(docRef, updateData);
+      const nextPrivateProfile = removeUndefinedDeep({
+        ...currentData,
+        ...updateData,
+      });
+
+      const batch = writeBatch(db);
+      batch.set(docRef, nextPrivateProfile);
+      batch.set(
+        doc(db, 'public_profiles', uid),
+        buildPublicProfileData(nextPrivateProfile as Partial<UserProfile>),
+      );
+      await batch.commit();
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
     }
@@ -616,7 +816,13 @@ export const UserService = {
         deletedAt: serverTimestamp(),
       });
 
-      await setDoc(docRef, nextData);
+      const batch = writeBatch(db);
+      batch.set(docRef, nextData);
+      batch.set(
+        doc(db, 'public_profiles', uid),
+        buildPublicProfileData(nextData as Partial<UserProfile>),
+      );
+      await batch.commit();
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
     }
@@ -722,13 +928,22 @@ export const UserService = {
     ];
 
     try {
+      const batch = writeBatch(db);
       for (const user of fakeUsers) {
         const docRef = doc(db, 'users', user.uid!);
-        await setDoc(docRef, {
+        const createdAt = serverTimestamp();
+        const nextPrivateProfile = {
           ...user,
-          createdAt: serverTimestamp()
-        });
+          createdAt
+        };
+
+        batch.set(docRef, nextPrivateProfile);
+        batch.set(
+          doc(db, 'public_profiles', user.uid!),
+          buildPublicProfileData(nextPrivateProfile as Partial<UserProfile>),
+        );
       }
+      await batch.commit();
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, 'users/seed');
     }
@@ -747,6 +962,7 @@ export const UserService = {
         }
 
         const userRef = doc(db, 'users', toId);
+        const publicProfileRef = doc(db, 'public_profiles', toId);
         const userSnap = await transaction.get(userRef);
         
         if (!userSnap.exists()) throw new Error('Usuário não encontrado');
@@ -775,6 +991,15 @@ export const UserService = {
           rating: Number(newRating.toFixed(1)),
           reviewCount: newCount
         });
+
+        transaction.set(
+          publicProfileRef,
+          {
+            rating: Number(newRating.toFixed(1)),
+            reviewCount: newCount,
+          },
+          { merge: true },
+        );
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, 'transaction/rating');

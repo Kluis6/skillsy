@@ -60,6 +60,12 @@ const rights = [
   "Informações sobre compartilhamento, consentimento e outras medidas previstas em lei.",
 ];
 
+const cookieCategories = [
+  "Essenciais: necessarios para seguranca, autenticacao e funcionamento basico da plataforma.",
+  "Preferencias: usados para lembrar escolhas de experiencia, como estados visuais e conveniencias de navegacao.",
+  "A Skillsy deve evitar ativar analytics, publicidade comportamental ou rastreadores de terceiros sem consentimento especifico e destacado.",
+];
+
 export default function PrivacidadePage() {
   return (
     <main className="min-h-screen w-full">
@@ -288,6 +294,35 @@ export default function PrivacidadePage() {
           </div>
         </section>
       </div>
+
+      <section className="container mx-auto mb-24 px-4">
+        <div className="rounded-2xl border bg-slate-50 p-8 md:p-10">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-[1.1fr_0.9fr]">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold text-gray-900">Cookies e tecnologias similares</h2>
+              <p className="text-sm leading-relaxed text-gray-700">
+                A Skillsy usa um aviso de cookies para diferenciar recursos essenciais de
+                preferencias opcionais. Cookies de conveniencia nao devem ser gravados antes
+                da escolha do titular, e a recusa nao pode bloquear o acesso ao conteudo
+                principal da plataforma.
+              </p>
+              <p className="text-sm leading-relaxed text-gray-700">
+                Caso novos rastreadores, analytics ou ferramentas de marketing sejam adotados,
+                a politica e o mecanismo de consentimento devem ser atualizados antes da
+                ativacao em producao.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {cookieCategories.map((item) => (
+                <div key={item} className="rounded-xl border bg-white p-4 text-sm text-gray-700">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       <Footer />
     </main>

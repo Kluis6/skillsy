@@ -9,7 +9,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   try {
-    const profile = await UserService.getProfile(id);
+    const profile = await UserService.getPublicProfile(id);
     if (!profile) return { title: 'Perfil não encontrado' };
 
     const title = `${profile.name} | ${profile.serviceType || 'Membro'}`;
@@ -31,10 +31,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PublicProfilePage({ params }: Props) {
   const { id } = await params;
-  const initialProfile = await UserService.getProfile(id);
+  const initialProfile = await UserService.getPublicProfile(id);
   
   return <ProfileDetailClient id={id} initialProfile={initialProfile} />;
 }
-
 
 

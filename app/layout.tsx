@@ -72,6 +72,7 @@ export const metadata: Metadata = {
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -101,6 +102,7 @@ export default function RootLayout({
             <AuthProvider>
               <TooltipProvider>
                 {children}
+                <CookieConsentBanner />
                 <Toaster position="top-center" richColors />
               </TooltipProvider>
             </AuthProvider>

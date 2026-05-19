@@ -152,7 +152,7 @@ export function ProfileDetailClient({
       if (!id || initialProfile) return;
       setLoading(true);
       try {
-        const p = await UserService.getProfile(id);
+        const p = await UserService.getPublicProfile(id);
         setTargetProfile(p);
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -567,7 +567,7 @@ export function ProfileDetailClient({
         description: "Obrigado por compartilhar sua experiência.",
       });
       // Refresh profile to show new rating
-      const updated = await UserService.getProfile(id);
+      const updated = await UserService.getPublicProfile(id);
       setTargetProfile(updated);
     } catch (error: any) {
       console.error("Error submitting rating:", error);

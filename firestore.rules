@@ -188,6 +188,47 @@ service cloud.firestore {
              (!('deletedAt' in data) || data.deletedAt is timestamp);
     }
 
+    function isValidPublicProfile(data, userId) {
+      let allowedFields = [
+        'uid', 'name', 'photoURL', 'bannerURL', 'bio', 'category',
+        'isProvider', 'serviceType', 'location', 'companyName', 'gallery',
+        'rating', 'reviewCount', 'experienceYears', 'availability',
+        'serviceHours', 'whatsapp', 'instagram', 'facebook', 'linkedin',
+        'website', 'phone', 'phones', 'isBlocked', 'isDeleted', 'createdAt'
+      ];
+
+      return data.keys().hasAll(['uid', 'name', 'isProvider']) &&
+             data.keys().hasOnly(allowedFields) &&
+             data.uid == userId &&
+             data.name is string &&
+             data.name.size() > 0 &&
+             data.name.size() <= 100 &&
+             data.isProvider is bool &&
+             (!('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 1000000)) &&
+             (!('bannerURL' in data) || data.bannerURL == null || (data.bannerURL is string && data.bannerURL.size() <= 1000000)) &&
+             (!('bio' in data) || data.bio == null || (data.bio is string && data.bio.size() <= 2000)) &&
+             (!('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100 && isValidCategory(data.category))) &&
+             (!('serviceType' in data) || data.serviceType == null || (data.serviceType is string && data.serviceType.size() <= 200)) &&
+             (!('location' in data) || data.location == null || (data.location is string && data.location.size() <= 200)) &&
+             (!('companyName' in data) || data.companyName == null || (data.companyName is string && data.companyName.size() <= 200)) &&
+             (!('gallery' in data) || data.gallery == null || isValidGallery(data.gallery)) &&
+             (!('rating' in data) || data.rating is number) &&
+             (!('reviewCount' in data) || data.reviewCount is number) &&
+             (!('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
+             (!('availability' in data) || data.availability == null || isValidAvailabilityList(data.availability)) &&
+             (!('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200)) &&
+             (!('whatsapp' in data) || data.whatsapp == null || (data.whatsapp is string && data.whatsapp.size() <= 30)) &&
+             (!('instagram' in data) || data.instagram == null || (data.instagram is string && data.instagram.size() <= 100)) &&
+             (!('facebook' in data) || data.facebook == null || (data.facebook is string && data.facebook.size() <= 100)) &&
+             (!('linkedin' in data) || data.linkedin == null || (data.linkedin is string && data.linkedin.size() <= 100)) &&
+             (!('website' in data) || data.website == null || (data.website is string && data.website.size() <= 200)) &&
+             (!('phone' in data) || data.phone == null || (data.phone is string && data.phone.size() <= 30)) &&
+             (!('phones' in data) || data.phones == null || data.phones is list) &&
+             (!('isBlocked' in data) || data.isBlocked is bool) &&
+             (!('isDeleted' in data) || data.isDeleted is bool) &&
+             (!('createdAt' in data) || data.createdAt is timestamp);
+    }
+
     function keepsSameUserRole(data) {
       return ((resource.data.role in ['admin', 'user']) && data.role == resource.data.role) ||
              (!(resource.data.role in ['admin', 'user']) && data.role == 'user');
@@ -207,6 +248,11 @@ service cloud.firestore {
     function keepsSafeCreatedAt(data) {
       return ((resource.data.createdAt is timestamp) && data.createdAt == resource.data.createdAt) ||
              (!(resource.data.createdAt is timestamp) && data.createdAt is timestamp);
+    }
+
+    function isPublicProfileVisible() {
+      return (!('isDeleted' in resource.data) || resource.data.isDeleted == false) &&
+             (!('isBlocked' in resource.data) || resource.data.isBlocked == false);
     }
 
     function isValidService(data) {
@@ -389,8 +435,12 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      // Allow public read so visitors can see providers (but maybe not blocked ones?)
-      allow read: if isNotBlocked();
+      allow read: if isOwner(userId) ||
+                   isAdmin() ||
+                   (isAuthenticated() &&
+                    resource.data.email is string &&
+                    request.auth.token.email is string &&
+                    resource.data.email == request.auth.token.email);
       
       // Create: Owner can create as 'user', Admin can create anything
       allow create: if (isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.role == 'user') || isAdmin();
@@ -422,6 +472,16 @@ service cloud.firestore {
                         !exists(voteDocPath(userId, providerId)) &&
                         isValidVoteRecord(request.resource.data, providerId);
       }
+    }
+
+    match /public_profiles/{userId} {
+      allow read: if isPublicProfileVisible();
+
+      allow create: if (isOwner(userId) && isValidPublicProfile(request.resource.data, userId)) || isAdmin();
+
+      allow update: if (isOwner(userId) && isValidPublicProfile(request.resource.data, userId)) || isAdmin();
+
+      allow delete: if isOwner(userId) || isAdmin();
     }
 
     match /services/{serviceId} {

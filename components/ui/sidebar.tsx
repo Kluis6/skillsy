@@ -6,6 +6,7 @@ import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { useIsMobile } from "@/hooks/use-mobile";
+import { hasPreferenceCookieConsent } from "@/lib/cookie-consent";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,8 +84,12 @@ function SidebarProvider({
         _setOpen(openState);
       }
 
-      // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+      // Preference cookies are only persisted after the user opts in.
+      if (hasPreferenceCookieConsent()) {
+        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}; samesite=lax`;
+      } else {
+        document.cookie = `${SIDEBAR_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
+      }
     },
     [setOpenProp, open],
   );
