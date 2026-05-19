@@ -357,6 +357,36 @@ function buildPublicProfileData(source: Partial<UserProfile>) {
   });
 }
 
+function sortProvidersByFeaturedRanking(profiles: UserProfile[]) {
+  return [...profiles].sort((a, b) => {
+    const aRating = typeof a.rating === 'number' ? a.rating : 0;
+    const bRating = typeof b.rating === 'number' ? b.rating : 0;
+
+    if (bRating !== aRating) {
+      return bRating - aRating;
+    }
+
+    const aReviews = typeof a.reviewCount === 'number' ? a.reviewCount : 0;
+    const bReviews = typeof b.reviewCount === 'number' ? b.reviewCount : 0;
+
+    if (bReviews !== aReviews) {
+      return bReviews - aReviews;
+    }
+
+    return a.name.localeCompare(b.name, 'pt-BR');
+  });
+}
+
+function filterVisibleProviders(profiles: Array<UserProfile | null>) {
+  return profiles.filter(
+    (profile): profile is UserProfile =>
+      profile !== null &&
+      profile.isProvider === true &&
+      !profile.isDeleted &&
+      !profile.isBlocked,
+  );
+}
+
 export const UserService = {
   async getPublicProfile(uid: string): Promise<UserProfile | null> {
     const path = `public_profiles/${uid}`;
@@ -599,33 +629,31 @@ export const UserService = {
   async getProviders(limitCount: number = 10): Promise<UserProfile[]> {
     const path = 'public_profiles';
     try {
-      const q = query(
-        collection(db, 'public_profiles'),
-        where('isProvider', '==', true),
-        where('isDeleted', '==', false),
-        where('isBlocked', '==', false),
-        limit(limitCount),
-      );
+      const q = query(collection(db, 'public_profiles'));
       const querySnapshot = await getDocs(q);
-      const publicProfiles = querySnapshot.docs
-        .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
-        .filter((profile): profile is UserProfile => profile !== null)
-        .slice(0, limitCount);
+      const publicProfiles = sortProvidersByFeaturedRanking(
+        filterVisibleProviders(
+          querySnapshot.docs.map((doc) =>
+            toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
+          ),
+        ),
+      ).slice(0, limitCount);
 
       if (publicProfiles.length > 0) {
         return publicProfiles;
       }
 
       const legacySnapshot = await getDocs(
-        query(collection(db, 'users'), where('isProvider', '==', true), limit(limitCount)),
+        query(collection(db, 'users'), where('isProvider', '==', true), limit(limitCount * 3)),
       );
 
-      return legacySnapshot.docs
-        .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
-        .filter(
-          (profile): profile is UserProfile =>
-            profile !== null && !profile.isDeleted && !profile.isBlocked,
-        )
+      return sortProvidersByFeaturedRanking(
+        filterVisibleProviders(
+          legacySnapshot.docs.map((doc) =>
+            toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
+          ),
+        ),
+      )
         .slice(0, limitCount);
     } catch (error) {
       if (isPermissionDeniedError(error) && canUseLegacyPublicUsersFallback()) {
@@ -633,15 +661,16 @@ export const UserService = {
 
         try {
           const legacySnapshot = await getDocs(
-            query(collection(db, 'users'), where('isProvider', '==', true), limit(limitCount)),
+            query(collection(db, 'users'), where('isProvider', '==', true), limit(limitCount * 3)),
           );
 
-          return legacySnapshot.docs
-            .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
-            .filter(
-              (profile): profile is UserProfile =>
-                profile !== null && !profile.isDeleted && !profile.isBlocked,
-            )
+          return sortProvidersByFeaturedRanking(
+            filterVisibleProviders(
+              legacySnapshot.docs.map((doc) =>
+                toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
+              ),
+            ),
+          )
             .slice(0, limitCount);
         } catch (legacyError) {
           if (!isPermissionDeniedError(legacyError)) {
@@ -781,40 +810,41 @@ export const UserService = {
   async getAllProviders(): Promise<UserProfile[]> {
     const path = 'public_profiles';
     try {
-      const q = query(
-        collection(db, 'public_profiles'),
-        where('isProvider', '==', true),
-        where('isDeleted', '==', false),
-        where('isBlocked', '==', false),
-      );
+      const q = query(collection(db, 'public_profiles'));
       const querySnapshot = await getDocs(q);
-      const publicProfiles = querySnapshot.docs
-        .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
-        .filter((profile): profile is UserProfile => profile !== null);
+      const publicProfiles = sortProvidersByFeaturedRanking(
+        filterVisibleProviders(
+          querySnapshot.docs.map((doc) =>
+            toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
+          ),
+        ),
+      );
 
       if (publicProfiles.length > 0) {
         return publicProfiles;
       }
 
       const legacySnapshot = await getDocs(query(collection(db, 'users'), where('isProvider', '==', true)));
-      return legacySnapshot.docs
-        .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
-        .filter(
-          (profile): profile is UserProfile =>
-            profile !== null && !profile.isDeleted && !profile.isBlocked,
-        );
+      return sortProvidersByFeaturedRanking(
+        filterVisibleProviders(
+          legacySnapshot.docs.map((doc) =>
+            toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
+          ),
+        ),
+      );
     } catch (error) {
       if (isPermissionDeniedError(error) && canUseLegacyPublicUsersFallback()) {
         const legacyPath = 'users';
 
         try {
           const legacySnapshot = await getDocs(query(collection(db, 'users'), where('isProvider', '==', true)));
-          return legacySnapshot.docs
-            .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
-            .filter(
-              (profile): profile is UserProfile =>
-                profile !== null && !profile.isDeleted && !profile.isBlocked,
-            );
+          return sortProvidersByFeaturedRanking(
+            filterVisibleProviders(
+              legacySnapshot.docs.map((doc) =>
+                toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
+              ),
+            ),
+          );
         } catch (legacyError) {
           if (!isPermissionDeniedError(legacyError)) {
             handleFirestoreError(legacyError, OperationType.LIST, legacyPath);

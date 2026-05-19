@@ -40,6 +40,23 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
         return;
       }
 
+      if (!locationFilter && !searchTerm && initialProviders.length === 0) {
+        setSearching(true);
+        try {
+          const featuredProviders = await UserService.getProviders(6);
+          if (isMounted) {
+            setProviders(featuredProviders);
+          }
+        } catch (error) {
+          console.error('Error fetching featured providers:', error);
+        } finally {
+          if (isMounted) {
+            setSearching(false);
+          }
+        }
+        return;
+      }
+
       if (locationFilter || searchTerm) {
         setSearching(true);
         try {
