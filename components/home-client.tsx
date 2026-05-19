@@ -186,7 +186,7 @@ export function HomeClient({
         </AnimatePresence> */}
 
         {/* CTA Section */}
-        <ContactCTA />
+        {/* <ContactCTA /> */}
 
         {!user && (
           <div className="my-24 text-center flex-col md:flex-row flex w-full justify-center items-center space-x-2 ">
@@ -201,7 +201,7 @@ export function HomeClient({
         )}
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
