@@ -89,7 +89,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className="antialiased transition-colors duration-300"
+        className="antialiased transition-colors duration-300 relative"
         suppressHydrationWarning
       >
         <ThemeProvider

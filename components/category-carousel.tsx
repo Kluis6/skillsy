@@ -172,7 +172,7 @@ export function CategoryCarousel() {
   };
 
   return (
-    <div className="w-full h-[55vh]  sm:h-[80vh]  relative">
+    <div className="w-full h-[55vh] sm:h-[80vh] relative">
       <div className="relative group container mx-auto px-4">
         <div className="flex justify-center items-center rounded-xl z-10 shadow-2xl object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)]">
           <div className="absolute top-44 sm:top-40 space-y-2 md:space-y-4 w-[19rem] sm:w-lg md:w-2xl lg:w-4xl xl:w-6xl rounded-xl z-40 bg-white p-4 sm:p-6 md:p-8 shadow-2xl">
