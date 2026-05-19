@@ -201,7 +201,7 @@ export function HomeClient({
         )}
       </main>
 
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }
