@@ -24,7 +24,7 @@ export function HeroSection({
   setLocationFilter,
 }: HeroSectionProps) {
   return (
-    <section className="w-full h-[70vh]">
+    <section className="w-full h-[84vh]">
       <div className="container mx-auto space-y-4 flex flex-col justify-center items-center h-full px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
