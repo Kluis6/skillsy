@@ -67,7 +67,7 @@ export function HomeClient({
       {/* Categories Carousel */}
       {/* <CategoryCarousel /> */}
 
-      {!user && <BenefitsSection />}
+      {/* {!user && <BenefitsSection />} */}
 
       {/* Main Content */}
       <main className="container mx-auto px-4">
