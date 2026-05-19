@@ -65,7 +65,7 @@ export function HomeClient({
       />
 
       {/* Categories Carousel */}
-      <CategoryCarousel />
+      {/* <CategoryCarousel /> */}
 
       {!user && <BenefitsSection />}
 
