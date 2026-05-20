@@ -189,8 +189,8 @@ service cloud.firestore {
     function isValidPublicProfile(data, userId) {
       let allowedFields = [
         'uid', 'name', 'photoURL', 'bannerURL', 'bio', 'category',
-        'isProvider', 'serviceType', 'location', 'companyName', 'gallery',
-        'rating', 'reviewCount', 'experienceYears', 'availability',
+        'isProvider', 'serviceType', 'location', 'ward', 'companyName', 'gallery',
+        'rating', 'reviewCount', 'experienceYears', 'memberVerified', 'membershipYears', 'availability',
         'serviceHours', 'whatsapp', 'instagram', 'facebook', 'linkedin',
         'website', 'phone', 'phones', 'isBlocked', 'isDeleted', 'createdAt'
       ];
@@ -208,11 +208,14 @@ service cloud.firestore {
              (!('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100 && isValidCategory(data.category))) &&
              (!('serviceType' in data) || data.serviceType == null || (data.serviceType is string && data.serviceType.size() <= 200)) &&
              (!('location' in data) || data.location == null || (data.location is string && data.location.size() <= 200)) &&
+             (!('ward' in data) || data.ward == null || (data.ward is string && data.ward.size() <= 200)) &&
              (!('companyName' in data) || data.companyName == null || (data.companyName is string && data.companyName.size() <= 200)) &&
              (!('gallery' in data) || data.gallery == null || isValidGallery(data.gallery)) &&
              (!('rating' in data) || data.rating is number) &&
              (!('reviewCount' in data) || data.reviewCount is number) &&
              (!('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
+             (!('memberVerified' in data) || data.memberVerified is bool) &&
+             (!('membershipYears' in data) || data.membershipYears == null || data.membershipYears is number) &&
              (!('availability' in data) || data.availability == null || isValidAvailabilityList(data.availability)) &&
              (!('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200)) &&
              (!('whatsapp' in data) || data.whatsapp == null || (data.whatsapp is string && data.whatsapp.size() <= 30)) &&

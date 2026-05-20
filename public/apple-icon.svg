@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-labelledby="title">
+  <title>Skillsy Apple Touch Icon</title>
+  <defs>
+    <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#1d4ed8" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" rx="48" fill="url(#bg)" />
+  <path
+    d="M55 63.5C55 51.074 65.074 41 77.5 41H127v21H77.5a1.5 1.5 0 0 0 0 3H104c13.255 0 24 10.745 24 24s-10.745 24-24 24H53v-21h51a3 3 0 1 0 0-6H77.5C65.074 86 55 75.926 55 63.5Z"
+    fill="#fff"
+  />
+</svg>

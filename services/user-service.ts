@@ -21,6 +21,7 @@ import { toPlainValue } from '@/lib/firestore-plain';
 import { UserProfile, UserReport } from '@/models/types';
 import { AVAILABILITY_OPTIONS, PROVIDER_CATEGORIES } from '@/lib/profile-form';
 import { NotificationService } from './notification-service';
+import { getMembershipYears, hasMembershipVerificationData } from '@/lib/member-verification';
 
 enum OperationType {
   CREATE = 'create',
@@ -302,11 +303,14 @@ function toPublicProfileModel(
     category: raw.category || '',
     serviceType: raw.serviceType || '',
     location: raw.location || '',
+    ward: raw.ward || '',
     companyName: raw.companyName || '',
     gallery: raw.gallery || [],
     rating: raw.rating,
     reviewCount: raw.reviewCount,
     experienceYears: raw.experienceYears,
+    memberVerified: raw.memberVerified ?? false,
+    membershipYears: raw.membershipYears,
     availability: raw.availability || [],
     serviceHours: raw.serviceHours || '',
     whatsapp: raw.whatsapp || '',
@@ -332,11 +336,14 @@ function buildPublicProfileData(source: Partial<UserProfile>) {
     isProvider: source.isProvider ?? false,
     serviceType: source.serviceType || '',
     location: source.location || '',
+    ward: source.ward || '',
     companyName: source.companyName || '',
     gallery: source.gallery || [],
     rating: source.rating,
     reviewCount: source.reviewCount,
     experienceYears: source.experienceYears,
+    memberVerified: hasMembershipVerificationData(source),
+    membershipYears: getMembershipYears(source),
     availability: source.availability || [],
     serviceHours: source.serviceHours || '',
     whatsapp: source.whatsapp || '',

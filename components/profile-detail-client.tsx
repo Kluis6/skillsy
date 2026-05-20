@@ -21,6 +21,7 @@ import {
   CalendarDays,
   Clock,
   Flag,
+  ShieldCheck,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
@@ -65,6 +66,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { reportUserSchema, type ReportUserFormData } from "@/lib/validations";
 import { REPORT_REASON_LABELS, REPORT_REASON_OPTIONS } from "@/lib/reporting";
+import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 
 interface ProfileDetailClientProps {
   id: string;
@@ -715,6 +717,12 @@ export function ProfileDetailClient({
                       <h2 className="text-xl md:text-3xl font-bold text-text-main leading-tight">
                         {targetProfile.name}
                       </h2>
+                      {shouldShowVerifiedBadge(targetProfile) && (
+                        <Badge className="bg-primary/10 text-primary border-none font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+                          <ShieldCheck size={13} />
+                          Membro Verificado
+                        </Badge>
+                      )}
                     </div>
 
                     <p className="text-base text-gray-600 font-normal">
@@ -752,6 +760,24 @@ export function ProfileDetailClient({
                         </p>
                       </div>
                     )}
+                    {targetProfile.ward && (
+                      <div className="flex items-center space-x-2">
+                        <Briefcase size={16} className="text-gray-800" />
+                        <p className="text-sm text-gray-800 font-normal">
+                          {targetProfile.ward}
+                        </p>
+                      </div>
+                    )}
+                    {typeof targetProfile.membershipYears === "number" &&
+                      targetProfile.membershipYears >= 0 && (
+                        <div className="flex items-center space-x-2">
+                          <CalendarDays size={16} className="text-gray-800" />
+                          <p className="text-sm text-gray-800 font-normal">
+                            Membro há {targetProfile.membershipYears}{" "}
+                            {targetProfile.membershipYears === 1 ? "ano" : "anos"}
+                          </p>
+                        </div>
+                      )}
                   </div>
 
                   <div className="flex flex-col w-full sm:w-auto">

@@ -35,6 +35,8 @@ export interface UserProfile {
   reviewCount?: number;
   experienceYears?: number;
   baptismYear?: number;
+  memberVerified?: boolean;
+  membershipYears?: number;
   availability?: string[];
   serviceHours?: string;
   isBlocked?: boolean;

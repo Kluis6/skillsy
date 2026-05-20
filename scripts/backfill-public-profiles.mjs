@@ -16,11 +16,14 @@ const publicFieldNames = [
   "isProvider",
   "serviceType",
   "location",
+  "ward",
   "companyName",
   "gallery",
   "rating",
   "reviewCount",
   "experienceYears",
+  "memberVerified",
+  "membershipYears",
   "availability",
   "serviceHours",
   "whatsapp",
@@ -153,6 +156,52 @@ function arrayValue(values) {
   };
 }
 
+function readStringField(field) {
+  return typeof field?.stringValue === "string" ? field.stringValue : "";
+}
+
+function readNumberField(field) {
+  if (typeof field?.integerValue === "string") {
+    return Number(field.integerValue);
+  }
+
+  if (typeof field?.doubleValue === "number") {
+    return field.doubleValue;
+  }
+
+  return undefined;
+}
+
+function computeMemberVerified(fields) {
+  const ward = readStringField(fields.ward).trim();
+  const baptismYear = readNumberField(fields.baptismYear);
+  const currentYear = new Date().getFullYear();
+
+  return Boolean(
+    ward &&
+      typeof baptismYear === "number" &&
+      Number.isFinite(baptismYear) &&
+      baptismYear >= 1830 &&
+      baptismYear <= currentYear,
+  );
+}
+
+function computeMembershipYears(fields) {
+  const baptismYear = readNumberField(fields.baptismYear);
+  const currentYear = new Date().getFullYear();
+
+  if (
+    typeof baptismYear !== "number" ||
+    !Number.isFinite(baptismYear) ||
+    baptismYear < 1830 ||
+    baptismYear > currentYear
+  ) {
+    return undefined;
+  }
+
+  return currentYear - baptismYear;
+}
+
 function fallbackField(fieldName, userId, userDocument) {
   const fields = userDocument.fields || {};
 
@@ -173,6 +222,12 @@ function fallbackField(fieldName, userId, userDocument) {
           timestampValue: userDocument.createTime,
         },
       );
+    case "memberVerified":
+      return booleanValue(computeMemberVerified(fields));
+    case "membershipYears": {
+      const value = computeMembershipYears(fields);
+      return value === undefined ? undefined : { integerValue: String(value) };
+    }
     case "gallery":
     case "availability":
     case "phones":
