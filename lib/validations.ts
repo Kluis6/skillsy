@@ -183,7 +183,6 @@ export const adminEditUserSchema = z.object({
   serviceHours: z.string().max(100, 'Horário muito longo').nullable().optional(),
   role: z.enum(['user', 'admin']),
   isProvider: z.boolean(),
-  verifiedMember: z.boolean(),
   isBlocked: z.boolean(),
 });
 

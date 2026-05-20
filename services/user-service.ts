@@ -62,10 +62,6 @@ function isPermissionDeniedError(error: unknown) {
   );
 }
 
-function canUseLegacyPublicUsersFallback() {
-  return Boolean(auth.currentUser);
-}
-
 function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
@@ -268,7 +264,6 @@ function normalizeUserDocumentForRules(source: Record<string, unknown>) {
       ? baptismYear
       : undefined;
 
-  normalized.verifiedMember = normalizeBoolean(normalized.verifiedMember);
   normalized.isBlocked = normalizeBoolean(normalized.isBlocked);
   normalized.isDeleted = normalizeBoolean(normalized.isDeleted);
   normalized.deletedByUser = normalizeBoolean(normalized.deletedByUser);
@@ -393,29 +388,10 @@ export const UserService = {
     try {
       const docRef = doc(db, 'public_profiles', uid);
       const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        return toPublicProfileModel(toPlainValue(docSnap.data() as UserProfile));
-      }
-
-      const legacyDocSnap = await getDoc(doc(db, 'users', uid));
-      return legacyDocSnap.exists()
-        ? toPublicProfileModel(toPlainValue(legacyDocSnap.data() as UserProfile))
+      return docSnap.exists()
+        ? toPublicProfileModel(toPlainValue(docSnap.data() as UserProfile))
         : null;
     } catch (error) {
-      if (isPermissionDeniedError(error) && canUseLegacyPublicUsersFallback()) {
-        try {
-          const legacyDocSnap = await getDoc(doc(db, 'users', uid));
-          return legacyDocSnap.exists()
-            ? toPublicProfileModel(toPlainValue(legacyDocSnap.data() as UserProfile))
-            : null;
-        } catch (legacyError) {
-          if (!isPermissionDeniedError(legacyError)) {
-            handleFirestoreError(legacyError, OperationType.GET, `users/${uid}`);
-          }
-          return null;
-        }
-      }
-
       if (isPermissionDeniedError(error)) {
         return null;
       }
@@ -517,7 +493,6 @@ export const UserService = {
         'rating',
         'reviewCount',
         'experienceYears',
-        'verifiedMember',
         'baptismYear',
         'isBlocked',
         'isDeleted',
@@ -539,7 +514,6 @@ export const UserService = {
         'email',
         'role',
         'createdAt',
-        'verifiedMember',
         'isBlocked',
         'rating',
         'reviewCount',
@@ -638,48 +612,8 @@ export const UserService = {
           ),
         ),
       ).slice(0, limitCount);
-
-      if (publicProfiles.length > 0) {
-        return publicProfiles;
-      }
-
-      const legacySnapshot = await getDocs(
-        query(collection(db, 'users'), where('isProvider', '==', true), limit(limitCount * 3)),
-      );
-
-      return sortProvidersByFeaturedRanking(
-        filterVisibleProviders(
-          legacySnapshot.docs.map((doc) =>
-            toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
-          ),
-        ),
-      )
-        .slice(0, limitCount);
+      return publicProfiles;
     } catch (error) {
-      if (isPermissionDeniedError(error) && canUseLegacyPublicUsersFallback()) {
-        const legacyPath = 'users';
-
-        try {
-          const legacySnapshot = await getDocs(
-            query(collection(db, 'users'), where('isProvider', '==', true), limit(limitCount * 3)),
-          );
-
-          return sortProvidersByFeaturedRanking(
-            filterVisibleProviders(
-              legacySnapshot.docs.map((doc) =>
-                toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
-              ),
-            ),
-          )
-            .slice(0, limitCount);
-        } catch (legacyError) {
-          if (!isPermissionDeniedError(legacyError)) {
-            handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
-          }
-          return [];
-        }
-      }
-
       if (isPermissionDeniedError(error)) {
         return [];
       }
@@ -697,22 +631,14 @@ export const UserService = {
     try {
       const q = query(collection(db, 'public_profiles'));
       const querySnapshot = await getDocs(q);
-      let all = querySnapshot.docs
+      const all = querySnapshot.docs
         .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
-        .filter(
-          (profile): profile is UserProfile =>
-            profile !== null && !profile.isDeleted && !profile.isBlocked,
+        .filter((profile): profile is UserProfile =>
+          profile !== null &&
+          profile.isProvider === true &&
+          !profile.isDeleted &&
+          !profile.isBlocked,
         );
-
-      if (all.length === 0) {
-        const legacySnapshot = await getDocs(query(collection(db, 'users')));
-        all = legacySnapshot.docs
-          .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
-          .filter(
-            (profile): profile is UserProfile =>
-              profile !== null && !profile.isDeleted && !profile.isBlocked,
-          );
-      }
 
       const searchTokens = term.toLowerCase().split(' ').filter(t => t.length > 0);
 
@@ -741,63 +667,9 @@ export const UserService = {
           
         return matchesSearch && matchesLocation;
       }).sort((a, b) => {
-        // Prioritize providers in public search results.
-        if (a.isProvider && !b.isProvider) return -1;
-        if (!a.isProvider && b.isProvider) return 1;
-        return 0;
+        return sortProvidersByFeaturedRanking([a, b])[0] === a ? -1 : 1;
       });
     } catch (error) {
-      if (isPermissionDeniedError(error) && canUseLegacyPublicUsersFallback()) {
-        const legacyPath = 'users';
-
-        try {
-          const legacySnapshot = await getDocs(query(collection(db, 'users')));
-          const all = legacySnapshot.docs
-            .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
-            .filter(
-              (profile): profile is UserProfile =>
-                profile !== null && !profile.isDeleted && !profile.isBlocked,
-            );
-
-          const searchTokens = term.toLowerCase().split(' ').filter(t => t.length > 0);
-
-          return all.filter((p: UserProfile) => {
-            const matchesSearch = searchTokens.length === 0 || searchTokens.every(token => {
-              return (
-                p.name.toLowerCase().includes(token) ||
-                (p.category && p.category.toLowerCase().includes(token)) ||
-                (p.serviceType && p.serviceType.toLowerCase().includes(token)) ||
-                (p.companyName && p.companyName.toLowerCase().includes(token)) ||
-                (p.bio && p.bio.toLowerCase().includes(token))
-              );
-            });
-
-            const normalizedLocation = p.location?.toLowerCase() || '';
-            const cityFilter = location?.city?.toLowerCase().trim();
-            const stateFilter = location?.state?.toLowerCase().trim();
-            const hasLocationFilter = Boolean(cityFilter || stateFilter);
-
-            const matchesCity = !cityFilter || normalizedLocation.includes(cityFilter);
-            const matchesState = !stateFilter || normalizedLocation.includes(stateFilter);
-            const matchesLocation =
-              !hasLocationFilter ||
-              (normalizedLocation && matchesCity && matchesState) ||
-              (!normalizedLocation && searchTokens.length > 0);
-
-            return matchesSearch && matchesLocation;
-          }).sort((a, b) => {
-            if (a.isProvider && !b.isProvider) return -1;
-            if (!a.isProvider && b.isProvider) return 1;
-            return 0;
-          });
-        } catch (legacyError) {
-          if (!isPermissionDeniedError(legacyError)) {
-            handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
-          }
-          return [];
-        }
-      }
-
       if (isPermissionDeniedError(error)) {
         return [];
       }
@@ -812,47 +684,14 @@ export const UserService = {
     try {
       const q = query(collection(db, 'public_profiles'));
       const querySnapshot = await getDocs(q);
-      const publicProfiles = sortProvidersByFeaturedRanking(
+      return sortProvidersByFeaturedRanking(
         filterVisibleProviders(
           querySnapshot.docs.map((doc) =>
             toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
           ),
         ),
       );
-
-      if (publicProfiles.length > 0) {
-        return publicProfiles;
-      }
-
-      const legacySnapshot = await getDocs(query(collection(db, 'users'), where('isProvider', '==', true)));
-      return sortProvidersByFeaturedRanking(
-        filterVisibleProviders(
-          legacySnapshot.docs.map((doc) =>
-            toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
-          ),
-        ),
-      );
     } catch (error) {
-      if (isPermissionDeniedError(error) && canUseLegacyPublicUsersFallback()) {
-        const legacyPath = 'users';
-
-        try {
-          const legacySnapshot = await getDocs(query(collection(db, 'users'), where('isProvider', '==', true)));
-          return sortProvidersByFeaturedRanking(
-            filterVisibleProviders(
-              legacySnapshot.docs.map((doc) =>
-                toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
-              ),
-            ),
-          );
-        } catch (legacyError) {
-          if (!isPermissionDeniedError(legacyError)) {
-            handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
-          }
-          return [];
-        }
-      }
-
       if (isPermissionDeniedError(error)) {
         return [];
       }
@@ -874,42 +713,8 @@ export const UserService = {
           (profile): profile is UserProfile =>
             profile !== null && !profile.isDeleted && !profile.isBlocked,
         );
-
-      if (publicProfiles.length > 0) {
-        return publicProfiles;
-      }
-
-      const legacySnapshot = await getDocs(
-        query(collection(db, 'users'), where('uid', 'in', uids.slice(0, 10))),
-      );
-      return legacySnapshot.docs
-        .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
-        .filter(
-          (profile): profile is UserProfile =>
-            profile !== null && !profile.isDeleted && !profile.isBlocked,
-        );
+      return publicProfiles;
     } catch (error) {
-      if (isPermissionDeniedError(error) && canUseLegacyPublicUsersFallback()) {
-        const legacyPath = 'users';
-
-        try {
-          const legacySnapshot = await getDocs(
-            query(collection(db, 'users'), where('uid', 'in', uids.slice(0, 10))),
-          );
-          return legacySnapshot.docs
-            .map((doc) => toPublicProfileModel(toPlainValue(doc.data() as UserProfile)))
-            .filter(
-              (profile): profile is UserProfile =>
-                profile !== null && !profile.isDeleted && !profile.isBlocked,
-            );
-        } catch (legacyError) {
-          if (!isPermissionDeniedError(legacyError)) {
-            handleFirestoreError(legacyError, OperationType.LIST, legacyPath);
-          }
-          return [];
-        }
-      }
-
       if (isPermissionDeniedError(error)) {
         return [];
       }
@@ -1036,10 +841,10 @@ export const UserService = {
         companyName: 'Oliveira Reparos',
         bio: 'Profissional com 15 anos de experiência em manutenção residencial e predial.',
         whatsapp: '11988887777',
+        baptismYear: 2008,
         rating: 4.8,
         reviewCount: 12,
         role: 'user',
-        verifiedMember: true,
         photoURL: 'https://picsum.photos/seed/ricardo/200',
         bannerURL: 'https://picsum.photos/seed/ricardo_banner/800/200'
       },
@@ -1055,10 +860,10 @@ export const UserService = {
         companyName: 'Ana Doces',
         bio: 'Faço bolos para casamentos, aniversários e eventos especiais com ingredientes de primeira.',
         whatsapp: '41999998888',
+        baptismYear: 2012,
         rating: 5.0,
         reviewCount: 25,
         role: 'user',
-        verifiedMember: true,
         photoURL: 'https://picsum.photos/seed/ana/200',
         bannerURL: 'https://picsum.photos/seed/ana_banner/800/200'
       },
@@ -1077,7 +882,6 @@ export const UserService = {
         rating: 4.9,
         reviewCount: 8,
         role: 'user',
-        verifiedMember: false,
         photoURL: 'https://picsum.photos/seed/marcos/200',
         bannerURL: 'https://picsum.photos/seed/marcos_banner/800/200'
       },
@@ -1093,10 +897,10 @@ export const UserService = {
         companyName: 'Brilho Total',
         bio: 'Serviço de limpeza detalhado e confiável para sua casa ou escritório.',
         whatsapp: '21966665555',
+        baptismYear: 2005,
         rating: 4.7,
         reviewCount: 15,
         role: 'user',
-        verifiedMember: true,
         photoURL: 'https://picsum.photos/seed/juliana/200',
         bannerURL: 'https://picsum.photos/seed/juliana_banner/800/200'
       },
@@ -1115,7 +919,6 @@ export const UserService = {
         rating: 4.6,
         reviewCount: 10,
         role: 'user',
-        verifiedMember: false,
         photoURL: 'https://picsum.photos/seed/paulo/200',
         bannerURL: 'https://picsum.photos/seed/paulo_banner/800/200'
       }
@@ -1158,6 +961,7 @@ export const UserService = {
         const userRef = doc(db, 'users', toId);
         const publicProfileRef = doc(db, 'public_profiles', toId);
         const userSnap = await transaction.get(userRef);
+        const publicProfileSnap = await transaction.get(publicProfileRef);
         
         if (!userSnap.exists()) throw new Error('Usuário não encontrado');
         
@@ -1186,14 +990,16 @@ export const UserService = {
           reviewCount: newCount
         });
 
-        transaction.set(
-          publicProfileRef,
-          {
-            rating: Number(newRating.toFixed(1)),
-            reviewCount: newCount,
-          },
-          { merge: true },
-        );
+        if (publicProfileSnap.exists()) {
+          transaction.set(
+            publicProfileRef,
+            {
+              rating: Number(newRating.toFixed(1)),
+              reviewCount: newCount,
+            },
+            { merge: true },
+          );
+        }
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, 'transaction/rating');

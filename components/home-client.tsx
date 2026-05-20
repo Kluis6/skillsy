@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Star, Briefcase, ShieldCheck } from "lucide-react";
+import { MapPin, Star, Briefcase } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -134,9 +134,6 @@ export function HomeClient({
                           <div className="flex flex-col">
                             <CardTitle className="text-base md:text-xl flex justify-start gap-x-1 md:gap-x-2 items-center font-bold text-text-main">
                               {p.name}
-                              {p.verifiedMember && (
-                                <ShieldCheck className="size-4 md:size-5 text-blue-500" />
-                              )}
                             </CardTitle>
                             <CardDescription className="md:text-base text-xs flex items-center gap-1">
                               <MapPin size={12} /> {p.location || "Brasil"}

@@ -732,9 +732,6 @@ function SearchResultsContent() {
                                     <h3 className="text-base md:text-2xl font-bold text-text-main  font-heading">
                                       {p.name}
                                     </h3>
-                                    {p.verifiedMember && (
-                                      <ShieldCheck className="text-primary size-4 md:size-6" />
-                                    )}
                                   </div>
 
                                   <div className="">
@@ -752,12 +749,6 @@ function SearchResultsContent() {
                                     <div className="flex items-center space-x-1">
                                       <p className="text-gray-700 block md:hidden font-medium text-xs md:text-sm">
                                         {p.location || "Brasil"}
-                                      </p>
-                                      <span className="font-bold block md:hidden">
-                                        ·
-                                      </span>
-                                      <p className="text-gray-700 font-medium text-xs md:text-sm">
-                                        {p.ward}
                                       </p>
                                     </div>
                                   </div>
@@ -1058,9 +1049,6 @@ function SearchResultsContent() {
                                       <h3 className="text-base md:text-2xl font-bold text-text-main  font-heading">
                                         {p.name}
                                       </h3>
-                                      {p.verifiedMember && (
-                                        <ShieldCheck className="text-primary size-4 md:size-6" />
-                                      )}
                                     </div>
 
                                     <div className="">
@@ -1078,12 +1066,6 @@ function SearchResultsContent() {
                                       <div className="flex items-center space-x-1">
                                         <p className="text-gray-700 block md:hidden font-medium text-xs md:text-sm">
                                           {p.location || "Brasil"}
-                                        </p>
-                                        <span className="font-bold block md:hidden">
-                                          ·
-                                        </span>
-                                        <p className="text-gray-700 font-medium text-xs md:text-sm">
-                                          {p.ward}
                                         </p>
                                       </div>
                                     </div>

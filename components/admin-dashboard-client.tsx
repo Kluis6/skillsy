@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { shouldShowVerifiedBadge } from '@/lib/member-verification';
 
 export function AdminDashboardClient() {
   const { profile, loading: authLoading } = useAuth();
@@ -92,7 +93,7 @@ export function AdminDashboardClient() {
           <Card className="bg-card border-none shadow-sm rounded-3xl overflow-hidden">
             <CardHeader className="pb-2">
               <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Membros Verificados</CardDescription>
-              <CardTitle className="text-4xl font-bold font-heading">{loading ? '...' : users.filter(u => u.verifiedMember).length}</CardTitle>
+              <CardTitle className="text-4xl font-bold font-heading">{loading ? '...' : users.filter(shouldShowVerifiedBadge).length}</CardTitle>
             </CardHeader>
             <div className="h-1 bg-amber-500 w-full opacity-20" />
           </Card>

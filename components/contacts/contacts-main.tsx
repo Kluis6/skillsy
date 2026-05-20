@@ -314,9 +314,6 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 font-heading tracking-tight">
                           {selectedContact.name}
                         </h2>
-                        {selectedContact.verifiedMember && (
-                          <ShieldCheck size={24} className="text-primary" />
-                        )}
                       </div>
 
                       <div className="text-center md:text-left md:flex flex-col hidden">
@@ -354,12 +351,6 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                       </p>
                     </div>
 
-                    <div className="text-center md:text-left flex items-center justify-center md:justify-start text-primary space-x-2">
-                      <LuChurch size={14} />
-                      <p className="text-primary font-medium truncate text-sm">
-                        {selectedContact.ward || "Geral"}
-                      </p>
-                    </div>
                   </div>
 
                   <div className="flex md:hidden flex-wrap justify-center gap-2">

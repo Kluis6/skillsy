@@ -37,7 +37,6 @@ export interface UserProfile {
   baptismYear?: number;
   availability?: string[];
   serviceHours?: string;
-  verifiedMember?: boolean;
   isBlocked?: boolean;
   isDeleted?: boolean;
   deletedByUser?: boolean;

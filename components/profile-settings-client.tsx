@@ -62,6 +62,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LocationService } from "@/services/location-service";
 import { Footer } from "./footer";
+import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 
 const MAX_IMAGE_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
 const MAX_INLINE_IMAGE_SIZE_BYTES = 100 * 1024;
@@ -487,7 +488,7 @@ export function ProfileSettingsClient() {
                     {formData.name || "Seu Nome"}
                   </h2>
                   <p className="text-sm text-text-muted mb-4">{user.email}</p>
-                  {profile?.verifiedMember && (
+                  {shouldShowVerifiedBadge(profile) && (
                     <Badge className="bg-primary/10 text-primary border-none font-bold px-4 py-1.5 rounded-full flex items-center gap-2">
                       <ShieldCheck size={14} /> Membro Verificado
                     </Badge>
@@ -639,8 +640,8 @@ export function ProfileSettingsClient() {
                         </p>
                       )}
                       <p className="text-[10px] text-primary/60 font-medium ml-1">
-                        Este campo ajuda a completar seu perfil, mas o selo de
-                        verificação segue as regras de moderação da plataforma.
+                        Preencha junto com a ala ou ramo para exibir o selo de
+                        membro verificado no perfil.
                       </p>
                     </div>
                   </div>

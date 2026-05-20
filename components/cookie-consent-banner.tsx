@@ -17,7 +17,7 @@ export function CookieConsentBanner() {
   useEffect(() => {
     const syncVisibility = window.setTimeout(() => {
       setVisible(readCookieConsent() === null);
-    }, 0);
+    }, 3500);
 
     const handleOpenPreferences = () => {
       setVisible(true);
@@ -52,14 +52,7 @@ export function CookieConsentBanner() {
 
         <div className="space-y-4 px-5 py-4 text-sm text-slate-700 md:px-6 md:py-5">
           <p>
-            Usamos cookies e armazenamento local para manter recursos essenciais da plataforma
-            e, com a sua permissao, lembrar preferencias de experiencia, como o estado da
-            barra lateral. Voce pode recusar cookies nao essenciais sem perder o acesso ao
-            site.
-          </p>
-
-          <p>
-            Saiba mais na nossa{" "}
+            Esta plataforma salva cookies. Mais informacoes estao na nossa{" "}
             <Link
               className="font-semibold text-blue-700 underline underline-offset-4"
               href="/privacidade"
@@ -76,14 +69,14 @@ export function CookieConsentBanner() {
               className="border-slate-300"
               onClick={() => handleChoice("rejected")}
             >
-              Recusar nao essenciais
+              Fechar
             </Button>
             <Button
               type="button"
               className="bg-blue-600 text-white hover:bg-blue-700"
               onClick={() => handleChoice("accepted")}
             >
-              Aceitar preferencias
+              Entendi
             </Button>
           </div>
         </div>

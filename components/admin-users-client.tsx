@@ -95,6 +95,7 @@ import {
 import { LocationService } from '@/services/location-service';
 import { BRAZIL_STATES } from '@/lib/brazil-states';
 import { REPORT_REASON_LABELS } from '@/lib/reporting';
+import { shouldShowVerifiedBadge } from '@/lib/member-verification';
 
 const ADMIN_FORM_LIMITS = {
   name: 50,
@@ -151,7 +152,6 @@ export function AdminUsersClient() {
       serviceHours: '',
       role: 'user',
       isProvider: false,
-      verifiedMember: false,
       isBlocked: false,
     }
   });
@@ -288,7 +288,6 @@ export function AdminUsersClient() {
       serviceType: user.serviceType || '',
       role: user.role as 'user' | 'admin',
       isProvider: user.isProvider || false,
-      verifiedMember: user.verifiedMember || false,
       isBlocked: user.isBlocked || false,
       baptismYear: baptismYearValue && !isNaN(baptismYearValue) ? baptismYearValue : null,
       availability: user.availability || [],
@@ -355,16 +354,6 @@ export function AdminUsersClient() {
       fetchUsers();
     } catch (error) {
       toast.error('Erro ao alterar status do usuário');
-    }
-  };
-
-  const handleToggleVerify = async (user: UserProfile) => {
-    try {
-      await UserService.adminUpdateUser(user.uid, { verifiedMember: !user.verifiedMember });
-      toast.success(user.verifiedMember ? 'Verificação removida' : 'Usuário verificado');
-      fetchUsers();
-    } catch (error) {
-      toast.error('Erro ao alterar verificação');
     }
   };
 
@@ -542,7 +531,7 @@ export function AdminUsersClient() {
                           <div className="flex flex-col">
                             <span className="font-bold text-text-main flex items-center gap-1">
                               {u.name}
-                              {u.verifiedMember && <ShieldCheck size={14} className="text-primary" />}
+                              {shouldShowVerifiedBadge(u) && <ShieldCheck size={14} className="text-primary" />}
                               {u.role === 'admin' && <Badge variant="secondary" className="text-[8px] h-4 px-1 bg-red-50 text-red-500 border-red-100">Admin</Badge>}
                             </span>
                             <span className="text-xs text-text-muted flex items-center gap-1"><Mail size={10} /> {u.email}</span>
@@ -631,9 +620,6 @@ export function AdminUsersClient() {
                               <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-text-muted px-3 py-2">Gerenciar</DropdownMenuLabel>
                               <DropdownMenuItem onClick={() => handleEditClick(u)} className="rounded-xl cursor-pointer focus:bg-primary/5 focus:text-primary">
                                 <Edit3 size={16} className="mr-2" /> Editar Perfil
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleToggleVerify(u)} className="rounded-xl cursor-pointer focus:bg-primary/5 focus:text-primary">
-                                <ShieldCheck size={16} className="mr-2" /> {u.verifiedMember ? 'Remover Verificação' : 'Verificar Membro'}
                               </DropdownMenuItem>
                               <DropdownMenuSeparator className="bg-border-subtle my-1" />
                               <DropdownMenuItem 
@@ -837,6 +823,9 @@ export function AdminUsersClient() {
                   className="bg-surface border-none rounded-2xl h-12"
                 />
                 {editForm.formState.errors.baptismYear && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.baptismYear.message}</p>}
+                <p className="text-[10px] text-primary/70 ml-2">
+                  Com o ano de batismo e a ala ou ramo preenchidos, o selo é exibido automaticamente.
+                </p>
               </div>
 
               <div className="md:col-span-2 space-y-4 pt-2">
@@ -950,14 +939,6 @@ export function AdminUsersClient() {
                   onCheckedChange={(checked) => editForm.setValue('isProvider', checked)}
                 />
                 <Label htmlFor="edit-isProvider" className="text-sm font-bold cursor-pointer">Prestador de Serviço</Label>
-              </div>
-              <div className="flex items-center gap-3">
-                <Switch 
-                  id="edit-verified" 
-                  checked={editForm.watch('verifiedMember')}
-                  onCheckedChange={(checked) => editForm.setValue('verifiedMember', checked)}
-                />
-                <Label htmlFor="edit-verified" className="text-sm font-bold cursor-pointer">Membro Verificado</Label>
               </div>
               <div className="flex items-center gap-3">
                 <Switch 

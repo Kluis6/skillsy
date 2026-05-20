@@ -9,26 +9,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  ArrowLeft,
   UserPlus,
   MapPin,
   Briefcase,
   Star,
-  ShieldCheck,
   Info,
   Building2,
-  Phone,
-  Church,
-  Users,
-  Plus,
-  ChevronRight,
-  Navigation,
   Camera,
   Globe,
-  Instagram,
-  Facebook,
-  Linkedin,
-  MessageCircle,
   Copy,
   CalendarDays,
   Clock,
@@ -37,8 +25,6 @@ import {
 import { motion } from "motion/react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
@@ -85,27 +71,6 @@ interface ProfileDetailClientProps {
   initialProfile: UserProfile | null;
 }
 
-interface BusinessAddressMapProps {
-  query: string;
-}
-
-function BusinessAddressMap({ query }: BusinessAddressMapProps) {
-  const encodedQuery = encodeURIComponent(query);
-  const mapsEmbedUrl = `https://www.google.com/maps?q=${encodedQuery}&z=15&output=embed`;
-
-  return (
-    <div className="overflow-hidden rounded-md border border-border-subtle ">
-      <iframe
-        title={`Mapa de ${query}`}
-        src={mapsEmbedUrl}
-        className="h-60 w-full"
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-      />
-    </div>
-  );
-}
-
 export function ProfileDetailClient({
   id,
   initialProfile,
@@ -145,6 +110,11 @@ export function ProfileDetailClient({
   const canUseNativeShare =
     typeof navigator !== "undefined" && "share" in navigator;
   const canReportProfile = Boolean(targetProfile && targetProfile.uid !== user?.uid);
+  const canRateProfile = Boolean(
+    targetProfile &&
+      targetProfile.isProvider &&
+      user?.uid !== targetProfile.uid,
+  );
 
   useEffect(() => {
     // We only need to fetch if we don't have the profile yet or to get fresh data
@@ -519,14 +489,6 @@ export function ProfileDetailClient({
     targetProfile?.website,
   );
 
-  const hasBusinessAddress = Boolean(
-    targetProfile?.businessAddress ||
-    targetProfile?.businessAddressNumber ||
-    targetProfile?.businessNeighborhood ||
-    targetProfile?.businessState ||
-    targetProfile?.businessComplement,
-  );
-
   const availabilityDays = (targetProfile?.availability || []).filter((day) =>
     AVAILABILITY_OPTIONS.includes(day as (typeof AVAILABILITY_OPTIONS)[number]),
   );
@@ -534,15 +496,6 @@ export function ProfileDetailClient({
   const hasAvailabilityInfo = Boolean(
     availabilityDays.length || targetProfile?.serviceHours?.trim(),
   );
-
-  const businessAddressQuery = [
-    targetProfile?.businessAddress,
-    targetProfile?.businessAddressNumber,
-    targetProfile?.businessNeighborhood,
-    targetProfile?.businessState,
-  ]
-    .filter(Boolean)
-    .join(", ");
 
   const handleRate = async (score: number) => {
     if (!user) {
@@ -555,6 +508,13 @@ export function ProfileDetailClient({
     if (user.uid === id) {
       toast.error("Ação inválida", {
         description: "Você não pode avaliar seu próprio perfil.",
+      });
+      return;
+    }
+
+    if (!targetProfile?.isProvider) {
+      toast.error("Avaliação indisponível", {
+        description: "Este perfil não está público para avaliações.",
       });
       return;
     }
@@ -631,7 +591,7 @@ export function ProfileDetailClient({
         <Info size={64} className="text-text-muted mb-6" />
         <h1 className="text-3xl font-bold mb-4">Perfil não encontrado</h1>
         <p className="text-text-muted mb-8">
-          O usuário que você procura não existe ou o link está incorreto.
+          Este perfil não está disponível publicamente no momento ou o link informado está incorreto.
         </p>
         <Link href="/">
           <Button className="bg-primary text-white font-bold rounded-xl px-8">
@@ -755,9 +715,6 @@ export function ProfileDetailClient({
                       <h2 className="text-xl md:text-3xl font-bold text-text-main leading-tight">
                         {targetProfile.name}
                       </h2>
-                      {targetProfile.verifiedMember && (
-                        <ShieldCheck className="text-primary size-5 md:size-7" />
-                      )}
                     </div>
 
                     <p className="text-base text-gray-600 font-normal">
@@ -795,25 +752,6 @@ export function ProfileDetailClient({
                         </p>
                       </div>
                     )}
-                    <div className="flex space-x-2">
-                      {targetProfile.ward && (
-                        <div className="flex items-center space-x-2">
-                          <Church size={18} className="text-primary" />
-                          <p className="text-sm text-primary font-medium">
-                            {targetProfile.ward}
-                          </p>
-                        </div>
-                      )}
-                      <span className="font-bold block text-gray-900">·</span>
-                      {targetProfile.baptismYear && (
-                        <p className="text-sm text-gray-800 font-normal">
-                          {targetProfile.baptismYear ===
-                          new Date().getFullYear()
-                            ? `Membro desde ${targetProfile.baptismYear}`
-                            : `Membro há ${new Date().getFullYear() - targetProfile.baptismYear} anos`}
-                        </p>
-                      )}
-                    </div>
                   </div>
 
                   <div className="flex flex-col w-full sm:w-auto">
@@ -954,6 +892,7 @@ export function ProfileDetailClient({
                 </div>
               </div>
             )}
+            {targetProfile.isProvider && (
             <div className=" bg-white w-full border-y md:border-l border-l-0 ">
               <div className="h-full w-full p-4 mx-auto container md:pe-7 space-y-4">
                 <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
@@ -986,9 +925,7 @@ export function ProfileDetailClient({
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button
                           key={star}
-                          disabled={
-                            submittingRating || user?.uid === targetProfile.uid
-                          }
+                          disabled={!canRateProfile || submittingRating}
                           onMouseEnter={() => setRatingHover(star)}
                           onMouseLeave={() => setRatingHover(0)}
                           onClick={() => handleRate(star)}
@@ -1013,61 +950,10 @@ export function ProfileDetailClient({
                 </div>
               </div>
             </div>
+            )}
           </div>
 
           <div className="w-full flex flex-col md:flex-row gap-2">
-            {hasAvailabilityInfo && (
-              <div className=" bg-white w-full border-y md:border-r border-r-0">
-                <div className="h-full w-full md:ps-7 p-4 mx-auto container ">
-                  {hasBusinessAddress && (
-                    <div className="flex flex-col space-y-4">
-                      <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
-                        Endereço Comercial
-                      </h3>
-                      <div className="flex flex-col gap-4 w-full">
-                        <div className="w-full space-y-1">
-                          {(targetProfile.businessAddress ||
-                            targetProfile.businessAddressNumber) && (
-                            <p className="text-sm md:text-base text-gray-700 font-medium leading-tight">
-                              {[
-                                targetProfile.businessAddress,
-                                targetProfile.businessAddressNumber,
-                              ]
-                                .filter(Boolean)
-                                .join(", ")}
-                            </p>
-                          )}
-                          {targetProfile.businessComplement && (
-                            <p className="text-xs md:text-sm font-normal text-gray-700">
-                              {targetProfile.businessComplement}
-                            </p>
-                          )}
-
-                          <div className="flex space-x-2">
-                            {targetProfile.businessNeighborhood && (
-                              <p className="text-xs md:text-sm font-normal text-gray-700">
-                                {targetProfile.businessNeighborhood}
-                              </p>
-                            )}
-                            {targetProfile.businessState && (
-                              <p className="text-xs md:text-sm font-bold text-gray-700 uppercase tracking-wider">
-                                {targetProfile.businessState}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="w-full h-full">
-                          {businessAddressQuery && (
-                            <BusinessAddressMap query={businessAddressQuery} />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
             <div className=" bg-white w-full border-y md:border-l border-l-0 ">
               <div className="h-full w-full p-4 mx-auto container md:pe-7">
                 {hasContactInfo && (
