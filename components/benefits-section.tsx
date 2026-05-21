@@ -55,7 +55,7 @@ export function BenefitsSection() {
               className="lg:space-y-12 space-y-8 text-center lg:text-start justify-center lg:items-start flex flex-col w-full"
             >
               <div className="space-y-2">
-                <h2 className="text-xl sm:text-2xl md:text-3xl xl:text-5xl font-bold text-text-main leading-tight text-center lg:text-start">
+                <h2 className="text-xl sm:text-2xl md:text-3xl xl:text-4xl font-bold text-text-main leading-tight text-center lg:text-start">
                   Por que fazer <br className="hidden lg:flex" /> parte da
                   <span className="text-primary"> Skillsy ?</span>
                 </h2>
@@ -70,7 +70,7 @@ export function BenefitsSection() {
                 <AuthModal>
                   <Button
                     variant="default"
-                    className="w-fit bg-primary text-white shadow-2xl shadow-primary border-0 rounded-full px-10 h-10 md:h-14 font-bold text-sm md:text-base lg:text-lg group"
+                    className="w-fit bg-primary text-white hover:shadow-2xl shadow-primary border-0 rounded-full px-10 h-10 md:h-14 font-bold text-sm md:text-base lg:text-lg group"
                   >
                     Criar minha conta agora
                     <ArrowRight
@@ -98,9 +98,9 @@ export function BenefitsSection() {
                 className={`lg:p-8 md:p-6 p-4 flex flex-col space-y-4 md:space-y-6 rounded-xl border border-border-subtle bg-white transition-all hover:shadow-xl hover:shadow-primary/5 group ${idx % 3 === 0 ? "md:col-span-1" : ""}`}
               >
                 <div
-                  className={`size-12 md:size-14 ${benefit.bg} ${benefit.color} rounded-md flex items-center justify-center  group-hover:scale-110 transition-transform duration-300`}
+                  className={`size-12 md:size-14 xl:size-14 ${benefit.bg} ${benefit.color} rounded-md flex items-center justify-center  group-hover:scale-110 transition-transform duration-300`}
                 >
-                  <benefit.icon className="lg:size-9 size-7" />
+                  <benefit.icon className="lg:size-8 size-6" />
                 </div>
 
                 <div>

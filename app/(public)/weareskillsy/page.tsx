@@ -34,21 +34,21 @@ const principles = [
     description:
       "A plataforma existe para abrir espaço para talentos locais, ampliar visibilidade e gerar oportunidades reais.",
     icon: Sparkles,
-    tone: "bg-red-500/10 text-red-500 border-red-500/10",
+    tone: "bg-red-50 text-red-500",
   },
   {
     title: "Serviço",
     description:
       "Acreditamos que trabalho bem-feito, disponibilidade para ajudar e responsabilidade prática fortalecem a vida em comunidade.",
     icon: HeartHandshake,
-    tone: "bg-yellow-500/15 text-yellow-500 border-yellow-500/10",
+    tone: "bg-yellow-50 text-yellow-500",
   },
   {
     title: "Confiança",
     description:
       "Queremos facilitar conexões mais seguras, claras e respeitosas entre pessoas que buscam ou oferecem serviços.",
     icon: ShieldCheck,
-    tone: "bg-blue-500/15 text-blue-500 border-blue-500/10",
+    tone: "bg-blue-50 text-blue-500",
   },
 ];
 
@@ -124,7 +124,7 @@ export default function WeAreSkillsyPage() {
         imageItems={headerImageItems}
       />
 
-      <div className="mx-auto px-4 container w-full z-[99999] isolate -mt-8 mb-16">
+      <div className="mx-auto px-4 container w-full z-[99999] isolate -mt-14 lg:-mt-10 mb-16">
         <div className="w-full xl:p-8 p-4 bg-white z-50 shadow-2xl rounded-lg ">
           <div className="grid grid-cols-12 gap-2 md:gap-4 md:gap-y-8 xl:gap-8 gap-y-8">
             <div className="col-span-12 space-y-4">
@@ -140,17 +140,22 @@ export default function WeAreSkillsyPage() {
             {principles.map((principle) => (
               <div
                 key={principle.title}
-                className={`rounded-md ${principle.tone} col-span-12 md:col-span-4 p-4 border`}
+                className={`rounded-md col-span-12 lg:col-span-4 p-4 border space-y-4`}
               >
-                <div className="mb-4 flex size-12 items-center justify-center rounded-sm bg-white shadow-2xl">
+                <div
+                  className={`${principle.tone} flex size-12 items-center justify-center rounded-sm shadow-2xl`}
+                >
                   <principle.icon size={22} />
                 </div>
-                <h2 className="mb-3 text-xl font-bold text-text-main">
-                  {principle.title}
-                </h2>
-                <p className="text-sm leading-relaxed text-text-muted">
-                  {principle.description}
-                </p>
+
+                <div className="">
+                  <h2 className="text-xl font-bold text-text-main">
+                    {principle.title}
+                  </h2>
+                  <p className="text-sm leading-relaxed text-text-muted">
+                    {principle.description}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -164,38 +169,44 @@ export default function WeAreSkillsyPage() {
               O que o Skillsy é
             </h3>
           </div>
-          <div className="col-span-12 md:col-span-4 h-full w-full">
-            <div className="rounded-xl bg-blue-600 p-6 h-full">
-              <h3 className="font-bold text-white text-base">
-                Uma plataforma de conexões
-              </h3>
-              <p className="mt-2 text-sm font-normal text-gray-50">
-                A Skillsy ajuda pessoas a encontrar e apresentar serviços com
-                mais proximidade, contexto e confiança.
-              </p>
+          <div className="col-span-12 md:col-span-12 lg:col-span-4">
+            <div className="rounded-xl bg-cover relative h-[50vh] overflow-hidden bg-[url(/Gemini_Generated_Image_5g468e5g468e5g46.png)]">
+              <div className="bottom-0 absolute bg-black/80 w-full left-0 p-4">
+                <h3 className="font-bold text-white text-base">
+                  Uma plataforma de conexões
+                </h3>
+                <p className="mt-2 text-sm font-normal text-gray-50">
+                  A Skillsy ajuda pessoas a encontrar e apresentar serviços com
+                  mais proximidade, contexto e confiança.
+                </p>
+              </div>
             </div>
           </div>
-          <div className="col-span-12 md:col-span-4">
-            <div className="rounded-xl bg-blue-600 h-full p-6">
-              <h3 className="font-bold text-white text-base">
-                Um espaço para visibilidade de talentos
-              </h3>
-              <p className="mt-2 text-sm font-normal text-gray-50">
-                Profissionais, empreendedores e pessoas com habilidades úteis
-                podem divulgar melhor aquilo que fazem.
-              </p>
+          <div className="col-span-12 md:col-span-6 lg:col-span-4">
+            <div className="rounded-xl bg-cover relative h-[50vh] overflow-hidden bg-[url(/Gemini_Generated_Image_bgs04bbgs04bbgs0.png)]">
+              <div className="bottom-0 absolute bg-black/80 w-full left-0 p-4">
+                <h3 className="font-bold text-white text-base">
+                  Um espaço para visibilidade de talentos
+                </h3>
+                <p className="mt-2 text-sm font-normal text-gray-50">
+                  Profissionais, empreendedores e pessoas com habilidades úteis
+                  podem divulgar melhor aquilo que fazem.
+                </p>
+              </div>
             </div>
           </div>
-          <div className="col-span-12 md:col-span-4">
-            <div className="rounded-xl bg-blue-600 p-6">
-              <h3 className="font-bold text-white text-base">
-                Uma iniciativa de apoio mútuo
-              </h3>
-              <p className="mt-2 text-sm font-normal text-gray-50">
-                Quando uma contratação acontece com confiança, mais gente é
-                beneficiada: quem presta o serviço, quem contrata e a rede ao
-                redor.
-              </p>
+          <div className="col-span-12 md:col-span-6 lg:col-span-4">
+            <div className="rounded-xl bg-cover relative h-[50vh] overflow-hidden bg-[url(/Gemini_Generated_Image_dzdzcqdzdzcqdzdz.png)]">
+              <div className="bottom-0 absolute bg-black/80 w-full left-0 p-4">
+                <h3 className="font-bold text-white text-base">
+                  Uma iniciativa de apoio mútuo
+                </h3>
+                <p className="mt-2 text-sm font-normal text-gray-50">
+                  Quando uma contratação acontece com confiança, mais gente é
+                  beneficiada: quem presta o serviço, quem contrata e a rede ao
+                  redor.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -250,8 +261,8 @@ export default function WeAreSkillsyPage() {
 
       <section className="container mx-auto px-4 my-24">
         <div className="grid grid-cols-12 gap-4 md:gap-8">
-          <div className="col-span-12 md:col-span-4">
-            <div className=" space-y-4">
+          <div className="col-span-12 lg:col-span-4">
+            <div className="space-y-4">
               <h2 className="text-xl 2xl:text-2xl font-bold text-gray-900">
                 Os valores que guiam a plataforma
               </h2>
@@ -262,7 +273,7 @@ export default function WeAreSkillsyPage() {
               </p>
             </div>
           </div>
-          <div className="col-span-12 md:col-span-8">
+          <div className="col-span-12 lg:col-span-8">
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               {values.map((value) => (
                 <div key={value.title} className="md:col-span-4 col-span-12">
@@ -282,13 +293,11 @@ export default function WeAreSkillsyPage() {
             </div>
           </div>
         </div>
-
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3"></div>
       </section>
 
       <div className="container mx-auto px-4 my-24">
-        <section className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div className="rounded-xl bg-slate-50 border  p-8 md:p-10 space-y-8">
+        <section className="mt-12 grid grid-cols-12 gap-4 lg:gap-8">
+          <div className="col-span-12 lg:col-span-6 rounded-xl bg-slate-50 border p-8 md:p-10 space-y-8">
             <h2 className="text-2xl font-bold text-gray-900">
               O que o Skillsy não pretende ser
             </h2>
@@ -310,7 +319,7 @@ export default function WeAreSkillsyPage() {
             </div>
           </div>
 
-          <div className="p-8 md:p-10 space-y-7">
+          <div className="p-8 md:p-10 space-y-7 col-span-12 lg:col-span-6">
             <h2 className="text-2xl font-bold text-gray-900">
               Como você pode participar
             </h2>
@@ -327,7 +336,7 @@ export default function WeAreSkillsyPage() {
               </p>
             </div>
 
-            <div className="flex flex-col gap-4 sm:flex-row">
+            <div className="flex flex-col gap-4 xl:flex-row">
               <Link
                 href="/join"
                 className="inline-flex items-center justify-center rounded-full bg-blue-700 px-6 py-3 text-base font-bold text-white transition-colors  w-full"

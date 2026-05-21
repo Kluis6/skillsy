@@ -400,8 +400,8 @@ export function Navbar({
                 title="Faça login ou cria sua conta"
                 className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 w-10 md:w-auto md:px-4 h-10 dark:text-white font-normal"
               >
-                <LuLogIn />
-                <p className="hidden md:block"> Entrar</p>
+                <LuLogIn className="flex md:hidden" />
+                <p className="hidden font-medium md:block"> Entrar</p>
               </Button>
             </AuthModal>
           )}
