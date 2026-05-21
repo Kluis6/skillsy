@@ -79,7 +79,7 @@ export function HomeClient({
             className="lg:space-y-12 space-y-8"
           >
             <div className="text-center space-y-2">
-              <h3 className="text-xl lg:text-2xl font-bold text-text-main font-heading tracking-tight text-center">
+              <h3 className="text-2xl font-bold text-text-main font-heading tracking-tight text-center">
                 Membros em Destaque
               </h3>
               <p className="text-base font-normal text-gray-700">
@@ -189,7 +189,10 @@ export function HomeClient({
             <p className="text-sm text-text-muted"> Possui uma empresa ou presta serviços?</p>
 
             <AuthModal>
-              <button className="text-accent font-bold cursor-pointer hover:underline bg-transparent border-none p-0">
+              <button
+                type="button"
+                className="bg-transparent font-bold text-accent hover:underline"
+              >
                 Cadastre sua Skill agora
               </button>
             </AuthModal>

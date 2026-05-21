@@ -55,7 +55,7 @@ export function BenefitsSection() {
               className="lg:space-y-12 space-y-8 text-center lg:text-start justify-center lg:items-start flex flex-col w-full"
             >
               <div className="space-y-2">
-                <h2 className="text-xl sm:text-2xl md:text-3xl xl:text-4xl font-bold text-text-main leading-tight text-center lg:text-start">
+                <h2 className="text-2xl md:text-3xl xl:text-4xl font-bold text-text-main leading-tight text-center lg:text-start">
                   Por que fazer <br className="hidden lg:flex" /> parte da
                   <span className="text-primary"> Skillsy ?</span>
                 </h2>

@@ -55,7 +55,7 @@ export function ContactCTA() {
       <div className="grid grid-cols-12 gap-y-12 md:gap-8">
         <div className="col-span-12 lg:col-span-6 xl:col-span-7 w-full h-full">
           <div className="space-y-4 justify-center pt-4 lg:pt-0 items-center md:items-start flex flex-col w-full h-full">
-            <h3 className="text-xl lg:text-3xl xl:text-4xl font-bold text-white font-heading tracking-tight text-center">
+            <h3 className="text-2xl lg:text-3xl xl:text-4xl font-bold text-white font-heading tracking-tight text-center">
               Dúvidas ou Sugestões?
             </h3>
             <p className="text-white text-center md:text-start font-normal text-sm md:text-base lg:text-lg">
