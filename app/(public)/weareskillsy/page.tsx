@@ -143,7 +143,7 @@ export default function WeAreSkillsyPage() {
                 className={`rounded-md col-span-12 lg:col-span-4 p-4 border space-y-4`}
               >
                 <div
-                  className={`${principle.tone} flex size-12 items-center justify-center rounded-sm shadow-2xl`}
+                  className={`${principle.tone} flex size-12 items-center justify-center rounded-sm shadow-md`}
                 >
                   <principle.icon size={22} />
                 </div>
@@ -278,7 +278,7 @@ export default function WeAreSkillsyPage() {
               {values.map((value) => (
                 <div key={value.title} className="md:col-span-4 col-span-12">
                   <div className=" border p-4 h-full rounded-md space-y-2 bg-slate-50">
-                    <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700  ">
+                    <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md  ">
                       <value.icon size={22} />
                     </div>
                     <h3 className="text-base font-bold text-gray-800">
@@ -296,9 +296,9 @@ export default function WeAreSkillsyPage() {
       </section>
 
       <div className="container mx-auto px-4 my-24">
-        <section className="mt-12 grid grid-cols-12 gap-4 lg:gap-8">
-          <div className="col-span-12 lg:col-span-6 rounded-xl bg-slate-50 border p-8 md:p-10 space-y-8">
-            <h2 className="text-2xl font-bold text-gray-900">
+        <section className="mt-12 grid grid-cols-12 gap-y-8 gap-4 lg:gap-8">
+          <div className="col-span-12 lg:col-span-6 rounded-xl bg-slate-50 border p-4 md:p-8 lg:p-10 space-y-4">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
               O que o Skillsy não pretende ser
             </h2>
             <div className="space-y-4 text-sm leading-relaxed text-gray-700">
@@ -319,8 +319,8 @@ export default function WeAreSkillsyPage() {
             </div>
           </div>
 
-          <div className="p-8 md:p-10 space-y-7 col-span-12 lg:col-span-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+          <div className="p-4 md:p-8 xl:p-10 space-y-4 col-span-12 lg:col-span-6">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
               Como você pode participar
             </h2>
             <div className="space-y-4 text-sm leading-relaxed text-gray-700">
@@ -356,9 +356,9 @@ export default function WeAreSkillsyPage() {
       </div>
 
       <div className="container mx-auto px-4 mb-24">
-        <section className="rounded-xl border border-amber-200 bg-amber-50 p-6 md:p-8">
-          <div className="max-w-4xl space-y-3">
-            <h2 className="text-lg font-bold text-amber-900">
+        <section className="rounded-xl border border-amber-200 bg-amber-50 p-4 md:p-8">
+          <div className="max-w-4xl space-y-4">
+            <h2 className="text-xl font-bold text-amber-900">
               Comunicado importante
             </h2>
             <p className="text-sm leading-relaxed text-amber-950/90">

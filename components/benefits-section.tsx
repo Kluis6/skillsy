@@ -70,7 +70,7 @@ export function BenefitsSection() {
                 <AuthModal>
                   <Button
                     variant="default"
-                    className="w-fit bg-primary text-white hover:shadow-2xl shadow-primary border-0 rounded-full px-10 h-10 md:h-14 font-bold text-sm md:text-base lg:text-lg group"
+                    className="w-fit bg-primary text-white hover:shadow-2xl shadow-primary border-0 rounded-full px-10 h-12 md:h-14 font-bold text-sm md:text-base lg:text-lg group"
                   >
                     Criar minha conta agora
                     <ArrowRight
@@ -87,7 +87,7 @@ export function BenefitsSection() {
           </div>
 
           {/* Right Side: Bento Grid of Benefits */}
-          <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
             {benefits.map((benefit, idx) => (
               <motion.div
                 key={idx}
@@ -98,7 +98,7 @@ export function BenefitsSection() {
                 className={`lg:p-8 md:p-6 p-4 flex flex-col space-y-4 md:space-y-6 rounded-xl border border-border-subtle bg-white transition-all hover:shadow-xl hover:shadow-primary/5 group ${idx % 3 === 0 ? "md:col-span-1" : ""}`}
               >
                 <div
-                  className={`size-12 md:size-14 xl:size-14 ${benefit.bg} ${benefit.color} rounded-md flex items-center justify-center  group-hover:scale-110 transition-transform duration-300`}
+                  className={`size-12 md:size-14 xl:size-14 shadow-sm ${benefit.bg} ${benefit.color} rounded-md flex items-center justify-center  group-hover:scale-110 transition-transform duration-300`}
                 >
                   <benefit.icon className="lg:size-8 size-6" />
                 </div>

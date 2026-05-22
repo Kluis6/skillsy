@@ -88,7 +88,7 @@ export function HomeClient({
             </div>
 
             {providers.length > 0 ? (
-              <div className="grid grid-cols-12 gap-y-6 md:gap-y-8 md:gap-8">
+              <div className="grid grid-cols-12 gap-y-6 md:gap-6">
                 {providers.map((p, idx) => (
                   <motion.div
                     key={p.uid}
@@ -111,7 +111,7 @@ export function HomeClient({
                           <div className="absolute inset-0 z-20 bg-surface" />
                         )}
                         <div className="flex items-center gap-1 text-base font-bold text-highlight z-30 absolute right-4 top-4 drop-shadow-xl">
-                          <Star size={16} fill="currentColor" />{" "}
+                          <Star size={16} fill="currentColor" />
                           {p.rating || "0.0"}
                         </div>
                         <div className="absolute z-30 bottom-4 left-4">
@@ -135,7 +135,7 @@ export function HomeClient({
                             <CardTitle className="text-base md:text-xl flex justify-start gap-x-1 md:gap-x-2 items-center font-bold text-text-main">
                               {p.name}
                             </CardTitle>
-                            <CardDescription className="md:text-base text-xs flex items-center gap-1">
+                            <CardDescription className="lg:text-base text-xs flex items-center gap-1">
                               <MapPin size={12} /> {p.location || "Brasil"}
                             </CardDescription>
                           </div>
@@ -149,7 +149,7 @@ export function HomeClient({
                       </CardHeader>
 
                       <CardContent className="flex-grow text-sm">
-                        <p className="text-text-muted leading-relaxed line-clamp-3 mb-4">
+                        <p className="text-text-muted leading-relaxed line-clamp-2 mb-4">
                           {p.bio ||
                             "Membro dedicado da comunidade oferecendo serviços com excelência e valores compartilhados."}
                         </p>
