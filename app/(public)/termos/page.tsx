@@ -1,9 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { AlertTriangle, FileText, Info, Mail, RefreshCcw, Scale, ShieldCheck, UserCheck } from "lucide-react";
+import {
+  AlertTriangle,
+  FileText,
+  Info,
+  Mail,
+  RefreshCcw,
+  Scale,
+  ShieldCheck,
+  UserCheck,
+} from "lucide-react";
 import { Footer } from "@/components/footer";
 import { createPublicMetadata } from "@/lib/public-metadata";
+import HeaderSection, { HeaderImageItem, HeaderTextSegment } from "@/components/headersection";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Termos de Uso",
@@ -60,10 +70,56 @@ const conduct = [
   "Perfis, avaliações ou contas podem ser limitados, suspensos ou removidos em caso de abuso, fraude ou descumprimento destes termos.",
 ];
 
+const headerHeadlineSegments: HeaderTextSegment[] = [
+  { text: " Privacidade com" },
+  { text: " clareza", className: "text-white" },
+  { text: ", cuidado" },
+  { text: " e " },
+  { text: "responsabilidade", className: "text-white" },
+];
+
+const headerImageItems: HeaderImageItem[] = [
+  {
+    src: "/Gemini_Generated_Image_xfqkexfqkexfqkex.png",
+    alt: "Profissional em atividade",
+    wrapperClassName:
+      "absolute bottom-0 left-24 sm:left-4 xl:left-[48rem] z-50 h-36 w-48",
+    delay: 0.1,
+  },
+  {
+    src: "/Gemini_Generated_Image_sh3dqosh3dqosh3d.png",
+    alt: "Pessoa sorrindo durante atendimento",
+    wrapperClassName:
+      "absolute bottom-0 right-4 sm:right-18 md:right-6 z-20 h-56 w-48",
+    delay: 0.18,
+  },
+  {
+    src: "/Gemini_Generated_Image_oc5c5poc5c5poc5c.png",
+    alt: "Criadora mostrando seu trabalho",
+    wrapperClassName:
+      "absolute bottom-0 left-4 sm:left-26 lg:left-28 xl:left-[55rem] z-40 h-74 w-48",
+    delay: 0.26,
+  },
+  {
+    src: "/Gemini_Generated_Image_ndy0l8ndy0l8ndy0.png",
+    alt: "Prestador de serviço em ambiente profissional",
+    wrapperClassName:
+      "absolute bottom-0 right-12 sm:right-6 md:right-30 lg:right-32 xl:right-24 z-10 h-92 w-48",
+    delay: 0.34,
+  },
+];
+
 export default function TermosPage() {
   return (
     <main className="min-h-screen w-full">
-      <div className="relative h-[72vh] w-full bg-blue-700/75 bg-[url(public/Gemini_Generated_Image_d74ovcd74ovcd74o.png)] bg-cover bg-blend-multiply md:h-[78vh]">
+      <HeaderSection
+        backgroundImageSrc="/Gemini_Generated_Image_8gh7rv8gh7rv8gh7.png"
+        backgroundImageAlt="Pessoas e serviços em contexto comunitário"
+        headlineSegments={headerHeadlineSegments}
+        imageItems={headerImageItems}
+        overlayClassName="bg-blue-700/70"
+      />
+      {/* <div className="relative h-[72vh] w-full bg-blue-700/75 bg-[url(public/Gemini_Generated_Image_d74ovcd74ovcd74o.png)] bg-cover bg-blend-multiply md:h-[78vh]">
         <div className="absolute left-4 top-28 z-40 w-xs -translate-y-1/2 md:left-6 md:w-sm xl:top-1/4">
           <h1 className="font-heading text-2xl font-semibold tracking-tight text-white drop-shadow-xl md:text-3xl xl:text-4xl">
             Regras para usar o Skillsy com <span className="text-red-500">clareza</span>,{" "}
@@ -82,7 +138,7 @@ export default function TermosPage() {
             />
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
         <div className="w-full rounded-lg bg-white p-4 shadow-2xl xl:p-8">
@@ -92,15 +148,17 @@ export default function TermosPage() {
                 <FileText size={14} />
                 Termos da plataforma
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Termos de Uso</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Termos de Uso
+              </h2>
               <p className="text-base font-normal text-gray-800">
-                Estes termos explicam como a Skillsy funciona, o que você pode esperar da
-                plataforma e quais responsabilidades continuam sendo suas ao contratar ou oferecer
-                serviços.
+                Estes termos explicam como a Skillsy funciona, o que você pode
+                esperar da plataforma e quais responsabilidades continuam sendo
+                suas ao contratar ou oferecer serviços.
               </p>
               <p className="text-base font-normal text-gray-800">
-                Ao acessar ou usar a Skillsy, você concorda com estas regras. Se não concordar,
-                recomendamos não utilizar a plataforma.
+                Ao acessar ou usar a Skillsy, você concorda com estas regras. Se
+                não concordar, recomendamos não utilizar a plataforma.
               </p>
             </div>
 
@@ -112,8 +170,12 @@ export default function TermosPage() {
                 <div className="mb-4 flex size-12 items-center justify-center rounded-sm bg-white shadow-2xl">
                   <item.icon size={22} />
                 </div>
-                <h3 className="mb-3 text-xl font-bold text-text-main">{item.title}</h3>
-                <p className="text-sm leading-relaxed text-text-muted">{item.description}</p>
+                <h3 className="mb-3 text-xl font-bold text-text-main">
+                  {item.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-text-muted">
+                  {item.description}
+                </p>
               </div>
             ))}
           </div>
@@ -123,7 +185,9 @@ export default function TermosPage() {
       <section className="container mx-auto my-24 px-4">
         <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
           <div className="col-span-12 text-center">
-            <h2 className="text-2xl font-bold text-gray-900">Independência institucional</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Independência institucional
+            </h2>
           </div>
 
           <div className="col-span-12">
@@ -134,14 +198,21 @@ export default function TermosPage() {
                 </div>
                 <div className="space-y-4">
                   <p className="text-base leading-relaxed text-gray-800">
-                    A <strong>Skillsy</strong> é uma iniciativa independente, criada para
-                    facilitar conexões profissionais e apoio mútuo entre membros da comunidade.
+                    A <strong>Skillsy</strong> é uma iniciativa independente,
+                    criada para facilitar conexões profissionais e apoio mútuo
+                    entre membros da comunidade.
                   </p>
                   <div className="rounded-lg border border-amber-200 bg-amber-50 p-5 text-sm leading-relaxed text-amber-950/90">
-                    <strong className="text-amber-900">Aviso importante:</strong> a Skillsy não
-                    é afiliada, administrada, patrocinada nem endossada oficialmente por{" "}
-                    <strong>A Igreja de Jesus Cristo dos Santos dos Últimos Dias</strong>. Também
-                    não representa alas, estacas, unidades locais ou departamentos da Igreja.
+                    <strong className="text-amber-900">
+                      Aviso importante:
+                    </strong>{" "}
+                    a Skillsy não é afiliada, administrada, patrocinada nem
+                    endossada oficialmente por{" "}
+                    <strong>
+                      A Igreja de Jesus Cristo dos Santos dos Últimos Dias
+                    </strong>
+                    . Também não representa alas, estacas, unidades locais ou
+                    departamentos da Igreja.
                   </div>
                 </div>
               </div>
@@ -155,18 +226,22 @@ export default function TermosPage() {
           <div className="grid grid-cols-12 gap-4 gap-y-8">
             <div className="col-span-12 md:col-span-6">
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold text-gray-900">Como a Skillsy funciona</h2>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Como a Skillsy funciona
+                </h2>
                 <p className="text-base font-normal text-gray-800">
-                  A Skillsy atua como um diretório de conexões. A plataforma ajuda usuários a
-                  apresentar seus serviços, encontrar profissionais e iniciar contato com mais
-                  facilidade.
+                  A Skillsy atua como um diretório de conexões. A plataforma
+                  ajuda usuários a apresentar seus serviços, encontrar
+                  profissionais e iniciar contato com mais facilidade.
                 </p>
                 <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-gray-700">Fluxo básico de uso</h3>
+                  <h3 className="text-lg font-bold text-gray-700">
+                    Fluxo básico de uso
+                  </h3>
                   <p className="text-base font-normal text-gray-800">
-                    O papel da plataforma é aproximar as partes. As definições comerciais e
-                    operacionais continuam sendo feitas diretamente entre usuário contratante e
-                    usuário prestador.
+                    O papel da plataforma é aproximar as partes. As definições
+                    comerciais e operacionais continuam sendo feitas diretamente
+                    entre usuário contratante e usuário prestador.
                   </p>
                 </div>
               </div>
@@ -180,7 +255,9 @@ export default function TermosPage() {
                       <div className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-blue-700 text-sm font-bold text-white">
                         {index + 1}
                       </div>
-                      <p className="text-sm leading-relaxed text-gray-700">{item}</p>
+                      <p className="text-sm leading-relaxed text-gray-700">
+                        {item}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -198,8 +275,9 @@ export default function TermosPage() {
                 Responsabilidades e conduta esperada
               </h2>
               <p className="text-base font-normal text-gray-800">
-                O uso saudável da plataforma depende de clareza nas informações, respeito nas
-                relações e responsabilidade nas decisões tomadas fora dela.
+                O uso saudável da plataforma depende de clareza nas informações,
+                respeito nas relações e responsabilidade nas decisões tomadas
+                fora dela.
               </p>
             </div>
           </div>
@@ -211,10 +289,15 @@ export default function TermosPage() {
                   <div className="mb-4 flex size-12 items-center justify-center rounded-sm bg-amber-100 text-amber-700">
                     <AlertTriangle size={22} />
                   </div>
-                  <h3 className="text-base font-bold text-gray-800">Limites da plataforma</h3>
+                  <h3 className="text-base font-bold text-gray-800">
+                    Limites da plataforma
+                  </h3>
                   <div className="mt-3 space-y-3">
                     {responsibilities.map((item) => (
-                      <p key={item} className="text-sm leading-relaxed text-gray-700">
+                      <p
+                        key={item}
+                        className="text-sm leading-relaxed text-gray-700"
+                      >
                         {item}
                       </p>
                     ))}
@@ -227,10 +310,15 @@ export default function TermosPage() {
                   <div className="mb-4 flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700">
                     <ShieldCheck size={22} />
                   </div>
-                  <h3 className="text-base font-bold text-gray-800">Conduta dos usuários</h3>
+                  <h3 className="text-base font-bold text-gray-800">
+                    Conduta dos usuários
+                  </h3>
                   <div className="mt-3 space-y-3">
                     {conduct.map((item) => (
-                      <p key={item} className="text-sm leading-relaxed text-gray-700">
+                      <p
+                        key={item}
+                        className="text-sm leading-relaxed text-gray-700"
+                      >
                         {item}
                       </p>
                     ))}
@@ -246,20 +334,26 @@ export default function TermosPage() {
         <section className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div className="rounded-xl border bg-slate-50 p-8 md:p-10">
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-gray-900">Privacidade e dados</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Privacidade e dados
+              </h2>
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700">
                   <UserCheck size={18} />
                 </div>
                 <p className="text-sm leading-relaxed text-gray-700">
-                  O tratamento dos seus dados pessoais segue a nossa Política de Privacidade, que
-                  explica quais informações podem ser coletadas, como são usadas e quais escolhas
-                  você tem dentro da plataforma.
+                  O tratamento dos seus dados pessoais segue a nossa Política de
+                  Privacidade, que explica quais informações podem ser
+                  coletadas, como são usadas e quais escolhas você tem dentro da
+                  plataforma.
                 </p>
               </div>
               <p className="text-sm leading-relaxed text-gray-700">
                 Para entender melhor esse tratamento, consulte a{" "}
-                <Link href="/privacidade" className="font-semibold text-blue-700 hover:underline">
+                <Link
+                  href="/privacidade"
+                  className="font-semibold text-blue-700 hover:underline"
+                >
                   Política de Privacidade
                 </Link>
                 .
@@ -268,17 +362,21 @@ export default function TermosPage() {
           </div>
 
           <div className="space-y-7 p-8 md:p-10">
-            <h2 className="text-2xl font-bold text-gray-900">Atualizações e contato</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Atualizações e contato
+            </h2>
             <div className="space-y-4 text-sm leading-relaxed text-gray-700">
               <p>
-                Estes termos podem ser atualizados para refletir melhorias, ajustes operacionais
-                ou mudanças legais. O uso continuado da plataforma após a publicação de uma nova
-                versão indica que você tomou conhecimento do texto atualizado.
+                Estes termos podem ser atualizados para refletir melhorias,
+                ajustes operacionais ou mudanças legais. O uso continuado da
+                plataforma após a publicação de uma nova versão indica que você
+                tomou conhecimento do texto atualizado.
               </p>
               <p>
-                Se você tiver dúvidas sobre estes termos, utilize os canais oficiais divulgados
-                pela Skillsy. Em caso de denúncia, conteúdo impróprio ou suspeita de fraude,
-                entre em contato assim que possível para análise.
+                Se você tiver dúvidas sobre estes termos, utilize os canais
+                oficiais divulgados pela Skillsy. Em caso de denúncia, conteúdo
+                impróprio ou suspeita de fraude, entre em contato assim que
+                possível para análise.
               </p>
             </div>
 
@@ -289,15 +387,20 @@ export default function TermosPage() {
                     <RefreshCcw size={18} />
                   </div>
                   <div>
-                    <strong className="text-amber-900">Última atualização:</strong> 17 de abril de
-                    2026.
+                    <strong className="text-amber-900">
+                      Última atualização:
+                    </strong>{" "}
+                    17 de abril de 2026.
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-amber-100 text-amber-800">
                     <Mail size={18} />
                   </div>
-                  <div>Use os canais oficiais da Skillsy para dúvidas, denúncias e solicitações.</div>
+                  <div>
+                    Use os canais oficiais da Skillsy para dúvidas, denúncias e
+                    solicitações.
+                  </div>
                 </div>
               </div>
             </div>

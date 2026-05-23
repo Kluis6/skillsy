@@ -92,7 +92,7 @@ export default function Sectionstart() {
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="space-y-4"
             >
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
                 Estamos aqui para ajudar <br /> você a encontrar o que precisa.
               </h2>
               <p className="text-base font-normal text-gray-800">
@@ -101,7 +101,7 @@ export default function Sectionstart() {
               </p>
             </motion.div>
 
-            <div className=" space-y-5 ">
+            <div className=" space-y-4 ">
               {steps.map((step, index) => (
                 <motion.article
                   key={step.number}
@@ -119,7 +119,7 @@ export default function Sectionstart() {
                     {/* <p className="text-xs font-bold tracking-[0.22em] text-text-main">
                         {step.eyebrow}
                       </p> */}
-                    <p className="font-heading text-5xl leading-none font-semibold text-text-main md:text-6xl">
+                    <p className="font-heading text-4xl md:text-5xl leading-none font-semibold text-text-main">
                       {step.number}
                     </p>
                   </div>

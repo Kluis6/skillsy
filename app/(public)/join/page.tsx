@@ -37,21 +37,21 @@ const benefits = [
     description:
       "Conecte-se com pessoas que valorizam honestidade, respeito e bom atendimento em cada contato.",
     icon: ShieldCheck,
-    tone: "bg-blue-500/10 text-blue-700 border-blue-200",
+    tone: "bg-blue-500/10 text-blue-700",
   },
   {
     title: "Visibilidade na sua região",
     description:
       "Mostre seu trabalho para pessoas da sua cidade e arredores que buscam indicações mais confiáveis.",
     icon: Zap,
-    tone: "bg-amber-500/10 text-amber-700 border-amber-200",
+    tone: "bg-amber-500/10 text-amber-700",
   },
   {
     title: "Reputação com experiência real",
     description:
       "Receba avaliações de quem contratou você e ajude outros usuários a decidir com mais segurança.",
     icon: Star,
-    tone: "bg-red-500/10 text-red-600 border-red-200",
+    tone: "bg-red-500/10 text-red-600",
   },
 ];
 
@@ -132,10 +132,10 @@ export default function JoinPage() {
         <div className="w-full rounded-lg bg-white p-4 shadow-2xl xl:p-8">
           <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
             <div className="col-span-12 space-y-4">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
                 Participe do Skillsy
               </h2>
-              <p className="text-base font-normal text-gray-800">
+              <p className="text-base font-normal text-gray-700">
                 O Skillsy foi criado para ajudar pessoas a divulgar seus
                 talentos, encontrar profissionais com mais contexto e fortalecer
                 uma rede de apoio baseada em confiança, serviço e
@@ -146,17 +146,21 @@ export default function JoinPage() {
             {benefits.map((benefit) => (
               <div
                 key={benefit.title}
-                className={`col-span-12 rounded-md border p-4 md:col-span-4 ${benefit.tone}`}
+                className={`col-span-12 rounded-md border p-4 lg:col-span-4 space-y-4 `}
               >
-                <div className="mb-4 flex size-12 items-center justify-center rounded-sm bg-white shadow-2xl">
+                <div
+                  className={`flex size-12 items-center justify-center rounded-sm shadow-md ${benefit.tone}`}
+                >
                   <benefit.icon size={22} />
                 </div>
-                <h3 className="mb-3 text-xl font-bold text-text-main">
-                  {benefit.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-text-muted">
-                  {benefit.description}
-                </p>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-bold text-text-main">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-text-muted">
+                    {benefit.description}
+                  </p>
+                </div>
               </div>
             ))}
 
@@ -167,12 +171,6 @@ export default function JoinPage() {
                   <ArrowRight size={18} className="ml-2" />
                 </Button>
               </AuthModal>
-              <a
-                href="#como-funciona"
-                className="inline-flex h-12 w-full items-center justify-center rounded-full border border-border-subtle bg-white px-6 text-base font-bold text-text-main transition-colors hover:bg-surface sm:w-auto"
-              >
-                Como funciona
-              </a>
             </div>
           </div>
         </div>
@@ -180,57 +178,11 @@ export default function JoinPage() {
 
       <Sectionstart />
 
-      <section className="my-24 bg-surface">
-        <div className="container mx-auto px-4 py-18">
-          <div className="grid grid-cols-12 gap-4 gap-y-8">
-            <div className="col-span-12 md:col-span-6">
-              <div className="space-y-4">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Por que vale a pena participar
-                </h2>
-                <p className="text-base font-normal text-gray-800">
-                  Participar do Skillsy não é apenas criar um perfil. É abrir
-                  espaço para que seu trabalho seja visto, lembrado e
-                  recomendado com mais segurança.
-                </p>
-                <p className="text-base font-normal text-gray-800">
-                  A plataforma foi pensada para facilitar encontros entre
-                  pessoas que precisam de ajuda prática e pessoas dispostas a
-                  servir com qualidade, honestidade e cuidado.
-                </p>
-
-                <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-gray-700">
-                    O que você encontra aqui
-                  </h3>
-                  <p className="text-base font-normal text-gray-800">
-                    Mais visibilidade para talentos locais, mais confiança na
-                    hora de contratar e uma rede que pode gerar novas conexões,
-                    indicações e oportunidades reais.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-span-12 md:col-span-6">
-              <div className="relative h-90 w-full overflow-hidden rounded-2xl md:h-full">
-                <Image
-                  src="/Gemini_Generated_Image_mpk4kumpk4kumpk4.png"
-                  alt="Pessoas em colaboração e atendimento"
-                  className="object-cover object-top"
-                  fill
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="container mx-auto my-24 px-4">
         <div className="grid grid-cols-12 gap-8">
-          <div className="col-span-12 md:col-span-4">
+          <div className="col-span-12 lg:col-span-4">
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-gray-900 2xl:text-2xl">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 2xl:text-2xl">
                 O que essa participação pode fortalecer
               </h2>
               <p className="text-base font-normal text-gray-800">
@@ -241,12 +193,12 @@ export default function JoinPage() {
             </div>
           </div>
 
-          <div className="col-span-12 md:col-span-8">
+          <div className="col-span-12 lg:col-span-8">
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               {highlights.map((item) => (
                 <div key={item.title} className="col-span-12 md:col-span-4">
                   <div className="h-full space-y-2 rounded-md border bg-slate-50 p-4">
-                    <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700">
+                    <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
                       <item.icon size={22} />
                     </div>
                     <h3 className="text-base font-bold text-gray-800">
@@ -263,10 +215,56 @@ export default function JoinPage() {
         </div>
       </section>
 
+      <section className="my-24 bg-surface">
+        <div className="container mx-auto px-4 py-18">
+          <div className="grid grid-cols-12 gap-4 gap-y-8">
+            <div className="col-span-12 md:col-span-6">
+              <div className="space-y-4">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                  Por que vale a pena participar
+                </h2>
+                <p className="text-base font-normal text-gray-700">
+                  Participar do Skillsy não é apenas criar um perfil. É abrir
+                  espaço para que seu trabalho seja visto, lembrado e
+                  recomendado com mais segurança.
+                </p>
+                <p className="text-base font-normal text-gray-700">
+                  A plataforma foi pensada para facilitar encontros entre
+                  pessoas que precisam de ajuda prática e pessoas dispostas a
+                  servir com qualidade, honestidade e cuidado.
+                </p>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-bold text-gray-800">
+                    O que você encontra aqui
+                  </h3>
+                  <p className="text-base font-normal text-gray-700">
+                    Mais visibilidade para talentos locais, mais confiança na
+                    hora de contratar e uma rede que pode gerar novas conexões,
+                    indicações e oportunidades reais.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-span-12 md:col-span-6">
+              <div className="relative h-90 w-full overflow-hidden rounded-2xl md:h-full">
+                <Image
+                  src="/Gemini_Generated_Image_lb1x7blb1x7blb1x copy.png"
+                  alt="Pessoas em colaboração e atendimento"
+                  className="object-cover object-top"
+                  fill
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div className="container mx-auto mb-24 px-4">
-        <section className="rounded-xl border border-amber-200 bg-amber-50 p-6 md:p-8">
-          <div className="max-w-4xl space-y-3">
-            <h2 className="text-lg font-bold text-amber-900">
+        <section className="rounded-xl border border-amber-200 bg-amber-50 p-4 md:p-8">
+          <div className="max-w-4xl space-y-4">
+            <h2 className="text-xl md:text-2xl font-bold text-amber-900">
               Comunicado importante
             </h2>
             <p className="text-sm leading-relaxed text-amber-950/90">
@@ -285,7 +283,7 @@ export default function JoinPage() {
 
       <section className="bg-blue-700 py-20 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="mx-auto max-w-3xl text-3xl font-bold md:text-4xl">
+          <h2 className="text-2xl font-bold md:text-4xl">
             Trabalho, confiança e serviço também fortalecem a comunidade.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-blue-50">
