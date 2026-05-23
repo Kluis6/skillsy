@@ -179,7 +179,7 @@ export default function JoinPage() {
       <Sectionstart />
 
       <section className="container mx-auto my-24 px-4">
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-12 gap-4 md:gap-8">
           <div className="col-span-12 lg:col-span-4">
             <div className="space-y-4">
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 2xl:text-2xl">
