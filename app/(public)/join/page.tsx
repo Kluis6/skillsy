@@ -194,7 +194,7 @@ export default function JoinPage() {
           </div>
 
           <div className="col-span-12 lg:col-span-8">
-            <div className="grid grid-cols-12 gap-4 gap-y-8">
+            <div className="grid grid-cols-12 gap-2 md:gap-4 gap-y-8">
               {highlights.map((item) => (
                 <div key={item.title} className="col-span-12 md:col-span-4">
                   <div className="h-full space-y-2 rounded-md border bg-slate-50 p-4">
