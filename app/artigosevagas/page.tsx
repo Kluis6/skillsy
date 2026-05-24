@@ -22,16 +22,16 @@ export default async function NoticiasPage() {
   return (
     <div className="min-h-screen bg-surface">
       <Navbar />
-      <section className="relative h-[30vh] md:h-[50vh] w-full bg-cover bg-center object-fill bg-[url(/Gemini_Generated_Image_z25epiz25epiz25e.png)] ">
+      <section className="relative h-[30vh] md:h-[50vh] w-full bg-cover bg-center object-fill bg-[url(/Gemini_Generated_Image_kwyhw5kwyhw5kwyh.png)] ">
        <div className={`absolute inset-0 bg-blue-700/30 brightness-30`}></div>
         <div className="space-y-4 p-4 container mx-auto flex flex-col items-start justify-center h-full w-full">
           <div className="max-w-2xl space-y-2">
-            <h1 className="text-xl lg:text-4xl font-black text-white drop-shadow-md">
-              Notícias, artigos e vagas
+            <h1 className="text-xl lg:text-4xl font-black text-white drop-shadow-sm drop-shadow-black/50">
+              Novidades, artigos e vagas
             </h1>
-            <p className="text-base md:text-xl text-white font-normal drop-shadow">
-              Acompanhe publicações da comunidade e compartilhe conteúdo próprio
-              se você já tiver verificação de membro no Skillsy.
+            <p className="text-base md:text-xl text-white font-medium drop-shadow-sm drop-shadow-black/50">
+              Acompanhe publicações da comunidade e compartilhe o conteúdo.
+             
             </p>
           </div>
         </div>
