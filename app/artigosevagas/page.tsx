@@ -23,8 +23,8 @@ export default async function NoticiasPage() {
     <div className="min-h-screen bg-surface">
       <Navbar />
       <section className="relative h-[30vh] md:h-[50vh] w-full bg-cover bg-center object-fill bg-[url(/Gemini_Generated_Image_kwyhw5kwyhw5kwyh.png)] ">
-       <div className={`absolute inset-0 bg-blue-700/30 brightness-30`}></div>
-        <div className="space-y-4 p-4 container mx-auto flex flex-col items-start justify-center h-full w-full">
+       <div className={`absolute inset-0 bg-blue-700/40 brightness-30`}></div>
+        <div className="space-y-4 p-4 container mx-auto flex flex-col items-start justify-start h-full w-full">
           <div className="max-w-2xl space-y-2">
             <h1 className="text-xl lg:text-4xl font-black text-white drop-shadow-sm drop-shadow-black/50">
               Novidades, artigos e vagas
