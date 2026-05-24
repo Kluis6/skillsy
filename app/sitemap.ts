@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '',
     '/search',
     '/contacts',
-    '/noticias',
+    '/artigosevagas',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -32,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     const postRoutes = posts.map((post) => ({
-      url: `${baseUrl}/noticias/${post.slug}`,
+      url: `${baseUrl}/artigosevagas/${post.slug}`,
       lastModified: post.publishedAt?.seconds
         ? new Date(post.publishedAt.seconds * 1000)
         : new Date(),

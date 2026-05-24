@@ -119,10 +119,10 @@ export function Navbar({
                     <li className="p-2 hover:bg-surface">
                       <DrawerClose asChild>
                         <Link
-                          href="/noticias"
+                          href="/artigosevagas"
                           className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
                         >
-                          Novidades e notícias
+                          Novidades e vagas
                         </Link>
                       </DrawerClose>
                     </li>
@@ -295,10 +295,10 @@ export function Navbar({
                   <li className="p-2 hover:bg-surface">
                     <DrawerClose asChild>
                       <Link
-                        href="/noticias"
+                        href="/artigosevagas"
                         className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
                       >
-                        Novidades e notícias
+                        Novidades e vagas
                       </Link>
                     </DrawerClose>
                   </li>

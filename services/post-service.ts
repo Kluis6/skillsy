@@ -208,7 +208,7 @@ export const PostService = {
       message: `${user.email || 'Um usuário'} publicou "${post.title}".`,
       type: 'system',
       read: false,
-      link: `/noticias/${post.slug}`,
+      link: `/artigosevagas/${post.slug}`,
     });
   },
 
@@ -286,7 +286,7 @@ export const PostService = {
       message: `${user.email || 'Um usuário'} denunciou "${input.postTitle}".`,
       type: 'report',
       read: false,
-      link: `/noticias/${input.postSlug}`,
+      link: `/artigosevagas/${input.postSlug}`,
     });
   },
 };

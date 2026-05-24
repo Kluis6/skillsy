@@ -101,7 +101,7 @@ export function MyPostsClient() {
                 <div className="flex gap-3">
                   <PostPublicActions post={post} compact />
                   {post.status === "published" ? (
-                    <Link href={`/noticias/${post.slug}`}>
+                    <Link href={`/artigosevagas/${post.slug}`}>
                       <Button>Ver publicado</Button>
                     </Link>
                   ) : null}

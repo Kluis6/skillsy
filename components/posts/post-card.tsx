@@ -41,7 +41,7 @@ export function PostCard({ post }: { post: Post }) {
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
-            href={`/noticias/${post.slug}`}
+            href={`/artigosevagas/${post.slug}`}
             className="inline-flex text-sm font-bold text-primary hover:underline"
           >
             {post.category === "job" ? "Ver vaga" : "Ler publicação"}

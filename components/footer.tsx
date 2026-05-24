@@ -12,10 +12,10 @@ export function Footer() {
 
           <div className="order-2 lg:order-3 flex flex-col md:flex-row gap-4 lg:gap-6 text-text-muted items-start justify-startw-full">
             <Link
-              href="/noticias"
+              href="/artigosevagas"
               className="hover:text-blue-600 text-gray-700 transition-colors text-sm font-normal"
             >
-              Notícias
+              Novidades e vagas
             </Link>
             <Link
               href="/join"

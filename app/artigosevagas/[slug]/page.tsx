@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return createPublicMetadata({
     title: post.title,
     description: getPostExcerpt(post),
-    path: `/noticias/${post.slug}`,
+    path: `/artigosevagas/${post.slug}`,
     imageTitle: post.title,
     imageDescription: getPostExcerpt(post),
     imageLabel: post.category === "job" ? "Vaga publicada" : "Artigo publicado",
@@ -59,7 +59,7 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
           </div>
           <h1 className="text-4xl font-black text-text-main">{post.title}</h1>
           <p className="text-lg text-text-muted">{getPostExcerpt(post)}</p>
-          <PostPublicActions post={post} redirectOnDelete="/noticias" />
+          <PostPublicActions post={post} redirectOnDelete="/artigosevagas" />
         </div>
 
         {post.coverImageUrl ? (

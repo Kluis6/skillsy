@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { CreatePostCta } from "@/components/posts/create-post-cta";
 import { PostListClient } from "@/components/posts/post-list-client";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { PostService } from "@/services/post-service";
-import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Notícias, Artigos e Vagas",
   description: "Conteúdo publicado pela comunidade Skillsy.",
-  path: "/noticias",
+  path: "/artigosevagas",
   imageTitle: "Notícias, artigos e vagas da comunidade Skillsy",
   imageDescription:
     "Acompanhe publicações, reflexões e novidades compartilhadas pela comunidade.",
@@ -23,21 +22,22 @@ export default async function NoticiasPage() {
   return (
     <div className="min-h-screen bg-surface">
       <Navbar />
-      <main className="container mx-auto space-y-10 px-4 py-10">
-        <section className="flex flex-col gap-6 rounded-[2rem] border border-border-subtle bg-white p-6 md:flex-row md:items-end md:justify-between md:p-8">
-          <div className="space-y-4">
-            <h1 className="text-4xl font-black text-text-main">
+      <section className="relative h-[30vh] md:h-[50vh] w-full bg-cover bg-center object-fill bg-[url(/Gemini_Generated_Image_z25epiz25epiz25e.png)] ">
+       <div className={`absolute inset-0 bg-blue-700/30 brightness-30`}></div>
+        <div className="space-y-4 p-4 container mx-auto flex flex-col items-start justify-center h-full w-full">
+          <div className="max-w-2xl space-y-2">
+            <h1 className="text-xl lg:text-4xl font-black text-white drop-shadow-md">
               Notícias, artigos e vagas
             </h1>
-            <p className="max-w-2xl text-text-muted">
+            <p className="text-base md:text-xl text-white font-normal drop-shadow">
               Acompanhe publicações da comunidade e compartilhe conteúdo próprio
               se você já tiver verificação de membro no Skillsy.
             </p>
           </div>
-          <Link href="/meus-artigos/novo">
-            <Button className="w-full md:w-auto">Criar publicação</Button>
-          </Link>
-        </section>
+        </div>
+      </section>
+      <main className="container mx-auto space-y-10 px-4 py-10">
+        <CreatePostCta />
         <PostListClient posts={posts} />
       </main>
       <Footer />

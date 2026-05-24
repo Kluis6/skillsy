@@ -179,7 +179,7 @@ export function AdminPostsClient() {
                 </div>
                 <div className="flex flex-wrap gap-3">
                   {post.status === "published" ? (
-                    <Link href={`/noticias/${post.slug}`}>
+                    <Link href={`/artigosevagas/${post.slug}`}>
                       <Button variant="outline">Ver público</Button>
                     </Link>
                   ) : null}
