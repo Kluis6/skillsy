@@ -163,11 +163,11 @@ export function PostPublicActions({
 
       {canReport ? (
         <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size={compact ? "sm" : "default"}>
-              <Flag size={16} className="mr-2" />
-              Denunciar
-            </Button>
+          <DialogTrigger
+            render={<Button variant="ghost" size={compact ? "sm" : "default"} />}
+          >
+            <Flag size={16} className="mr-2" />
+            Denunciar
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
