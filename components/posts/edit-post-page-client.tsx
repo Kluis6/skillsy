@@ -28,7 +28,7 @@ export function EditPostPageClient({ id }: { id: string }) {
         setPost(result);
       } catch (error) {
         console.error(error);
-        toast.error("Não foi possível carregar o artigo.");
+        toast.error("Não foi possível carregar a publicação.");
       } finally {
         setIsLoading(false);
       }
@@ -44,7 +44,7 @@ export function EditPostPageClient({ id }: { id: string }) {
   if (!post) {
     return (
       <div className="rounded-[2rem] border border-border-subtle bg-white p-10 text-center text-text-muted">
-        Artigo não encontrado ou indisponível para edição.
+        Publicação não encontrada ou indisponível para edição.
       </div>
     );
   }

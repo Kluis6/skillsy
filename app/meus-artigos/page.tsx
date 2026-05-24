@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { MyPostsClient } from "@/components/posts/my-posts-client";
 
 export const metadata: Metadata = {
-  title: "Meus Artigos",
+  title: "Minhas Publicações",
   robots: {
     index: false,
     follow: false,

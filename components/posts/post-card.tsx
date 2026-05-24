@@ -3,7 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Post } from "@/models/types";
+import { POST_CATEGORY_LABELS, getPostExcerpt } from "@/lib/post-utils";
 import { Badge } from "@/components/ui/badge";
+import { PostPublicActions } from "@/components/posts/post-public-actions";
 
 export function PostCard({ post }: { post: Post }) {
   return (
@@ -15,11 +17,13 @@ export function PostCard({ post }: { post: Post }) {
             alt={post.title}
             fill
             className="object-cover"
+            sizes="(max-width: 1023px) 100vw, 50vw"
           />
         </div>
       ) : null}
       <div className="space-y-4 p-6">
         <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="outline">{POST_CATEGORY_LABELS[post.category]}</Badge>
           {post.isFeatured ? (
             <Badge className="bg-primary/10 text-primary border-primary/10">
               Destaque
@@ -32,15 +36,18 @@ export function PostCard({ post }: { post: Post }) {
         <div className="space-y-2">
           <h2 className="text-2xl font-bold text-text-main">{post.title}</h2>
           <p className="text-sm leading-relaxed text-text-muted">
-            {post.excerpt}
+            {getPostExcerpt(post)}
           </p>
         </div>
-        <Link
-          href={`/noticias/${post.slug}`}
-          className="inline-flex text-sm font-bold text-primary hover:underline"
-        >
-          Ler artigo
-        </Link>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Link
+            href={`/noticias/${post.slug}`}
+            className="inline-flex text-sm font-bold text-primary hover:underline"
+          >
+            {post.category === "job" ? "Ver vaga" : "Ler publicação"}
+          </Link>
+          <PostPublicActions post={post} compact />
+        </div>
       </div>
     </article>
   );

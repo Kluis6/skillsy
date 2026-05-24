@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { Post } from "@/models/types";
+import { POST_CATEGORY_LABELS, getPostExcerpt } from "@/lib/post-utils";
 import { PostService } from "@/services/post-service";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PostPublicActions } from "@/components/posts/post-public-actions";
 import { toast } from "sonner";
 
 const statusLabels: Record<Post["status"], string> = {
@@ -49,7 +51,7 @@ export function MyPostsClient() {
   if (!user) {
     return (
       <div className="rounded-[2rem] border border-border-subtle bg-white p-10 text-center">
-        <h1 className="text-2xl font-bold text-text-main">Faça login para acessar seus artigos</h1>
+        <h1 className="text-2xl font-bold text-text-main">Faça login para acessar suas publicações</h1>
         <p className="mt-2 text-text-muted">
           A área de publicação é restrita a usuários autenticados.
         </p>
@@ -61,20 +63,20 @@ export function MyPostsClient() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 rounded-[2rem] border border-border-subtle bg-white p-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-text-main">Meus artigos</h1>
+          <h1 className="text-3xl font-bold text-text-main">Minhas publicações</h1>
           <p className="mt-1 text-text-muted">
-            Crie rascunhos, envie para revisão e acompanhe o status.
+            Crie rascunhos, publique conteúdo e acompanhe o status.
           </p>
         </div>
         <Link href="/meus-artigos/novo">
-          <Button>Novo artigo</Button>
+          <Button>Nova publicação</Button>
         </Link>
       </div>
 
       <div className="rounded-[2rem] border border-border-subtle bg-white">
         {posts.length === 0 ? (
           <div className="p-10 text-center text-text-muted">
-            Você ainda não criou nenhum artigo.
+            Você ainda não criou nenhuma publicação.
           </div>
         ) : (
           <div className="divide-y divide-border-subtle">
@@ -86,9 +88,10 @@ export function MyPostsClient() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <h2 className="text-xl font-bold text-text-main">{post.title}</h2>
+                    <Badge variant="outline">{POST_CATEGORY_LABELS[post.category]}</Badge>
                     <Badge variant="outline">{statusLabels[post.status]}</Badge>
                   </div>
-                  <p className="max-w-2xl text-sm text-text-muted">{post.excerpt}</p>
+                  <p className="max-w-2xl text-sm text-text-muted">{getPostExcerpt(post)}</p>
                   {post.rejectionReason ? (
                     <p className="text-xs font-medium text-red-500">
                       Motivo da rejeição: {post.rejectionReason}
@@ -96,9 +99,7 @@ export function MyPostsClient() {
                   ) : null}
                 </div>
                 <div className="flex gap-3">
-                  <Link href={`/meus-artigos/${post.id}/editar`}>
-                    <Button variant="outline">Editar</Button>
-                  </Link>
+                  <PostPublicActions post={post} compact />
                   {post.status === "published" ? (
                     <Link href={`/noticias/${post.slug}`}>
                       <Button>Ver publicado</Button>

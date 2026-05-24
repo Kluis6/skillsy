@@ -14,8 +14,9 @@ import {
 } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { toPlainValue } from '@/lib/firestore-plain';
-import { Post, PostStatus } from '@/models/types';
-import { slugifyPostTitle } from '@/lib/post-utils';
+import { hasMembershipVerificationData } from '@/lib/member-verification';
+import { Post, PostReport, PostStatus, UserProfile } from '@/models/types';
+import { getPostExcerpt, slugifyPostTitle } from '@/lib/post-utils';
 import { NotificationService } from '@/services/notification-service';
 
 async function ensureUniqueSlug(baseSlug: string, currentId?: string) {
@@ -31,6 +32,18 @@ async function ensureUniqueSlug(baseSlug: string, currentId?: string) {
   return `${fallback}-${Date.now().toString().slice(-6)}`;
 }
 
+function toPostModel(data: Post) {
+  return {
+    ...toPlainValue(data),
+    category: data.category || 'article',
+    excerpt: data.excerpt || '',
+    content: data.content || '',
+    coverImageUrl: data.coverImageUrl || '',
+    tags: data.tags || [],
+    isFeatured: data.isFeatured || false,
+  } as Post;
+}
+
 function requireAuthenticatedUser() {
   if (!auth.currentUser) {
     throw new Error('Usuário não autenticado');
@@ -39,12 +52,50 @@ function requireAuthenticatedUser() {
   return auth.currentUser;
 }
 
+async function getCurrentUserProfile() {
+  const user = requireAuthenticatedUser();
+  const snapshot = await getDoc(doc(db, 'users', user.uid));
+  if (!snapshot.exists()) {
+    throw new Error('Perfil do usuário não encontrado');
+  }
+
+  return toPlainValue({ uid: snapshot.id, ...snapshot.data() } as UserProfile);
+}
+
+function isVerifiedProfile(profile: UserProfile | null | undefined) {
+  return Boolean(profile?.memberVerified) || hasMembershipVerificationData(profile);
+}
+
+async function requireVerifiedProfile() {
+  const profile = await getCurrentUserProfile();
+  if (!isVerifiedProfile(profile)) {
+    throw new Error('Apenas usuários verificados podem publicar');
+  }
+
+  return profile;
+}
+
+async function requireOwnPost(id: string) {
+  const user = requireAuthenticatedUser();
+  const post = await PostService.getPostById(id);
+
+  if (!post) {
+    throw new Error('Publicação não encontrada');
+  }
+
+  if (post.authorId !== user.uid) {
+    throw new Error('Você não pode alterar esta publicação');
+  }
+
+  return post;
+}
+
 export const PostService = {
   async getPublishedPosts(): Promise<Post[]> {
     const q = query(collection(db, 'posts'), where('status', '==', 'published'), limit(50));
     const snapshot = await getDocs(q);
     return snapshot.docs
-      .map((postDoc) => toPlainValue({ id: postDoc.id, ...postDoc.data() } as Post))
+      .map((postDoc) => toPostModel({ id: postDoc.id, ...postDoc.data() } as Post))
       .sort((a, b) => (b.publishedAt?.seconds || 0) - (a.publishedAt?.seconds || 0));
   },
 
@@ -57,7 +108,7 @@ export const PostService = {
     );
     const snapshot = await getDocs(q);
     if (snapshot.empty) return null;
-    return toPlainValue({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Post);
+    return toPostModel({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Post);
   },
 
   async getMyPosts(): Promise<Post[]> {
@@ -65,17 +116,18 @@ export const PostService = {
     const q = query(collection(db, 'posts'), where('authorId', '==', user.uid), limit(100));
     const snapshot = await getDocs(q);
     return snapshot.docs
-      .map((postDoc) => toPlainValue({ id: postDoc.id, ...postDoc.data() } as Post))
+      .map((postDoc) => toPostModel({ id: postDoc.id, ...postDoc.data() } as Post))
       .sort((a, b) => (b.updatedAt?.seconds || 0) - (a.updatedAt?.seconds || 0));
   },
 
   async getPostById(id: string): Promise<Post | null> {
     const snapshot = await getDoc(doc(db, 'posts', id));
     if (!snapshot.exists()) return null;
-    return toPlainValue({ id: snapshot.id, ...snapshot.data() } as Post);
+    return toPostModel({ id: snapshot.id, ...snapshot.data() } as Post);
   },
 
   async createDraft(input: {
+    category: Post['category'];
     title: string;
     slug: string;
     excerpt: string;
@@ -84,15 +136,17 @@ export const PostService = {
     tags?: string[];
   }): Promise<string> {
     const user = requireAuthenticatedUser();
+    await requireVerifiedProfile();
     const uniqueSlug = await ensureUniqueSlug(slugifyPostTitle(input.slug || input.title));
 
     const docRef = await addDoc(collection(db, 'posts'), {
       authorId: user.uid,
       authorName: user.displayName || 'Membro Skillsy',
       authorEmail: user.email || '',
+      category: input.category,
       title: input.title,
       slug: uniqueSlug,
-      excerpt: input.excerpt,
+      excerpt: input.excerpt || getPostExcerpt(input),
       content: input.content,
       coverImageUrl: input.coverImageUrl || '',
       tags: input.tags || [],
@@ -108,6 +162,7 @@ export const PostService = {
   async updateOwnPost(
     id: string,
     input: {
+      category: Post['category'];
       title: string;
       slug: string;
       excerpt: string;
@@ -116,11 +171,14 @@ export const PostService = {
       tags?: string[];
     },
   ): Promise<void> {
+    await requireVerifiedProfile();
+    await requireOwnPost(id);
     const uniqueSlug = await ensureUniqueSlug(slugifyPostTitle(input.slug || input.title), id);
     await updateDoc(doc(db, 'posts', id), {
+      category: input.category,
       title: input.title,
       slug: uniqueSlug,
-      excerpt: input.excerpt,
+      excerpt: input.excerpt || getPostExcerpt(input),
       content: input.content,
       coverImageUrl: input.coverImageUrl || '',
       tags: input.tags || [],
@@ -128,26 +186,38 @@ export const PostService = {
     });
   },
 
-  async submitForReview(id: string): Promise<void> {
+  async publishOwnPost(id: string): Promise<void> {
     const user = requireAuthenticatedUser();
-    const post = await this.getPostById(id);
+    await requireVerifiedProfile();
+    const post = await requireOwnPost(id);
 
-    await updateDoc(doc(db, 'posts', id), {
-      status: 'pending_review',
+    const payload: Record<string, unknown> = {
+      status: 'published',
       updatedAt: serverTimestamp(),
       rejectionReason: '',
-    });
+    };
+
+    if (!post.publishedAt) {
+      payload.publishedAt = serverTimestamp();
+    }
+
+    await updateDoc(doc(db, 'posts', id), payload);
 
     await NotificationService.createNotification({
-      title: 'Novo artigo para revisão',
-      message: `${user.email || 'Um usuário'} enviou "${post?.title || 'um artigo'}" para revisão.`,
+      title: 'Nova publicação',
+      message: `${user.email || 'Um usuário'} publicou "${post.title}".`,
       type: 'system',
       read: false,
-      link: '/admin/artigos',
+      link: `/noticias/${post.slug}`,
     });
   },
 
-  async deleteOwnDraft(id: string): Promise<void> {
+  async submitForReview(id: string): Promise<void> {
+    await this.publishOwnPost(id);
+  },
+
+  async deleteOwnPost(id: string): Promise<void> {
+    await requireOwnPost(id);
     await deleteDoc(doc(db, 'posts', id));
   },
 
@@ -155,7 +225,7 @@ export const PostService = {
     const q = query(collection(db, 'posts'), orderBy('updatedAt', 'desc'), limit(200));
     const snapshot = await getDocs(q);
     return snapshot.docs.map((postDoc) =>
-      toPlainValue({ id: postDoc.id, ...postDoc.data() } as Post),
+      toPostModel({ id: postDoc.id, ...postDoc.data() } as Post),
     );
   },
 
@@ -182,5 +252,41 @@ export const PostService = {
     }
 
     await updateDoc(doc(db, 'posts', input.id), payload);
+  },
+
+  async createReport(input: {
+    postId: string;
+    postTitle: string;
+    postSlug: string;
+    postAuthorId: string;
+    reason: string;
+    details?: string;
+  }): Promise<void> {
+    const user = requireAuthenticatedUser();
+
+    if (user.uid === input.postAuthorId) {
+      throw new Error('Você não pode denunciar sua própria publicação');
+    }
+
+    await addDoc(collection(db, 'post_reports'), {
+      postId: input.postId,
+      postTitle: input.postTitle,
+      postSlug: input.postSlug,
+      postAuthorId: input.postAuthorId,
+      reporterId: user.uid,
+      reporterEmail: user.email || '',
+      reason: input.reason,
+      details: input.details || '',
+      status: 'new',
+      createdAt: serverTimestamp(),
+    } satisfies Omit<PostReport, 'id'>);
+
+    await NotificationService.createNotification({
+      title: 'Nova denúncia de publicação',
+      message: `${user.email || 'Um usuário'} denunciou "${input.postTitle}".`,
+      type: 'report',
+      read: false,
+      link: `/noticias/${input.postSlug}`,
+    });
   },
 };

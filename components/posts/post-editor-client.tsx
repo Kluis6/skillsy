@@ -5,8 +5,13 @@ import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/use-auth";
+import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 import { postEditorSchema, type PostEditorFormData } from "@/lib/validations";
-import { normalizePostTags, slugifyPostTitle } from "@/lib/post-utils";
+import {
+  normalizePostTags,
+  POST_CATEGORY_LABELS,
+  slugifyPostTitle,
+} from "@/lib/post-utils";
 import { Post } from "@/models/types";
 import { PostService } from "@/services/post-service";
 import { Button } from "@/components/ui/button";
@@ -26,14 +31,17 @@ export function PostEditorClient({
   initialPost,
 }: PostEditorClientProps) {
   const router = useRouter();
-  const { user, loading } = useAuth();
-  const [isSubmittingForReview, startSubmitForReview] = useTransition();
+  const { user, profile, loading } = useAuth();
+  const [isPublishing, startPublishing] = useTransition();
   const [autoSlugEdited, setAutoSlugEdited] = useState(Boolean(initialPost));
+  const canPublish = shouldShowVerifiedBadge(profile);
+  const isPublishedPost = initialPost?.status === "published";
 
   const form = useForm<PostEditorFormData>({
     resolver: zodResolver(postEditorSchema),
     mode: "onBlur",
     defaultValues: {
+      category: initialPost?.category || "article",
       title: initialPost?.title || "",
       slug: initialPost?.slug || "",
       excerpt: initialPost?.excerpt || "",
@@ -63,6 +71,7 @@ export function PostEditorClient({
 
     try {
       const payload = {
+        category: data.category,
         title: data.title.trim(),
         slug: data.slug.trim(),
         excerpt: data.excerpt.trim(),
@@ -94,14 +103,16 @@ export function PostEditorClient({
 
     if (!postId) return;
 
-    startSubmitForReview(async () => {
+    startPublishing(async () => {
       try {
-        await PostService.submitForReview(postId);
-        toast.success("Artigo enviado para revisão.");
+        await PostService.publishOwnPost(postId);
+        toast.success(
+          isPublishedPost ? "Publicação atualizada." : "Publicação enviada com sucesso.",
+        );
         router.refresh();
       } catch (error) {
         console.error(error);
-        toast.error("Não foi possível enviar para revisão.");
+        toast.error("Não foi possível publicar.");
       }
     });
   };
@@ -124,14 +135,50 @@ export function PostEditorClient({
     );
   }
 
+  if (!canPublish) {
+    return (
+      <div className="mx-auto max-w-3xl rounded-[2rem] border border-border-subtle bg-white p-10 text-center">
+        <h1 className="text-2xl font-bold text-text-main">
+          Publicação disponível para membros verificados
+        </h1>
+        <p className="mt-2 text-text-muted">
+          Complete sua verificação de membro no perfil para criar artigos e vagas.
+        </p>
+        <Link
+          href="/profile"
+          className="mt-6 inline-flex text-sm font-bold text-primary hover:underline"
+        >
+          Ir para meu perfil
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="rounded-[2rem] border border-blue-100 bg-blue-50/80 p-5 text-sm text-slate-700">
-        Título até 120 caracteres, resumo até 240, conteúdo entre 100 e 20000
-        caracteres e até 5 tags separadas por vírgula.
+        Escolha entre artigo e vaga. Para publicar, a postagem precisa ter pelo menos
+        texto ou imagem de capa. O resumo é opcional e as tags continuam limitadas a 5.
       </div>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 rounded-[2rem] border border-border-subtle bg-white p-6 md:p-8">
+        <div className="space-y-2">
+          <Label htmlFor="category">Categoria</Label>
+          <select
+            id="category"
+            {...form.register("category")}
+            className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            <option value="article">{POST_CATEGORY_LABELS.article}</option>
+            <option value="job">{POST_CATEGORY_LABELS.job}</option>
+          </select>
+          {form.formState.errors.category ? (
+            <p className="text-[10px] font-bold text-red-500">
+              {form.formState.errors.category.message}
+            </p>
+          ) : null}
+        </div>
+
         <div className="space-y-2">
           <Label htmlFor="title">Título</Label>
           <Input
@@ -186,7 +233,7 @@ export function PostEditorClient({
             {...form.register("excerpt")}
           />
           <div className="flex justify-between text-[10px] text-text-muted">
-            <span>Resumo exibido na listagem pública.</span>
+            <span>Opcional. Se vazio, usamos um resumo automático.</span>
             <span>{excerptValue.length}/240</span>
           </div>
           {form.formState.errors.excerpt ? (
@@ -205,7 +252,7 @@ export function PostEditorClient({
             {...form.register("content")}
           />
           <div className="flex justify-between text-[10px] text-text-muted">
-            <span>Use texto simples por enquanto. Podemos evoluir para editor rico depois.</span>
+            <span>O texto é opcional se você enviar uma capa, mas quando existir deve ter pelo menos 40 caracteres.</span>
             <span>{contentValue.length}/20000</span>
           </div>
           {form.formState.errors.content ? (
@@ -238,10 +285,14 @@ export function PostEditorClient({
             <Button
               type="button"
               variant="outline"
-              disabled={isSubmittingForReview}
+              disabled={isPublishing}
               onClick={handleSubmitForReview}
             >
-              {isSubmittingForReview ? "Enviando..." : "Enviar para revisão"}
+              {isPublishing
+                ? "Publicando..."
+                : isPublishedPost
+                  ? "Atualizar publicação"
+                  : "Publicar agora"}
             </Button>
           ) : null}
         </div>

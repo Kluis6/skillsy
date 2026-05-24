@@ -83,6 +83,26 @@ service cloud.firestore {
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isBlocked == false;
     }
 
+    function isVerifiedMember() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             (
+               (
+                 'memberVerified' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
+                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.memberVerified == true
+               ) ||
+               (
+                 'ward' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
+                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.ward is string &&
+                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.ward.size() > 0 &&
+                 'baptismYear' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
+                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.baptismYear is number &&
+                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.baptismYear >= 1830 &&
+                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.baptismYear <= 2100
+               )
+             );
+    }
+
     function isValidEmail(email) {
       return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
@@ -341,14 +361,18 @@ service cloud.firestore {
       return status in ['draft', 'pending_review', 'published', 'rejected'];
     }
 
+    function isValidPostCategory(category) {
+      return category in ['article', 'job'];
+    }
+
     function isValidPost(data) {
       let allowed = [
-        'authorId', 'authorName', 'authorEmail', 'title', 'slug', 'excerpt', 'content',
+        'authorId', 'authorName', 'authorEmail', 'category', 'title', 'slug', 'excerpt', 'content',
         'coverImageUrl', 'tags', 'status', 'createdAt', 'updatedAt', 'publishedAt',
         'reviewedAt', 'reviewedBy', 'rejectionReason', 'isFeatured'
       ];
 
-      return data.keys().hasAll(['authorId', 'authorName', 'authorEmail', 'title', 'slug', 'excerpt', 'content', 'status']) &&
+      return data.keys().hasAll(['authorId', 'authorName', 'authorEmail', 'category', 'title', 'slug', 'excerpt', 'content', 'status']) &&
              data.keys().hasOnly(allowed) &&
              data.authorId is string &&
              data.authorId.size() > 0 &&
@@ -356,6 +380,7 @@ service cloud.firestore {
              data.authorName.size() > 0 &&
              data.authorName.size() <= 100 &&
              isValidEmail(data.authorEmail) &&
+             isValidPostCategory(data.category) &&
              data.title is string &&
              data.title.size() >= 5 &&
              data.title.size() <= 120 &&
@@ -364,12 +389,13 @@ service cloud.firestore {
              data.slug.size() <= 140 &&
              data.slug.matches('^[a-z0-9-]+$') &&
              data.excerpt is string &&
-             data.excerpt.size() >= 20 &&
              data.excerpt.size() <= 240 &&
              data.content is string &&
-             data.content.size() >= 100 &&
              data.content.size() <= 20000 &&
              (!('coverImageUrl' in data) || data.coverImageUrl == null || (data.coverImageUrl is string && data.coverImageUrl.size() <= 1000000)) &&
+             (data.content.size() > 0 || (('coverImageUrl' in data) && data.coverImageUrl is string && data.coverImageUrl.size() > 0)) &&
+             (data.content.size() == 0 || data.content.size() >= 40) &&
+             (data.excerpt.size() == 0 || data.excerpt.size() >= 20) &&
              (!('tags' in data) || data.tags == null || (data.tags is list && data.tags.size() <= 5)) &&
              isValidPostStatus(data.status) &&
              (!('createdAt' in data) || data.createdAt is timestamp) &&
@@ -392,8 +418,37 @@ service cloud.firestore {
     }
 
     function authorCanManageOwnPost(nextStatus) {
-      return ((resource.data.status in ['draft', 'rejected']) && (nextStatus in ['draft', 'pending_review'])) ||
-             (resource.data.status == 'pending_review' && nextStatus == 'pending_review');
+      return ((resource.data.status in ['draft', 'rejected']) && (nextStatus in ['draft', 'pending_review', 'published'])) ||
+             (resource.data.status == 'pending_review' && nextStatus in ['pending_review', 'published']) ||
+             (resource.data.status == 'published' && nextStatus == 'published');
+    }
+
+    function isValidPostReport(data) {
+      let allowed = [
+        'postId', 'postTitle', 'postSlug', 'postAuthorId', 'reporterId',
+        'reporterEmail', 'reason', 'details', 'status', 'createdAt'
+      ];
+
+      return data.keys().hasAll(['postId', 'postTitle', 'postSlug', 'postAuthorId', 'reporterId', 'reporterEmail', 'reason', 'status']) &&
+             data.keys().hasOnly(allowed) &&
+             data.postId is string &&
+             data.postId.size() > 0 &&
+             data.postTitle is string &&
+             data.postTitle.size() > 0 &&
+             data.postTitle.size() <= 120 &&
+             data.postSlug is string &&
+             data.postSlug.size() >= 3 &&
+             data.postSlug.size() <= 140 &&
+             data.postSlug.matches('^[a-z0-9-]+$') &&
+             data.postAuthorId is string &&
+             data.postAuthorId.size() > 0 &&
+             data.reporterId == request.auth.uid &&
+             isValidEmail(data.reporterEmail) &&
+             data.reason in ['informacao_falsa', 'conteudo_ofensivo', 'spam', 'golpe_ou_fraude', 'conduta_inadequada', 'outro'] &&
+             (!('details' in data) || data.details == null || (data.details is string && data.details.size() <= 1000)) &&
+             data.status in ['new', 'reviewed', 'resolved'] &&
+             data.postAuthorId != request.auth.uid &&
+             (!('createdAt' in data) || data.createdAt is timestamp);
     }
 
     // ===============================================================
@@ -426,6 +481,7 @@ service cloud.firestore {
 
       allow create: if isAuthenticated() &&
                       isNotBlocked() &&
+                      isVerifiedMember() &&
                       isValidPost(request.resource.data) &&
                       isOwnPostAuthor(request.resource.data) &&
                       request.resource.data.status == 'draft' &&
@@ -436,6 +492,7 @@ service cloud.firestore {
       allow update: if isAdmin() ||
                       (isAuthenticated() &&
                        isNotBlocked() &&
+                       isVerifiedMember() &&
                        resource.data.authorId == request.auth.uid &&
                        isValidPost(request.resource.data) &&
                        keepsSamePostAuthor(request.resource.data) &&
@@ -444,7 +501,15 @@ service cloud.firestore {
       allow delete: if isAdmin() ||
                       (isAuthenticated() &&
                        resource.data.authorId == request.auth.uid &&
-                       resource.data.status in ['draft', 'rejected']);
+                       isNotBlocked());
+    }
+
+    match /post_reports/{reportId} {
+      allow create: if isAuthenticated() &&
+                      isNotBlocked() &&
+                      isValidPostReport(request.resource.data) &&
+                      request.resource.data.status == 'new';
+      allow read, update, delete: if isAdmin();
     }
 
     match /users/{userId} {

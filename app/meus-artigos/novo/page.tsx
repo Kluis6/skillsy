@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PostEditorClient } from "@/components/posts/post-editor-client";
 
 export const metadata: Metadata = {
-  title: "Novo Artigo",
+  title: "Nova Publicação",
   robots: {
     index: false,
     follow: false,

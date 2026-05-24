@@ -76,6 +76,7 @@ export interface UserReport {
   createdAt: any;
 }
 
+export type PostCategory = 'article' | 'job';
 export type PostStatus = 'draft' | 'pending_review' | 'published' | 'rejected';
 
 export interface Post {
@@ -83,6 +84,7 @@ export interface Post {
   authorId: string;
   authorName: string;
   authorEmail: string;
+  category: PostCategory;
   title: string;
   slug: string;
   excerpt: string;
@@ -97,4 +99,18 @@ export interface Post {
   reviewedBy?: string;
   rejectionReason?: string;
   isFeatured?: boolean;
+}
+
+export interface PostReport {
+  id?: string;
+  postId: string;
+  postTitle: string;
+  postSlug: string;
+  postAuthorId: string;
+  reporterId: string;
+  reporterEmail: string;
+  reason: string;
+  details?: string;
+  status: 'new' | 'reviewed' | 'resolved';
+  createdAt: any;
 }

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { AVAILABILITY_OPTIONS, PROVIDER_CATEGORIES } from '@/lib/profile-form';
 import { REPORT_REASON_OPTIONS } from '@/lib/reporting';
+import { POST_CATEGORY_OPTIONS } from '@/lib/post-utils';
 
 const currentYear = new Date().getFullYear();
 
@@ -210,6 +211,9 @@ export const reportUserSchema = z.object({
 export type ReportUserFormData = z.infer<typeof reportUserSchema>;
 
 export const postEditorSchema = z.object({
+  category: z.enum(POST_CATEGORY_OPTIONS, {
+    message: 'Selecione a categoria da publicação',
+  }),
   title: z
     .string()
     .trim()
@@ -224,12 +228,10 @@ export const postEditorSchema = z.object({
   excerpt: z
     .string()
     .trim()
-    .min(20, 'O resumo deve ter pelo menos 20 caracteres')
     .max(240, 'O resumo deve ter no máximo 240 caracteres'),
   content: z
     .string()
     .trim()
-    .min(100, 'O conteúdo deve ter pelo menos 100 caracteres')
     .max(20000, 'O conteúdo deve ter no máximo 20000 caracteres'),
   coverImageUrl: z
     .union([
@@ -239,6 +241,48 @@ export const postEditorSchema = z.object({
   tags: z
     .string()
     .max(120, 'As tags devem ter no máximo 120 caracteres'),
+}).superRefine((data, context) => {
+  const hasTextContent = data.content.trim().length > 0;
+  const hasCoverImage = data.coverImageUrl.trim().length > 0;
+  const hasExcerpt = data.excerpt.trim().length > 0;
+
+  if (!hasTextContent && !hasCoverImage) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Adicione texto ao conteúdo ou uma imagem de capa para publicar.',
+      path: ['content'],
+    });
+  }
+
+  if (hasTextContent && data.content.trim().length < 40) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Quando houver texto, o conteúdo deve ter pelo menos 40 caracteres.',
+      path: ['content'],
+    });
+  }
+
+  if (hasExcerpt && data.excerpt.trim().length < 20) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Quando informado, o resumo deve ter pelo menos 20 caracteres.',
+      path: ['excerpt'],
+    });
+  }
 });
 
 export type PostEditorFormData = z.infer<typeof postEditorSchema>;
+
+export const reportPostSchema = z.object({
+  reason: z.enum(REPORT_REASON_OPTIONS, {
+    message: 'Selecione um motivo para a denúncia',
+  }),
+  details: z
+    .string()
+    .trim()
+    .max(1000, 'A descrição deve ter no máximo 1000 caracteres')
+    .optional()
+    .or(z.literal('')),
+});
+
+export type ReportPostFormData = z.infer<typeof reportPostSchema>;
