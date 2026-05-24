@@ -241,7 +241,7 @@ export default function PrivacidadePage() {
       </section>
 
       <section className="container mx-auto my-24 px-4">
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-12 gap-4 md:gap-8">
           <div className="col-span-12 lg:col-span-4">
             <div className="space-y-4">
               <h2 className="text-xl lg:text-2xl font-bold text-gray-900 ">
@@ -259,7 +259,7 @@ export default function PrivacidadePage() {
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               <div className="col-span-12 md:col-span-4">
                 <div className="h-full space-y-2 rounded-md border bg-slate-50 p-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700">
+                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
                     <Share2 size={22} />
                   </div>
                   <h3 className="text-base font-bold text-gray-800">
@@ -289,7 +289,7 @@ export default function PrivacidadePage() {
               </div>
               <div className="col-span-12 md:col-span-4">
                 <div className="h-full space-y-2 rounded-md border bg-slate-50 p-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700">
+                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
                     <ShieldCheck size={22} />
                   </div>
                   <h3 className="text-base font-bold text-gray-800">
@@ -308,7 +308,7 @@ export default function PrivacidadePage() {
       </section>
 
       <div className="container mx-auto mb-24 px-4">
-        <section className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <section className="mt-12 grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2">
           <div className="rounded-xl border bg-slate-50 p-4 md:p-6 lg:p-10">
             <div className="space-y-4">
               <h2 className="text-xl lg:text-2xl font-bold text-gray-900">
@@ -330,8 +330,8 @@ export default function PrivacidadePage() {
             </div>
           </div>
 
-          <div className="space-y-7 p-4 md:p-6 lg:p-10">
-            <h2 className="text-xl lg:text-2xl font-bold text-gray-900">
+          <div className="space-y-4">
+            <h2 className="text-xl lg:text-2xl font-bold text-gray-800">
               Atualizações e contato
             </h2>
             <div className="space-y-4 text-sm leading-relaxed text-gray-700">
@@ -358,15 +358,15 @@ export default function PrivacidadePage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm leading-relaxed text-amber-950/90">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950/90">
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-amber-100 text-amber-800">
                   <RefreshCcw size={18} />
                 </div>
-                <div>
+                <div >
                   <strong className="text-amber-900">
                     Última atualização:
-                  </strong>{" "}
+                  </strong><br />
                   17 de abril de 2026.
                 </div>
               </div>
@@ -377,7 +377,7 @@ export default function PrivacidadePage() {
 
       <section className="container mx-auto mb-24 px-4">
         <div className="rounded-2xl border bg-slate-50 p-4 md:p-6 lg::p-10">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-[1.1fr_0.9fr]">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-4">
               <h2 className="text-xl lg:text-2xl font-bold text-gray-900">
                 Cookies e tecnologias similares
