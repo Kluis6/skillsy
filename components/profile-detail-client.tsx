@@ -66,7 +66,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { reportUserSchema, type ReportUserFormData } from "@/lib/validations";
 import { REPORT_REASON_LABELS, REPORT_REASON_OPTIONS } from "@/lib/reporting";
-import { shouldShowVerifiedBadge } from "@/lib/member-verification";
+import {
+  getMembershipYears,
+  shouldShowVerifiedBadge,
+} from "@/lib/member-verification";
 
 interface ProfileDetailClientProps {
   id: string;
@@ -117,6 +120,9 @@ export function ProfileDetailClient({
       targetProfile.isProvider &&
       user?.uid !== targetProfile.uid,
   );
+  const membershipYears = targetProfile
+    ? targetProfile.membershipYears ?? getMembershipYears(targetProfile)
+    : undefined;
 
   useEffect(() => {
     // We only need to fetch if we don't have the profile yet or to get fresh data
@@ -768,13 +774,13 @@ export function ProfileDetailClient({
                         </p>
                       </div>
                     )}
-                    {typeof targetProfile.membershipYears === "number" &&
-                      targetProfile.membershipYears >= 0 && (
+                    {typeof membershipYears === "number" &&
+                      membershipYears >= 0 && (
                         <div className="flex items-center space-x-2">
                           <CalendarDays size={16} className="text-gray-800" />
                           <p className="text-sm text-gray-800 font-normal">
-                            Membro há {targetProfile.membershipYears}{" "}
-                            {targetProfile.membershipYears === 1 ? "ano" : "anos"}
+                            Membro há {membershipYears}{" "}
+                            {membershipYears === 1 ? "ano" : "anos"}
                           </p>
                         </div>
                       )}

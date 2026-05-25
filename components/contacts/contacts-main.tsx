@@ -14,8 +14,10 @@ import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserProfile } from "@/models/types";
+import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 import { useContactsStore } from "@/store/use-contacts-store";
 import { toast } from "sonner";
 import { SidebarTrigger } from "../ui/sidebar";
@@ -314,6 +316,12 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 font-heading tracking-tight">
                           {selectedContact.name}
                         </h2>
+                        {shouldShowVerifiedBadge(selectedContact) && (
+                          <Badge className="bg-primary/10 text-primary border-none font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <ShieldCheck size={13} />
+                            Membro Verificado
+                          </Badge>
+                        )}
                       </div>
 
                       <div className="text-center md:text-left md:flex flex-col hidden">

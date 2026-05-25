@@ -8,7 +8,9 @@ const pageSize = 100;
 
 function parseArgs(argv) {
   const options = {
-    limit: 20,
+    limit: 50,
+    uid: undefined,
+    email: undefined,
     token: process.env.GOOGLE_OAUTH_ACCESS_TOKEN || process.env.FIREBASE_ACCESS_TOKEN,
   };
 
@@ -31,6 +33,26 @@ function parseArgs(argv) {
         throw new Error("Missing value for --token");
       }
       options.token = next;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--uid") {
+      const next = argv[index + 1];
+      if (!next) {
+        throw new Error("Missing value for --uid");
+      }
+      options.uid = next;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--email") {
+      const next = argv[index + 1];
+      if (!next) {
+        throw new Error("Missing value for --email");
+      }
+      options.email = next.toLowerCase();
       index += 1;
     }
   }
@@ -136,81 +158,55 @@ function getNumber(fields, key) {
     return Number(doubleValue);
   }
 
-  return 0;
+  return undefined;
 }
 
 function normalizeDocument(document) {
   const fields = document.fields || {};
+  const baptismYear = getNumber(fields, "baptismYear");
+  const ward = getString(fields, "ward");
+  const memberVerified = getBoolean(fields, "memberVerified");
+  const computedVerified = Boolean(
+    ward.trim() &&
+      typeof baptismYear === "number" &&
+      Number.isFinite(baptismYear) &&
+      baptismYear >= 1830 &&
+      baptismYear <= new Date().getFullYear(),
+  );
+
   return {
     id: document.name.split("/").pop(),
     uid: getString(fields, "uid"),
     name: getString(fields, "name"),
-    category: getString(fields, "category"),
-    companyName: getString(fields, "companyName"),
-    ward: getString(fields, "ward"),
-    memberVerified: getBoolean(fields, "memberVerified"),
-    membershipYears: getNumber(fields, "membershipYears"),
+    email: getString(fields, "email"),
+    ward: ward || "-",
+    baptismYear: baptismYear ?? "-",
+    memberVerified,
+    computedVerified,
     isProvider: getBoolean(fields, "isProvider"),
     isBlocked: getBoolean(fields, "isBlocked"),
     isDeleted: getBoolean(fields, "isDeleted"),
-    rating: getNumber(fields, "rating"),
-    reviewCount: getNumber(fields, "reviewCount"),
   };
-}
-
-function sortFeatured(items) {
-  return [...items].sort((a, b) => {
-    if (b.rating !== a.rating) {
-      return b.rating - a.rating;
-    }
-
-    if (b.reviewCount !== a.reviewCount) {
-      return b.reviewCount - a.reviewCount;
-    }
-
-    return a.name.localeCompare(b.name, "pt-BR");
-  });
 }
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const token = options.token || readAccessToken();
-  const documents = await listDocuments("public_profiles", token);
-  const profiles = documents.map(normalizeDocument);
+  const documents = await listDocuments("users", token);
+  let users = documents.map(normalizeDocument);
 
-  const visibleProviders = sortFeatured(
-    profiles.filter(
-      (profile) =>
-        profile.isProvider &&
-        !profile.isBlocked &&
-        !profile.isDeleted,
-    ),
-  ).slice(0, options.limit);
-
-  console.log(`public_profiles total: ${profiles.length}`);
-  console.log(`public_profiles visiveis como provider: ${visibleProviders.length}`);
-
-  if (visibleProviders.length === 0) {
-    console.log("Nenhum provider publico visivel encontrado.");
-    return;
+  if (options.uid) {
+    users = users.filter((user) => user.id === options.uid || user.uid === options.uid);
   }
 
-  console.table(
-    visibleProviders.map((profile) => ({
-      uid: profile.uid || profile.id,
-      name: profile.name,
-      category: profile.category || "-",
-      companyName: profile.companyName || "-",
-      ward: profile.ward || "-",
-      memberVerified: profile.memberVerified,
-      membershipYears: profile.membershipYears || 0,
-      rating: profile.rating,
-      reviewCount: profile.reviewCount,
-      isProvider: profile.isProvider,
-      isBlocked: profile.isBlocked,
-      isDeleted: profile.isDeleted,
-    })),
-  );
+  if (options.email) {
+    users = users.filter((user) => user.email.toLowerCase() === options.email);
+  }
+
+  users = users.slice(0, options.limit);
+
+  console.log(`users total: ${documents.length}`);
+  console.table(users);
 }
 
 main().catch((error) => {

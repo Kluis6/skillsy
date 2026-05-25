@@ -488,7 +488,7 @@ export function ProfileSettingsClient() {
                     {formData.name || "Seu Nome"}
                   </h2>
                   <p className="text-sm text-text-muted mb-4">{user.email}</p>
-                  {shouldShowVerifiedBadge(profile) && (
+                  {shouldShowVerifiedBadge(formData) && (
                     <Badge className="bg-primary/10 text-primary border-none font-bold px-4 py-1.5 rounded-full flex items-center gap-2">
                       <ShieldCheck size={14} /> Membro Verificado
                     </Badge>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Flag, Pencil, Trash2 } from "lucide-react";
+import { Flag, Pencil, Share2, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { REPORT_REASON_LABELS, REPORT_REASON_OPTIONS } from "@/lib/reporting";
 import {
@@ -58,6 +58,12 @@ export function PostPublicActions({
 
   const isOwnPost = user?.uid === post.authorId;
   const canReport = Boolean(user && !isOwnPost && post.status === "published");
+  const shareUrl =
+    typeof window === "undefined"
+      ? `/artigosevagas/${post.slug}`
+      : `${window.location.origin}/artigosevagas/${post.slug}`;
+  const canUseNativeShare =
+    typeof navigator !== "undefined" && "share" in navigator;
   const containerClassName = compact
     ? "flex flex-wrap items-center gap-2"
     : "flex flex-wrap items-center gap-3";
@@ -138,8 +144,53 @@ export function PostPublicActions({
     [],
   );
 
+  const handleCopyLink = async () => {
+    if (!shareUrl) return;
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Link copiado", {
+        description: "Agora você pode compartilhar esta publicação.",
+      });
+    } catch {
+      toast.error("Não foi possível copiar o link");
+    }
+  };
+
+  const handleShare = async () => {
+    if (!shareUrl) return;
+
+    if (canUseNativeShare) {
+      try {
+        await navigator.share({
+          title: post.title,
+          text:
+            post.category === "job"
+              ? `Confira esta vaga no Skillsy: ${post.title}`
+              : `Confira esta publicação no Skillsy: ${post.title}`,
+          url: shareUrl,
+        });
+        return;
+      } catch {
+        // Usuario cancelou ou o navegador bloqueou a acao.
+      }
+    }
+
+    await handleCopyLink();
+  };
+
   return (
     <div className={containerClassName}>
+      <Button
+        type="button"
+        variant="ghost"
+        size={compact ? "sm" : "default"}
+        onClick={handleShare}
+      >
+        <Share2 size={16} className="mr-2" />
+        Compartilhar
+      </Button>
+
       {isOwnPost && post.id ? (
         <>
           <Link href={`/meus-artigos/${post.id}/editar`}>

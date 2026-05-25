@@ -21,7 +21,11 @@ import { toPlainValue } from '@/lib/firestore-plain';
 import { UserProfile, UserReport } from '@/models/types';
 import { AVAILABILITY_OPTIONS, PROVIDER_CATEGORIES } from '@/lib/profile-form';
 import { NotificationService } from './notification-service';
-import { getMembershipYears, hasMembershipVerificationData } from '@/lib/member-verification';
+import {
+  deriveMemberVerification,
+  getMembershipYears,
+  hasMembershipVerificationData,
+} from '@/lib/member-verification';
 
 enum OperationType {
   CREATE = 'create',
@@ -258,7 +262,6 @@ function normalizeUserDocumentForRules(source: Record<string, unknown>) {
   normalized.rating = normalizeFiniteNumber(normalized.rating);
   normalized.reviewCount = normalizeFiniteNumber(normalized.reviewCount);
   normalized.experienceYears = normalizeFiniteNumber(normalized.experienceYears);
-
   const baptismYear = normalizeFiniteNumber(normalized.baptismYear);
   normalized.baptismYear =
     baptismYear !== undefined && baptismYear >= 1830 && baptismYear <= new Date().getFullYear()
@@ -309,8 +312,9 @@ function toPublicProfileModel(
     rating: raw.rating,
     reviewCount: raw.reviewCount,
     experienceYears: raw.experienceYears,
-    memberVerified: raw.memberVerified ?? false,
-    membershipYears: raw.membershipYears,
+    baptismYear: raw.baptismYear,
+    memberVerified: raw.memberVerified ?? hasMembershipVerificationData(raw),
+    membershipYears: raw.membershipYears ?? getMembershipYears(raw),
     availability: raw.availability || [],
     serviceHours: raw.serviceHours || '',
     whatsapp: raw.whatsapp || '',
@@ -326,13 +330,15 @@ function toPublicProfileModel(
 }
 
 function buildPublicProfileData(source: Partial<UserProfile>) {
+  const verification = deriveMemberVerification(source);
+
   return removeUndefinedDeep({
     uid: source.uid,
     name: source.name,
     photoURL: source.photoURL || '',
     bannerURL: source.bannerURL || '',
     bio: source.bio || '',
-    category: source.category || '',
+    category: normalizeBoundedString(source.category, 100),
     isProvider: source.isProvider ?? false,
     serviceType: source.serviceType || '',
     location: source.location || '',
@@ -342,8 +348,8 @@ function buildPublicProfileData(source: Partial<UserProfile>) {
     rating: source.rating,
     reviewCount: source.reviewCount,
     experienceYears: source.experienceYears,
-    memberVerified: hasMembershipVerificationData(source),
-    membershipYears: getMembershipYears(source),
+    memberVerified: verification.memberVerified,
+    membershipYears: verification.membershipYears,
     availability: source.availability || [],
     serviceHours: source.serviceHours || '',
     whatsapp: source.whatsapp || '',
@@ -356,6 +362,16 @@ function buildPublicProfileData(source: Partial<UserProfile>) {
     isBlocked: source.isBlocked ?? false,
     isDeleted: source.isDeleted ?? false,
     createdAt: source.createdAt,
+  });
+}
+
+function applyDerivedVerificationFields(source: Partial<UserProfile>) {
+  const verification = deriveMemberVerification(source);
+
+  return removeUndefinedDeep({
+    ...source,
+    memberVerified: verification.memberVerified,
+    membershipYears: verification.membershipYears,
   });
 }
 
@@ -441,10 +457,10 @@ export const UserService = {
       const privateDocRef = doc(db, 'users', profile.uid);
       const publicDocRef = doc(db, 'public_profiles', profile.uid);
       const batch = writeBatch(db);
-      const nextPrivateProfile = {
+      const nextPrivateProfile = applyDerivedVerificationFields({
         ...profile,
         createdAt,
-      };
+      });
 
       batch.set(privateDocRef, nextPrivateProfile);
       batch.set(
@@ -501,6 +517,8 @@ export const UserService = {
         'reviewCount',
         'experienceYears',
         'baptismYear',
+        'memberVerified',
+        'membershipYears',
         'isBlocked',
         'isDeleted',
         'deletedByUser',
@@ -581,7 +599,9 @@ export const UserService = {
         ...currentData,
         ...safeIncomingData,
       };
-      const sanitizedPrivateProfile = removeUndefinedDeep(nextData);
+      const sanitizedPrivateProfile = applyDerivedVerificationFields(
+        removeUndefinedDeep(nextData),
+      );
       const batch = writeBatch(db);
 
       batch.set(docRef, sanitizedPrivateProfile);
@@ -754,10 +774,10 @@ export const UserService = {
 
       const currentData = toPlainValue(currentSnapshot.data() as UserProfile);
       const { id, ...updateData } = data as any;
-      const nextPrivateProfile = removeUndefinedDeep({
+      const nextPrivateProfile = applyDerivedVerificationFields(removeUndefinedDeep({
         ...currentData,
         ...updateData,
-      });
+      }));
 
       const batch = writeBatch(db);
       batch.set(docRef, nextPrivateProfile);
@@ -787,7 +807,7 @@ export const UserService = {
           ? 'Conta administrativa desativada'
           : 'Conta desativada';
 
-      const nextData = removeUndefinedDeep({
+      const nextData = applyDerivedVerificationFields(removeUndefinedDeep({
         ...currentData,
         uid,
         email,
@@ -817,10 +837,12 @@ export const UserService = {
         gallery: [],
         availability: [],
         serviceHours: '',
+        memberVerified: false,
+        membershipYears: undefined,
         isDeleted: true,
         deletedByUser: true,
         deletedAt: serverTimestamp(),
-      });
+      }));
 
       const batch = writeBatch(db);
       batch.set(docRef, nextData);
@@ -936,10 +958,10 @@ export const UserService = {
       for (const user of fakeUsers) {
         const docRef = doc(db, 'users', user.uid!);
         const createdAt = serverTimestamp();
-        const nextPrivateProfile = {
+        const nextPrivateProfile = applyDerivedVerificationFields({
           ...user,
           createdAt
-        };
+        });
 
         batch.set(docRef, nextPrivateProfile);
         batch.set(

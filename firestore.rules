@@ -86,21 +86,48 @@ service cloud.firestore {
     function isVerifiedMember() {
       return isAuthenticated() &&
              exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-             (
-               (
-                 'memberVerified' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
-                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.memberVerified == true
-               ) ||
-               (
-                 'ward' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
-                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.ward is string &&
-                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.ward.size() > 0 &&
-                 'baptismYear' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
-                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.baptismYear is number &&
-                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.baptismYear >= 1830 &&
-                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.baptismYear <= 2100
-               )
-             );
+             'memberVerified' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.memberVerified == true;
+    }
+
+    function hasValidVerificationFields(data) {
+      return ('ward' in data) &&
+             data.ward is string &&
+             data.ward.size() > 0 &&
+             ('baptismYear' in data) &&
+             data.baptismYear is number &&
+             data.baptismYear >= 1830 &&
+             data.baptismYear <= 2100;
+    }
+
+    function hasConsistentMemberVerified(data) {
+      return (
+        hasValidVerificationFields(data) &&
+        ('memberVerified' in data) &&
+        data.memberVerified == true
+      ) || (
+        !hasValidVerificationFields(data) &&
+        (
+          !('memberVerified' in data) ||
+          data.memberVerified == false
+        )
+      );
+    }
+
+    function hasConsistentMembershipYears(data) {
+      return (
+        hasValidVerificationFields(data) &&
+        (
+          !('membershipYears' in data) ||
+          (data.membershipYears is number && data.membershipYears >= 0 && data.membershipYears <= 300)
+        )
+      ) || (
+        !hasValidVerificationFields(data) &&
+        (
+          !('membershipYears' in data) ||
+          data.membershipYears == null
+        )
+      );
     }
 
     function isValidEmail(email) {
@@ -160,6 +187,7 @@ service cloud.firestore {
         'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 'phone', 
         'phones', 'location', 'ward', 'companyName', 'gallery', 
         'rating', 'reviewCount', 'experienceYears', 'baptismYear',
+        'memberVerified', 'membershipYears',
         'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
         'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'businessComplement'
       ];
@@ -193,6 +221,10 @@ service cloud.firestore {
              (!('reviewCount' in data) || data.reviewCount is number) &&
              (!('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
              (!('baptismYear' in data) || data.baptismYear == null || data.baptismYear is number) &&
+             (!('memberVerified' in data) || data.memberVerified is bool) &&
+             (!('membershipYears' in data) || data.membershipYears == null || data.membershipYears is number) &&
+             hasConsistentMemberVerified(data) &&
+             hasConsistentMembershipYears(data) &&
              (!('availability' in data) || data.availability == null || isValidAvailabilityList(data.availability)) &&
              (!('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200)) &&
              (!('businessAddress' in data) || data.businessAddress == null || (data.businessAddress is string && data.businessAddress.size() <= 200)) &&
@@ -210,7 +242,7 @@ service cloud.firestore {
       let allowedFields = [
         'uid', 'name', 'photoURL', 'bannerURL', 'bio', 'category',
         'isProvider', 'serviceType', 'location', 'ward', 'companyName', 'gallery',
-        'rating', 'reviewCount', 'experienceYears', 'memberVerified', 'membershipYears', 'availability',
+        'rating', 'reviewCount', 'experienceYears', 'baptismYear', 'memberVerified', 'membershipYears', 'availability',
         'serviceHours', 'whatsapp', 'instagram', 'facebook', 'linkedin',
         'website', 'phone', 'phones', 'isBlocked', 'isDeleted', 'createdAt'
       ];
@@ -234,8 +266,11 @@ service cloud.firestore {
              (!('rating' in data) || data.rating is number) &&
              (!('reviewCount' in data) || data.reviewCount is number) &&
              (!('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
+             (!('baptismYear' in data) || data.baptismYear == null || data.baptismYear is number) &&
              (!('memberVerified' in data) || data.memberVerified is bool) &&
              (!('membershipYears' in data) || data.membershipYears == null || data.membershipYears is number) &&
+             hasConsistentMemberVerified(data) &&
+             hasConsistentMembershipYears(data) &&
              (!('availability' in data) || data.availability == null || isValidAvailabilityList(data.availability)) &&
              (!('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200)) &&
              (!('whatsapp' in data) || data.whatsapp == null || (data.whatsapp is string && data.whatsapp.size() <= 30)) &&

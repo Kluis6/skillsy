@@ -192,7 +192,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!user) return;
     try {
       await UserService.updateProfile(user.uid, data);
-      setProfile((prev: any) => ({ ...prev, ...data }));
+      const refreshedProfile = await UserService.getProfile(user.uid);
+      setProfile(refreshedProfile);
     } catch (error) {
       console.error('Error updating profile:', error);
       throw error;

@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import imageCompression from "browser-image-compression";
+import { ImagePlus, Loader2, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 import { postEditorSchema, type PostEditorFormData } from "@/lib/validations";
@@ -21,6 +24,35 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Link from "next/link";
 
+const MAX_IMAGE_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
+const MAX_INLINE_IMAGE_SIZE_BYTES = 100 * 1024;
+const SUPPORTED_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
+
+const readFileAsDataURL = (file: Blob) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () =>
+      reject(new Error("Nao foi possivel ler a imagem selecionada."));
+  });
+
+const getCompressionErrorMessage = (error: unknown) => {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  if (typeof error === "string" && error) {
+    return error;
+  }
+
+  return "Nao foi possivel processar essa imagem.";
+};
+
 type PostEditorClientProps = {
   mode: "create" | "edit";
   initialPost?: Post | null;
@@ -34,6 +66,8 @@ export function PostEditorClient({
   const { user, profile, loading } = useAuth();
   const [isPublishing, startPublishing] = useTransition();
   const [autoSlugEdited, setAutoSlugEdited] = useState(Boolean(initialPost));
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
   const canPublish = shouldShowVerifiedBadge(profile);
   const isPublishedPost = initialPost?.status === "published";
 
@@ -54,6 +88,8 @@ export function PostEditorClient({
   const titleValue = useWatch({ control: form.control, name: "title" }) || "";
   const contentValue = useWatch({ control: form.control, name: "content" }) || "";
   const excerptValue = useWatch({ control: form.control, name: "excerpt" }) || "";
+  const coverImageValue =
+    useWatch({ control: form.control, name: "coverImageUrl" }) || "";
 
   useEffect(() => {
     if (!autoSlugEdited) {
@@ -62,6 +98,87 @@ export function PostEditorClient({
       });
     }
   }, [autoSlugEdited, titleValue, form]);
+
+  const compressAndGetBase64 = async (file: File) => {
+    if (file.size <= MAX_INLINE_IMAGE_SIZE_BYTES) {
+      return await readFileAsDataURL(file);
+    }
+
+    const compressionOptions = {
+      maxSizeMB: 0.6,
+      maxWidthOrHeight: 1600,
+      useWebWorker: true,
+      initialQuality: 0.82,
+      fileType:
+        file.type === "image/png" ? "image/png" : "image/jpeg",
+    } as const;
+
+    try {
+      const compressed = await imageCompression(file, compressionOptions);
+      return await readFileAsDataURL(compressed);
+    } catch (error) {
+      if (file.size <= MAX_INLINE_IMAGE_SIZE_BYTES) {
+        return await readFileAsDataURL(file);
+      }
+
+      throw new Error(getCompressionErrorMessage(error));
+    }
+  };
+
+  const handleCoverFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Arquivo invalido", {
+        description: "Selecione um arquivo de imagem.",
+      });
+      event.target.value = "";
+      return;
+    }
+
+    if (!SUPPORTED_IMAGE_TYPES.has(file.type)) {
+      toast.error("Formato nao suportado", {
+        description: "Use uma imagem JPG, PNG ou WEBP.",
+      });
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_UPLOAD_SIZE_BYTES) {
+      toast.error("Imagem muito grande", {
+        description: "Escolha uma imagem de ate 10 MB.",
+      });
+      event.target.value = "";
+      return;
+    }
+
+    setUploadingCover(true);
+    try {
+      const base64 = await compressAndGetBase64(file);
+      form.setValue("coverImageUrl", base64, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+      toast.success("Imagem de capa carregada!");
+    } catch (error) {
+      toast.error("Erro ao carregar imagem", {
+        description: getCompressionErrorMessage(error),
+      });
+    } finally {
+      setUploadingCover(false);
+      event.target.value = "";
+    }
+  };
+
+  const handleRemoveCoverImage = () => {
+    form.setValue("coverImageUrl", "", {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  };
 
   const onSubmit = async (data: PostEditorFormData) => {
     if (!user) {
@@ -94,28 +211,44 @@ export function PostEditorClient({
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error("Não foi possível salvar o artigo.");
+      const message =
+        error instanceof Error &&
+        error.message.includes("Missing or insufficient permissions")
+          ? "Seu perfil parece verificado na interface, mas ainda não foi aceito pela regra do Firestore. Tente salvar o perfil novamente e depois publicar."
+          : "Não foi possível salvar o artigo.";
+      toast.error(message);
     }
   };
 
-  const handleSubmitForReview = () => {
+  const handleSubmitForReview = form.handleSubmit((data) => {
     const postId = initialPost?.id;
 
     if (!postId) return;
 
     startPublishing(async () => {
       try {
+        const payload = {
+          category: data.category,
+          title: data.title.trim(),
+          slug: data.slug.trim(),
+          excerpt: data.excerpt.trim(),
+          content: data.content.trim(),
+          coverImageUrl: data.coverImageUrl.trim(),
+          tags: normalizePostTags(data.tags),
+        };
+
+        await PostService.updateOwnPost(postId, payload);
         await PostService.publishOwnPost(postId);
         toast.success(
           isPublishedPost ? "Publicação atualizada." : "Publicação enviada com sucesso.",
         );
-        router.refresh();
+        router.push("/artigosevagas");
       } catch (error) {
         console.error(error);
         toast.error("Não foi possível publicar.");
       }
     });
-  };
+  });
 
   if (loading) {
     return <div className="p-8 text-center text-text-muted">Carregando...</div>;
@@ -216,6 +349,41 @@ export function PostEditorClient({
               placeholder="https://..."
               {...form.register("coverImageUrl")}
             />
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={uploadingCover}
+                onClick={() => coverInputRef.current?.click()}
+              >
+                {uploadingCover ? (
+                  <Loader2 size={16} className="mr-2 animate-spin" />
+                ) : (
+                  <ImagePlus size={16} className="mr-2" />
+                )}
+                {uploadingCover ? "Carregando..." : "Upload de imagem"}
+              </Button>
+              {coverImageValue ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleRemoveCoverImage}
+                >
+                  <Trash2 size={16} className="mr-2" />
+                  Remover capa
+                </Button>
+              ) : null}
+            </div>
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="hidden"
+              onChange={handleCoverFileChange}
+            />
+            <p className="text-[10px] text-text-muted">
+              Você pode colar uma URL ou enviar um arquivo JPG, PNG ou WEBP de até 10 MB.
+            </p>
             {form.formState.errors.coverImageUrl ? (
               <p className="text-[10px] font-bold text-red-500">
                 {form.formState.errors.coverImageUrl.message}
@@ -223,6 +391,21 @@ export function PostEditorClient({
             ) : null}
           </div>
         </div>
+
+        {coverImageValue ? (
+          <div className="space-y-2">
+            <Label>Prévia da capa</Label>
+            <div className="relative h-56 overflow-hidden rounded-xl border border-border-subtle bg-slate-50">
+              <Image
+                src={coverImageValue}
+                alt="Prévia da imagem de capa"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1023px) 100vw, 50vw"
+              />
+            </div>
+          </div>
+        ) : null}
 
         <div className="space-y-2">
           <Label htmlFor="excerpt">Resumo</Label>

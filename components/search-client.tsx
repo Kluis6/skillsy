@@ -75,6 +75,7 @@ import {
 
 import { LuLogIn } from "react-icons/lu";
 import { Footer } from "./footer";
+import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 
 function SearchResultsContent() {
   const { profile, toggleContact } = useAuth();
@@ -732,6 +733,12 @@ function SearchResultsContent() {
                                     <h3 className="text-base md:text-2xl font-bold text-text-main  font-heading">
                                       {p.name}
                                     </h3>
+                                    {shouldShowVerifiedBadge(p) ? (
+                                      <ShieldCheck
+                                        size={15}
+                                        className="text-primary"
+                                      />
+                                    ) : null}
                                   </div>
 
                                   <div className="">
@@ -1049,6 +1056,12 @@ function SearchResultsContent() {
                                       <h3 className="text-base md:text-2xl font-bold text-text-main  font-heading">
                                         {p.name}
                                       </h3>
+                                      {shouldShowVerifiedBadge(p) ? (
+                                        <ShieldCheck
+                                          size={15}
+                                          className="text-primary"
+                                        />
+                                      ) : null}
                                     </div>
 
                                     <div className="">

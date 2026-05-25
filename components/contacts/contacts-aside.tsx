@@ -5,10 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserProfile } from "@/models/types";
+import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 import { useContactsStore } from "@/store/use-contacts-store";
 import { toast } from "sonner";
 import Link from "next/link";
 import { LuArrowLeft } from "react-icons/lu";
+import { ShieldCheck } from "lucide-react";
 
 interface ContactsAsideProps {
   contacts: UserProfile[];
@@ -102,9 +104,14 @@ export function ContactsAside({
                 </Avatar>
                 <div className="flex-grow min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <h4 className="font-bold text-text-main truncate text-sm">
-                      {c.name}
-                    </h4>
+                    <div className="flex min-w-0 items-center gap-1.5">
+                      <h4 className="font-bold text-text-main truncate text-sm">
+                        {c.name}
+                      </h4>
+                      {shouldShowVerifiedBadge(c) ? (
+                        <ShieldCheck size={13} className="shrink-0 text-primary" />
+                      ) : null}
+                    </div>
                     {/* <div className="flex items-center gap-1 shrink-0">
                       <Button
                         variant="ghost"

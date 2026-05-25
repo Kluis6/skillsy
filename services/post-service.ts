@@ -18,12 +18,33 @@ import { hasMembershipVerificationData } from '@/lib/member-verification';
 import { Post, PostReport, PostStatus, UserProfile } from '@/models/types';
 import { getPostExcerpt, slugifyPostTitle } from '@/lib/post-utils';
 import { NotificationService } from '@/services/notification-service';
+import { deriveMemberVerification, normalizeBaptismYear } from '@/lib/member-verification';
 
 async function ensureUniqueSlug(baseSlug: string, currentId?: string) {
   const fallback = baseSlug || `post-${Date.now()}`;
-  const q = query(collection(db, 'posts'), where('slug', '==', fallback), limit(10));
-  const snapshot = await getDocs(q);
-  const conflict = snapshot.docs.find((item) => item.id !== currentId);
+  const user = requireAuthenticatedUser();
+  const [publishedSnapshot, ownSnapshot] = await Promise.all([
+    getDocs(
+      query(
+        collection(db, 'posts'),
+        where('slug', '==', fallback),
+        where('status', '==', 'published'),
+        limit(10),
+      ),
+    ),
+    getDocs(
+      query(
+        collection(db, 'posts'),
+        where('slug', '==', fallback),
+        where('authorId', '==', user.uid),
+        limit(10),
+      ),
+    ),
+  ]);
+
+  const conflict = [...publishedSnapshot.docs, ...ownSnapshot.docs].find(
+    (item) => item.id !== currentId,
+  );
 
   if (!conflict) {
     return fallback;
@@ -66,8 +87,56 @@ function isVerifiedProfile(profile: UserProfile | null | undefined) {
   return Boolean(profile?.memberVerified) || hasMembershipVerificationData(profile);
 }
 
+async function syncLegacyVerificationFields(profile: UserProfile) {
+  if (profile.memberVerified === true) {
+    return profile;
+  }
+
+  const user = requireAuthenticatedUser();
+  const updates: Record<string, unknown> = {};
+
+  if (typeof profile.ward === 'string') {
+    const trimmedWard = profile.ward.trim();
+    if (trimmedWard && trimmedWard !== profile.ward) {
+      updates.ward = trimmedWard;
+    }
+  }
+
+  const normalizedBaptismYear = normalizeBaptismYear(profile.baptismYear);
+  if (
+    normalizedBaptismYear !== undefined &&
+    normalizedBaptismYear !== profile.baptismYear
+  ) {
+    updates.baptismYear = normalizedBaptismYear;
+  }
+
+  const nextProfile = { ...profile, ...updates };
+  const verification = deriveMemberVerification(nextProfile);
+  if (verification.memberVerified && profile.memberVerified !== true) {
+    updates.memberVerified = verification.memberVerified;
+  }
+  if (
+    verification.memberVerified &&
+    profile.membershipYears !== verification.membershipYears
+  ) {
+    updates.membershipYears = verification.membershipYears;
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return profile;
+  }
+
+  await updateDoc(doc(db, 'users', user.uid), updates);
+
+  return {
+    ...profile,
+    ...updates,
+  } as UserProfile;
+}
+
 async function requireVerifiedProfile() {
-  const profile = await getCurrentUserProfile();
+  const currentProfile = await getCurrentUserProfile();
+  const profile = await syncLegacyVerificationFields(currentProfile);
   if (!isVerifiedProfile(profile)) {
     throw new Error('Apenas usuários verificados podem publicar');
   }

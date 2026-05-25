@@ -25,6 +25,15 @@ export interface AdminNotification {
   link?: string;
 }
 
+function isPermissionDeniedError(error: unknown) {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    error.code === 'permission-denied'
+  );
+}
+
 export const NotificationService = {
   async getNotifications(limitCount: number = 20): Promise<AdminNotification[]> {
     try {
@@ -86,6 +95,10 @@ export const NotificationService = {
         createdAt: serverTimestamp()
       });
     } catch (error) {
+      if (isPermissionDeniedError(error)) {
+        return;
+      }
+
       console.error('Error creating notification:', error);
     }
   }
