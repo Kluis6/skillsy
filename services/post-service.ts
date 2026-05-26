@@ -112,7 +112,7 @@ async function syncLegacyVerificationFields(profile: UserProfile) {
 
   const nextProfile = { ...profile, ...updates };
   const verification = deriveMemberVerification(nextProfile);
-  if (verification.memberVerified && profile.memberVerified !== true) {
+  if (verification.memberVerified) {
     updates.memberVerified = verification.memberVerified;
   }
   if (
