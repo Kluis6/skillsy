@@ -14,8 +14,11 @@ export function CreatePostCta() {
   }
 
   return (
-    <Link href="/meus-artigos/novo">
-      <Button className="w-full md:w-auto">Criar publicação</Button>
+    <Link
+      href="/meus-artigos/novo"
+      className="w-full md:w-fit flex justify-center items-center text-center h-10 px-4 bg-blue-500 text-white font-medium  rounded-sm text-sm hover:bg-blue-600 active:bg-blue-700 transition-colors"
+    >
+      Criar publicação
     </Link>
   );
 }
