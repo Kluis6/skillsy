@@ -577,7 +577,7 @@ export const UserService = {
       const createdAt =
         currentData.createdAt !== undefined ? currentData.createdAt : serverTimestamp();
 
-      const nextData = {
+      const nextData: Partial<UserProfile> = {
         uid,
         name:
           normalizeBoundedString(safeIncomingData.name, 100) ??
