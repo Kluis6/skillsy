@@ -1,8 +1,11 @@
 import type { UserProfile } from "@/models/types";
 
-type VerificationSource = Partial<
-  Pick<UserProfile, "ward" | "baptismYear" | "memberVerified">
-> | null | undefined;
+type VerificationSource =
+  | Partial<Pick<UserProfile, "ward" | "memberVerified">> & {
+      baptismYear?: UserProfile["baptismYear"] | string;
+    }
+  | null
+  | undefined;
 
 export function normalizeBaptismYear(value: unknown) {
   if (typeof value === "number" && Number.isFinite(value)) {
