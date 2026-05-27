@@ -8,10 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Flag, Pencil, Share2, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { REPORT_REASON_LABELS, REPORT_REASON_OPTIONS } from "@/lib/reporting";
-import {
-  reportPostSchema,
-  type ReportPostFormData,
-} from "@/lib/validations";
+import { reportPostSchema, type ReportPostFormData } from "@/lib/validations";
 import { Post } from "@/models/types";
 import { PostService } from "@/services/post-service";
 import { Button } from "@/components/ui/button";
@@ -192,22 +189,22 @@ export function PostPublicActions({
       </Button>
 
       {isOwnPost && post.id ? (
-        <div className="space-x-2 flex">
+        <div className="space-x-1 flex">
           <Link href={`/meus-artigos/${post.id}/editar`}>
             <Button variant="outline" size={compact ? "sm" : "default"}>
-              <Pencil size={16} className="mr-2" />
-              Editar
+              <Pencil size={16} className="md:mr-2" />
+              <p className="hidden"> Editar</p>
             </Button>
           </Link>
           <Button
             type="button"
-            variant="outline"
+            variant="destructive"
             size={compact ? "sm" : "default"}
             disabled={isDeleting}
             onClick={handleDelete}
           >
-            <Trash2 size={16} className="mr-2" />
-            {isDeleting ? "Apagando..." : "Apagar"}
+            <Trash2 size={16} className="md:mr-2" />
+            <p className="hidden"> {isDeleting ? "Apagando..." : "Apagar"}</p>
           </Button>
         </div>
       ) : null}
@@ -215,7 +212,9 @@ export function PostPublicActions({
       {canReport ? (
         <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
           <DialogTrigger
-            render={<Button variant="destructive" size={compact ? "sm" : "default"} />}
+            render={
+              <Button variant="destructive" size={compact ? "sm" : "default"} />
+            }
           >
             <Flag size={16} className="mr-2" />
             Denunciar
@@ -224,7 +223,8 @@ export function PostPublicActions({
             <DialogHeader>
               <DialogTitle>Denunciar publicação</DialogTitle>
               <DialogDescription>
-                Conte para a equipe por que esta publicação precisa ser revisada.
+                Conte para a equipe por que esta publicação precisa ser
+                revisada.
               </DialogDescription>
             </DialogHeader>
 

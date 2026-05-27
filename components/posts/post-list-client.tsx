@@ -42,7 +42,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
           <button
             type="button"
             onClick={() => setFilter("all")}
-            className={`w-full md:w-fit px-4 h-10 text-sm font-semibold transition-colors cursor-pointer ${
+            className={`w-full md:w-fit md:px-4 h-10 text-sm font-semibold transition-colors cursor-pointer ${
               filter === "all"
                 ? "text-blue-700 bg-blue-500/10"
                 : " text-gray-700 hover:bg-gray-500/10"
@@ -53,7 +53,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
           <button
             type="button"
             onClick={() => setFilter("article")}
-            className={`w-full md:w-fit px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
+            className={`w-full md:w-fit md:px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
               filter === "article"
                 ? "text-blue-700 bg-blue-500/10"
                 : "text-gray-700 hover:bg-gray-500/10"
@@ -64,7 +64,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
           <button
             type="button"
             onClick={() => setFilter("job")}
-            className={`w-full md:w-fit px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
+            className={`w-full md:w-fit md:px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
               filter === "job"
                 ? "text-blue-700 bg-blue-500/10"
                 : "text-gray-700 hover:bg-gray-500/10"

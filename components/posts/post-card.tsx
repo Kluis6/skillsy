@@ -35,7 +35,7 @@ export function PostCard({ post }: { post: Post }) {
             <CardAction>
               <Badge
                 variant="secondary"
-                className="bg-amber-500/20 text-amber-800"
+                className={` ${POST_CATEGORY_LABELS[post.category] === "Vagas" ? "bg-green-500/20 text-green-800" : "bg-amber-500/20 text-amber-800"} `}
               >
                 {POST_CATEGORY_LABELS[post.category]}
               </Badge>
@@ -48,7 +48,7 @@ export function PostCard({ post }: { post: Post }) {
             <CardTitle>{post.title}</CardTitle>
             <div className="w-full flex flex-col space-y-4">
               <CardDescription>{getPostExcerpt(post)}</CardDescription>
-              <CardDescription className="w-full">
+              <CardDescription>
                 <Link
                   href={`/artigosevagas/${post.slug}`}
                   className=" text-sm font-bold text-primary hover:underline"
