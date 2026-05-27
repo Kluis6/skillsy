@@ -58,7 +58,7 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
             </Link>
           </div>
           {post.coverImageUrl ? (
-            <div className="relative h-72 overflow-hidden md:h-[45vh]">
+            <div className="relative h-[30vh] overflow-hidden md:h-[45vh]">
               <Image
                 src={post.coverImageUrl}
                 alt={post.title}

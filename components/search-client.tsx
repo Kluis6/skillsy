@@ -7,7 +7,6 @@ import { UserService } from "@/services/user-service";
 import { UserProfile } from "@/models/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,31 +15,17 @@ import {
   Star,
   ShieldCheck,
   ChevronRight,
-  X,
   SlidersHorizontal,
-  UserPlus,
-  UserMinus,
   ChevronLeft,
   ChevronsLeft,
   ChevronsRight,
-  Clock,
-  CalendarDays,
-  Church,
   UserIcon,
-  ArrowLeft,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
-import { CepFilter } from "@/components/cep-filter";
-import { toast } from "sonner";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import {
   Select,
   SelectContent,
@@ -49,10 +34,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { ThemeToggle } from "@/components/theme-toggle";
 import { AuthModal } from "./auth-modal";
 import { BRAZIL_STATES } from "@/lib/brazil-states";
-
 import { BsList, BsXLg } from "react-icons/bs";
 
 import {
@@ -197,6 +180,16 @@ function SearchResultsContent() {
                       </Link>
                     </DrawerClose>
                   </li>
+                  <li className="p-2 hover:bg-surface">
+                    <DrawerClose asChild>
+                      <Link
+                        href="/artigosevagas"
+                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                      >
+                        Novidades e vagas
+                      </Link>
+                    </DrawerClose>
+                  </li>
                   <li className=" p-2 hover:bg-surface">
                     <DrawerClose asChild>
                       <Link
@@ -273,7 +266,7 @@ function SearchResultsContent() {
               <DrawerFooter>
                 <DrawerClose asChild>
                   <Link
-                    className="text-center bg-primary p-2 font-medium text-sm text-white rounded-sm"
+                    className="text-center bg-primary p-2 h-10 font-medium text-sm text-white rounded-sm"
                     href={"/donation"}
                   >
                     Ajude o projeto

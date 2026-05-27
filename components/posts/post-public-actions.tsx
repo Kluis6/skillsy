@@ -189,7 +189,7 @@ export function PostPublicActions({
       </Button>
 
       {isOwnPost && post.id ? (
-        <div className="space-x-1 flex">
+        <div className="space-x-2 flex">
           <Link href={`/meus-artigos/${post.id}/editar`}>
             <Button variant="outline" size={compact ? "sm" : "default"}>
               <Pencil size={16} className="sm:mr-2" />
@@ -219,7 +219,7 @@ export function PostPublicActions({
             <Flag size={16} className="mr-2" />
             Denunciar
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="md:w-fit md:h-auto">
             <DialogHeader>
               <DialogTitle>Denunciar publicação</DialogTitle>
               <DialogDescription>
@@ -237,7 +237,7 @@ export function PostPublicActions({
                 <select
                   id="post-report-reason"
                   {...reportForm.register("reason")}
-                  className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
                 >
                   {reportReasonOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -255,6 +255,7 @@ export function PostPublicActions({
               <div className="space-y-2">
                 <Label htmlFor="post-report-details">Detalhes</Label>
                 <Textarea
+                className="w-full h-full placeholder:text-sm"
                   id="post-report-details"
                   rows={5}
                   placeholder="Explique rapidamente o problema encontrado."
@@ -270,8 +271,8 @@ export function PostPublicActions({
                 ) : null}
               </div>
 
-              <DialogFooter>
-                <Button type="submit" disabled={isSubmittingReport}>
+              <DialogFooter className="">
+                <Button className="h-10 w-full" type="submit" disabled={isSubmittingReport}>
                   {isSubmittingReport ? "Enviando..." : "Enviar denúncia"}
                 </Button>
               </DialogFooter>
