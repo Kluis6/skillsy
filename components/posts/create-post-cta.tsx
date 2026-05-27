@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
-import { Button } from "@/components/ui/button";
 
 export function CreatePostCta() {
   const { user, profile, loading } = useAuth();

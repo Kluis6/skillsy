@@ -192,8 +192,8 @@ export function PostPublicActions({
         <div className="space-x-1 flex">
           <Link href={`/meus-artigos/${post.id}/editar`}>
             <Button variant="outline" size={compact ? "sm" : "default"}>
-              <Pencil size={16} className="md:mr-2" />
-              <p className="hidden"> Editar</p>
+              <Pencil size={16} className="sm:mr-2" />
+              <p className="hidden sm:flex"> Editar</p>
             </Button>
           </Link>
           <Button
@@ -203,8 +203,8 @@ export function PostPublicActions({
             disabled={isDeleting}
             onClick={handleDelete}
           >
-            <Trash2 size={16} className="md:mr-2" />
-            <p className="hidden"> {isDeleting ? "Apagando..." : "Apagar"}</p>
+            <Trash2 size={16} className="sm:mr-2" />
+            <p className="hidden sm:flex"> {isDeleting ? "Apagando..." : "Apagar"}</p>
           </Button>
         </div>
       ) : null}
