@@ -136,8 +136,9 @@ service cloud.firestore {
 
     function isValidCategory(category) {
       return category in [
-        'Tecnologia', 'Design', 'Marketing', 'Consultoria', 'Cozinha', 'Limpeza',
-        'Manutenção', 'Beleza', 'Educação', 'Saúde', 'Eventos', 'Jurídico',
+        'Tecnologia', 'Design', 'Marketing', 'Consultoria', 'Vendas', 'Aulas',
+        'Cozinha', 'Doméstico', 'Limpeza', 'Marcenaria', 'Manutenção',
+        'Construção Civil', 'Beleza', 'Educação', 'Saúde', 'Eventos', 'Jurídico',
         'Financeiro', 'Assistência', 'Reformas', 'Automotivo', 'Moda',
         'Bem Estar', 'Pet Care', 'Fotografia', 'Música', 'Idiomas',
         'Esportes', 'Festas', 'Transporte', 'Outros'

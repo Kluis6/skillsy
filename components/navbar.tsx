@@ -377,7 +377,7 @@ export function Navbar({
               <DrawerFooter>
                 <DrawerClose asChild>
                   <Link
-                    className="text-center bg-primary hover:bg-blue-700 active:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 black:active:bg-blue-800 p-2 font-medium text-sm text-white rounded-md"
+                    className="text-center bg-primary h-10 hover:bg-blue-700 active:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 black:active:bg-blue-800 p-2 font-medium text-sm text-white rounded-md"
                     href={"/donation"}
                   >
                     Ajude o projeto

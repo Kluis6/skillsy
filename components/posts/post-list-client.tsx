@@ -36,17 +36,16 @@ export function PostListClient({ posts }: { posts: Post[] }) {
   }
 
   return (
-    <div className="mx-auto container w-full my-4 space-y-4">
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 border">
-        <div className="flex flex-col md:flex-row justify-center items-center gap-4">
+    <div className="mx-auto container w-full mb-8  space-y-8 -mt-7 z-50">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 isolate bg-white rounded-lg  p-4 shadow-2xl">
+        <div className="flex  justify-center items-center gap-1 w-full md:w-fit">
           <button
             type="button"
-            
             onClick={() => setFilter("all")}
-            className={`w-full md:w-fit px-4 h-10 text-sm font-semibold transition-colors ${
+            className={`w-full md:w-fit px-4 h-10 text-sm font-semibold transition-colors cursor-pointer ${
               filter === "all"
-                ? " text-blue-700"
-                : " text-gray-700"
+                ? "text-blue-700 bg-blue-500/10"
+                : " text-gray-700 hover:bg-gray-500/10"
             }`}
           >
             Todos ({counts.all})
@@ -54,10 +53,10 @@ export function PostListClient({ posts }: { posts: Post[] }) {
           <button
             type="button"
             onClick={() => setFilter("article")}
-            className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+            className={`w-full md:w-fit px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
               filter === "article"
-                ? "border-primary bg-primary text-white"
-                : "border-border-subtle bg-white text-text-main hover:border-primary/40"
+                ? "text-blue-700 bg-blue-500/10"
+                : "text-gray-700 hover:bg-gray-500/10"
             }`}
           >
             Artigos ({counts.article})
@@ -65,10 +64,10 @@ export function PostListClient({ posts }: { posts: Post[] }) {
           <button
             type="button"
             onClick={() => setFilter("job")}
-            className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+            className={`w-full md:w-fit px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
               filter === "job"
-                ? "border-primary bg-primary text-white"
-                : "border-border-subtle bg-white text-text-main hover:border-primary/40"
+                ? "text-blue-700 bg-blue-500/10"
+                : "text-gray-700 hover:bg-gray-500/10"
             }`}
           >
             Vagas ({counts.job})
@@ -83,7 +82,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
           Nenhuma publicação encontrada para este filtro.
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-12 gap-6">
           {filteredPosts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
