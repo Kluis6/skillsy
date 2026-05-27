@@ -192,7 +192,7 @@ export function PostPublicActions({
       </Button>
 
       {isOwnPost && post.id ? (
-        <div className="space-x-2">
+        <div className="space-x-2 flex">
           <Link href={`/meus-artigos/${post.id}/editar`}>
             <Button variant="outline" size={compact ? "sm" : "default"}>
               <Pencil size={16} className="mr-2" />

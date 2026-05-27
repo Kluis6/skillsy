@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { Post } from "@/models/types";
 import { POST_CATEGORY_LABELS, getPostExcerpt } from "@/lib/post-utils";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Button } from "@base-ui/react";
 
 export function PostCard({ post }: { post: Post }) {
   return (
