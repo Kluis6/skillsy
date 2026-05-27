@@ -65,8 +65,8 @@ export function PostPublicActions({
   const canUseNativeShare =
     typeof navigator !== "undefined" && "share" in navigator;
   const containerClassName = compact
-    ? "flex flex-wrap items-center gap-2"
-    : "flex flex-wrap items-center gap-3";
+    ? "flex justify-between items-center gap-2"
+    : "flex justify-between items-center gap-3";
 
   const handleDelete = () => {
     if (!isOwnPost || !post.id) {
@@ -180,7 +180,7 @@ export function PostPublicActions({
   };
 
   return (
-    <div className={containerClassName}>
+    <div className={`${containerClassName} w-full`}>
       <Button
         type="button"
         variant="ghost"
@@ -192,7 +192,7 @@ export function PostPublicActions({
       </Button>
 
       {isOwnPost && post.id ? (
-        <>
+        <div className="space-x-2">
           <Link href={`/meus-artigos/${post.id}/editar`}>
             <Button variant="outline" size={compact ? "sm" : "default"}>
               <Pencil size={16} className="mr-2" />
@@ -209,13 +209,13 @@ export function PostPublicActions({
             <Trash2 size={16} className="mr-2" />
             {isDeleting ? "Apagando..." : "Apagar"}
           </Button>
-        </>
+        </div>
       ) : null}
 
       {canReport ? (
         <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
           <DialogTrigger
-            render={<Button variant="ghost" size={compact ? "sm" : "default"} />}
+            render={<Button variant="destructive" size={compact ? "sm" : "default"} />}
           >
             <Flag size={16} className="mr-2" />
             Denunciar

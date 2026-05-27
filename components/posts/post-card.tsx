@@ -20,22 +20,6 @@ export function PostCard({ post }: { post: Post }) {
   return (
     <>
       <article className="col-span-12 lg:col-span-4 h-full w-full">
-        {/* <Card className="relative mx-auto w-full max-w-sm pt-0">
-          <CardHeader>
-            <CardAction>
-              <Badge variant="secondary">Featured</Badge>
-            </CardAction>
-            <CardTitle>Design systems meetup</CardTitle>
-            <CardDescription>
-              A practical talk on component APIs, accessibility, and shipping
-              faster.
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button className="w-full">View Event</Button>
-          </CardFooter>
-        </Card> */}
-
         <Card className="relative mx-auto w-full pt-0">
           {post.coverImageUrl ? (
             <img
@@ -45,6 +29,11 @@ export function PostCard({ post }: { post: Post }) {
             />
           ) : null}
           <CardHeader>
+            <div>
+              <h3 className="text-xs text-gray-700">
+                por <strong> {post.authorName}</strong>
+              </h3>
+            </div>
             <CardAction>
               <Badge
                 variant="secondary"
@@ -58,39 +47,23 @@ export function PostCard({ post }: { post: Post }) {
                 </Badge>
               ) : null}
             </CardAction>
-            <CardTitle className="w-[14rem] md:w-auto">{post.title}</CardTitle>
-            <CardDescription>
-              A practical talk on component APIs, accessibility, and shipping
-              faster.
-            </CardDescription>
+            <CardTitle>{post.title}</CardTitle>
+            <div className="w-full flex flex-col space-y-4">
+              <CardDescription>{getPostExcerpt(post)}</CardDescription>
+              <CardDescription className="w-full">
+                <Link
+                  href={`/artigosevagas/${post.slug}`}
+                  className=" text-sm font-bold text-primary hover:underline"
+                >
+                  {post.category === "job" ? "Ver vaga" : "Ler publicação"}
+                </Link>
+              </CardDescription>
+            </div>
           </CardHeader>
           <CardFooter>
-            <Button className="w-full">View Event</Button>
+            <PostPublicActions post={post} compact />
           </CardFooter>
         </Card>
-
-        <div className="flex flex-col gap-2 p-4 lg:p-6 h-full">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-gray-700">
-              por <strong> {post.authorName}</strong>
-            </span>
-          </div>
-          <div className="flex flex-col justify-between">
-            <h2 className="text-xl font-bold text-text-main">{post.title}</h2>
-            <p className="text-sm leading-relaxed text-text-muted">
-              {getPostExcerpt(post)}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center justify-between">
-            <Link
-              href={`/artigosevagas/${post.slug}`}
-              className="inline-flex text-sm font-bold text-primary hover:underline"
-            >
-              {post.category === "job" ? "Ver vaga" : "Ler publicação"}
-            </Link>
-            <PostPublicActions post={post} compact />
-          </div>
-        </div>
       </article>
     </>
   );
