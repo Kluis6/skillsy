@@ -1015,6 +1015,10 @@ export const UserService = {
 
   async submitRating(fromId: string, toId: string, score: number, comment?: string): Promise<void> {
     try {
+      if (!Number.isInteger(score) || score < 1 || score > 5) {
+        throw new Error('A nota deve ser um numero inteiro entre 1 e 5.');
+      }
+
       const normalizedComment = comment?.trim();
 
       await runTransaction(db, async (transaction) => {
@@ -1034,6 +1038,14 @@ export const UserService = {
         }
 
         const publicProfileData = publicProfileSnap.data() as Partial<UserProfile>;
+        if (
+          publicProfileData.isProvider !== true ||
+          publicProfileData.isBlocked === true ||
+          publicProfileData.isDeleted === true
+        ) {
+          throw new Error('Este perfil não está disponível para avaliações.');
+        }
+
         const currentRating = publicProfileData.rating || 0;
         const currentCount = publicProfileData.reviewCount || 0;
         

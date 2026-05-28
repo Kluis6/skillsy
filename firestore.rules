@@ -313,13 +313,30 @@ service cloud.firestore {
              (!('isBlocked' in resource.data) || resource.data.isBlocked == false);
     }
 
+    function publicProfilePath(userId) {
+      return /databases/$(database)/documents/public_profiles/$(userId);
+    }
+
+    function canReceiveRatings(targetUserId) {
+      return exists(publicProfilePath(targetUserId)) &&
+             get(publicProfilePath(targetUserId)).data.isProvider == true &&
+             (!('isDeleted' in get(publicProfilePath(targetUserId)).data) ||
+               get(publicProfilePath(targetUserId)).data.isDeleted == false) &&
+             (!('isBlocked' in get(publicProfilePath(targetUserId)).data) ||
+               get(publicProfilePath(targetUserId)).data.isBlocked == false);
+    }
+
     function isAllowedRatingAggregateUpdate(targetUserId) {
       return isAuthenticated() &&
              isNotBlocked() &&
              request.auth.uid != targetUserId &&
+             canReceiveRatings(targetUserId) &&
              request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount']) &&
              request.resource.data.rating is number &&
+             request.resource.data.rating >= 1 &&
+             request.resource.data.rating <= 5 &&
              request.resource.data.reviewCount is number &&
+             request.resource.data.reviewCount >= 1 &&
              ((!('reviewCount' in resource.data) && request.resource.data.reviewCount == 1) ||
               (request.resource.data.reviewCount == resource.data.reviewCount + 1)) &&
              existsAfter(voteDocPath(request.auth.uid, targetUserId));
@@ -338,6 +355,7 @@ service cloud.firestore {
       return data.keys().hasAll(['toId', 'score', 'createdAt']) &&
              data.keys().hasOnly(allowed) &&
              data.toId is string && data.toId != request.auth.uid &&
+             canReceiveRatings(data.toId) &&
              data.score is number && data.score >= 1 && data.score <= 5 &&
              data.createdAt is timestamp &&
              (!('comment' in data) || (data.comment is string && data.comment.size() <= 500)) &&

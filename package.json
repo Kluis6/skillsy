@@ -10,8 +10,10 @@
     "clean": "next clean",
     "deploy:firestore-rules": "firebase deploy --only firestore --project gen-lang-client-0463625624",
     "backfill:public-profiles": "node scripts/backfill-public-profiles.mjs",
+    "backfill:user-public-visibility": "node scripts/backfill-user-public-visibility.mjs",
     "backfill:user-verification": "node scripts/backfill-user-verification.mjs",
     "inspect:public-profiles": "node scripts/inspect-public-profiles.mjs",
+    "inspect:public-profile-consistency": "node scripts/inspect-public-profile-consistency.mjs",
     "inspect:user-verification": "node scripts/inspect-users-verification.mjs"
   },
   "dependencies": {
