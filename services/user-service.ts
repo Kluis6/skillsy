@@ -258,6 +258,7 @@ function normalizeUserDocumentForRules(source: Record<string, unknown>) {
   normalized.phones = normalizeStringArray(normalized.phones);
   normalized.availability = normalizeAvailabilityForRules(normalized.availability);
   normalized.gallery = normalizeGalleryForRules(normalized.gallery);
+  normalized.hasPublicProfile = normalizeBoolean(normalized.hasPublicProfile);
 
   normalized.rating = normalizeFiniteNumber(normalized.rating);
   normalized.reviewCount = normalizeFiniteNumber(normalized.reviewCount);
@@ -375,6 +376,35 @@ function applyDerivedVerificationFields(source: Partial<UserProfile>) {
   });
 }
 
+function shouldSyncPublicProfile(
+  source: Partial<UserProfile> | Record<string, unknown> | null | undefined,
+) {
+  if (!source) {
+    return false;
+  }
+
+  if (typeof source.hasPublicProfile === 'boolean') {
+    return source.hasPublicProfile;
+  }
+
+  return source.isProvider === true;
+}
+
+function syncPublicProfileBatch(
+  batch: ReturnType<typeof writeBatch>,
+  uid: string,
+  source: Partial<UserProfile>,
+) {
+  const publicDocRef = doc(db, 'public_profiles', uid);
+
+  if (!shouldSyncPublicProfile(source) || source.isDeleted) {
+    batch.delete(publicDocRef);
+    return;
+  }
+
+  batch.set(publicDocRef, buildPublicProfileData(source));
+}
+
 function sortProvidersByFeaturedRanking(profiles: UserProfile[]) {
   return [...profiles].sort((a, b) => {
     const aRating = typeof a.rating === 'number' ? a.rating : 0;
@@ -455,21 +485,21 @@ export const UserService = {
     try {
       const createdAt = serverTimestamp();
       const privateDocRef = doc(db, 'users', profile.uid);
-      const publicDocRef = doc(db, 'public_profiles', profile.uid);
       const batch = writeBatch(db);
       const nextPrivateProfile = applyDerivedVerificationFields({
         ...profile,
+        hasPublicProfile:
+          typeof profile.hasPublicProfile === 'boolean'
+            ? profile.hasPublicProfile
+            : profile.isProvider === true,
         createdAt,
       });
 
       batch.set(privateDocRef, nextPrivateProfile);
-      batch.set(
-        publicDocRef,
-        buildPublicProfileData({
-          ...nextPrivateProfile,
-          uid: profile.uid,
-        }),
-      );
+      syncPublicProfileBatch(batch, profile.uid, {
+        ...nextPrivateProfile,
+        uid: profile.uid,
+      });
       await batch.commit();
 
       // Notify admins about the new user
@@ -499,6 +529,7 @@ export const UserService = {
         'bio',
         'category',
         'isProvider',
+        'hasPublicProfile',
         'role',
         'contacts',
         'whatsapp',
@@ -593,6 +624,14 @@ export const UserService = {
           (safeIncomingData.isProvider as boolean | undefined) ??
           (currentData.isProvider as boolean | undefined) ??
           false,
+        hasPublicProfile:
+          typeof safeIncomingData.hasPublicProfile === 'boolean'
+            ? (safeIncomingData.hasPublicProfile as boolean)
+            : Object.prototype.hasOwnProperty.call(safeIncomingData, 'isProvider')
+              ? ((safeIncomingData.isProvider as boolean | undefined) ?? false)
+              : ((currentData.hasPublicProfile as boolean | undefined) ??
+                (currentData.isProvider as boolean | undefined) ??
+                false),
         role: normalizeRole(currentData.role) ?? 'user',
         contacts: (currentData.contacts as string[] | undefined) ?? [],
         createdAt,
@@ -605,10 +644,7 @@ export const UserService = {
       const batch = writeBatch(db);
 
       batch.set(docRef, sanitizedPrivateProfile);
-      batch.set(
-        doc(db, 'public_profiles', uid),
-        buildPublicProfileData(sanitizedPrivateProfile as Partial<UserProfile>),
-      );
+      syncPublicProfileBatch(batch, uid, sanitizedPrivateProfile as Partial<UserProfile>);
       await batch.commit();
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
@@ -777,14 +813,17 @@ export const UserService = {
       const nextPrivateProfile = applyDerivedVerificationFields(removeUndefinedDeep({
         ...currentData,
         ...updateData,
+        hasPublicProfile:
+          typeof updateData.hasPublicProfile === 'boolean'
+            ? updateData.hasPublicProfile
+            : (typeof currentData.hasPublicProfile === 'boolean'
+              ? currentData.hasPublicProfile
+              : currentData.isProvider === true),
       }));
 
       const batch = writeBatch(db);
       batch.set(docRef, nextPrivateProfile);
-      batch.set(
-        doc(db, 'public_profiles', uid),
-        buildPublicProfileData(nextPrivateProfile as Partial<UserProfile>),
-      );
+      syncPublicProfileBatch(batch, uid, nextPrivateProfile as Partial<UserProfile>);
       await batch.commit();
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
@@ -817,6 +856,7 @@ export const UserService = {
         bio: '',
         category: '',
         isProvider: false,
+        hasPublicProfile: false,
         contacts: [],
         location: '',
         whatsapp: '',
@@ -846,10 +886,7 @@ export const UserService = {
 
       const batch = writeBatch(db);
       batch.set(docRef, nextData);
-      batch.set(
-        doc(db, 'public_profiles', uid),
-        buildPublicProfileData(nextData as Partial<UserProfile>),
-      );
+      syncPublicProfileBatch(batch, uid, nextData as Partial<UserProfile>);
       await batch.commit();
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
@@ -960,14 +997,15 @@ export const UserService = {
         const createdAt = serverTimestamp();
         const nextPrivateProfile = applyDerivedVerificationFields({
           ...user,
+          hasPublicProfile:
+            typeof user.hasPublicProfile === 'boolean'
+              ? user.hasPublicProfile
+              : user.isProvider === true,
           createdAt
         });
 
         batch.set(docRef, nextPrivateProfile);
-        batch.set(
-          doc(db, 'public_profiles', user.uid!),
-          buildPublicProfileData(nextPrivateProfile as Partial<UserProfile>),
-        );
+        syncPublicProfileBatch(batch, user.uid!, nextPrivateProfile as Partial<UserProfile>);
       }
       await batch.commit();
     } catch (error) {

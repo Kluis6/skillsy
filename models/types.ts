@@ -12,6 +12,7 @@ export interface UserProfile {
   bio?: string;
   category?: string;
   isProvider: boolean;
+  hasPublicProfile?: boolean;
   role: 'admin' | 'user';
   contacts: string[];
   location?: string;

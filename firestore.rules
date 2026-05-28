@@ -184,7 +184,7 @@ service cloud.firestore {
     function isValidUser(data) {
       let allowedFields = [
         'id', 'uid', 'name', 'email', 'photoURL', 'bannerURL', 'bio', 
-        'category', 'isProvider', 'role', 'contacts', 'whatsapp', 
+        'category', 'isProvider', 'hasPublicProfile', 'role', 'contacts', 'whatsapp', 
         'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 'phone', 
         'phones', 'location', 'ward', 'companyName', 'gallery', 
         'rating', 'reviewCount', 'experienceYears', 'baptismYear',
@@ -199,6 +199,7 @@ service cloud.firestore {
              data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
              isValidEmail(data.email) &&
              data.isProvider is bool &&
+             (!('hasPublicProfile' in data) || data.hasPublicProfile is bool) &&
              data.role in ['admin', 'user'] &&
              data.createdAt is timestamp &&
              (!('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 1000000)) &&

@@ -1,54 +1,53 @@
-import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import {
   BadgeCheck,
   HeartHandshake,
   QrCode,
   ShieldCheck,
   Wallet,
-} from 'lucide-react';
-import { Navbar } from '@/components/navbar';
-import { Footer } from '@/components/footer';
-import { createPublicMetadata } from '@/lib/public-metadata';
+} from "lucide-react";
+import { Footer } from "@/components/footer";
+import { createPublicMetadata } from "@/lib/public-metadata";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: 'Apoie o Skillsy',
+  title: "Apoie o Skillsy",
   description:
-    'Contribua com o Skillsy e ajude a manter a plataforma, melhorar a experiência e fortalecer a comunidade.',
-  path: '/donation',
-  imageTitle: 'Apoie o Skillsy',
+    "Contribua com o Skillsy e ajude a manter a plataforma, melhorar a experiência e fortalecer a comunidade.",
+  path: "/donation",
+  imageTitle: "Apoie o Skillsy",
   imageDescription:
-    'Sua contribuição pode ajudar a manter a plataforma, ampliar melhorias e fortalecer a comunidade.',
-  imageLabel: 'Doação',
+    "Sua contribuição pode ajudar a manter a plataforma, ampliar melhorias e fortalecer a comunidade.",
+  imageLabel: "Doação",
 });
 
-const PIX_BENEFICIARY = 'Nome do responsável ou da iniciativa';
-const PIX_KEY = 'sua-chave-pix-aqui';
-const PIX_KEY_TYPE = 'E-mail, telefone, CPF/CNPJ ou chave aleatória';
-const PIX_QR_CODE_SRC = '';
+const PIX_BENEFICIARY = "Luis Antonio de Oliveira Julio";
+const PIX_KEY = "sua-chave-pix-aqui";
+const PIX_KEY_TYPE = "E-mail, telefone, CPF/CNPJ ou chave aleatória";
+const PIX_QR_CODE_SRC = "";
 
 const impactItems = [
   {
-    title: 'Infraestrutura & Operação',
+    title: "Infraestrutura & Operação",
     description:
-      'Sua ajuda pode contribuir com hospedagem, banco de dados, manutenção técnica e continuidade da plataforma.',
+      "Sua ajuda pode contribuir com hospedagem, banco de dados, manutenção técnica e continuidade da plataforma.",
     icon: Wallet,
-    tone: 'bg-primary/5 text-primary border-primary/10',
+    tone: "bg-primary/5 text-primary border-primary/10",
   },
   {
-    title: 'Melhorias do Produto',
+    title: "Melhorias do Produto",
     description:
-      'As contribuições ajudam a desenvolver novos recursos, corrigir problemas e tornar a experiência mais útil para todos.',
+      "As contribuições ajudam a desenvolver novos recursos, corrigir problemas e tornar a experiência mais útil para todos.",
     icon: BadgeCheck,
-    tone: 'bg-highlight/5 text-highlight border-highlight/10',
+    tone: "bg-highlight/5 text-highlight border-highlight/10",
   },
   {
-    title: 'Apoio com Transparência',
+    title: "Apoio com Transparência",
     description:
-      'A doação é voluntária e existe para sustentar a iniciativa com responsabilidade, sem promessas exageradas ou vantagens ocultas.',
+      "A doação é voluntária e existe para sustentar a iniciativa com responsabilidade, sem promessas exageradas ou vantagens ocultas.",
     icon: ShieldCheck,
-    tone: 'bg-surface text-text-main border-border-subtle',
+    tone: "bg-surface text-text-main border-border-subtle",
   },
 ];
 
@@ -56,9 +55,20 @@ export default function DonationPage() {
   const hasQrCode = Boolean(PIX_QR_CODE_SRC);
 
   return (
-    <div className="min-h-screen bg-surface text-text-main">
-      <Navbar />
-
+    <div className="min-h-screen bg-surface w-full">
+      <section className="relative h-[30vh] md:h-[50vh] w-full bg-cover bg-center object-fill bg-[url(/Gemini_Generated_Image_kwyhw5kwyhw5kwyh.png)] ">
+        <div className={`absolute inset-0 bg-blue-700/30 brightness-30`}></div>
+        <div className="space-y-4 p-4 container mx-auto flex flex-col items-start justify-center h-full w-full">
+          <div className="space-y-2 bg-gray-700/40 shadow-md p-4 backdrop-blur-xs rounded">
+            <h2 className="text-xl lg:text-4xl font-bold text-white ">
+             Sua contribuição pode ajudar!
+            </h2>
+            <p className="text-base lg:text-xl text-white ">
+              Ajudar a Skillsy a continuar fortalecendo conexões reais.
+            </p>
+          </div>
+        </div>
+      </section>
       <main className="px-4 pb-20 pt-32">
         <div className="container mx-auto max-w-6xl">
           <section className="relative overflow-hidden rounded-[2.5rem] border border-border-subtle bg-card p-8 md:p-12 shadow-sm">
@@ -69,7 +79,7 @@ export default function DonationPage() {
                 Apoio Voluntário
               </div>
               <h1 className="font-heading text-4xl font-black tracking-tight text-text-main md:text-6xl">
-                Sua contribuição pode ajudar o{' '}
+                Sua contribuição pode ajudar o{" "}
                 <span className="text-primary">Skillsy</span> a continuar
                 fortalecendo conexões reais.
               </h1>
@@ -199,9 +209,7 @@ export default function DonationPage() {
               </div>
 
               <div className="mt-6 rounded-[2rem] border border-primary/10 bg-primary/5 p-5">
-                <h3 className="text-lg font-bold text-text-main">
-                  Importante
-                </h3>
+                <h3 className="text-lg font-bold text-text-main">Importante</h3>
                 <p className="mt-2 text-sm leading-relaxed text-text-muted">
                   A doação é espontânea e não concede prioridade em resultados,
                   benefícios exclusivos, posição de destaque ou qualquer tipo de
@@ -259,14 +267,14 @@ export default function DonationPage() {
               </p>
               <p>
                 Em caso de dúvidas sobre privacidade, uso da plataforma ou
-                limites da iniciativa, consulte nossa{' '}
+                limites da iniciativa, consulte nossa{" "}
                 <Link
                   href="/privacidade"
                   className="font-medium text-primary underline-offset-4 hover:underline"
                 >
                   Política de Privacidade
-                </Link>{' '}
-                e os{' '}
+                </Link>{" "}
+                e os{" "}
                 <Link
                   href="/termos"
                   className="font-medium text-primary underline-offset-4 hover:underline"
@@ -277,8 +285,7 @@ export default function DonationPage() {
               </p>
             </div>
           </section>
-
-          </div>
+        </div>
       </main>
 
       <Footer />
