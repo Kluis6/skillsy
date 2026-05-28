@@ -100,7 +100,6 @@ export default function OpenGraphImage() {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                zIndex: 1,
               }}
             >
               <div
@@ -199,7 +198,6 @@ export default function OpenGraphImage() {
                 justifyContent: "flex-end",
                 alignItems: "flex-end",
                 gap: "10px",
-                zIndex: 1,
               }}
             >
               {highlights.map((item) => (

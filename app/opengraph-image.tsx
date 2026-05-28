@@ -95,7 +95,6 @@ export default function OpenGraphImage() {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                zIndex: 1,
               }}
             >
               <div
@@ -163,6 +162,7 @@ export default function OpenGraphImage() {
                 </div>
                 <div
                   style={{
+                    display: "flex",
                     fontSize: "50px",
                     lineHeight: 1.04,
                     fontWeight: 800,
@@ -173,6 +173,7 @@ export default function OpenGraphImage() {
                 </div>
                 <div
                   style={{
+                    display: "flex",
                     fontSize: "23px",
                     lineHeight: 1.34,
                     color: "rgba(255,255,255,0.88)",
@@ -193,7 +194,6 @@ export default function OpenGraphImage() {
                 justifyContent: "flex-end",
                 alignItems: "flex-end",
                 gap: "12px",
-                zIndex: 1,
               }}
             >
               <div
@@ -235,12 +235,13 @@ export default function OpenGraphImage() {
                 gap: "14px",
               }}
             >
-            <div
-              style={{
-                ...OG_BRAND.eyebrow,
-              }}
-            >
-              Categorias populares
+              <div
+                style={{
+                  display: "flex",
+                  ...OG_BRAND.eyebrow,
+                }}
+              >
+                Categorias populares
               </div>
               <div
                 style={{
@@ -287,7 +288,7 @@ export default function OpenGraphImage() {
                   <div style={{ fontSize: "18px", fontWeight: 800 }}>
                     Busca contextual
                   </div>
-                  <div style={{ fontSize: "16px", color: "#475569", lineHeight: 1.3 }}>
+                  <div style={{ display: "flex", fontSize: "16px", color: "#475569", lineHeight: 1.3 }}>
                     Combine categoria, região e reputação para encontrar ajuda
                     com mais clareza.
                   </div>
@@ -306,7 +307,7 @@ export default function OpenGraphImage() {
                   <div style={{ fontSize: "18px", fontWeight: 800 }}>
                     Rede de confiança
                   </div>
-                  <div style={{ fontSize: "16px", color: "#475569", lineHeight: 1.3 }}>
+                  <div style={{ display: "flex", fontSize: "16px", color: "#475569", lineHeight: 1.3 }}>
                     Transforme indicação em conexão prática entre membros.
                   </div>
                 </div>
@@ -323,6 +324,7 @@ export default function OpenGraphImage() {
             >
               <div
                 style={{
+                  display: "flex",
                   ...OG_BRAND.eyebrow,
                 }}
               >

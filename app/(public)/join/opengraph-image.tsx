@@ -94,7 +94,6 @@ export default function OpenGraphImage() {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                zIndex: 1,
               }}
             >
               <div
@@ -191,7 +190,6 @@ export default function OpenGraphImage() {
                 display: "flex",
                 alignItems: "flex-end",
                 justifyContent: "flex-end",
-                zIndex: 1,
               }}
             >
               <div
