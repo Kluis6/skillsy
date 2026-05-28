@@ -57,9 +57,6 @@ import {
   toProfileUpdatePayload,
 } from "@/lib/profile-form";
 
-import { Skeleton } from "@/components/ui/skeleton";
-
-import { ThemeToggle } from "@/components/theme-toggle";
 import { LocationService } from "@/services/location-service";
 import { Footer } from "./footer";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
@@ -345,33 +342,6 @@ export function ProfileSettingsClient() {
       setCancelingAccount(false);
     }
   };
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-surface pb-20">
-        <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle px-6 md:px-10 py-4">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <Skeleton className="h-10 w-48 rounded-xl" />
-            <div className="flex items-center gap-4">
-              <Skeleton className="h-11 w-32 rounded-2xl" />
-            </div>
-          </div>
-        </nav>
-        <main className="max-w-5xl mx-auto px-6 mt-10">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="space-y-8">
-              <Skeleton className="h-64 w-full rounded-[2.5rem]" />
-              <Skeleton className="h-48 w-full rounded-[2.5rem]" />
-            </div>
-            <div className="lg:col-span-2 space-y-8">
-              <Skeleton className="h-[400px] w-full rounded-[2.5rem]" />
-              <Skeleton className="h-[300px] w-full rounded-[2.5rem]" />
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
 
   if (!user) {
     return (
@@ -951,7 +921,8 @@ export function ProfileSettingsClient() {
                       className={`bg-surface rounded-sm text-sm h-12 ${errors.phone ? "ring-2 ring-red-500" : ""}`}
                     />
                     <p className="text-[10px] text-text-muted ml-1">
-                      Somente números, até {PROFILE_LIMITS.phoneDigitsMax} dígitos.
+                      Somente números, até {PROFILE_LIMITS.phoneDigitsMax}{" "}
+                      dígitos.
                     </p>
                     {errors.phone && (
                       <p className="text-[10px] text-red-500 font-bold ml-1">
@@ -970,7 +941,8 @@ export function ProfileSettingsClient() {
                       className={`bg-surface rounded-sm text-sm h-12 ${errors.instagram ? "ring-2 ring-red-500" : ""}`}
                     />
                     <p className="text-[10px] text-text-muted ml-1">
-                      Usuário do Instagram com até {PROFILE_LIMITS.socialHandle} caracteres.
+                      Usuário do Instagram com até {PROFILE_LIMITS.socialHandle}{" "}
+                      caracteres.
                     </p>
                     {errors.instagram && (
                       <p className="text-[10px] text-red-500 font-bold ml-1">
@@ -1021,7 +993,8 @@ export function ProfileSettingsClient() {
                       className={`bg-surface rounded-sm h-12 text-sm  ${errors.website ? "ring-2 ring-red-500" : ""}`}
                     />
                     <p className="text-[10px] text-text-muted ml-1">
-                      URL completa com `https://`, até {PROFILE_LIMITS.website} caracteres.
+                      URL completa com `https://`, até {PROFILE_LIMITS.website}{" "}
+                      caracteres.
                     </p>
                     {errors.website && (
                       <p className="text-[10px] text-red-500 font-bold ml-1">
@@ -1169,7 +1142,8 @@ export function ProfileSettingsClient() {
                       Cancelar minha conta
                     </p>
                     <p className="text-xs text-red-600">
-                     todos seus dados serão apagados na plataforma, deseja continuar?
+                      todos seus dados serão apagados na plataforma, deseja
+                      continuar?
                     </p>
                   </div>
 

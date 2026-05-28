@@ -114,14 +114,16 @@ export function ProfileDetailClient({
 
   const canUseNativeShare =
     typeof navigator !== "undefined" && "share" in navigator;
-  const canReportProfile = Boolean(targetProfile && targetProfile.uid !== user?.uid);
+  const canReportProfile = Boolean(
+    targetProfile && targetProfile.uid !== user?.uid,
+  );
   const canRateProfile = Boolean(
     targetProfile &&
-      targetProfile.isProvider &&
-      user?.uid !== targetProfile.uid,
+    targetProfile.isProvider &&
+    user?.uid !== targetProfile.uid,
   );
   const membershipYears = targetProfile
-    ? targetProfile.membershipYears ?? getMembershipYears(targetProfile)
+    ? (targetProfile.membershipYears ?? getMembershipYears(targetProfile))
     : undefined;
 
   useEffect(() => {
@@ -413,7 +415,8 @@ export function ProfileDetailClient({
           <DialogHeader>
             <DialogTitle>Denunciar perfil</DialogTitle>
             <DialogDescription>
-              Informe o motivo da denúncia. Isso será enviado para o painel administrativo.
+              Informe o motivo da denúncia. Isso será enviado para o painel
+              administrativo.
             </DialogDescription>
           </DialogHeader>
           <form
@@ -421,7 +424,8 @@ export function ProfileDetailClient({
             className="space-y-4"
           >
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] text-amber-900">
-              Use a denúncia apenas para casos reais de conteúdo inadequado, fraude, spam ou informações enganosas.
+              Use a denúncia apenas para casos reais de conteúdo inadequado,
+              fraude, spam ou informações enganosas.
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-text-main">
@@ -455,9 +459,7 @@ export function ProfileDetailClient({
               />
               <div className="flex items-center justify-between text-[10px] text-text-muted">
                 <span>Opcional, mas ajuda na análise.</span>
-                <span>
-                  {(reportForm.watch("details") || "").length}/1000
-                </span>
+                <span>{(reportForm.watch("details") || "").length}/1000</span>
               </div>
               {reportForm.formState.errors.details && (
                 <p className="text-[10px] font-bold text-red-500">
@@ -473,8 +475,13 @@ export function ProfileDetailClient({
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={reportForm.formState.isSubmitting}>
-                {reportForm.formState.isSubmitting ? "Enviando..." : "Enviar denúncia"}
+              <Button
+                type="submit"
+                disabled={reportForm.formState.isSubmitting}
+              >
+                {reportForm.formState.isSubmitting
+                  ? "Enviando..."
+                  : "Enviar denúncia"}
               </Button>
             </DialogFooter>
           </form>
@@ -599,7 +606,8 @@ export function ProfileDetailClient({
         <Info size={64} className="text-text-muted mb-6" />
         <h1 className="text-3xl font-bold mb-4">Perfil não encontrado</h1>
         <p className="text-text-muted mb-8">
-          Este perfil não está disponível publicamente no momento ou o link informado está incorreto.
+          Este perfil não está disponível publicamente no momento ou o link
+          informado está incorreto.
         </p>
         <Link href="/">
           <Button className="bg-primary text-white font-bold rounded-xl px-8">
@@ -925,63 +933,63 @@ export function ProfileDetailClient({
               </div>
             )}
             {targetProfile.isProvider && (
-            <div className=" bg-white w-full border-y md:border-l border-l-0 ">
-              <div className="h-full w-full p-4 mx-auto container md:pe-7 space-y-4">
-                <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
-                  Avaliações da Comunidade
-                </h3>
-                <div className="w-full h-full flex space-x-2 md:space-x-4">
-                  <div className="text-center bg-surface rounded-lg border size-26 p-2 flex-none">
-                    <div className="flex flex-col items-center justify-center h-full w-full">
-                      <p className="md:text-3xl text-2xl font-bold text-primary">
-                        {targetProfile.rating || "0.0"}
-                      </p>
-                      <div className="flex items-center justify-center gap-0.5 text-highlight py-1">
-                        <Star size={12} fill="currentColor" />
-                        <Star size={12} fill="currentColor" />
-                        <Star size={12} fill="currentColor" />
-                        <Star size={12} fill="currentColor" />
-                        <Star size={12} fill="currentColor" />
+              <div className=" bg-white w-full border-y md:border-l border-l-0 ">
+                <div className="h-full w-full p-4 mx-auto container md:pe-7 space-y-4">
+                  <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                    Avaliações da Comunidade
+                  </h3>
+                  <div className="w-full h-full flex space-x-2 md:space-x-4">
+                    <div className="text-center bg-surface rounded-lg border size-26 p-2 flex-none">
+                      <div className="flex flex-col items-center justify-center h-full w-full">
+                        <p className="md:text-3xl text-2xl font-bold text-primary">
+                          {targetProfile.rating || "0.0"}
+                        </p>
+                        <div className="flex items-center justify-center gap-0.5 text-highlight py-1">
+                          <Star size={12} fill="currentColor" />
+                          <Star size={12} fill="currentColor" />
+                          <Star size={12} fill="currentColor" />
+                          <Star size={12} fill="currentColor" />
+                          <Star size={12} fill="currentColor" />
+                        </div>
+                        <p className="text-[10px] font-bold text-text-muted uppercase">
+                          {targetProfile.reviewCount || 0} avaliações
+                        </p>
                       </div>
-                      <p className="text-[10px] font-bold text-text-muted uppercase">
-                        {targetProfile.reviewCount || 0} avaliações
-                      </p>
                     </div>
-                  </div>
 
-                  <div className="flex flex-col space-y-1.5">
-                    <p className="text-sm text-gray-700 font-medium">
-                      Avalie o serviço prestado por este membro.
-                    </p>
-                    <div className="flex items-center gap-1.5">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          disabled={!canRateProfile || submittingRating}
-                          onMouseEnter={() => setRatingHover(star)}
-                          onMouseLeave={() => setRatingHover(0)}
-                          onClick={() => handleRate(star)}
-                          className={`transition-all ${
-                            (ratingHover || userRating || 0) >= star
-                              ? "text-highlight"
-                              : "text-border-subtle"
-                          } disabled:opacity-50`}
-                        >
-                          <Star
-                            size={24}
-                            fill={
+                    <div className="flex flex-col space-y-1.5">
+                      <p className="text-sm text-gray-700 font-medium">
+                        Avalie o serviço prestado por este membro.
+                      </p>
+                      <div className="flex items-center gap-1.5">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            disabled={!canRateProfile || submittingRating}
+                            onMouseEnter={() => setRatingHover(star)}
+                            onMouseLeave={() => setRatingHover(0)}
+                            onClick={() => handleRate(star)}
+                            className={`transition-all ${
                               (ratingHover || userRating || 0) >= star
-                                ? "currentColor"
-                                : "none"
-                            }
-                          />
-                        </button>
-                      ))}
+                                ? "text-highlight"
+                                : "text-border-subtle"
+                            } disabled:opacity-50`}
+                          >
+                            <Star
+                              size={24}
+                              fill={
+                                (ratingHover || userRating || 0) >= star
+                                  ? "currentColor"
+                                  : "none"
+                              }
+                            />
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
             )}
           </div>
 

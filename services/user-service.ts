@@ -989,14 +989,15 @@ export const UserService = {
 
         const userRef = doc(db, 'users', toId);
         const publicProfileRef = doc(db, 'public_profiles', toId);
-        const userSnap = await transaction.get(userRef);
         const publicProfileSnap = await transaction.get(publicProfileRef);
-        
-        if (!userSnap.exists()) throw new Error('Usuário não encontrado');
-        
-        const userData = userSnap.data() as UserProfile;
-        const currentRating = userData.rating || 0;
-        const currentCount = userData.reviewCount || 0;
+
+        if (!publicProfileSnap.exists()) {
+          throw new Error('Perfil público não encontrado');
+        }
+
+        const publicProfileData = publicProfileSnap.data() as Partial<UserProfile>;
+        const currentRating = publicProfileData.rating || 0;
+        const currentCount = publicProfileData.reviewCount || 0;
         
         const newCount = currentCount + 1;
         const newRating = ((currentRating * currentCount) + score) / newCount;
