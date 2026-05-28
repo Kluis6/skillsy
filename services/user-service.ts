@@ -609,6 +609,8 @@ export const UserService = {
         currentData.createdAt !== undefined ? currentData.createdAt : serverTimestamp();
 
       const nextData: Partial<UserProfile> = {
+        ...currentData,
+        ...safeIncomingData,
         uid,
         name:
           normalizeBoundedString(safeIncomingData.name, 100) ??
@@ -635,8 +637,6 @@ export const UserService = {
         role: normalizeRole(currentData.role) ?? 'user',
         contacts: (currentData.contacts as string[] | undefined) ?? [],
         createdAt,
-        ...currentData,
-        ...safeIncomingData,
       };
       const sanitizedPrivateProfile = applyDerivedVerificationFields(
         removeUndefinedDeep(nextData),
