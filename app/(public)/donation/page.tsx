@@ -277,7 +277,8 @@ export default function DonationPage() {
               </p>
             </div>
           </section>
-        </div>
+
+          </div>
       </main>
 
       <Footer />

@@ -127,9 +127,12 @@ export default function OpenGraphImage() {
                     gap: "4px",
                   }}
                 >
-                  <div style={{ fontSize: "28px", fontWeight: 800 }}>Skillsy</div>
+                  <div style={{ display: "flex", fontSize: "28px", fontWeight: 800 }}>
+                    Skillsy
+                  </div>
                   <div
                     style={{
+                      display: "flex",
                       fontSize: "18px",
                       color: "rgba(255,255,255,0.82)",
                     }}
@@ -210,8 +213,8 @@ export default function OpenGraphImage() {
                   fontSize: "18px",
                 }}
               >
-                <div>Buscar profissionais...</div>
-                <div style={{ fontWeight: 700 }}>⌕</div>
+                <div style={{ display: "flex" }}>Buscar profissionais...</div>
+                <div style={{ display: "flex", fontWeight: 700 }}>⌕</div>
               </div>
             </div>
           </div>
@@ -285,7 +288,7 @@ export default function OpenGraphImage() {
                     border: OG_BRAND.panelBorder,
                   }}
                 >
-                  <div style={{ fontSize: "18px", fontWeight: 800 }}>
+                  <div style={{ display: "flex", fontSize: "18px", fontWeight: 800 }}>
                     Busca contextual
                   </div>
                   <div style={{ display: "flex", fontSize: "16px", color: "#475569", lineHeight: 1.3 }}>
@@ -304,7 +307,7 @@ export default function OpenGraphImage() {
                     border: OG_BRAND.panelBorder,
                   }}
                 >
-                  <div style={{ fontSize: "18px", fontWeight: 800 }}>
+                  <div style={{ display: "flex", fontSize: "18px", fontWeight: 800 }}>
                     Rede de confiança
                   </div>
                   <div style={{ display: "flex", fontSize: "16px", color: "#475569", lineHeight: 1.3 }}>
@@ -374,13 +377,13 @@ export default function OpenGraphImage() {
                         gap: "4px",
                       }}
                     >
-                      <div style={{ fontSize: "22px", fontWeight: 800 }}>
+                      <div style={{ display: "flex", fontSize: "22px", fontWeight: 800 }}>
                         {card.name}
                       </div>
-                      <div style={{ fontSize: "18px", color: "#475569" }}>
+                      <div style={{ display: "flex", fontSize: "18px", color: "#475569" }}>
                         {card.service}
                       </div>
-                      <div style={{ fontSize: "16px", color: "#64748B" }}>
+                      <div style={{ display: "flex", fontSize: "16px", color: "#64748B" }}>
                         {card.location}
                       </div>
                     </div>
@@ -395,6 +398,7 @@ export default function OpenGraphImage() {
                   >
                     <div
                       style={{
+                        display: "flex",
                         borderRadius: "999px",
                         padding: "8px 14px",
                         background: "#E0F2FE",
@@ -405,7 +409,14 @@ export default function OpenGraphImage() {
                     >
                       Membro verificado
                     </div>
-                    <div style={{ fontSize: "20px", fontWeight: 800, color: "#1D4ED8" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        fontSize: "20px",
+                        fontWeight: 800,
+                        color: "#1D4ED8",
+                      }}
+                    >
                       {card.rating} ★
                     </div>
                   </div>
