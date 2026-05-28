@@ -26,6 +26,7 @@ export const metadata: Metadata = createPublicMetadata({
   imageDescription:
     "Entenda a missão, os valores e a visão da plataforma para fortalecer conexões de confiança.",
   imageLabel: "Sobre o projeto",
+  socialImagePath: "/weareskillsy/opengraph-image",
 });
 
 const principles = [

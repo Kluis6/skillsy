@@ -10,6 +10,8 @@ type PublicMetadataOptions = {
   imageTitle?: string;
   imageDescription?: string;
   imageLabel?: string;
+  socialImagePath?: string;
+  openGraphType?: "website" | "article";
   keywords?: string[];
 };
 
@@ -41,13 +43,17 @@ export function createPublicMetadata({
   imageTitle,
   imageDescription,
   imageLabel,
+  socialImagePath,
+  openGraphType,
   keywords,
 }: PublicMetadataOptions): Metadata {
-  const socialImage = createOgImageUrl({
-    title: imageTitle ?? title,
-    description: imageDescription ?? description,
-    label: imageLabel,
-  });
+  const socialImage =
+    socialImagePath ??
+    createOgImageUrl({
+      title: imageTitle ?? title,
+      description: imageDescription ?? description,
+      label: imageLabel,
+    });
 
   return {
     title,
@@ -57,7 +63,7 @@ export function createPublicMetadata({
       canonical: path,
     },
     openGraph: {
-      type: "website",
+      type: openGraphType ?? "website",
       locale: "pt_BR",
       url: path,
       siteName,

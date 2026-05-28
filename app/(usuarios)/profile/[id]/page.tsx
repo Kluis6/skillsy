@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ProfileDetailClient } from '@/components/profile-detail-client';
+import { createPublicMetadata } from '@/lib/public-metadata';
 import { UserService } from '@/services/user-service';
 
 interface Props {
@@ -15,15 +16,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const title = `${profile.name} | ${profile.serviceType || 'Membro'}`;
     const description = profile.bio || `Conheça ${profile.name}, profissional na comunidade SUD especializado em ${profile.serviceType || 'serviços diversos'}.`;
 
-    return {
+    return createPublicMetadata({
       title,
       description,
-      openGraph: {
-        title,
-        description,
-        images: [profile.photoURL || 'https://picsum.photos/seed/skillsy-profile/1200/630'],
-      },
-    };
+      path: `/profile/${profile.uid}`,
+      imageTitle: profile.name,
+      imageDescription: description,
+      imageLabel: profile.category || 'Perfil público',
+      socialImagePath: `/profile/${profile.uid}/opengraph-image`,
+    });
   } catch (error) {
     return { title: 'Perfil' };
   }
@@ -35,5 +36,4 @@ export default async function PublicProfilePage({ params }: Props) {
   
   return <ProfileDetailClient id={id} initialProfile={initialProfile} />;
 }
-
 

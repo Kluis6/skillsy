@@ -33,6 +33,8 @@ export async function generateMetadata({
     imageTitle: post.title,
     imageDescription: getPostExcerpt(post),
     imageLabel: post.category === "job" ? "Vaga publicada" : "Artigo publicado",
+    socialImagePath: `/artigosevagas/${post.slug}/opengraph-image`,
+    openGraphType: "article",
   });
 }
 

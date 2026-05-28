@@ -1,31 +1,28 @@
 import { ImageResponse } from "next/og";
 import { OG_BRAND, ogContentType, ogSize } from "@/lib/og-image-templates";
 
-export const alt = "Skillsy - Rede de profissionais e serviços de confiança";
+export const alt = "Skillsy - Participe do Skillsy";
 export const size = ogSize;
 export const contentType = ogContentType;
 
-const categoryChips = [
-  "Tecnologia",
-  "Design",
-  "Aulas",
-  "Marcenaria",
-  "Doméstico",
-  "Construção Civil",
-];
-
-const providerCards = [
+const benefits = [
   {
-    name: "Marina Souza",
-    service: "Design e identidade visual",
-    rating: "5.0",
-    location: "Campinas, SP",
+    title: "Confiança que aproxima",
+    body: "Conexões com honestidade, respeito e bom atendimento.",
+    toneBg: "#DBEAFE",
+    toneText: "#1D4ED8",
   },
   {
-    name: "Carlos Mendes",
-    service: "Reformas e manutenção",
-    rating: "4.9",
-    location: "Curitiba, PR",
+    title: "Visibilidade na sua região",
+    body: "Mostre seu trabalho para quem busca indicações confiáveis.",
+    toneBg: "#FEF3C7",
+    toneText: "#B45309",
+  },
+  {
+    title: "Reputação com experiência real",
+    body: "Avaliações que ajudam outras pessoas a decidir com segurança.",
+    toneBg: "#FEE2E2",
+    toneText: "#DC2626",
   },
 ];
 
@@ -58,22 +55,23 @@ export default function OpenGraphImage() {
         >
           <div
             style={{
-              position: "relative",
               width: "100%",
-              height: "250px",
+              height: "262px",
               display: "flex",
+              justifyContent: "space-between",
               padding: "34px 36px",
               background: OG_BRAND.heroBlue,
               color: "#ffffff",
+              position: "relative",
             }}
           >
             <div
               style={{
                 position: "absolute",
-                right: "-40px",
-                top: "-36px",
-                width: "220px",
-                height: "220px",
+                right: "-34px",
+                top: "-30px",
+                width: "210px",
+                height: "210px",
                 borderRadius: "999px",
                 background: "rgba(255,255,255,0.14)",
               }}
@@ -81,17 +79,18 @@ export default function OpenGraphImage() {
             <div
               style={{
                 position: "absolute",
-                right: "120px",
-                bottom: "-54px",
-                width: "180px",
-                height: "180px",
+                right: "122px",
+                bottom: "-58px",
+                width: "170px",
+                height: "170px",
                 borderRadius: "999px",
                 background: "rgba(255,255,255,0.12)",
               }}
             />
+
             <div
               style={{
-                width: "58%",
+                width: "62%",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -132,10 +131,10 @@ export default function OpenGraphImage() {
                   <div
                     style={{
                       fontSize: "18px",
-                      color: "rgba(255,255,255,0.82)",
+                      color: "rgba(255,255,255,0.84)",
                     }}
                   >
-                    Network entre membros
+                    Participe do Skillsy
                   </div>
                 </div>
               </div>
@@ -154,64 +153,58 @@ export default function OpenGraphImage() {
                     borderRadius: "999px",
                     background: OG_BRAND.whiteOverlay,
                     padding: "10px 16px",
-                    fontSize: "17px",
+                    fontSize: "16px",
                     fontWeight: 700,
                     textTransform: "uppercase",
                   }}
                 >
-                  Página inicial
+                  Cadastro público
                 </div>
                 <div
                   style={{
-                    fontSize: "50px",
+                    fontSize: "48px",
                     lineHeight: 1.04,
                     fontWeight: 800,
                     letterSpacing: "-0.03em",
+                    maxWidth: "620px",
                   }}
                 >
-                  Encontre profissionais e serviços com mais confiança
+                  Seu trabalho pode gerar oportunidades, confiança e apoio real
                 </div>
                 <div
                   style={{
-                    fontSize: "23px",
+                    fontSize: "22px",
                     lineHeight: 1.34,
                     color: "rgba(255,255,255,0.88)",
-                    maxWidth: "560px",
+                    maxWidth: "600px",
                   }}
                 >
-                  Uma home focada em descoberta de talentos, categorias e perfis
-                  públicos compartilháveis.
+                  Uma miniatura mais próxima do hero da página de convite, com
+                  foco em visibilidade, reputação e conexões.
                 </div>
               </div>
             </div>
 
             <div
               style={{
-                width: "42%",
+                width: "38%",
                 display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-end",
                 alignItems: "flex-end",
-                gap: "12px",
+                justifyContent: "flex-end",
                 zIndex: 1,
               }}
             >
               <div
                 style={{
-                  width: "100%",
-                  maxWidth: "370px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "14px 16px",
-                  borderRadius: "20px",
-                  background: "rgba(255,255,255,0.16)",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  fontSize: "18px",
+                  padding: "16px 22px",
+                  borderRadius: "999px",
+                  background: "#ffffff",
+                  color: OG_BRAND.primary,
+                  fontSize: "20px",
+                  fontWeight: 800,
                 }}
               >
-                <div>Buscar profissionais...</div>
-                <div style={{ fontWeight: 700 }}>⌕</div>
+                Criar Minha Conta →
               </div>
             </div>
           </div>
@@ -219,55 +212,61 @@ export default function OpenGraphImage() {
           <div
             style={{
               width: "100%",
-              height: "352px",
+              height: "340px",
               display: "flex",
+              gap: "18px",
               padding: "28px 32px 30px",
-              gap: "22px",
               background:
                 "linear-gradient(180deg, rgba(246,250,255,1) 0%, rgba(255,255,255,1) 100%)",
             }}
           >
             <div
               style={{
-                width: "40%",
+                width: "42%",
                 display: "flex",
                 flexDirection: "column",
-                gap: "14px",
+                gap: "12px",
+                justifyContent: "space-between",
               }}
             >
-            <div
-              style={{
-                ...OG_BRAND.eyebrow,
-              }}
-            >
-              Categorias populares
-              </div>
               <div
                 style={{
                   display: "flex",
-                  flexWrap: "wrap",
-                  gap: "10px",
+                  flexDirection: "column",
+                  gap: "8px",
                 }}
               >
-                {categoryChips.map((chip) => (
-                  <div
-                    key={chip}
-                    style={{
-                      borderRadius: "999px",
-                      padding: "10px 14px",
-                      background: OG_BRAND.chipBg,
-                      color: OG_BRAND.primary,
-                      fontSize: "16px",
-                      fontWeight: 700,
-                    }}
-                  >
-                    {chip}
-                  </div>
-                ))}
+                <div
+                  style={{
+                    ...OG_BRAND.eyebrow,
+                  }}
+                >
+                  Por que participar
+                </div>
+                <div
+                  style={{
+                    fontSize: "34px",
+                    fontWeight: 800,
+                    lineHeight: 1.08,
+                    color: "#0F172A",
+                  }}
+                >
+                  Fortaleça talento, reputação e rede de apoio
+                </div>
+                <div
+                  style={{
+                    fontSize: "19px",
+                    lineHeight: 1.35,
+                    color: "#475569",
+                  }}
+                >
+                  A página convida membros a divulgar trabalho, ganhar contexto
+                  local e abrir espaço para oportunidades reais.
+                </div>
               </div>
+
               <div
                 style={{
-                  marginTop: "8px",
                   display: "flex",
                   flexDirection: "column",
                   gap: "10px",
@@ -275,67 +274,38 @@ export default function OpenGraphImage() {
               >
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                    padding: "18px",
                     borderRadius: "22px",
-                    background: OG_BRAND.panelBg,
-                    border: OG_BRAND.panelBorder,
+                    padding: "18px",
+                    background: "#F8FAFC",
+                    border: "1px solid #E2E8F0",
+                    fontSize: "18px",
+                    color: "#334155",
+                    lineHeight: 1.32,
                   }}
                 >
-                  <div style={{ fontSize: "18px", fontWeight: 800 }}>
-                    Busca contextual
-                  </div>
-                  <div style={{ fontSize: "16px", color: "#475569", lineHeight: 1.3 }}>
-                    Combine categoria, região e reputação para encontrar ajuda
-                    com mais clareza.
-                  </div>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                    padding: "18px",
-                    borderRadius: "22px",
-                    background: OG_BRAND.panelBg,
-                    border: OG_BRAND.panelBorder,
-                  }}
-                >
-                  <div style={{ fontSize: "18px", fontWeight: 800 }}>
-                    Rede de confiança
-                  </div>
-                  <div style={{ fontSize: "16px", color: "#475569", lineHeight: 1.3 }}>
-                    Transforme indicação em conexão prática entre membros.
-                  </div>
+                  Mais do que criar um perfil, é abrir espaço para ser visto,
+                  lembrado e recomendado com mais segurança.
                 </div>
               </div>
             </div>
 
             <div
               style={{
-                width: "60%",
+                width: "58%",
                 display: "flex",
-                flexDirection: "column",
-                gap: "14px",
+                gap: "12px",
               }}
             >
-              <div
-                style={{
-                  ...OG_BRAND.eyebrow,
-                }}
-              >
-                Perfis em destaque
-              </div>
-              {providerCards.map((card) => (
+              {benefits.map((benefit) => (
                 <div
-                  key={card.name}
+                  key={benefit.title}
                   style={{
+                    flex: 1,
                     display: "flex",
+                    flexDirection: "column",
                     justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "20px 22px",
+                    gap: "14px",
+                    padding: "20px 18px",
                     borderRadius: "24px",
                     background: "#ffffff",
                     border: "1px solid #E2E8F0",
@@ -344,67 +314,45 @@ export default function OpenGraphImage() {
                 >
                   <div
                     style={{
+                      width: "52px",
+                      height: "52px",
+                      borderRadius: "16px",
                       display: "flex",
                       alignItems: "center",
-                      gap: "16px",
+                      justifyContent: "center",
+                      background: benefit.toneBg,
+                      color: benefit.toneText,
+                      fontSize: "24px",
+                      fontWeight: 800,
                     }}
                   >
-                    <div
-                      style={{
-                        width: "56px",
-                        height: "56px",
-                        borderRadius: "999px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        background: OG_BRAND.primarySoft,
-                        color: OG_BRAND.primary,
-                        fontSize: "24px",
-                        fontWeight: 800,
-                      }}
-                    >
-                      {card.name.charAt(0)}
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "4px",
-                      }}
-                    >
-                      <div style={{ fontSize: "22px", fontWeight: 800 }}>
-                        {card.name}
-                      </div>
-                      <div style={{ fontSize: "18px", color: "#475569" }}>
-                        {card.service}
-                      </div>
-                      <div style={{ fontSize: "16px", color: "#64748B" }}>
-                        {card.location}
-                      </div>
-                    </div>
+                    •
                   </div>
                   <div
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      alignItems: "flex-end",
                       gap: "8px",
                     }}
                   >
                     <div
                       style={{
-                        borderRadius: "999px",
-                        padding: "8px 14px",
-                        background: "#E0F2FE",
-                        color: "#0369A1",
-                        fontSize: "15px",
-                        fontWeight: 700,
+                        fontSize: "20px",
+                        fontWeight: 800,
+                        lineHeight: 1.16,
+                        color: "#0F172A",
                       }}
                     >
-                      Membro verificado
+                      {benefit.title}
                     </div>
-                    <div style={{ fontSize: "20px", fontWeight: 800, color: "#1D4ED8" }}>
-                      {card.rating} ★
+                    <div
+                      style={{
+                        fontSize: "16px",
+                        lineHeight: 1.32,
+                        color: "#475569",
+                      }}
+                    >
+                      {benefit.body}
                     </div>
                   </div>
                 </div>

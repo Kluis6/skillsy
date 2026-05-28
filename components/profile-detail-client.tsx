@@ -115,7 +115,10 @@ export function ProfileDetailClient({
   const canUseNativeShare =
     typeof navigator !== "undefined" && "share" in navigator;
   const canReportProfile = Boolean(
-    targetProfile && targetProfile.uid !== user?.uid,
+    user && targetProfile && targetProfile.uid !== user.uid,
+  );
+  const canToggleContact = Boolean(
+    user && targetProfile && targetProfile.uid !== user.uid,
   );
   const canRateProfile = Boolean(
     targetProfile &&
@@ -371,7 +374,7 @@ export function ProfileDetailClient({
             render={
               <TooltipTrigger
                 render={
-                  <Button variant="outline" size="icon" className={className} />
+                  <Button variant="outline"  className={` ${className || 'rounded-sm size-10'}`} />
                 }
               >
                 <PiShareFat className="text-gray-700" />
@@ -398,9 +401,9 @@ export function ProfileDetailClient({
           <TooltipTrigger
             render={
               <Button
-                variant="outline"
+                variant="destructive"
                 size="icon"
-                className={className}
+                className={` ${className && 'rounded-sm size-10'}`}
                 onClick={() => setReportDialogOpen(true)}
               />
             }
@@ -411,7 +414,7 @@ export function ProfileDetailClient({
             <p>Denunciar perfil</p>
           </TooltipContent>
         </Tooltip>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md sm:h-auto">
           <DialogHeader>
             <DialogTitle>Denunciar perfil</DialogTitle>
             <DialogDescription>
@@ -423,7 +426,7 @@ export function ProfileDetailClient({
             onSubmit={reportForm.handleSubmit(handleSubmitReport)}
             className="space-y-4"
           >
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] text-amber-900">
+            <div className=" border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] text-amber-900">
               Use a denúncia apenas para casos reais de conteúdo inadequado,
               fraude, spam ou informações enganosas.
             </div>
@@ -468,15 +471,17 @@ export function ProfileDetailClient({
               )}
             </div>
             <DialogFooter>
-              <Button
+              {/* <Button
                 type="button"
                 variant="ghost"
                 onClick={() => setReportDialogOpen(false)}
               >
                 Cancelar
-              </Button>
+              </Button> */}
               <Button
                 type="submit"
+                variant="default"
+                className="rounded-sm h-10 w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-medium"
                 disabled={reportForm.formState.isSubmitting}
               >
                 {reportForm.formState.isSubmitting
@@ -681,7 +686,7 @@ export function ProfileDetailClient({
                       </Tooltip>
                     ) : (
                       <>
-                        {user?.uid !== targetProfile.uid && (
+                        {canToggleContact && (
                           <Button
                             variant={isContact ? "destructive" : "default"}
                             onClick={handleToggleContact}
@@ -832,7 +837,7 @@ export function ProfileDetailClient({
                           </Tooltip>
                         ) : (
                           <>
-                            {user?.uid !== targetProfile.uid && (
+                            {canToggleContact && (
                               <Button
                                 variant={isContact ? "destructive" : "default"}
                                 onClick={handleToggleContact}

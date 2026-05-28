@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     imageDescription:
       "Conheça o Skillsy e compartilhe uma página pública com prévia visual pronta para redes sociais.",
     imageLabel: "Página inicial",
+    socialImagePath: "/opengraph-image",
     keywords: [
       "skillsy",
       "rede de confiança",

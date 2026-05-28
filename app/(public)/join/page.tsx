@@ -29,6 +29,7 @@ export const metadata: Metadata = createPublicMetadata({
   imageDescription:
     "Divulgue seu trabalho, fortaleça sua reputação e gere novas conexões dentro da comunidade.",
   imageLabel: "Cadastro público",
+  socialImagePath: "/join/opengraph-image",
 });
 
 const benefits = [
