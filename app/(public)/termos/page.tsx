@@ -371,7 +371,8 @@ export default function TermosPage() {
                   <div>
                     <strong className="text-amber-900">
                       Última atualização:
-                    </strong> <br />
+                    </strong>{" "}
+                    <br />
                     17 de abril de 2026.
                   </div>
                 </div>
@@ -380,8 +381,8 @@ export default function TermosPage() {
                     <Mail size={18} />
                   </div>
                   <div>
-                    Use os canais oficiais da Skillsy para dúvidas, <br className="hidden md:flex" /> denúncias e
-                    solicitações.
+                    Use os canais oficiais da Skillsy para dúvidas,{" "}
+                    <br className="hidden md:flex" /> denúncias e solicitações.
                   </div>
                 </div>
               </div>
@@ -389,8 +390,6 @@ export default function TermosPage() {
           </div>
         </section>
       </div>
-
-      <Footer />
     </main>
   );
 }

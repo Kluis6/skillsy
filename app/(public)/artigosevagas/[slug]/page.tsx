@@ -115,7 +115,6 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
           </div>
         </div>
       </section>
-      <Footer />
     </main>
   );
 }

@@ -363,10 +363,11 @@ export default function PrivacidadePage() {
                 <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-amber-100 text-amber-800">
                   <RefreshCcw size={18} />
                 </div>
-                <div >
+                <div>
                   <strong className="text-amber-900">
                     Última atualização:
-                  </strong><br />
+                  </strong>
+                  <br />
                   17 de abril de 2026.
                 </div>
               </div>
@@ -408,8 +409,6 @@ export default function PrivacidadePage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }

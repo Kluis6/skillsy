@@ -378,8 +378,6 @@ export default function WeAreSkillsyPage() {
           </div>
         </section>
       </div>
-
-      <Footer />
     </main>
   );
 }

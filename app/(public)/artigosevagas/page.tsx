@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Footer } from "@/components/footer";
 import { PostListClient } from "@/components/posts/post-list-client";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { PostService } from "@/services/post-service";
@@ -36,7 +35,6 @@ export default async function NoticiasPage() {
       <main className="container mx-auto space-y-10 px-4 ">
         <PostListClient posts={posts} />
       </main>
-      <Footer />
     </div>
   );
 }

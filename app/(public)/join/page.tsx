@@ -79,11 +79,20 @@ const highlights = [
 
 const headerHeadlineSegments: HeaderTextSegment[] = [
   { text: "Seu trabalho pode gerar " },
-  { text: "oportunidades", className: "text-white drop-shadow-sm drop-shadow-black/50" },
+  {
+    text: "oportunidades",
+    className: "text-white drop-shadow-sm drop-shadow-black/50",
+  },
   { text: ", conexões de " },
-  { text: "confiança", className: "text-white drop-shadow-sm drop-shadow-black/50" },
+  {
+    text: "confiança",
+    className: "text-white drop-shadow-sm drop-shadow-black/50",
+  },
   { text: " e " },
-  { text: "apoio real", className: "text-white drop-shadow-sm drop-shadow-black/50" },
+  {
+    text: "apoio real",
+    className: "text-white drop-shadow-sm drop-shadow-black/50",
+  },
   { text: " dentro da comunidade." },
 ];
 
@@ -301,8 +310,6 @@ export default function JoinPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }
