@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Post } from "@/models/types";
 import { PostService } from "@/services/post-service";
 import { PostEditorClient } from "@/components/posts/post-editor-client";
+import { PostEditorPageLoading } from "@/components/loading/route-loaders";
 import { toast } from "sonner";
 
 export function EditPostPageClient({ id }: { id: string }) {
@@ -38,7 +39,7 @@ export function EditPostPageClient({ id }: { id: string }) {
   }, [id, user]);
 
   if (loading || isLoading) {
-    return <div className="p-8 text-center text-text-muted">Carregando...</div>;
+    return <PostEditorPageLoading />;
   }
 
   if (!post) {

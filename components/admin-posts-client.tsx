@@ -8,6 +8,7 @@ import { PostService } from "@/services/post-service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { AdminPostsPageLoading } from "@/components/loading/route-loaders";
 import { toast } from "sonner";
 
 const statusLabels: Record<PostStatus, string> = {
@@ -103,7 +104,7 @@ export function AdminPostsClient() {
   };
 
   if (loading || isLoading) {
-    return <div className="p-8 text-center text-text-muted">Carregando...</div>;
+    return <AdminPostsPageLoading />;
   }
 
   if (profile?.role !== "admin") {

@@ -9,6 +9,7 @@ import { PostService } from "@/services/post-service";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PostPublicActions } from "@/components/posts/post-public-actions";
+import { MyPostsPageLoading } from "@/components/loading/route-loaders";
 import { toast } from "sonner";
 
 const statusLabels: Record<Post["status"], string> = {
@@ -45,7 +46,7 @@ export function MyPostsClient() {
   }, [user]);
 
   if (loading || isLoading) {
-    return <div className="p-8 text-center text-text-muted">Carregando...</div>;
+    return <MyPostsPageLoading />;
   }
 
   if (!user) {

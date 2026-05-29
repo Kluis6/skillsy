@@ -27,8 +27,8 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { toast } from "sonner";
 import Image from "next/image";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import { ProfilePublicPageLoading } from "@/components/loading/route-loaders";
 import {
   Dialog,
   DialogContent,
@@ -47,7 +47,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Navbar } from "./navbar";
 import { LuMapPin, LuPencil, LuUserMinus } from "react-icons/lu";
 import { TooltipContent, Tooltip, TooltipTrigger } from "./ui/tooltip";
@@ -582,27 +581,7 @@ export function ProfileDetailClient({
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-surface">
-        <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle px-6 md:px-10 py-4">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <Skeleton className="h-10 w-10 rounded-full" />
-            <Skeleton className="h-6 w-32 rounded-lg" />
-            <ThemeToggle />
-          </div>
-        </div>
-        <main className="max-w-4xl mx-auto px-6 mt-10">
-          <Skeleton className="h-[400px] w-full rounded-[3rem] mb-8" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2 space-y-8">
-              <Skeleton className="h-[200px] w-full rounded-[2.5rem]" />
-              <Skeleton className="h-[150px] w-full rounded-[2.5rem]" />
-            </div>
-            <Skeleton className="h-[300px] w-full rounded-[2.5rem]" />
-          </div>
-        </main>
-      </div>
-    );
+    return <ProfilePublicPageLoading />;
   }
 
   if (!targetProfile) {

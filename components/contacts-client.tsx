@@ -3,9 +3,9 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useContactsController } from "@/hooks/use-contacts-controller";
 import { Button } from "@/components/ui/button";
+import { ContactsPageLoading } from "@/components/loading/route-loaders";
 import { Users } from "lucide-react";
 import Link from "next/link";
-import { Skeleton } from "@/components/ui/skeleton";
 import { AppSidebar } from "./appsidebar";
 import { ContactsAside } from "./contacts/contacts-aside";
 import { ContactsMain } from "./contacts/contacts-main";
@@ -18,28 +18,7 @@ export function ContactsClient() {
   );
 
   if (authLoading) {
-    return (
-      <div className="min-h-screen bg-surface flex flex-col">
-        <nav className="h-16 bg-background/80 backdrop-blur-md border-b border-border-subtle px-6 flex items-center justify-between">
-          <Skeleton className="h-8 w-40" />
-          <Skeleton className="h-8 w-8 rounded-full" />
-        </nav>
-        <div className="flex-grow flex overflow-hidden">
-          <aside className="w-80 border-r border-border-subtle bg-card hidden md:block">
-            <div className="p-4 space-y-4">
-              <Skeleton className="h-10 w-full rounded-xl" />
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-20 w-full rounded-2xl" />
-              ))}
-            </div>
-          </aside>
-          <main className="flex-grow p-8">
-            <Skeleton className="h-64 w-full rounded-[2.5rem] mb-8" />
-            <Skeleton className="h-40 w-full rounded-[2.5rem]" />
-          </main>
-        </div>
-      </div>
-    );
+    return <ContactsPageLoading />;
   }
 
   if (!user) {

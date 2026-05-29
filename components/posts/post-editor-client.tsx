@@ -18,6 +18,7 @@ import {
 import { Post } from "@/models/types";
 import { PostService } from "@/services/post-service";
 import { Button } from "@/components/ui/button";
+import { PostEditorPageLoading } from "@/components/loading/route-loaders";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -251,7 +252,7 @@ export function PostEditorClient({
   });
 
   if (loading) {
-    return <div className="p-8 text-center text-text-muted">Carregando...</div>;
+    return <PostEditorPageLoading />;
   }
 
   if (!user) {
