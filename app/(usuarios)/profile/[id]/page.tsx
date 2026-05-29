@@ -3,6 +3,8 @@ import { ProfileDetailClient } from '@/components/profile-detail-client';
 import { createPublicMetadata } from '@/lib/public-metadata';
 import { UserService } from '@/services/user-service';
 
+export const dynamic = 'force-dynamic';
+
 interface Props {
   params: Promise<{ id: string }>;
 }
@@ -36,4 +38,3 @@ export default async function PublicProfilePage({ params }: Props) {
   
   return <ProfileDetailClient id={id} initialProfile={initialProfile} />;
 }
-

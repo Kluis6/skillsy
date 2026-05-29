@@ -3,6 +3,8 @@ import { HomeClient } from "@/components/home-client";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { UserService } from "@/services/user-service";
 
+export const dynamic = "force-dynamic";
+
 const pageTitle = "Inicial";
 const pageDescription =
   "Encontre profissionais e serviços de confiança na comunidade.";

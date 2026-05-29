@@ -3,6 +3,8 @@ import { PostListClient } from "@/components/posts/post-list-client";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { PostService } from "@/services/post-service";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = createPublicMetadata({
   title: "Notícias, Artigos e Vagas",
   description: "Conteúdo publicado pela comunidade Skillsy.",

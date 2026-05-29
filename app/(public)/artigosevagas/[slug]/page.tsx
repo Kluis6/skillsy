@@ -10,6 +10,8 @@ import { PostService } from "@/services/post-service";
 import Link from "next/link";
 import { LuArrowLeft } from "react-icons/lu";
 
+export const dynamic = "force-dynamic";
+
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
