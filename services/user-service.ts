@@ -349,6 +349,7 @@ function buildPublicProfileData(source: Partial<UserProfile>) {
     rating: source.rating,
     reviewCount: source.reviewCount,
     experienceYears: source.experienceYears,
+    baptismYear: source.baptismYear,
     memberVerified: verification.memberVerified,
     membershipYears: verification.membershipYears,
     availability: source.availability || [],
