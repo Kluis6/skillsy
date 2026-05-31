@@ -51,7 +51,7 @@ export function MyPostsClient() {
 
   if (!user) {
     return (
-      <div className="rounded-[2rem] border border-border-subtle bg-white p-10 text-center">
+      <div className="rounded-[2rem] border border-border-subtle bg-card p-10 text-center">
         <h1 className="text-2xl font-bold text-text-main">Faça login para acessar suas publicações</h1>
         <p className="mt-2 text-text-muted">
           A área de publicação é restrita a usuários autenticados.
@@ -62,7 +62,7 @@ export function MyPostsClient() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-[2rem] border border-border-subtle bg-white p-6 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 rounded-[2rem] border border-border-subtle bg-card p-6 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-text-main">Minhas publicações</h1>
           <p className="mt-1 text-text-muted">
@@ -74,7 +74,7 @@ export function MyPostsClient() {
         </Link>
       </div>
 
-      <div className="rounded-[2rem] border border-border-subtle bg-white">
+      <div className="rounded-[2rem] border border-border-subtle bg-card">
         {posts.length === 0 ? (
           <div className="p-10 text-center text-text-muted">
             Você ainda não criou nenhuma publicação.

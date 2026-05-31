@@ -170,7 +170,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
               />
             }
           >
-            <PiShareFat className="text-gray-700 " />
+            <PiShareFat className="text-text-muted " />
           </TooltipTrigger>
           <TooltipContent>
             <p>Compartilhar</p>
@@ -193,7 +193,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   />
                 }
               >
-                <PiShareFat className="text-gray-700" />
+                <PiShareFat className="text-text-muted" />
               </TooltipTrigger>
             }
           />
@@ -234,7 +234,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                 <Icon className="size-5" />
               </span>
               <span className="flex min-w-0 flex-col items-start">
-                <span className="font-semibold text-gray-800">
+                <span className="font-semibold text-text-main">
                   {action.label}
                 </span>
                 <span className="text-xs text-muted-foreground whitespace-normal">
@@ -265,7 +265,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
           >
             {/* Profile Hero (LinkedIn Style) */}
 
-            <div className="w-full bg-white">
+            <div className="w-full bg-card">
               <div className="relative w-full h-52 md:h-68">
                 <div className="h-40 md:h-50 w-full relative">
                   {selectedContact.bannerURL && (
@@ -308,12 +308,12 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                 </div>
               </div>
 
-              <div className="w-full bg-white p-4 border-b">
+              <div className="w-full bg-card p-4 border-b border-border-subtle">
                 <div className="flex flex-col md:flex-row items-center justify-center md:items-end gap-6 w-full">
                   <div className="text-center md:text-left w-full space-y-1">
                     <div className="flex md:justify-between items-center justify-center">
                       <div className="flex items-center justify-center  md:justify-start gap-x-1">
-                        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 font-heading tracking-tight">
+                        <h2 className="text-2xl md:text-3xl font-bold text-text-main font-heading tracking-tight">
                           {selectedContact.name}
                         </h2>
                         {shouldShowVerifiedBadge(selectedContact) && (
@@ -336,7 +336,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                     </div>
 
                     <div className="flex flex-col space-y-1">
-                      <p className="text-base font-medium text-gray-700">
+                      <p className="text-base font-medium text-text-main">
                         {selectedContact.serviceType ||
                           selectedContact.category ||
                           "Membro da Comunidade"}
@@ -344,8 +344,8 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                     </div>
                     {selectedContact.companyName && (
                       <div className="flex items-center gap-x-2 w-full justify-center md:justify-start">
-                        <Building2 size={16} className="text-gray-700" />
-                        <p className="text-gray-700 font-normal text-sm flex items-center justify-center md:justify-start gap-2">
+                        <Building2 size={16} className="text-text-muted" />
+                        <p className="text-text-muted font-normal text-sm flex items-center justify-center md:justify-start gap-2">
                           {selectedContact.companyName}
                         </p>
                       </div>
@@ -353,7 +353,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
 
                     <div className="flex items-center space-x-2 justify-center md:justify-start ">
                       <MapPin size={14} />
-                      <p className="text-gray-700 text-sm font-normal">
+                      <p className="text-text-muted text-sm font-normal">
                         {selectedContact.location ||
                           "Localização não informada"}
                       </p>
@@ -401,8 +401,8 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
             {/* Bio & Details */}
             <div className="border-y">
               <div className="md:col-span-2 space-y-6">
-                <section className="bg-white p-4 border-border-subtle">
-                  <h3 className="text-lg font-bold font-heading text-gray-700">
+                <section className="bg-card p-4 border-border-subtle">
+                  <h3 className="text-lg font-bold font-heading text-text-main">
                     Sobre o Profissional
                   </h3>
                   <p className="text-text-muted text-sm leading-relaxed whitespace-pre-wrap">
@@ -434,7 +434,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                 )} */}
               </div>
             </div>
-            <div className="p-4 bg-white w-full border-y flex flex-col md:flex-row gap-2 flex-nowrap">
+            <div className="p-4 bg-card w-full border-y border-border-subtle flex flex-col md:flex-row gap-2 flex-nowrap">
               <Button
                 onClick={() => {
                   toggleContact(selectedContact.uid).then(() => {

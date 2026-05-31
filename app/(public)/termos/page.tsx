@@ -123,18 +123,18 @@ export default function TermosPage() {
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
-        <div className="w-full rounded-lg bg-white p-4 shadow-2xl xl:p-8">
+        <div className="w-full rounded-lg bg-card p-4 shadow-2xl xl:p-8 border border-border-subtle">
           <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
             <div className="col-span-12 space-y-4">
-              <h2 className="text-xl lg:text-2xl font-bold text-gray-900">
+              <h2 className="text-xl lg:text-2xl font-bold text-text-main">
                 Termos de Uso
               </h2>
-              <p className="text-base font-normal text-gray-700">
+              <p className="text-base font-normal text-text-muted">
                 Estes termos explicam como a Skillsy funciona, o que você pode
                 esperar da plataforma e quais responsabilidades continuam sendo
                 suas ao contratar ou oferecer serviços.
               </p>
-              <p className="text-base font-normal text-gray-700">
+              <p className="text-base font-normal text-text-muted">
                 Ao acessar ou usar a Skillsy, você concorda com estas regras. Se
                 não concordar, recomendamos não utilizar a plataforma.
               </p>
@@ -168,20 +168,20 @@ export default function TermosPage() {
       <section className="container mx-auto my-24 px-4">
         <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
           <div className="col-span-12 text-center">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+            <h2 className="text-xl md:text-2xl font-bold text-text-main">
               Independência institucional
             </h2>
           </div>
 
           <div className="col-span-12">
-            <div className="rounded-xl border bg-slate-50 p-4 md:p-6 lg:p-8 space-y-4">
+            <div className="rounded-xl border border-border-subtle bg-surface p-4 md:p-6 lg:p-8 space-y-4">
               <div className="flex items-start gap-4 ">
                 <div className="flex size-12 shrink-0 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700">
                   <Scale size={22} />
                 </div>
               </div>
               <div className="space-y-4">
-                <p className="text-base leading-relaxed text-gray-800">
+                <p className="text-base leading-relaxed text-text-muted">
                   A <strong>Skillsy</strong> é uma iniciativa independente,
                   criada para facilitar conexões profissionais e apoio mútuo
                   entre membros da comunidade.
@@ -207,19 +207,19 @@ export default function TermosPage() {
           <div className="grid grid-cols-12 gap-4 gap-y-8">
             <div className="col-span-12 md:col-span-6">
               <div className="space-y-4">
-                <h2 className="text-lg lg:text-xl font-bold text-gray-800">
+                <h2 className="text-lg lg:text-xl font-bold text-text-main">
                   Como a Skillsy funciona
                 </h2>
-                <p className="text-base font-normal text-gray-700">
+                <p className="text-base font-normal text-text-muted">
                   A Skillsy atua como um diretório de conexões. A plataforma
                   ajuda usuários a apresentar seus serviços, encontrar
                   profissionais e iniciar contato com mais facilidade.
                 </p>
                 <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-gray-800">
+                  <h3 className="text-lg font-bold text-text-main">
                     Fluxo básico de uso
                   </h3>
-                  <p className="text-base font-normal text-gray-700">
+                  <p className="text-base font-normal text-text-muted">
                     O papel da plataforma é aproximar as partes. As definições
                     comerciais e operacionais continuam sendo feitas diretamente
                     entre usuário contratante e usuário prestador.
@@ -231,12 +231,12 @@ export default function TermosPage() {
             <div className="col-span-12 md:col-span-6">
               <div className="grid grid-cols-1 gap-4">
                 {flow.map((item, index) => (
-                  <div key={item} className="rounded-md border bg-white p-4">
+                  <div key={item} className="rounded-md border border-border-subtle bg-card p-4">
                     <div className="flex items-start gap-3">
                       <div className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-blue-700 text-sm font-bold text-white">
                         {index + 1}
                       </div>
-                      <p className="text-sm leading-relaxed text-gray-700">
+                      <p className="text-sm leading-relaxed text-text-muted">
                         {item}
                       </p>
                     </div>
@@ -252,10 +252,10 @@ export default function TermosPage() {
         <div className="grid grid-cols-12 gap-4 lg:gap-8">
           <div className="col-span-12 lg:col-span-4">
             <div className="space-y-4">
-              <h2 className="text-xl lg:text-2xl font-bold text-gray-800 ">
+              <h2 className="text-xl lg:text-2xl font-bold text-text-main">
                 Responsabilidades e conduta esperada
               </h2>
-              <p className="text-base font-normal text-gray-700">
+              <p className="text-base font-normal text-text-muted">
                 O uso saudável da plataforma depende de clareza nas informações,
                 respeito nas relações e responsabilidade nas decisões tomadas
                 fora dela.
@@ -266,18 +266,18 @@ export default function TermosPage() {
           <div className="col-span-12 lg:col-span-8">
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               <div className="col-span-12 lg:col-span-6">
-                <div className="h-full rounded-md border bg-slate-50 p-4 space-y-4">
+                <div className="h-full rounded-md border border-border-subtle bg-surface p-4 space-y-4">
                   <div className="mb-4 flex size-12 items-center justify-center rounded-sm bg-amber-100 text-amber-700 shadow-md">
                     <AlertTriangle size={22} />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-800">
+                  <h3 className="text-lg font-bold text-text-main">
                     Limites da plataforma
                   </h3>
                   <div className="space-y-3">
                     {responsibilities.map((item) => (
                       <p
                         key={item}
-                        className="text-sm leading-relaxed text-gray-700"
+                        className="text-sm leading-relaxed text-text-muted"
                       >
                         {item}
                       </p>
@@ -287,19 +287,19 @@ export default function TermosPage() {
               </div>
 
               <div className="col-span-12 lg:col-span-6">
-                <div className="h-full rounded-md border bg-slate-50 p-4 space-y-4">
+                <div className="h-full rounded-md border border-border-subtle bg-surface p-4 space-y-4">
                   <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
                     <ShieldCheck size={22} />
                   </div>
 
                   <div className=" space-y-2">
-                    <h3 className="text-lg font-bold text-gray-800">
+                    <h3 className="text-lg font-bold text-text-main">
                       Conduta dos usuários
                     </h3>
                     {conduct.map((item) => (
                       <p
                         key={item}
-                        className="text-sm leading-relaxed text-gray-700"
+                        className="text-sm leading-relaxed text-text-muted"
                       >
                         {item}
                       </p>
@@ -314,23 +314,23 @@ export default function TermosPage() {
 
       <div className="container mx-auto mb-24 px-4">
         <section className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div className="rounded-xl border bg-slate-50 p-4 md:p- lg:p-10">
+          <div className="rounded-xl border border-border-subtle bg-surface p-4 md:p- lg:p-10">
             <div className="space-y-4">
-              <h2 className="text-xl lg:text-2xl font-bold text-gray-800">
+              <h2 className="text-xl lg:text-2xl font-bold text-text-main">
                 Privacidade e dados
               </h2>
               <div className="flex items-start gap-3">
                 <div className="flex size-10 md:size-12 shrink-0 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
                   <UserCheck size={18} />
                 </div>
-                <p className="text-sm leading-relaxed text-gray-700">
+                <p className="text-sm leading-relaxed text-text-muted">
                   O tratamento dos seus dados pessoais segue a nossa Política de
                   Privacidade, que explica quais informações podem ser
                   coletadas, como são usadas e quais escolhas você tem dentro da
                   plataforma.
                 </p>
               </div>
-              <p className="text-sm leading-relaxed text-gray-700">
+              <p className="text-sm leading-relaxed text-text-muted">
                 Para entender melhor esse tratamento, consulte a{" "}
                 <Link
                   href="/privacidade"
@@ -344,10 +344,10 @@ export default function TermosPage() {
           </div>
 
           <div className="space-y-7 p-4 md:p-6 lg:p-10">
-            <h2 className="text-xl lg:text-2xl font-bold text-gray-800">
+            <h2 className="text-xl lg:text-2xl font-bold text-text-main">
               Atualizações e contato
             </h2>
-            <div className="space-y-4 text-sm leading-relaxed text-gray-700">
+            <div className="space-y-4 text-sm leading-relaxed text-text-muted">
               <p>
                 Estes termos podem ser atualizados para refletir melhorias,
                 ajustes operacionais ou mudanças legais. O uso continuado da

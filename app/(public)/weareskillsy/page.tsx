@@ -126,12 +126,12 @@ export default function WeAreSkillsyPage() {
       />
 
       <div className="mx-auto px-4 container w-full z-[99999] isolate -mt-14 lg:-mt-10 mb-16">
-        <div className="w-full xl:p-8 p-4 bg-white z-50 shadow-2xl rounded-lg ">
+        <div className="w-full xl:p-8 p-4 bg-card z-50 shadow-2xl rounded-lg border border-border-subtle">
           <div className="grid grid-cols-12 gap-2 md:gap-4 md:gap-y-8 xl:gap-8 gap-y-8">
             <div className="col-span-12 space-y-4">
-              <h3 className="text-2xl font-bold text-gray-900">Ser Skillsy</h3>
+              <h3 className="text-2xl font-bold text-text-main">Ser Skillsy</h3>
               {/* <div className="w-full p-8 bg-amber-500 sm:bg-blue-500 md:bg-red-500 lg:bg-emerald-500 xl:bg-fuchsia-500 2xl:bg-orange-500"></div> */}
-              <p className="text-base font-normal text-gray-800">
+              <p className="text-base font-normal text-text-muted">
                 Mais do que um diretório de profissionais, o Skillsy nasce como
                 uma iniciativa independente para aproximar pessoas, fortalecer
                 relacionamentos de confiança e facilitar o encontro entre quem
@@ -166,7 +166,7 @@ export default function WeAreSkillsyPage() {
       <div className="mx-auto px-4 container my-24">
         <div className="grid grid-cols-12 gap-4 xl:gap-8 gap-y-8">
           <div className="col-span-12 text-center">
-            <h3 className="text-2xl font-bold text-gray-900">
+            <h3 className="text-2xl font-bold text-text-main">
               O que o Skillsy é
             </h3>
           </div>
@@ -176,7 +176,7 @@ export default function WeAreSkillsyPage() {
                 <h3 className="font-bold text-white text-base">
                   Uma plataforma de conexões
                 </h3>
-                <p className="mt-2 text-sm font-normal text-gray-50">
+                <p className="mt-2 text-sm font-normal text-white/90">
                   A Skillsy ajuda pessoas a encontrar e apresentar serviços com
                   mais proximidade, contexto e confiança.
                 </p>
@@ -189,7 +189,7 @@ export default function WeAreSkillsyPage() {
                 <h3 className="font-bold text-white text-base">
                   Um espaço para visibilidade de talentos
                 </h3>
-                <p className="mt-2 text-sm font-normal text-gray-50">
+                <p className="mt-2 text-sm font-normal text-white/90">
                   Profissionais, empreendedores e pessoas com habilidades úteis
                   podem divulgar melhor aquilo que fazem.
                 </p>
@@ -202,7 +202,7 @@ export default function WeAreSkillsyPage() {
                 <h3 className="font-bold text-white text-base">
                   Uma iniciativa de apoio mútuo
                 </h3>
-                <p className="mt-2 text-sm font-normal text-gray-50">
+                <p className="mt-2 text-sm font-normal text-white/90">
                   Quando uma contratação acontece com confiança, mais gente é
                   beneficiada: quem presta o serviço, quem contrata e a rede ao
                   redor.
@@ -217,16 +217,16 @@ export default function WeAreSkillsyPage() {
           <div className="grid grid-cols-12 gap-4 gap-y-8">
             <div className="col-span-12 md:col-span-6">
               <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-900">
+                <h3 className="text-2xl font-bold text-text-main">
                   Nossa missão
                 </h3>
-                <p className="text-base font-normal text-gray-800">
+                <p className="text-base font-normal text-text-muted">
                   Criar um ambiente onde talentos locais possam ser vistos com
                   mais clareza, onde famílias encontrem ajuda com mais confiança
                   e onde o trabalho bem-feito se torne uma forma concreta de
                   apoiar a comunidade.
                 </p>
-                <p className="text-base font-normal text-gray-800">
+                <p className="text-base font-normal text-text-muted">
                   Em termos práticos, isso significa aproximar pessoas,
                   incentivar relações mais responsáveis e tornar mais fácil
                   descobrir profissionais, serviços e oportunidades que talvez
@@ -234,10 +234,10 @@ export default function WeAreSkillsyPage() {
                 </p>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-gray-700">
+                  <h3 className="text-lg font-bold text-text-main">
                     O que queremos fortalecer
                   </h3>
-                  <p className="text-base font-normal text-gray-800">
+                  <p className="text-base font-normal text-text-muted">
                     Queremos fortalecer uma cultura de indicação responsável,
                     reputação construída com experiência real, serviço prestado
                     com integridade e oportunidades que circulam dentro da
@@ -264,10 +264,10 @@ export default function WeAreSkillsyPage() {
         <div className="grid grid-cols-12 gap-4 md:gap-8">
           <div className="col-span-12 lg:col-span-4">
             <div className="space-y-4">
-              <h2 className="text-xl 2xl:text-2xl font-bold text-gray-900">
+              <h2 className="text-xl 2xl:text-2xl font-bold text-text-main">
                 Os valores que guiam a plataforma
               </h2>
-              <p className="text-base font-normal text-gray-800">
+              <p className="text-base font-normal text-text-muted">
                 O Skillsy cresce melhor quando a tecnologia serve a algo maior:
                 relações mais honestas, trabalho mais digno e uma comunidade
                 mais disposta a se apoiar.
@@ -278,14 +278,14 @@ export default function WeAreSkillsyPage() {
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               {values.map((value) => (
                 <div key={value.title} className="md:col-span-4 col-span-12">
-                  <div className=" border p-4 h-full rounded-md space-y-2 bg-slate-50">
+                  <div className="border border-border-subtle p-4 h-full rounded-md space-y-2 bg-surface">
                     <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md  ">
                       <value.icon size={22} />
                     </div>
-                    <h3 className="text-base font-bold text-gray-800">
+                    <h3 className="text-base font-bold text-text-main">
                       {value.title}
                     </h3>
-                    <p className="text-sm font-normal text-gray-700">
+                    <p className="text-sm font-normal text-text-muted">
                       {value.description}
                     </p>
                   </div>
@@ -298,11 +298,11 @@ export default function WeAreSkillsyPage() {
 
       <div className="container mx-auto px-4 my-24">
         <section className="mt-12 grid grid-cols-12 gap-y-8 gap-4 lg:gap-8">
-          <div className="col-span-12 lg:col-span-6 rounded-xl bg-slate-50 border p-4 md:p-8 lg:p-10 space-y-4">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+          <div className="col-span-12 lg:col-span-6 rounded-xl bg-surface border border-border-subtle p-4 md:p-8 lg:p-10 space-y-4">
+            <h2 className="text-xl md:text-2xl font-bold text-text-main">
               O que o Skillsy não pretende ser
             </h2>
-            <div className="space-y-4 text-sm leading-relaxed text-gray-700">
+            <div className="space-y-4 text-sm leading-relaxed text-text-muted">
               <p>
                 A plataforma não pretende substituir o discernimento pessoal, a
                 conversa direta entre as partes ou a responsabilidade de avaliar
@@ -321,10 +321,10 @@ export default function WeAreSkillsyPage() {
           </div>
 
           <div className="p-4 md:p-8 xl:p-10 space-y-4 col-span-12 lg:col-span-6">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+            <h2 className="text-xl md:text-2xl font-bold text-text-main">
               Como você pode participar
             </h2>
-            <div className="space-y-4 text-sm leading-relaxed text-gray-700">
+            <div className="space-y-4 text-sm leading-relaxed text-text-muted">
               <p>
                 Você pode participar divulgando seu trabalho, encontrando
                 profissionais, compartilhando a plataforma com outras pessoas ou
@@ -347,7 +347,7 @@ export default function WeAreSkillsyPage() {
               </Link>
               <Link
                 href="/donation"
-                className="inline-flex items-center justify-center rounded-full w-full border border-border-subtle bg-white px-6 py-3 text-base font-bold text-text-main transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="inline-flex items-center justify-center rounded-full w-full border border-border-subtle bg-card px-6 py-3 text-base font-bold text-text-main transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 Apoiar o Skillsy
               </Link>

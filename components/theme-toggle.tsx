@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { BsMoon, BsSun } from "react-icons/bs";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export function ThemeToggle() {
     };
   }, []);
 
-  const isDark = mounted && theme === "dark";
+  const isDark = mounted && resolvedTheme === "dark";
 
   return (
     <Button
@@ -28,7 +28,7 @@ export function ThemeToggle() {
       className="size-10 transition-discrete"
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
-      {isDark ? <BsMoon /> : <BsSun className="text-gray-800" />}
+      {isDark ? <BsMoon /> : <BsSun className="text-foreground" />}
 
       <span className="sr-only">Alternar tema</span>
     </Button>

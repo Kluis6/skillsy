@@ -15,6 +15,9 @@ import {
   addDoc,
   runTransaction,
   writeBatch,
+  deleteDoc,
+  Timestamp,
+  deleteField,
 } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import { toPlainValue } from '@/lib/firestore-plain';
@@ -142,6 +145,40 @@ function normalizeFiniteNumber(value: unknown) {
   return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
 }
 
+function normalizeTimestampValue(value: unknown) {
+  if (value instanceof Timestamp) {
+    return value;
+  }
+
+  if (
+    value &&
+    typeof value === 'object' &&
+    'seconds' in (value as Record<string, unknown>) &&
+    'nanoseconds' in (value as Record<string, unknown>)
+  ) {
+    const seconds = (value as Record<string, unknown>).seconds;
+    const nanoseconds = (value as Record<string, unknown>).nanoseconds;
+
+    if (
+      typeof seconds === 'number' &&
+      Number.isFinite(seconds) &&
+      typeof nanoseconds === 'number' &&
+      Number.isFinite(nanoseconds)
+    ) {
+      return new Timestamp(seconds, nanoseconds);
+    }
+  }
+
+  if (typeof value === 'string') {
+    const date = new Date(value);
+    if (!Number.isNaN(date.getTime())) {
+      return Timestamp.fromDate(date);
+    }
+  }
+
+  return undefined;
+}
+
 function normalizeEmail(value: unknown) {
   const normalized = normalizeBoundedString(value, 320);
 
@@ -211,6 +248,180 @@ function normalizeGalleryForRules(value: unknown) {
   return next;
 }
 
+function isTimestampLike(value: unknown) {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  return (
+    'seconds' in (value as Record<string, unknown>) ||
+    'toDate' in (value as Record<string, unknown>) ||
+    'toMillis' in (value as Record<string, unknown>)
+  );
+}
+
+function hasValidVerificationShape(source: Partial<UserProfile>) {
+  return Boolean(
+    typeof source.ward === 'string' &&
+      source.ward.trim().length > 0 &&
+      typeof source.baptismYear === 'number' &&
+      Number.isFinite(source.baptismYear) &&
+      source.baptismYear >= 1830 &&
+      source.baptismYear <= 2100,
+  );
+}
+
+function assertRuleCompatibleProfile(
+  source: Partial<UserProfile>,
+  mode: 'private' | 'public',
+) {
+  const label = mode === 'private' ? 'Perfil privado' : 'Perfil público';
+
+  if (!source.uid || typeof source.uid !== 'string') {
+    throw new Error(`${label}: uid ausente ou invalido.`);
+  }
+
+  if (!source.name || typeof source.name !== 'string' || source.name.length > 100) {
+    throw new Error(`${label}: nome ausente ou invalido.`);
+  }
+
+  if (mode === 'private') {
+    if (!source.email || typeof source.email !== 'string') {
+      throw new Error('Perfil privado: email ausente ou invalido.');
+    }
+
+    if (source.role !== 'admin' && source.role !== 'user') {
+      throw new Error('Perfil privado: role invalido.');
+    }
+  }
+
+  if (typeof source.isProvider !== 'boolean') {
+    throw new Error(`${label}: isProvider invalido.`);
+  }
+
+  if (!isTimestampLike(source.createdAt)) {
+    throw new Error(`${label}: createdAt invalido.`);
+  }
+
+  if ('deletedAt' in source && source.deletedAt !== undefined && !isTimestampLike(source.deletedAt)) {
+    throw new Error(`${label}: deletedAt invalido.`);
+  }
+
+  if (source.category === '') {
+    throw new Error(`${label}: category vazia nao e aceita pelas regras.`);
+  }
+
+  const hasValidVerification = hasValidVerificationShape(source);
+  if (hasValidVerification && source.memberVerified !== true) {
+    throw new Error(
+      `${label}: memberVerified precisa ser true quando ward e baptismYear sao validos.`,
+    );
+  }
+
+  if (!hasValidVerification && source.memberVerified === true) {
+    throw new Error(
+      `${label}: memberVerified nao pode ser true sem ward e baptismYear validos.`,
+    );
+  }
+
+  if (
+    source.membershipYears !== undefined &&
+    (typeof source.membershipYears !== 'number' ||
+      !Number.isFinite(source.membershipYears) ||
+      source.membershipYears < 0 ||
+      source.membershipYears > 300)
+  ) {
+    throw new Error(`${label}: membershipYears invalido.`);
+  }
+}
+
+function summarizeDebugValue(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return {
+      type: 'string',
+      length: value.length,
+      preview: value.slice(0, 120),
+    };
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean' || value === null) {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return {
+      type: 'array',
+      size: value.length,
+      sample: value.slice(0, 2).map((item) => summarizeDebugValue(item)),
+    };
+  }
+
+  if (isTimestampLike(value)) {
+    return {
+      type: 'timestamp-like',
+      keys: Object.keys(value as Record<string, unknown>),
+    };
+  }
+
+  if (value && typeof value === 'object') {
+    return {
+      type: 'object',
+      keys: Object.keys(value as Record<string, unknown>),
+    };
+  }
+
+  return typeof value;
+}
+
+function summarizeProfileForDebug(source: Partial<UserProfile>) {
+  return Object.fromEntries(
+    Object.entries(source).map(([key, value]) => [key, summarizeDebugValue(value)]),
+  );
+}
+
+function buildUserProfileUpdatePatch(
+  current: Record<string, unknown>,
+  rawCurrent: Record<string, unknown>,
+  next: Record<string, unknown>,
+  immutableKeys: Set<string>,
+  allowedKeys: Set<string>,
+) {
+  const patch: Record<string, unknown> = {};
+  const keys = new Set([
+    ...Object.keys(rawCurrent),
+    ...Object.keys(current),
+    ...Object.keys(next),
+  ]);
+
+  for (const key of keys) {
+    if (key === 'id') {
+      continue;
+    }
+
+    if (!allowedKeys.has(key)) {
+      if (key in rawCurrent) {
+        patch[key] = deleteField();
+      }
+      continue;
+    }
+
+    if (immutableKeys.has(key)) {
+      continue;
+    }
+
+    if (!(key in next) || next[key] === undefined) {
+      if (key in current) {
+        patch[key] = deleteField();
+      }
+      continue;
+    }
+
+    patch[key] = next[key];
+  }
+
+  return patch;
+}
+
 function normalizeUserDocumentForRules(source: Record<string, unknown>) {
   const normalized = removeUndefinedDeep({ ...source }) as Record<string, unknown>;
 
@@ -273,6 +484,8 @@ function normalizeUserDocumentForRules(source: Record<string, unknown>) {
   normalized.isDeleted = normalizeBoolean(normalized.isDeleted);
   normalized.deletedByUser = normalizeBoolean(normalized.deletedByUser);
   normalized.isProvider = normalizeBoolean(normalized.isProvider);
+  normalized.createdAt = normalizeTimestampValue(normalized.createdAt);
+  normalized.deletedAt = normalizeTimestampValue(normalized.deletedAt);
 
   return removeUndefinedDeep(normalized);
 }
@@ -404,6 +617,33 @@ function syncPublicProfileBatch(
   }
 
   batch.set(publicDocRef, buildPublicProfileData(source));
+}
+
+async function syncPublicProfileDocument(
+  uid: string,
+  source: Partial<UserProfile>,
+) {
+  const publicDocRef = doc(db, 'public_profiles', uid);
+
+  if (!shouldSyncPublicProfile(source) || source.isDeleted) {
+    await deleteDoc(publicDocRef);
+    return;
+  }
+
+  await setDoc(publicDocRef, buildPublicProfileData(source));
+}
+
+function isSerializedFirestoreError(error: unknown) {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  try {
+    const parsed = JSON.parse(error.message) as Partial<FirestoreErrorInfo>;
+    return typeof parsed.operationType === 'string' && typeof parsed.path === 'string';
+  } catch {
+    return false;
+  }
 }
 
 function sortProvidersByFeaturedRanking(profiles: UserProfile[]) {
@@ -591,8 +831,9 @@ export const UserService = {
         throw new Error('Perfil não encontrado para atualização');
       }
 
+      const rawCurrentData = currentSnapshot.data() as Record<string, unknown>;
       const currentData = normalizeUserDocumentForRules(
-        sanitizeData(currentSnapshot.data() as Record<string, unknown>),
+        sanitizeData(rawCurrentData),
       );
       const incomingData = normalizeUserDocumentForRules(
         sanitizeData(data as Record<string, unknown>),
@@ -642,12 +883,46 @@ export const UserService = {
       const sanitizedPrivateProfile = applyDerivedVerificationFields(
         removeUndefinedDeep(nextData),
       );
-      const batch = writeBatch(db);
+      const publicProfileData = buildPublicProfileData(
+        sanitizedPrivateProfile as Partial<UserProfile>,
+      );
+      assertRuleCompatibleProfile(
+        sanitizedPrivateProfile as Partial<UserProfile>,
+        'private',
+      );
+      if (shouldSyncPublicProfile(sanitizedPrivateProfile as Partial<UserProfile>)) {
+        assertRuleCompatibleProfile(publicProfileData as Partial<UserProfile>, 'public');
+      }
+      console.error(
+        'UpdateProfile private payload:',
+        JSON.stringify(summarizeProfileForDebug(sanitizedPrivateProfile as Partial<UserProfile>)),
+      );
+      console.error(
+        'UpdateProfile public payload:',
+        JSON.stringify(summarizeProfileForDebug(publicProfileData as Partial<UserProfile>)),
+      );
+      const privatePatch = buildUserProfileUpdatePatch(
+        currentData,
+        rawCurrentData,
+        sanitizedPrivateProfile as Record<string, unknown>,
+        immutableKeys,
+        allowedUserFields,
+      );
+      console.error(
+        'UpdateProfile private patch:',
+        JSON.stringify(summarizeProfileForDebug(privatePatch as Partial<UserProfile>)),
+      );
+      await updateDoc(docRef, privatePatch);
 
-      batch.set(docRef, sanitizedPrivateProfile);
-      syncPublicProfileBatch(batch, uid, sanitizedPrivateProfile as Partial<UserProfile>);
-      await batch.commit();
+      try {
+        await syncPublicProfileDocument(uid, sanitizedPrivateProfile as Partial<UserProfile>);
+      } catch (error) {
+        handleFirestoreError(error, OperationType.UPDATE, `public_profiles/${uid}`);
+      }
     } catch (error) {
+      if (isSerializedFirestoreError(error)) {
+        throw error;
+      }
       handleFirestoreError(error, OperationType.UPDATE, path);
     }
   },

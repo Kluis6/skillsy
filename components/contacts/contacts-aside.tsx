@@ -49,18 +49,18 @@ export function ContactsAside({
   };
 
   return (
-    <aside className="w-full bg-white flex flex-col h-screen overflow-hidden ">
+    <aside className="w-full bg-card flex flex-col h-screen overflow-hidden ">
       <div className="px-4 py-2.5 border-b border-border-s flex flex-col space-y-4">
         <div className="w-full flex justify-between items-center ">
           <Link
             href="/"
             className="flex justify-start items-center space-x-[0.4rem] h-10"
           >
-            <LuArrowLeft className="text-gray-700 size-4" />
-            <p className="text-gray-700 font-normal text-sm">Voltar</p>
+            <LuArrowLeft className="text-text-muted size-4" />
+            <p className="text-text-muted font-normal text-sm">Voltar</p>
           </Link>
 
-          <h4 className="text-sm font-medium text-gray-600">Meus contatos</h4>
+          <h4 className="text-sm font-medium text-text-muted">Meus contatos</h4>
         </div>
         <div className="relative">
           <Search
@@ -69,7 +69,7 @@ export function ContactsAside({
           />
           <Input
             placeholder="Buscar contatos..."
-            className="pl-10 h-10 text-sm focus:bg-white placeholder:text-gray-400 rounded-full"
+            className="pl-10 h-10 text-sm bg-card focus:bg-card placeholder:text-text-muted rounded-full border-border-subtle"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -90,7 +90,7 @@ export function ContactsAside({
                 key={c.uid}
                 onClick={() => handleSelectContact(c.uid)}
                 className={`w-full p-4 flex items-center gap-4 transition-all hover:bg-primary/5 text-left relative group ${
-                  selectedContactId === c.uid ? "bg-primary/5" : "bg-white"
+                  selectedContactId === c.uid ? "bg-primary/5" : "bg-card"
                 }`}
               >
                 {selectedContactId === c.uid && (

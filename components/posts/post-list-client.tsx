@@ -29,7 +29,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
 
   if (posts.length === 0) {
     return (
-      <div className="rounded-md border border-dashed border-border-subtle bg-white p-10 text-center text-text-muted">
+      <div className="rounded-md border border-dashed border-border-subtle bg-card p-10 text-center text-text-muted">
         Nenhuma publicação publicada ainda.
       </div>
     );
@@ -37,7 +37,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
 
   return (
     <div className="mx-auto container w-full mb-8  space-y-8 -mt-7 z-50">
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 isolate bg-white rounded-lg  p-4 shadow-2xl">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 isolate bg-card rounded-lg p-4 shadow-2xl border border-border-subtle">
         <div className="flex  justify-center items-center gap-1 w-full md:w-fit">
           <button
             type="button"
@@ -45,7 +45,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
             className={`w-full md:w-fit md:px-4 h-10 text-sm font-semibold transition-colors cursor-pointer ${
               filter === "all"
                 ? "text-blue-700 bg-blue-500/10"
-                : " text-gray-700 hover:bg-gray-500/10"
+                : "text-text-muted hover:bg-surface"
             }`}
           >
             Todos ({counts.all})
@@ -56,7 +56,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
             className={`w-full md:w-fit md:px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
               filter === "article"
                 ? "text-blue-700 bg-blue-500/10"
-                : "text-gray-700 hover:bg-gray-500/10"
+                : "text-text-muted hover:bg-surface"
             }`}
           >
             Artigos ({counts.article})
@@ -67,7 +67,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
             className={`w-full md:w-fit md:px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
               filter === "job"
                 ? "text-blue-700 bg-blue-500/10"
-                : "text-gray-700 hover:bg-gray-500/10"
+                : "text-text-muted hover:bg-surface"
             }`}
           >
             Vagas ({counts.job})
@@ -78,7 +78,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
       </div>
 
       {filteredPosts.length === 0 ? (
-        <div className="rounded-md border border-dashed border-border-subtle bg-white p-10 text-center text-text-muted">
+        <div className="rounded-md border border-dashed border-border-subtle bg-card p-10 text-center text-text-muted">
           Nenhuma publicação encontrada para este filtro.
         </div>
       ) : (

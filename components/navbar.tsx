@@ -55,7 +55,7 @@ export function Navbar({
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle dark:border-slate-800">
+    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle">
       <div className="container mx-auto flex justify-between items-center px-4 py-2">
         <div className="flex items-center space-x-4">
           {shouldShowBackButton ? (
@@ -69,7 +69,7 @@ export function Navbar({
             >
               <DrawerTrigger asChild className="flex md:hidden">
                 <Button size="icon" className="size-10" variant="ghost">
-                  <BsList className="size-5 text-gray-700 dark:text-white" />
+                  <BsList className="size-5 text-foreground" />
                 </Button>
               </DrawerTrigger>
               <DrawerContent>
@@ -85,14 +85,14 @@ export function Navbar({
                   <DrawerTrigger asChild>
                     <Button
                       size="icon"
-                      className="bg-white dark:bg-accent dark:hover:bg-black/45 hover:bg-zinc-100"
+                      className="bg-card hover:bg-accent"
                     >
-                      <BsXLg className="text-gray-800 dark:text-white" />
+                      <BsXLg className="text-foreground" />
                     </Button>
                   </DrawerTrigger>
                 </DrawerHeader>
                 <div className="px-4 space-y-4">
-                  <h3 className="font-medium text-sm text-gray-800 dark:text-white">
+                  <h3 className="font-medium text-sm text-foreground">
                     Navegação
                   </h3>
                   <ul className="w-full space-y-1">
@@ -100,7 +100,7 @@ export function Navbar({
                       <DrawerClose asChild>
                         <Link
                           href="/"
-                          className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                          className="flex text-sm font-normal text-text-muted"
                         >
                           Inicial
                         </Link>
@@ -110,7 +110,7 @@ export function Navbar({
                       <DrawerClose asChild>
                         <Link
                           href="/weareskillsy"
-                          className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                          className="flex text-sm font-normal text-text-muted"
                         >
                           O que é Skillsy?
                         </Link>
@@ -120,7 +120,7 @@ export function Navbar({
                       <DrawerClose asChild>
                         <Link
                           href="/artigosevagas"
-                          className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                          className="flex text-sm font-normal text-text-muted"
                         >
                           Novidades e vagas
                         </Link>
@@ -131,7 +131,7 @@ export function Navbar({
                       <DrawerClose asChild>
                         <Link
                           href="/join"
-                          className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
+                          className="flex text-sm font-normal text-text-muted"
                         >
                           Por que participar?
                         </Link>
@@ -141,7 +141,7 @@ export function Navbar({
                       <DrawerClose asChild>
                         <Link
                           href="/privacidade"
-                          className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
+                          className="flex text-sm font-normal text-text-muted"
                         >
                           Privacidade
                         </Link>
@@ -151,7 +151,7 @@ export function Navbar({
                       <DrawerClose asChild>
                         <Link
                           href="/termos"
-                          className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                          className="flex text-sm font-normal text-text-muted"
                         >
                           Termos de uso
                         </Link>
@@ -161,7 +161,7 @@ export function Navbar({
 
                   {user && (
                     <>
-                      <h3 className="font-medium text-sm text-gray-800 dark:text-white">
+                      <h3 className="font-medium text-sm text-foreground">
                         Minha conta
                       </h3>
 
@@ -169,7 +169,7 @@ export function Navbar({
                         <li className="hover:bg-surface p-2">
                           <DrawerClose asChild>
                             <Link
-                              className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
+                              className="flex text-sm font-normal text-text-muted"
                               href="/contacts"
                             >
                               Meus Contatos
@@ -179,7 +179,7 @@ export function Navbar({
                         <li className="hover:bg-surface p-2">
                           <DrawerClose asChild>
                             <Link
-                              className="flex text-sm font-normal  text-gray-700 dark:text-gray-50"
+                              className="flex text-sm font-normal text-text-muted"
                               href="/profile"
                             >
                               Configurações do Perfil
@@ -188,7 +188,7 @@ export function Navbar({
                         </li>
                         <li>
                           <Button
-                            className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-gray-700 dark:text-gray-50 rounded-none bg-transparent"
+                            className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-text-muted rounded-none bg-transparent"
                             onClick={handleLogout}
                           >
                             Sair da Conta
@@ -219,7 +219,7 @@ export function Navbar({
             <div className="md:flex hidden items-center gap-2">
               <Link
                 href="/weareskillsy"
-                className="text-sm font-normal text-gray-700 hover:text-gray-800 decoration-1 hover:underline transition-all underline-offset-2 decoration-gray-800 dark:decoration-white dark:text-white"
+                className="text-sm font-normal text-text-muted hover:text-foreground decoration-1 hover:underline transition-all underline-offset-2 decoration-foreground"
               >
                 O que é Skillsy
               </Link>
@@ -229,7 +229,7 @@ export function Navbar({
           {shouldShowBackButton && (
             <Button
               variant="ghost"
-              className="h-10 text-gray-700 dark:text-white"
+              className="h-10 text-foreground"
               onClick={() => router.back()}
             >
               <ArrowLeft /> <p className="hidden md:flex">Voltar</p>
@@ -247,7 +247,7 @@ export function Navbar({
           >
             <DrawerTrigger asChild className="hidden md:flex">
               <Button size="icon" className="size-10" variant="ghost">
-                <BsList className="size-5 text-gray-700 dark:text-white" />
+                <BsList className="size-5 text-foreground" />
               </Button>
             </DrawerTrigger>
             <DrawerContent>
@@ -261,14 +261,14 @@ export function Navbar({
                 <DrawerTrigger asChild>
                   <Button
                     size="icon"
-                    className="bg-white dark:bg-accent dark:hover:bg-black/45 hover:bg-zinc-100"
+                    className="bg-card hover:bg-accent"
                   >
-                    <BsXLg className="text-gray-800 dark:text-white" />
+                    <BsXLg className="text-foreground" />
                   </Button>
                 </DrawerTrigger>
               </DrawerHeader>
               <div className="px-4 space-y-4">
-                <h3 className="font-medium text-sm text-gray-800 dark:text-white">
+                <h3 className="font-medium text-sm text-foreground">
                   Navegação
                 </h3>
                 <ul className="w-full space-y-1">
@@ -276,7 +276,7 @@ export function Navbar({
                     <DrawerClose asChild>
                       <Link
                         href="/"
-                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                        className="flex text-sm font-normal text-text-muted"
                       >
                         Inicial
                       </Link>
@@ -286,7 +286,7 @@ export function Navbar({
                     <DrawerClose asChild>
                       <Link
                         href="/weareskillsy"
-                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                        className="flex text-sm font-normal text-text-muted"
                       >
                         O que é Skillsy?
                       </Link>
@@ -296,7 +296,7 @@ export function Navbar({
                     <DrawerClose asChild>
                       <Link
                         href="/artigosevagas"
-                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                        className="flex text-sm font-normal text-text-muted"
                       >
                         Novidades e vagas
                       </Link>
@@ -306,7 +306,7 @@ export function Navbar({
                     <DrawerClose asChild>
                       <Link
                         href="/join"
-                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                        className="flex text-sm font-normal text-text-muted"
                       >
                         Por que participar?
                       </Link>
@@ -316,7 +316,7 @@ export function Navbar({
                     <DrawerClose asChild>
                       <Link
                         href="/privacidade"
-                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                        className="flex text-sm font-normal text-text-muted"
                       >
                         Privacidade
                       </Link>
@@ -326,7 +326,7 @@ export function Navbar({
                     <DrawerClose asChild>
                       <Link
                         href="/termos"
-                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                        className="flex text-sm font-normal text-text-muted"
                       >
                         Termos de uso
                       </Link>
@@ -336,7 +336,7 @@ export function Navbar({
 
                 {user && (
                   <>
-                    <h3 className="font-medium text-sm text-gray-800 dark:text-white">
+                    <h3 className="font-medium text-sm text-foreground">
                       Minha conta
                     </h3>
 
@@ -344,7 +344,7 @@ export function Navbar({
                       <li className="hover:bg-surface p-2">
                         <DrawerClose asChild>
                           <Link
-                            className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                            className="flex text-sm font-normal text-text-muted"
                             href="/contacts"
                           >
                             Meus Contatos
@@ -354,7 +354,7 @@ export function Navbar({
                       <li className="hover:bg-surface p-2">
                         <DrawerClose asChild>
                           <Link
-                            className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                            className="flex text-sm font-normal text-text-muted"
                             href="/profile"
                           >
                             Configurações do Perfil
@@ -363,7 +363,7 @@ export function Navbar({
                       </li>
                       <li>
                         <Button
-                          className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-gray-700 dark:text-gray-50 rounded-none bg-transparent"
+                          className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-text-muted rounded-none bg-transparent"
                           onClick={handleLogout}
                         >
                           Sair da Conta
@@ -388,7 +388,7 @@ export function Navbar({
           </Drawer>
 
           {user ? (
-            <Avatar className="size-7 ring-2 ring-offset-2 ring-offset-white dark:ring-offset-black dark:ring-slate-700 ring-slate-400 md:ml-1.5 mr-1">
+            <Avatar className="size-7 ring-2 ring-offset-2 ring-offset-background ring-border-subtle md:ml-1.5 mr-1">
               <AvatarImage src={user.photoURL || undefined} />
               <AvatarFallback>
                 <UserIcon className="size-7" />

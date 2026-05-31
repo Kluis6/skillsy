@@ -225,7 +225,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
               <h1 className="hidden 2xl:block text-3xl md:text-4xl font-bold text-primary mb-2">
                 Skillsy
               </h1>
-              <h2 className="text-base md:text-xl font-medium text-gray-700 mb-1">
+              <h2 className="text-base md:text-xl font-medium text-text-main mb-1">
                 Bem-vindo de volta!
               </h2>
               <p className="text-xs font-normal md:text-sm text-text-muted mb-2 xxl:mb-6">
@@ -446,11 +446,11 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
               </TabsContent>
             </Tabs>
             <div className="flex items-center gap-4 w-full">
-              <div className="h-px flex-grow bg-slate-300" />
-              <h3 className="md:text-base text-base font-bold text-gray-500  shrink-0">
+              <div className="h-px flex-grow bg-border-subtle" />
+              <h3 className="md:text-base text-base font-bold text-text-muted shrink-0">
                 ou
               </h3>
-              <div className="h-px flex-grow bg-slate-300" />
+              <div className="h-px flex-grow bg-border-subtle" />
             </div>
 
             <Button

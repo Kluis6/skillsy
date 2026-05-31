@@ -51,11 +51,11 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
   return (
     <main className="min-h-screen bg-surface py-2">
       <section className="container mx-auto px-4 mb-2">
-        <div className="bg-white border pb-4">
+        <div className="bg-card border border-border-subtle pb-4">
           <div className="flex items-center justify-between p-4">
             <Link
               href="/artigosevagas"
-              className="flex items-center space-x-1 text-gray-700 cursor-pointer"
+              className="flex items-center space-x-1 text-text-muted hover:text-primary transition-colors cursor-pointer"
             >
               <LuArrowLeft />
               <p className=" font-medium text-sm">Voltar</p>
@@ -78,7 +78,7 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
                 Destaque
               </Badge>
             ) : null}
-            <h3 className="text-xs text-gray-700">
+            <h3 className="text-xs text-text-muted">
               por <strong> {post.authorName}</strong>
             </h3>
             <div>
@@ -99,13 +99,13 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
             <h3 className="text-xl md:text-3xl lg:text-4xl font-black text-text-main">
               {post.title}
             </h3>
-            <p className="text-base leading-6 text-gray-700 font-normal">
+            <p className="text-base leading-6 text-text-muted font-normal">
               {getPostExcerpt(post)}
             </p>
             <PostPublicActions post={post} redirectOnDelete="/artigosevagas" />
             <article>
               {post.content.trim() ? (
-                <p className="whitespace-pre-wrap leading-6 text-base text-gray-700 font-normal">
+                <p className="whitespace-pre-wrap leading-6 text-base text-text-muted font-normal">
                   {post.content}
                 </p>
               ) : (

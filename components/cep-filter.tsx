@@ -107,15 +107,15 @@ export function CepFilter({
           onClick={clearLocation}
           className="flex justify-center items-center px-7 py-5 "
         >
-          <X className="size-4 text-gray-700" />
-          <p className="text-gray-700 dark:text-white">Remover localização</p>
+          <X className="size-4 text-text-muted" />
+          <p className="text-text-muted">Remover localização</p>
         </Button>
       ) : (
         <Button
           variant="outline"
           onClick={handleDetectLocation}
           disabled={loading}
-          className="h-12 w-xs text-gray-700 min-w-28 flex justify-center  text-center items-center"
+          className="h-12 w-xs text-text-muted min-w-28 flex justify-center text-center items-center"
         >
           {loading ? (
             <div className="w-full flex justify-center items-center">
@@ -124,9 +124,9 @@ export function CepFilter({
           ) : (
             <>
               <MapPin
-                className={`transition-colors ${error ? "text-red-500" : "text-gray-700 dark:text-white"}`}
+                className={`transition-colors ${error ? "text-red-500" : "text-text-muted"}`}
               />
-              <p className="dark:text-white">Sua localização</p>
+              <p>Sua localização</p>
             </>
           )}
         </Button>

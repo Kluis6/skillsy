@@ -57,8 +57,8 @@ export function HeroSection({
               <Input
                 name="q"
                 placeholder="O que você procura? Pintor, Advogado, Bolo de Pote..."
-                className="pl-12 h-12 w-full placeholder:text-gray-400 shadow-sm rounded-full"
-                defaultValue={searchTerm}
+                className="pl-12 h-12 w-full bg-card border-border-subtle text-text-main placeholder:text-text-muted shadow-sm rounded-full"
+                value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
@@ -72,9 +72,9 @@ export function HeroSection({
                 />
               </>
             )}
-            <p className="text-xs font-normal text-gray-700 dark:text-gray-50 tracking-widest">
+            <p className="text-xs font-normal text-text-muted tracking-widest">
               Localização atual:{" "}
-              <span className="text-blue-700 dark:text-white font-medium">
+              <span className="text-primary font-medium">
                 {locationFilter
                   ? `${locationFilter.city}, ${locationFilter.state}`
                   : "Todo o Brasil"}

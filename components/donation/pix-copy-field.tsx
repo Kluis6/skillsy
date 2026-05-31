@@ -39,13 +39,13 @@ export function PixCopyField({ pixKey }: PixCopyFieldProps) {
     <button
       type="button"
       onClick={handleCopy}
-      className="block w-full rounded-xl border border-border-subtle bg-surface p-4 text-left transition-colors hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer"
+      className="block w-full rounded-xl border border-border-subtle bg-surface p-4 text-left transition-colors hover:bg-card focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer"
       aria-label="Copiar chave Pix"
     >
       <span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.18em] text-text-muted">
         Chave Pix
       </span>
-      <code className="block break-all rounded-xl bg-white px-3 py-3 text-sm text-text-main">
+      <code className="block break-all rounded-xl bg-card px-3 py-3 text-sm text-text-main">
         {pixKey}
       </code>
       <span className="mt-2 block text-xs font-medium text-primary">

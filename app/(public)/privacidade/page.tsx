@@ -128,19 +128,19 @@ export default function PrivacidadePage() {
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
-        <div className="w-full rounded-lg bg-white p-4 shadow-2xl xl:p-8">
+        <div className="w-full rounded-lg bg-card p-4 shadow-2xl xl:p-8 border border-border-subtle">
           <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
             <div className="col-span-12 space-y-4">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+              <h2 className="text-xl md:text-2xl font-bold text-text-main">
                 Política de Privacidade
               </h2>
               <div className="space-y-2">
-                <p className="text-base font-normal text-gray-700">
+                <p className="text-base font-normal text-text-muted">
                   Esta política explica quais dados a Skillsy pode tratar, por
                   que eles são usados, com quem podem ser compartilhados e como
                   você pode exercer seus direitos.
                 </p>
-                <p className="text-base font-normal text-gray-700">
+                <p className="text-base font-normal text-text-muted">
                   Nosso objetivo é tratar suas informações com clareza, cuidado
                   e apenas na medida necessária para o funcionamento da
                   plataforma.
@@ -175,7 +175,7 @@ export default function PrivacidadePage() {
       <section className="container mx-auto my-24 px-4">
         <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
           <div className="col-span-12 text-center">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+            <h2 className="text-xl md:text-2xl font-bold text-text-main">
               Quais dados podemos coletar
             </h2>
           </div>
@@ -198,20 +198,20 @@ export default function PrivacidadePage() {
           <div className="grid grid-cols-12 gap-4 gap-y-8">
             <div className="col-span-12 md:col-span-6">
               <div className="space-y-4">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                <h2 className="text-xl md:text-2xl font-bold text-text-main">
                   Como usamos esses dados
                 </h2>
-                <p className="text-base font-normal text-gray-800">
+                <p className="text-base font-normal text-text-muted">
                   O tratamento pode se apoiar em bases legais previstas na LGPD,
                   como execução dos serviços da plataforma, legítimo interesse
                   compatível com a operação e, quando aplicável, consentimento
                   do titular.
                 </p>
                 <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-gray-700">
+                  <h3 className="text-lg font-bold text-text-main">
                     Na prática, isso inclui
                   </h3>
-                  <p className="text-base font-normal text-gray-800">
+                  <p className="text-base font-normal text-text-muted">
                     Viabilizar login, exibir perfis, facilitar conexões,
                     permitir contato entre usuários e proteger a plataforma
                     contra fraude, abuso e uso indevido.
@@ -223,12 +223,12 @@ export default function PrivacidadePage() {
             <div className="col-span-12 md:col-span-6">
               <div className="grid grid-cols-1 gap-4">
                 {useCases.map((item) => (
-                  <div key={item} className="rounded-md border bg-white p-4">
+                  <div key={item} className="rounded-md border border-border-subtle bg-card p-4">
                     <div className="flex items-start gap-3">
                       <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700">
                         <Eye size={18} />
                       </div>
-                      <p className="text-sm leading-relaxed text-gray-700">
+                      <p className="text-sm leading-relaxed text-text-muted">
                         {item}
                       </p>
                     </div>
@@ -244,10 +244,10 @@ export default function PrivacidadePage() {
         <div className="grid grid-cols-12 gap-4 md:gap-8">
           <div className="col-span-12 lg:col-span-4">
             <div className="space-y-4">
-              <h2 className="text-xl lg:text-2xl font-bold text-gray-900 ">
+              <h2 className="text-xl lg:text-2xl font-bold text-text-main">
                 Compartilhamento, retenção e segurança
               </h2>
-              <p className="text-base font-normal text-gray-700">
+              <p className="text-base font-normal text-text-muted">
                 A Skillsy não comercializa dados pessoais para publicidade de
                 terceiros e busca limitar o tratamento ao necessário para a
                 operação da plataforma.
@@ -258,14 +258,14 @@ export default function PrivacidadePage() {
           <div className="col-span-12 lg:col-span-8">
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               <div className="col-span-12 md:col-span-4">
-                <div className="h-full space-y-2 rounded-md border bg-slate-50 p-4">
+                <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
                   <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
                     <Share2 size={22} />
                   </div>
-                  <h3 className="text-base font-bold text-gray-800">
+                  <h3 className="text-base font-bold text-text-main">
                     Compartilhamento
                   </h3>
-                  <p className="text-sm font-normal text-gray-700">
+                  <p className="text-sm font-normal text-text-muted">
                     Dados públicos do perfil podem ser exibidos a outros
                     usuários e dados operacionais podem ser tratados por
                     fornecedores essenciais da plataforma.
@@ -273,14 +273,14 @@ export default function PrivacidadePage() {
                 </div>
               </div>
               <div className="col-span-12 md:col-span-4">
-                <div className="h-full space-y-2 rounded-md border bg-slate-50 p-4">
+                <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
                   <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
                     <Lock size={22} />
                   </div>
-                  <h3 className="text-base font-bold text-gray-800">
+                  <h3 className="text-base font-bold text-text-main">
                     Retenção
                   </h3>
-                  <p className="text-sm font-normal text-gray-700">
+                  <p className="text-sm font-normal text-text-muted">
                     Os dados são mantidos pelo tempo necessário para cumprir as
                     finalidades desta política e atender exigências legais,
                     regulatórias ou de defesa de direitos.
@@ -288,14 +288,14 @@ export default function PrivacidadePage() {
                 </div>
               </div>
               <div className="col-span-12 md:col-span-4">
-                <div className="h-full space-y-2 rounded-md border bg-slate-50 p-4">
+                <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
                   <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
                     <ShieldCheck size={22} />
                   </div>
-                  <h3 className="text-base font-bold text-gray-800">
+                  <h3 className="text-base font-bold text-text-main">
                     Segurança
                   </h3>
-                  <p className="text-sm font-normal text-gray-700">
+                  <p className="text-sm font-normal text-text-muted">
                     Adotamos medidas razoáveis para reduzir riscos de acesso
                     indevido, uso inadequado e perda de dados, considerando o
                     porte e a natureza do produto.
@@ -309,19 +309,19 @@ export default function PrivacidadePage() {
 
       <div className="container mx-auto mb-24 px-4">
         <section className="mt-12 grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2">
-          <div className="rounded-xl border bg-slate-50 p-4 md:p-6 lg:p-10">
+          <div className="rounded-xl border border-border-subtle bg-surface p-4 md:p-6 lg:p-10">
             <div className="space-y-4">
-              <h2 className="text-xl lg:text-2xl font-bold text-gray-900">
+              <h2 className="text-xl lg:text-2xl font-bold text-text-main">
                 Seus direitos e escolhas
               </h2>
-              <p className="text-sm leading-relaxed text-gray-700">
+              <p className="text-sm leading-relaxed text-text-muted">
                 Nos termos da LGPD, você pode solicitar, conforme o caso:
               </p>
               <div className="space-y-3">
                 {rights.map((item) => (
                   <div
                     key={item}
-                    className="rounded-md border bg-white p-4 text-sm text-gray-700"
+                    className="rounded-md border border-border-subtle bg-card p-4 text-sm text-text-muted"
                   >
                     {item}
                   </div>
@@ -331,10 +331,10 @@ export default function PrivacidadePage() {
           </div>
 
           <div className="space-y-4">
-            <h2 className="text-xl lg:text-2xl font-bold text-gray-800">
+            <h2 className="text-xl lg:text-2xl font-bold text-text-main">
               Atualizações e contato
             </h2>
-            <div className="space-y-4 text-sm leading-relaxed text-gray-700">
+            <div className="space-y-4 text-sm leading-relaxed text-text-muted">
               <p>
                 Esta política pode ser revisada para refletir melhorias do
                 produto, ajustes operacionais ou mudanças legais. A versão mais
@@ -377,19 +377,19 @@ export default function PrivacidadePage() {
       </div>
 
       <section className="container mx-auto mb-24 px-4">
-        <div className="rounded-2xl border bg-slate-50 p-4 md:p-6 lg::p-10">
+        <div className="rounded-2xl border border-border-subtle bg-surface p-4 md:p-6 lg::p-10">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-4">
-              <h2 className="text-xl lg:text-2xl font-bold text-gray-900">
+              <h2 className="text-xl lg:text-2xl font-bold text-text-main">
                 Cookies e tecnologias similares
               </h2>
-              <p className="text-sm leading-relaxed text-gray-700">
+              <p className="text-sm leading-relaxed text-text-muted">
                 A Skillsy usa um aviso de cookies para diferenciar recursos
                 essenciais de preferencias opcionais. Cookies de conveniencia
                 nao devem ser gravados antes da escolha do titular, e a recusa
                 nao pode bloquear o acesso ao conteudo principal da plataforma.
               </p>
-              <p className="text-sm leading-relaxed text-gray-700">
+              <p className="text-sm leading-relaxed text-text-muted">
                 Caso novos rastreadores, analytics ou ferramentas de marketing
                 sejam adotados, a politica e o mecanismo de consentimento devem
                 ser atualizados antes da ativacao em producao.
@@ -400,7 +400,7 @@ export default function PrivacidadePage() {
               {cookieCategories.map((item) => (
                 <div
                   key={item}
-                  className="rounded-xl border bg-white p-4 text-sm text-gray-700"
+                  className="rounded-xl border border-border-subtle bg-card p-4 text-sm text-text-muted"
                 >
                   {item}
                 </div>

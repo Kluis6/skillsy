@@ -22,7 +22,7 @@ export function BlockedClient() {
 
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-white rounded-[2.5rem] p-10 shadow-2xl shadow-primary/10 border border-border-subtle text-center">
+      <div className="max-w-md w-full bg-card rounded-[2.5rem] p-10 shadow-2xl shadow-primary/10 border border-border-subtle text-center">
         <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-8">
           <ShieldAlert size={40} className="text-red-500" />
         </div>

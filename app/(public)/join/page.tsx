@@ -139,13 +139,13 @@ export default function JoinPage() {
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
-        <div className="w-full rounded-lg bg-white p-4 shadow-2xl xl:p-8">
+        <div className="w-full rounded-lg bg-card p-4 shadow-2xl xl:p-8 border border-border-subtle">
           <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
             <div className="col-span-12 space-y-4">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+              <h2 className="text-xl md:text-2xl font-bold text-text-main">
                 Participe do Skillsy
               </h2>
-              <p className="text-base font-normal text-gray-700">
+              <p className="text-base font-normal text-text-muted">
                 O Skillsy foi criado para ajudar pessoas a divulgar seus
                 talentos, encontrar profissionais com mais contexto e fortalecer
                 uma rede de apoio baseada em confiança, serviço e
@@ -192,10 +192,10 @@ export default function JoinPage() {
         <div className="grid grid-cols-12 gap-4 md:gap-8">
           <div className="col-span-12 lg:col-span-4">
             <div className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 2xl:text-2xl">
+              <h2 className="text-xl md:text-2xl font-bold text-text-main 2xl:text-2xl">
                 O que essa participação pode fortalecer
               </h2>
-              <p className="text-base font-normal text-gray-800">
+              <p className="text-base font-normal text-text-muted">
                 Cada perfil relevante, cada contratação bem-feita e cada
                 recomendação responsável ajudam a tornar o Skillsy mais útil
                 para todos.
@@ -207,14 +207,14 @@ export default function JoinPage() {
             <div className="grid grid-cols-12 gap-2 md:gap-4 gap-y-8">
               {highlights.map((item) => (
                 <div key={item.title} className="col-span-12 md:col-span-4">
-                  <div className="h-full space-y-2 rounded-md border bg-slate-50 p-4">
+                  <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
                     <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
                       <item.icon size={22} />
                     </div>
-                    <h3 className="text-base font-bold text-gray-800">
+                    <h3 className="text-base font-bold text-text-main">
                       {item.title}
                     </h3>
-                    <p className="text-sm font-normal text-gray-700">
+                    <p className="text-sm font-normal text-text-muted">
                       {item.description}
                     </p>
                   </div>
@@ -230,25 +230,25 @@ export default function JoinPage() {
           <div className="grid grid-cols-12 gap-4 gap-y-8">
             <div className="col-span-12 md:col-span-6">
               <div className="space-y-4">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                <h2 className="text-xl md:text-2xl font-bold text-text-main">
                   Por que vale a pena participar
                 </h2>
-                <p className="text-base font-normal text-gray-700">
+                <p className="text-base font-normal text-text-muted">
                   Participar do Skillsy não é apenas criar um perfil. É abrir
                   espaço para que seu trabalho seja visto, lembrado e
                   recomendado com mais segurança.
                 </p>
-                <p className="text-base font-normal text-gray-700">
+                <p className="text-base font-normal text-text-muted">
                   A plataforma foi pensada para facilitar encontros entre
                   pessoas que precisam de ajuda prática e pessoas dispostas a
                   servir com qualidade, honestidade e cuidado.
                 </p>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-gray-800">
+                  <h3 className="text-lg font-bold text-text-main">
                     O que você encontra aqui
                   </h3>
-                  <p className="text-base font-normal text-gray-700">
+                  <p className="text-base font-normal text-text-muted">
                     Mais visibilidade para talentos locais, mais confiança na
                     hora de contratar e uma rede que pode gerar novas conexões,
                     indicações e oportunidades reais.
@@ -303,7 +303,7 @@ export default function JoinPage() {
           </p>
           <div className="mt-8 flex justify-center">
             <AuthModal>
-              <Button className="h-12 rounded-full bg-white px-8 text-base font-bold text-blue-700 hover:bg-white/90">
+              <Button className="h-12 rounded-full bg-card px-8 text-base font-bold text-primary hover:bg-surface">
                 Fazer Parte do Skillsy
               </Button>
             </AuthModal>

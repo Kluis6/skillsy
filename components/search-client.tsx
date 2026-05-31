@@ -148,7 +148,7 @@ function SearchResultsContent() {
           >
             <DrawerTrigger asChild className="flex md:hidden">
               <Button size="icon" className="size-10" variant="ghost">
-                <BsList className="size-5 text-gray-700" />
+                <BsList className="size-5 text-foreground" />
               </Button>
             </DrawerTrigger>
             <DrawerContent>
@@ -162,19 +162,23 @@ function SearchResultsContent() {
                   </DrawerDescription>
                 </div>
                 <DrawerTrigger asChild>
-                  <Button size="icon" className="bg-white hover:bg-zinc-100">
-                    <BsXLg className="text-gray-800" />
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="bg-card hover:bg-surface"
+                  >
+                    <BsXLg className="text-foreground" />
                   </Button>
                 </DrawerTrigger>
               </DrawerHeader>
               <div className="px-4 space-y-4">
-                <h3 className="font-medium text-sm text-gray-800">Navegação</h3>
+                <h3 className="font-medium text-sm text-text-main">Navegação</h3>
                 <ul className="w-full space-y-1">
                   <li className=" p-2 hover:bg-surface">
                     <DrawerClose asChild>
                       <Link
                         href="/weareskillsy"
-                        className="flex text-sm font-normal text-gray-800"
+                        className="flex text-sm font-normal text-text-main"
                       >
                         O que é Skillsy?
                       </Link>
@@ -184,7 +188,7 @@ function SearchResultsContent() {
                     <DrawerClose asChild>
                       <Link
                         href="/artigosevagas"
-                        className="flex text-sm font-normal text-gray-700 dark:text-gray-50"
+                        className="flex text-sm font-normal text-text-main"
                       >
                         Novidades e vagas
                       </Link>
@@ -194,7 +198,7 @@ function SearchResultsContent() {
                     <DrawerClose asChild>
                       <Link
                         href="/join"
-                        className="flex text-sm font-normal text-gray-800"
+                        className="flex text-sm font-normal text-text-main"
                       >
                         Por que participar?
                       </Link>
@@ -204,7 +208,7 @@ function SearchResultsContent() {
                     <DrawerClose asChild>
                       <Link
                         href="/privacidade"
-                        className="flex text-sm font-normal text-gray-800"
+                        className="flex text-sm font-normal text-text-main"
                       >
                         Privacidade
                       </Link>
@@ -214,7 +218,7 @@ function SearchResultsContent() {
                     <DrawerClose asChild>
                       <Link
                         href="/termos"
-                        className="flex text-sm font-normal text-gray-800"
+                        className="flex text-sm font-normal text-text-main"
                       >
                         Termos de uso
                       </Link>
@@ -224,7 +228,7 @@ function SearchResultsContent() {
 
                 {user && (
                   <>
-                    <h3 className="font-medium text-sm text-gray-800">
+                    <h3 className="font-medium text-sm text-text-main">
                       Minha conta
                     </h3>
 
@@ -232,7 +236,7 @@ function SearchResultsContent() {
                       <li className="hover:bg-surface p-2">
                         <DrawerClose asChild>
                           <Link
-                            className="flex text-sm font-normal text-gray-800"
+                            className="flex text-sm font-normal text-text-main"
                             href="/contacts"
                           >
                             Meus Contatos
@@ -242,7 +246,7 @@ function SearchResultsContent() {
                       <li className="hover:bg-surface p-2">
                         <DrawerClose asChild>
                           <Link
-                            className="flex text-sm font-normal text-gray-800"
+                            className="flex text-sm font-normal text-text-main"
                             href="/profile"
                           >
                             Configurações do Perfil
@@ -252,7 +256,7 @@ function SearchResultsContent() {
                       <li>
                         <Button
                           variant="ghost"
-                          className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-gray-800 rounded-none"
+                          className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-text-main rounded-none"
                           onClick={logout}
                         >
                           Sair da Conta
@@ -294,7 +298,7 @@ function SearchResultsContent() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="O que você procura? Pintor, Advogado, Bolo de Pote..."
-                className="pl-12 h-10 w-full bg-white placeholder:text-gray-400 shadow-sm rounded-full placeholder:sm:text-sm "
+                className="pl-12 h-10 w-full bg-card border-border-subtle text-text-main placeholder:text-text-muted shadow-sm rounded-full placeholder:sm:text-sm "
               />
             </div>
 
@@ -308,7 +312,7 @@ function SearchResultsContent() {
           </form>
 
           {user ? (
-            <Avatar className="size-7 ring-2 ring-offset-2 ring-zinc-400 md:ml-1.5 mr-1">
+            <Avatar className="size-7 ring-2 ring-offset-2 ring-border-subtle md:ml-1.5 mr-1">
               <AvatarImage src={user.photoURL || undefined} />
               <AvatarFallback>
                 <UserIcon className="size-7" />
@@ -340,7 +344,7 @@ function SearchResultsContent() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="O que você procura? Pintor, Advogado, Bolo de Pote..."
-                className="pl-12 h-10 w-full bg-white placeholder:text-gray-400 shadow-sm rounded-full placeholder:text-xs"
+                className="pl-12 h-10 w-full bg-card border-border-subtle text-text-main placeholder:text-text-muted shadow-sm rounded-full placeholder:text-xs"
               />
             </div>
 
@@ -420,7 +424,7 @@ function SearchResultsContent() {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar / Filters */}
           <aside className="w-full lg:w-72 shrink-0 space-y-8 hidden lg:block">
-            <div className="bg-white p-4 border border-border-subtle">
+            <div className="bg-card p-4 border border-border-subtle">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-bold text-text-main flex items-center gap-2 font-heading">
                   <SlidersHorizontal size={18} className="text-primary" />{" "}
@@ -560,7 +564,7 @@ function SearchResultsContent() {
                       variant="outline"
                       title="Filtros"
                     >
-                      <SlidersHorizontal size={18} className="text-gray-700" />
+                      <SlidersHorizontal size={18} className="text-foreground" />
                     </Button>
                   }
                 />
@@ -713,7 +717,7 @@ function SearchResultsContent() {
                         transition={{ delay: idx * 0.05 }}
                       >
                         <Link href={`/profile/${p.uid}`}>
-                          <div className="flex flex-row gap-6 p-4 md:p-8 border border-border-subtle  hover:shadow-2xl transition-all duration-300 bg-white cursor-pointer relative overflow-hidden">
+                          <div className="flex flex-row gap-6 p-4 md:p-8 border border-border-subtle hover:shadow-2xl transition-all duration-300 bg-card cursor-pointer relative overflow-hidden">
                             <div className="shrink-0 flex flex-col items-center gap-2.5 md:gap-3">
                               <Avatar className="md:size-24 size-12 border-1 md:border-4 border-surface shadow-sm">
                                 <AvatarImage src={p.photoURL} />
@@ -746,18 +750,18 @@ function SearchResultsContent() {
 
                                   <div className="">
                                     {p.companyName && (
-                                      <p className="font-medium text-xs md:text-sm text-gray-700">
+                                      <p className="font-medium text-xs md:text-sm text-text-main">
                                         {p.companyName}
                                       </p>
                                     )}
 
-                                    <p className="text-gray-500 font-normal text-xs md:text-sm">
+                                    <p className="text-text-muted font-normal text-xs md:text-sm">
                                       {p.serviceType ||
                                         p.category ||
                                         "Profissional"}
                                     </p>
                                     <div className="flex items-center space-x-1">
-                                      <p className="text-gray-700 block md:hidden font-medium text-xs md:text-sm">
+                                      <p className="text-text-main block md:hidden font-medium text-xs md:text-sm">
                                         {p.location || "Brasil"}
                                       </p>
                                     </div>
@@ -988,10 +992,10 @@ function SearchResultsContent() {
                   <div className="text-center py-20 space-y-6">
                     <div className="space-y-2">
                       <Search className="mx-auto size-10 md:size-16 text-blue-300 " />
-                      <h4 className="text-xl md:text-2xl font-bold text-gray-900 ">
+                      <h4 className="text-xl md:text-2xl font-bold text-text-main">
                         Nenhum resultado exato encontrado
                       </h4>
-                      <p className="text-slate-500  max-w-md mx-auto">
+                      <p className="text-text-muted max-w-md mx-auto">
                         Não encontramos profissionais para &quot;{query}&quot;
                         {city
                           ? ` em ${city}, ${state}`
@@ -1022,21 +1026,21 @@ function SearchResultsContent() {
                   {suggestions.length > 0 && (
                     <div className="space-y-6">
                       <div className="flex items-center gap-4">
-                        <div className="h-px flex-grow bg-slate-200" />
-                        <h3 className="md:text-lg text-base font-bold text-gray-500 tracking-widest shrink-0">
+                        <div className="h-px flex-grow bg-border-subtle" />
+                        <h3 className="md:text-lg text-base font-bold text-text-muted tracking-widest shrink-0">
                           {city
                             ? `Membros em ${city}`
                             : state
                               ? `Membros em ${selectedStateLabel}`
                               : "Membros em Destaque"}
                         </h3>
-                        <div className="h-px flex-grow bg-slate-200" />
+                        <div className="h-px flex-grow bg-border-subtle" />
                       </div>
 
                       <div className="grid grid-cols-1 gap-4">
                         {suggestions.map((p) => (
                           <Link href={`/profile/${p.uid}`} key={p.uid}>
-                            <div className="flex flex-row gap-6 p-4 md:p-8 border border-border-subtle  hover:shadow-2xl transition-all duration-300 bg-white cursor-pointer relative overflow-hidden">
+                            <div className="flex flex-row gap-6 p-4 md:p-8 border border-border-subtle hover:shadow-2xl transition-all duration-300 bg-card cursor-pointer relative overflow-hidden">
                               <div className="shrink-0 flex flex-col items-center gap-2.5 md:gap-3">
                                 <Avatar className="md:size-24 size-12 border-1 md:border-4 border-surface shadow-sm">
                                   <AvatarImage src={p.photoURL} />
@@ -1069,18 +1073,18 @@ function SearchResultsContent() {
 
                                     <div className="">
                                       {p.companyName && (
-                                        <p className="font-medium text-xs md:text-sm text-gray-700">
+                                        <p className="font-medium text-xs md:text-sm text-text-main">
                                           {p.companyName}
                                         </p>
                                       )}
 
-                                      <p className="text-gray-500 font-normal text-xs md:text-sm">
+                                      <p className="text-text-muted font-normal text-xs md:text-sm">
                                         {p.serviceType ||
                                           p.category ||
                                           "Profissional"}
                                       </p>
                                       <div className="flex items-center space-x-1">
-                                        <p className="text-gray-700 block md:hidden font-medium text-xs md:text-sm">
+                                        <p className="text-text-main block md:hidden font-medium text-xs md:text-sm">
                                           {p.location || "Brasil"}
                                         </p>
                                       </div>

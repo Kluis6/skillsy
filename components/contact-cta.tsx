@@ -69,7 +69,7 @@ export function ContactCTA() {
           <Card className="w-full lg:w-md">
             <CardContent>
               <CardHeader>
-                <CardTitle className="text-gray-800 text-xl font-medium mb-6 text-center">
+                <CardTitle className="text-text-main text-xl font-medium mb-6 text-center">
                   Fale Conosco
                 </CardTitle>
                
@@ -115,7 +115,7 @@ export function ContactCTA() {
                       type="email"
                       maxLength={CONTACT_LIMITS.email}
                       {...register("email")}
-                      className={`border-1 h-10 md:h-12 border-gray-300 text-text-main placeholder:text-text-muted/50 transition-all ${
+                      className={`border-1 h-10 md:h-12 border-border-subtle text-text-main placeholder:text-text-muted/50 transition-all ${
                         errors.email
                           ? "border-red-500/50 focus:border-red-500"
                           : touchedFields.email && !errors.email

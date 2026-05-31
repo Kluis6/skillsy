@@ -14,6 +14,7 @@
     "backfill:user-verification": "node scripts/backfill-user-verification.mjs",
     "inspect:public-profiles": "node scripts/inspect-public-profiles.mjs",
     "inspect:public-profile-consistency": "node scripts/inspect-public-profile-consistency.mjs",
+    "inspect:user-profile-shape": "node scripts/inspect-user-profile-shape.mjs",
     "inspect:user-verification": "node scripts/inspect-users-verification.mjs"
   },
   "dependencies": {

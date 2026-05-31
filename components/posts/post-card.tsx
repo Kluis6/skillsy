@@ -28,7 +28,7 @@ export function PostCard({ post }: { post: Post }) {
           ) : null}
           <CardHeader>
             <div>
-              <h3 className="text-xs text-gray-700">
+              <h3 className="text-xs text-text-muted">
                 por <strong> {post.authorName}</strong>
               </h3>
             </div>

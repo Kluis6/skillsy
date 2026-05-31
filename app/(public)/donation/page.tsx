@@ -66,12 +66,12 @@ export default function DonationPage() {
         </div>
       </section>
       <div className="container mx-auto px-4 isolate -mt-8 ">
-        <section className="relative overflow-hidden rounded-xl border bg-white p-4 md:p-6 lg:p-10 shadow-2xl mb-8">
+        <section className="relative overflow-hidden rounded-xl border border-border-subtle bg-card p-4 md:p-6 lg:p-10 shadow-2xl mb-8">
           <div className="space-y-4">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+            <h2 className="text-xl md:text-2xl font-bold text-text-main">
               Apoio Voluntário
             </h2>
-            <p className="text-base font-normal text-gray-700">
+            <p className="text-base font-normal text-text-muted">
               O Skillsy é uma iniciativa independente criada para conectar
               pessoas, talentos e oportunidades dentro de uma rede de confiança.
               Se você acredita nesse propósito, sua doação pode ajudar a manter
@@ -82,7 +82,7 @@ export default function DonationPage() {
             {impactItems.map((item) => (
               <div
                 key={item.title}
-                className={`rounded-md col-span-12 lg:col-span-4 border p-4 lg:p-6 bg-white space-y-4`}
+                className="rounded-md col-span-12 lg:col-span-4 border border-border-subtle p-4 lg:p-6 bg-card space-y-4"
               >
                 <div
                   className={`flex h-12 w-12 shadow-md items-center justify-center rounded-sm ${item.tone}`}
@@ -197,7 +197,7 @@ export default function DonationPage() {
           </div> 
 
           <section className=" space-y-4">
-            <h2 className="lg:text-2xl text-xl font-bold text-gray-900">
+            <h2 className="lg:text-2xl text-xl font-bold text-text-main">
               Antes de doar
             </h2>
             <div className="space-y-2 text-sm leading-relaxed text-text-muted">

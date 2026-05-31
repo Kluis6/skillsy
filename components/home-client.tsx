@@ -77,13 +77,13 @@ export function HomeClient({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="lg:space-y-12 space-y-8"
+            className="lg:space-y-12 space-y-8" 
           >
             <div className="text-center space-y-2">
               <h3 className="text-2xl font-bold text-text-main font-heading tracking-tight text-center">
                 Membros em Destaque
               </h3>
-              <p className="text-base font-normal text-gray-700">
+              <p className="text-base font-normal text-text-muted">
                 Conheça os profissionais <br className="flex lg:hidden" /> mais bem avaliados da nossa rede.
               </p>
             </div>
@@ -98,7 +98,7 @@ export function HomeClient({
                     transition={{ delay: idx * 0.05 }}
                     className="col-span-12 md:col-span-6 xl:col-span-4"
                   >
-                    <Card className="relative mx-auto w-full h-full bg-white pt-0">
+                    <Card className="relative mx-auto w-full h-full bg-card pt-0">
                       <div className="relative w-full h-25 md:h-40">
                         <div className="absolute inset-0 z-30 h-25 md:h-40 bg-black/25" />
                         {p.bannerURL ? (
@@ -146,7 +146,7 @@ export function HomeClient({
                         </section>
 
                         <CardAction>
-                          <Badge className="bg-surface text-blue-500 font-normal">
+                          <Badge className="bg-surface text-primary font-normal">
                             {p.category || "Geral"}
                           </Badge>
                         </CardAction>

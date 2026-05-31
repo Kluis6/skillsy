@@ -366,8 +366,8 @@ export function ProfileSettingsClient() {
         <nav className="mx-auto container px-4 py-1 md:py-2 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center space-x-2">
-              <ArrowLeft size={16} className="text-gray-600" />{" "}
-              <p className="hidden text-sm md:flex text-gray-600 font-medium">
+              <ArrowLeft size={16} className="text-text-muted" />{" "}
+              <p className="hidden text-sm md:flex text-text-muted font-medium">
                 Voltar
               </p>
             </Link>
@@ -396,7 +396,7 @@ export function ProfileSettingsClient() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
             {/* Left Column: Avatar & Basic Info */}
             <div className="space-y-2">
-              <div className="md:border border-b bg-white overflow-hidden">
+              <div className="md:border border-b bg-card overflow-hidden">
                 <div className="relative h-32 bg-gradient-to-r from-primary/10 to-accent/10">
                   {formData.bannerURL && (
                     <Image
@@ -493,26 +493,26 @@ export function ProfileSettingsClient() {
                   </div>
                 </div>
               </div>
-              <div className="bg-white md:p-8 p-4 md:border border-y space-y-6 ">
+              <div className="bg-card md:p-8 p-4 md:border border-y space-y-6 ">
                 <div className="space-y-1 ">
-                  <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                  <h3 className="md:text-xl text-base font-semibold text-text-main">
                     Informações Pessoais
                   </h3>
-                  <p className="text-xs font-normal text-gray-500">
+                  <p className="text-xs font-normal text-text-muted">
                     Estes dados ajudam outros membros a te encontrarem.
                   </p>
                 </div>
                 <section className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400  flex items-center gap-1">
+                      <Label className="text-xs md:text-sm font-medium text-text-muted flex items-center gap-1">
                         Nome Completo <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative">
                         <Input
                           {...register("name")}
                           maxLength={PROFILE_LIMITS.name}
-                          className={`bg-surface focus:bg-white rounded-sm text-sm h-12 transition-all ${
+                          className={`bg-surface focus:bg-card rounded-sm text-sm h-12 transition-all ${
                             errors.name
                               ? "border-red-500/50 focus:border-red-500 ring-0"
                               : touchedFields.name && !errors.name
@@ -541,7 +541,7 @@ export function ProfileSettingsClient() {
                       )}
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400  flex items-center gap-1">
+                      <Label className="text-xs md:text-sm font-medium text-text-muted flex items-center gap-1">
                         Localização (Cidade/Estado)
                       </Label>
                       <div className="flex gap-2">
@@ -549,7 +549,7 @@ export function ProfileSettingsClient() {
                           {...register("location")}
                           placeholder="Ex: São Paulo, SP"
                           maxLength={PROFILE_LIMITS.location}
-                          className={`bg-surface focus:bg-white transition-all rounded-sm text-sm h-12 flex-grow ${errors.location ? "ring-2 ring-red-500" : ""}`}
+                          className={`bg-surface focus:bg-card transition-all rounded-sm text-sm h-12 flex-grow ${errors.location ? "ring-2 ring-red-500" : ""}`}
                         />
                         <Button
                           type="button"
@@ -576,14 +576,14 @@ export function ProfileSettingsClient() {
                       </p>
                     </div>
                     <div className="space-y-2 ">
-                      <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                      <Label className="text-xs md:text-sm font-medium text-text-muted">
                         Ramo / Ala
                       </Label>
                       <Input
                         {...register("ward")}
                         placeholder="Ex: Ala Centro, Estaca Brasil"
                         maxLength={PROFILE_LIMITS.ward}
-                        className={`bg-surface focus:bg-white transition-all text-sm rounded-sm h-12 ${errors.ward ? "ring-2 ring-red-500" : ""}`}
+                        className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.ward ? "ring-2 ring-red-500" : ""}`}
                       />
                       <p className="text-[10px] text-text-muted ml-1">
                         Até {PROFILE_LIMITS.ward} caracteres.
@@ -595,14 +595,14 @@ export function ProfileSettingsClient() {
                       )}
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                      <Label className="text-xs md:text-sm font-medium text-text-muted">
                         Ano de Batismo
                       </Label>
                       <Input
                         {...register("baptismYear")}
                         placeholder="Ex: 2010"
                         maxLength={4}
-                        className={`bg-surface focus:bg-white transition-all text-sm rounded-sm h-12 ${errors.baptismYear ? "ring-2 ring-red-500" : ""}`}
+                        className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.baptismYear ? "ring-2 ring-red-500" : ""}`}
                       />
                       {errors.baptismYear && (
                         <p className="text-[10px] text-red-500 font-bold ml-1">
@@ -618,11 +618,11 @@ export function ProfileSettingsClient() {
 
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                      <Label className="text-xs md:text-sm font-medium text-text-muted">
                         Bio / Descrição
                       </Label>
                       <span
-                        className={`text-[10px] font-semibold ${formData.bio && formData.bio.length > 500 ? "text-red-500" : "text-gray-500"}`}
+                        className={`text-[10px] font-semibold ${formData.bio && formData.bio.length > 500 ? "text-red-500" : "text-text-muted"}`}
                       >
                         {formData.bio?.length || 0} / 500
                       </span>
@@ -630,7 +630,7 @@ export function ProfileSettingsClient() {
                     <Textarea
                       {...register("bio")}
                       placeholder="Conte um pouco sobre você e seus talentos..."
-                      className={`bg-surface focus:bg-white transition-all text-sm rounded-sm min-h-[150px] p-4 focus:ring-2 focus:ring-primary/20 ${errors.bio ? "ring-2 ring-red-500" : ""}`}
+                      className={`bg-surface focus:bg-card transition-all text-sm rounded-sm min-h-[150px] p-4 focus:ring-2 focus:ring-primary/20 ${errors.bio ? "ring-2 ring-red-500" : ""}`}
                       maxLength={PROFILE_LIMITS.bio}
                     />
                     <p className="text-[10px] text-text-muted ml-1">
@@ -645,20 +645,20 @@ export function ProfileSettingsClient() {
                 </section>
               </div>
               {/* aqui */}
-              <div className="md:border border-y bg-white p-4 md:p-8 space-y-6">
+              <div className="md:border border-y bg-card p-4 md:p-8 space-y-6">
                 <div className="flex flex-col md:flex-row gap-4 justify-between items-start">
                   <div className="space-y-1">
-                    <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                    <h3 className="md:text-xl text-base font-semibold text-text-main">
                       Status Profissional
                     </h3>
-                    <p className="text-xs font-normal text-gray-500">
+                    <p className="text-xs font-normal text-text-muted">
                       Ative para cadastrar seu serviço ou empresa
                     </p>
                   </div>
 
                   <div className="flex items-center justify-between py-2 px-4 gap-2  bg-surface  border ">
                     <div className="space-y-0.5">
-                      <Label className="text-sm font-bold text-gray-700">
+                      <Label className="text-sm font-bold text-text-main">
                         Quero Anunciar
                       </Label>
                       <p className="text-[10px] text-text-muted">
@@ -688,13 +688,13 @@ export function ProfileSettingsClient() {
                   {formData.isProvider && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                       <div className="space-y-2">
-                        <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <Label className="text-xs md:text-sm font-medium text-text-muted">
                           Categoria do Serviço
                         </Label>
                         <div className="relative">
                           <select
                             {...register("category")}
-                            className={`w-full bg-surface border focus:bg-white rounded-sm h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none ${errors.category ? "ring-2 ring-red-500" : ""}`}
+                            className={`w-full bg-surface border focus:bg-card rounded-sm h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none ${errors.category ? "ring-2 ring-red-500" : ""}`}
                           >
                             <option value="">Selecione uma categoria</option>
                             {PROVIDER_CATEGORIES.map((category) => (
@@ -714,14 +714,14 @@ export function ProfileSettingsClient() {
                         </p>
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <Label className="text-xs md:text-sm font-medium text-text-muted">
                           Especialidade Detalhada
                         </Label>
                         <Input
                           {...register("serviceType")}
                           placeholder="Ex: Eletricista, Professor de Inglês, etc."
                           maxLength={PROFILE_LIMITS.serviceType}
-                          className={`bg-surface focus:bg-white text-sm transition-all rounded-sm h-12 ${errors.serviceType ? "ring-2 ring-red-500" : ""}`}
+                          className={`bg-surface focus:bg-card text-sm transition-all rounded-sm h-12 ${errors.serviceType ? "ring-2 ring-red-500" : ""}`}
                         />
                         <p className="text-[10px] text-text-muted ml-1">
                           Até {PROFILE_LIMITS.serviceType} caracteres.
@@ -734,9 +734,9 @@ export function ProfileSettingsClient() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <Label className="text-xs md:text-sm font-medium text-text-muted">
                           Nome da Empresa
-                          <span className="text-xs text-gray-700">
+                          <span className="text-xs text-text-main">
                             (Opcional)
                           </span>
                         </Label>
@@ -744,7 +744,7 @@ export function ProfileSettingsClient() {
                           {...register("companyName")}
                           placeholder="Ex: Silva Construções"
                           maxLength={PROFILE_LIMITS.companyName}
-                          className={`bg-surface focus:bg-white transition-all text-sm rounded-sm h-12 ${errors.companyName ? "ring-2 ring-red-500" : ""}`}
+                          className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.companyName ? "ring-2 ring-red-500" : ""}`}
                         />
                         {errors.companyName && (
                           <p className="text-[10px] text-red-500 font-bold ml-1">
@@ -754,7 +754,7 @@ export function ProfileSettingsClient() {
                       </div>
 
                       <div className="space-y-4 pt-2">
-                        <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <Label className="text-xs md:text-sm font-medium text-text-muted">
                           Disponibilidade
                         </Label>
                         <div className="flex flex-wrap gap-2">
@@ -789,12 +789,12 @@ export function ProfileSettingsClient() {
                       </div>
 
                       <div className="space-y-2 pt-2">
-                        <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400"></Label>
+                        <Label className="text-xs md:text-sm font-medium text-text-muted"></Label>
                         <Input
                           {...register("serviceHours")}
                           placeholder="Ex: 08:00 - 18:00 ou Por agendamento"
                           maxLength={PROFILE_LIMITS.serviceHours}
-                          className={`bg-surface focus:bg-white transition-all text-sm rounded-sm h-12 ${errors.serviceHours ? "ring-2 ring-red-500" : ""}`}
+                          className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.serviceHours ? "ring-2 ring-red-500" : ""}`}
                         />
                         <p className="text-[10px] text-text-muted ml-1">
                           Horário ou disponibilidade resumida, até{" "}
@@ -813,66 +813,66 @@ export function ProfileSettingsClient() {
                   {formData.isProvider && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="col-span-3">
-                        <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 ">
+                        <h4 className="text-sm font-bold text-text-main ">
                           Endereço Comercial
-                          <span className="text-gray-500 text-xs font-medium">
+                          <span className="text-text-muted text-xs font-medium">
                             (Opcional)
                           </span>
                         </h4>
                       </div>
                       <div className="col-span-3 md:col-span-2 space-y-2">
-                        <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <Label className="text-xs md:text-sm font-medium text-text-muted">
                           Endereço (Rua/Avenida)
                         </Label>
                         <Input
                           {...register("businessAddress")}
                           placeholder="Ex: Rua das Flores"
                           maxLength={PROFILE_LIMITS.address}
-                          className={`bg-surface focus:bg-white transition-all rounded-sm h-12 ${errors.businessAddress ? "ring-2 ring-red-500" : ""}`}
+                          className={`bg-surface focus:bg-card transition-all rounded-sm h-12 ${errors.businessAddress ? "ring-2 ring-red-500" : ""}`}
                         />
                       </div>
                       <div className="space-y-2 col-span-1">
-                        <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <Label className="text-xs md:text-sm font-medium text-text-muted">
                           Número
                         </Label>
                         <Input
                           {...register("businessAddressNumber")}
                           placeholder="Ex: 123"
                           maxLength={PROFILE_LIMITS.addressNumber}
-                          className={`bg-surface focus:bg-white transition-all rounded-sm h-12 ${errors.businessAddressNumber ? "ring-2 ring-red-500" : ""}`}
+                          className={`bg-surface focus:bg-card transition-all rounded-sm h-12 ${errors.businessAddressNumber ? "ring-2 ring-red-500" : ""}`}
                         />
                       </div>
                       <div className="space-y-2 col-span-2">
-                        <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <Label className="text-xs md:text-sm font-medium text-text-muted">
                           Bairro
                         </Label>
                         <Input
                           {...register("businessNeighborhood")}
                           placeholder="Ex: Centro"
                           maxLength={PROFILE_LIMITS.neighborhood}
-                          className={`bg-surface focus:bg-white transition-all rounded-sm h-12 ${errors.businessNeighborhood ? "ring-2 ring-red-500" : ""}`}
+                          className={`bg-surface focus:bg-card transition-all rounded-sm h-12 ${errors.businessNeighborhood ? "ring-2 ring-red-500" : ""}`}
                         />
                       </div>
                       <div className="space-y-2 col-auto">
-                        <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <Label className="text-xs md:text-sm font-medium text-text-muted">
                           Estado
                         </Label>
                         <Input
                           {...register("businessState")}
                           placeholder="Ex: SP"
                           maxLength={PROFILE_LIMITS.state}
-                          className={`focus:bg-white bg-surface rounded-sm text-sm h-12 ${errors.businessState ? "ring-2 ring-red-500" : ""}`}
+                          className={`focus:bg-card bg-surface rounded-sm text-sm h-12 ${errors.businessState ? "ring-2 ring-red-500" : ""}`}
                         />
                       </div>
                       <div className="space-y-2 col-span-2">
-                        <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <Label className="text-xs md:text-sm font-medium text-text-muted">
                           Complemento
                         </Label>
                         <Input
                           {...register("businessComplement")}
                           placeholder="Ex: Sala 10, Bloco B"
                           maxLength={PROFILE_LIMITS.complement}
-                          className={`focus:bg-white bg-surface rounded-sm text-sm h-12 ${errors.businessComplement ? "ring-2 ring-red-500" : ""}`}
+                          className={`focus:bg-card bg-surface rounded-sm text-sm h-12 ${errors.businessComplement ? "ring-2 ring-red-500" : ""}`}
                         />
                       </div>
                     </div>
@@ -880,13 +880,13 @@ export function ProfileSettingsClient() {
                 </div>
               </div>
 
-              <div className="bg-white md:p-8 p-4 md:border border-y space-y-6">
-                <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+              <div className="bg-card md:p-8 p-4 md:border border-y space-y-6">
+                <h3 className="md:text-xl text-base font-semibold text-text-main">
                   Redes Sociais & Contato
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2 col-span-2 md:col-span-1">
-                    <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <Label className="text-xs md:text-sm font-medium text-text-muted">
                       WhatsApp
                     </Label>
                     <Input
@@ -907,9 +907,9 @@ export function ProfileSettingsClient() {
                     )}
                   </div>
                   <div className="space-y-2 md:col-span-1 col-span-2">
-                    <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <Label className="text-xs md:text-sm font-medium text-text-muted">
                       Telefone Adicional
-                      <span className="text-gray-800 text-xs font-normal">
+                      <span className="text-text-main text-xs font-normal">
                         (Opcional)
                       </span>
                     </Label>
@@ -931,7 +931,7 @@ export function ProfileSettingsClient() {
                     )}
                   </div>
                   <div className="space-y-2 col-span-2">
-                    <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <Label className="text-xs md:text-sm font-medium text-text-muted">
                       Instagram
                     </Label>
                     <Input
@@ -951,7 +951,7 @@ export function ProfileSettingsClient() {
                     )}
                   </div>
                   <div className="space-y-2 col-span-2">
-                    <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <Label className="text-xs md:text-sm font-medium text-text-muted">
                       Facebook
                     </Label>
                     <Input
@@ -967,7 +967,7 @@ export function ProfileSettingsClient() {
                     )}
                   </div>
                   <div className="space-y-2 col-span-2">
-                    <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <Label className="text-xs md:text-sm font-medium text-text-muted">
                       LinkedIn
                     </Label>
                     <Input
@@ -983,7 +983,7 @@ export function ProfileSettingsClient() {
                     )}
                   </div>
                   <div className="space-y-2 col-span-2">
-                    <Label className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <Label className="text-xs md:text-sm font-medium text-text-muted">
                       Website
                     </Label>
                     <Input
@@ -1005,10 +1005,10 @@ export function ProfileSettingsClient() {
                 </div>
               </div>
 
-              <div className="bg-white md:border border-y md:p-8 p-4 space-y-6">
+              <div className="bg-card md:border border-y md:p-8 p-4 space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                    <h3 className="md:text-xl text-base font-semibold text-text-main">
                       Galeria de Fotos
                     </h3>
                     <Badge
@@ -1038,8 +1038,8 @@ export function ProfileSettingsClient() {
                     onChange={(e) => handleFileChange(e, "gallery")}
                   />
                 </div>
-                <div className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-[11px] text-slate-700 space-y-1">
-                  <p className="font-semibold text-slate-900">
+                <div className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-[11px] text-text-muted space-y-1">
+                  <p className="font-semibold text-text-main">
                     Regras da galeria
                   </p>
                   <p>
@@ -1126,12 +1126,12 @@ export function ProfileSettingsClient() {
                 </div>
               </div>
 
-              <div className="bg-white md:border border-y md:p-8 p-4 space-y-6">
+              <div className="bg-card md:border border-y md:p-8 p-4 space-y-6">
                 <div className="space-y-1">
-                  <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                  <h3 className="md:text-xl text-base font-semibold text-text-main">
                     Zona de Perigo
                   </h3>
-                  <p className="text-xs font-normal text-gray-500">
+                  <p className="text-xs font-normal text-text-muted">
                     Cancelar sua conta da plataforma.
                   </p>
                 </div>

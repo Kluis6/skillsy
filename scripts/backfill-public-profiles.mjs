@@ -22,6 +22,7 @@ const publicFieldNames = [
   "rating",
   "reviewCount",
   "experienceYears",
+  "baptismYear",
   "memberVerified",
   "membershipYears",
   "availability",
@@ -42,6 +43,7 @@ function parseArgs(argv) {
   const options = {
     dryRun: false,
     limit: undefined,
+    uid: undefined,
     token: process.env.GOOGLE_OAUTH_ACCESS_TOKEN || process.env.FIREBASE_ACCESS_TOKEN,
   };
 
@@ -58,6 +60,16 @@ function parseArgs(argv) {
         throw new Error("Missing value for --limit");
       }
       options.limit = Number(next);
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--uid") {
+      const next = argv[index + 1];
+      if (!next) {
+        throw new Error("Missing value for --uid");
+      }
+      options.uid = next;
       index += 1;
       continue;
     }
@@ -310,7 +322,11 @@ async function writePublicProfile(token, userDocument, dryRun) {
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const token = options.token || readAccessToken();
-  const users = await listUsers(token, options.limit);
+  let users = await listUsers(token, options.limit);
+
+  if (options.uid) {
+    users = users.filter((userDocument) => getDocumentId(userDocument.name) === options.uid);
+  }
 
   if (users.length === 0) {
     console.log("No user documents found in users collection.");

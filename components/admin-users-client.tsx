@@ -607,7 +607,7 @@ export function AdminUsersClient() {
                             >
                               {u.isBlocked ? <CheckCircle size={18} /> : <Ban size={18} />}
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="rounded-xl font-bold text-xs uppercase tracking-widest bg-white border-border-subtle shadow-xl px-3 py-2 text-text-main">
+                            <TooltipContent side="top" className="rounded-xl font-bold text-xs uppercase tracking-widest bg-card border-border-subtle shadow-xl px-3 py-2 text-text-main">
                               {u.isBlocked ? 'Desbloquear Acesso' : 'Bloquear Acesso'}
                             </TooltipContent>
                           </Tooltip>
@@ -974,8 +974,8 @@ export function AdminUsersClient() {
           
           <form onSubmit={adminForm.handleSubmit(onCreateAdmin)}>
             <div className="space-y-6 py-6">
-              <div className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-[11px] text-slate-700 space-y-1">
-                <p className="font-semibold text-slate-900">
+              <div className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-[11px] text-text-muted space-y-1">
+                <p className="font-semibold text-text-main">
                   Regras do pré-cadastro administrativo
                 </p>
                 <p>

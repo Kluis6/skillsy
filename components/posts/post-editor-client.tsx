@@ -257,7 +257,7 @@ export function PostEditorClient({
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-3xl rounded-[2rem] border border-border-subtle bg-white p-10 text-center">
+      <div className="mx-auto max-w-3xl rounded-[2rem] border border-border-subtle bg-card p-10 text-center">
         <h1 className="text-2xl font-bold text-text-main">Acesso restrito</h1>
         <p className="mt-2 text-text-muted">
           Faça login para escrever e gerenciar seus artigos.
@@ -271,7 +271,7 @@ export function PostEditorClient({
 
   if (!canPublish) {
     return (
-      <div className="mx-auto max-w-3xl rounded-[2rem] border border-border-subtle bg-white p-10 text-center">
+      <div className="mx-auto max-w-3xl rounded-[2rem] border border-border-subtle bg-card p-10 text-center">
         <h1 className="text-2xl font-bold text-text-main">
           Publicação disponível para membros verificados
         </h1>
@@ -290,12 +290,12 @@ export function PostEditorClient({
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <div className="rounded-[2rem] border border-blue-100 bg-blue-50/80 p-5 text-sm text-slate-700">
+      <div className="rounded-[2rem] border border-blue-100 bg-blue-50/80 p-5 text-sm text-text-muted">
         Escolha entre artigo e vaga. Para publicar, a postagem precisa ter pelo menos
         texto ou imagem de capa. O resumo é opcional e as tags continuam limitadas a 5.
       </div>
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 rounded-[2rem] border border-border-subtle bg-white p-6 md:p-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 rounded-[2rem] border border-border-subtle bg-card p-6 md:p-8">
         <div className="space-y-2">
           <Label htmlFor="category">Categoria</Label>
           <select
@@ -396,7 +396,7 @@ export function PostEditorClient({
         {coverImageValue ? (
           <div className="space-y-2">
             <Label>Prévia da capa</Label>
-            <div className="relative h-56 overflow-hidden rounded-xl border border-border-subtle bg-slate-50">
+            <div className="relative h-56 overflow-hidden rounded-xl border border-border-subtle bg-surface">
               <Image
                 src={coverImageValue}
                 alt="Prévia da imagem de capa"

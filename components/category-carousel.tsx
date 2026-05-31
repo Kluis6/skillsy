@@ -205,7 +205,7 @@ export function CategoryCarousel() {
     <div className="w-full h-[65vh] sm:h-[70vh] lg:h-[78vh] relative">
       <div className="relative group container mx-auto px-4">
         <div className="flex justify-center items-center rounded-xl z-10 shadow-2xl object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)]">
-          <div className="absolute  top-[calc(100%-6rem)] space-y-2 md:space-y-4 w-[calc(100%-4rem)] md:w-[calc(100%-6rem)] lg:w-[calc(100%-8rem)] rounded-xl z-40 bg-white p-4 sm:p-6 md:p-8 shadow-2xl">
+          <div className="absolute  top-[calc(100%-6rem)] space-y-2 md:space-y-4 w-[calc(100%-4rem)] md:w-[calc(100%-6rem)] lg:w-[calc(100%-8rem)] rounded-xl z-40 bg-card p-4 sm:p-6 md:p-8 shadow-2xl border border-border-subtle">
             <div className="w-full">
               <h3 className="text-xl lg:text-2xl font-bold text-text-main font-heading tracking-tight text-center">
                 Categorias mais populares
@@ -224,7 +224,7 @@ export function CategoryCarousel() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => handleCategoryClick(cat.name)}
-                  className="flex flex-col items-center justify-between space-y-6 min-w-[100px] md:min-w-[140px] p-4 bg-white rounded-xl border hover:shadow-md transition-all duration-300 group/card shrink-0"
+                  className="flex flex-col items-center justify-between space-y-6 min-w-[100px] md:min-w-[140px] p-4 bg-card rounded-xl border border-border-subtle hover:shadow-md transition-all duration-300 group/card shrink-0"
                 >
                   <div
                     className={`size-12 md:size-14 lg:size-16 ${cat.bg} rounded-md flex items-center justify-center  group-hover/card:scale-110 transition-transform duration-300`}
@@ -232,7 +232,7 @@ export function CategoryCarousel() {
                     <cat.icon className={`${cat.color}`} size={22} />
                   </div>
 
-                  <span className="text-xs md:text-sm font-medium text-gray-800 dark:text-gray-100 group-hover/card:text-blue-700 dark:group-hover/card:text-white transition-colors">
+                  <span className="text-xs md:text-sm font-medium text-text-main group-hover/card:text-primary transition-colors">
                     {cat.name}
                   </span>
                 </motion.button>

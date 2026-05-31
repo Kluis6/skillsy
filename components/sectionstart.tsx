@@ -92,10 +92,10 @@ export default function Sectionstart() {
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="space-y-4"
             >
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+              <h2 className="text-xl md:text-2xl font-bold text-text-main">
                 Estamos aqui para ajudar <br /> você a encontrar o que precisa.
               </h2>
-              <p className="text-base font-normal text-gray-800">
+              <p className="text-base font-normal text-text-muted">
                 Buscando um profissional ou divulgando seu trabalho, a Skillsy é
                 o seu lugar.
               </p>
@@ -113,7 +113,7 @@ export default function Sectionstart() {
                     delay: 0.1 + index * 0.08,
                     ease: "easeOut",
                   }}
-                  className="grid gap-4 border-t border-slate-200 pt-5 md:grid-cols-[6.5rem_minmax(0,1fr)]"
+                  className="grid gap-4 border-t border-border-subtle pt-5 md:grid-cols-[6.5rem_minmax(0,1fr)]"
                 >
                   <div className="space-y-1">
                     {/* <p className="text-xs font-bold tracking-[0.22em] text-text-main">

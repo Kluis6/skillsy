@@ -141,7 +141,7 @@ export function AdminNavbar() {
                           onClick={() => !n.read && handleMarkAsRead(n.id)}
                         >
                           <div className="flex gap-3">
-                            <div className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${!n.read ? 'bg-white shadow-sm' : 'bg-surface'}`}>
+                            <div className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${!n.read ? 'bg-card shadow-sm' : 'bg-surface'}`}>
                               {getIconForType(n.type)}
                             </div>
                             <div className="flex-1 min-w-0">

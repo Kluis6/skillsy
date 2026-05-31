@@ -109,7 +109,7 @@ export function AdminPostsClient() {
 
   if (profile?.role !== "admin") {
     return (
-      <div className="rounded-[2rem] border border-border-subtle bg-white p-10 text-center">
+      <div className="rounded-[2rem] border border-border-subtle bg-card p-10 text-center">
         <h1 className="text-2xl font-bold text-text-main">Acesso restrito</h1>
         <p className="mt-2 text-text-muted">
           Apenas administradores podem revisar artigos.
@@ -120,14 +120,14 @@ export function AdminPostsClient() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[2rem] border border-border-subtle bg-white p-6">
+      <div className="rounded-[2rem] border border-border-subtle bg-card p-6">
         <h1 className="text-3xl font-bold text-text-main">Artigos</h1>
         <p className="mt-1 text-text-muted">
           Revise envios, publique conteúdo e destaque notícias importantes.
         </p>
       </div>
 
-      <div className="grid gap-4 rounded-[2rem] border border-border-subtle bg-white p-6 md:grid-cols-[1fr_220px]">
+      <div className="grid gap-4 rounded-[2rem] border border-border-subtle bg-card p-6 md:grid-cols-[1fr_220px]">
         <Input
           placeholder="Buscar por título ou autor"
           value={query}
@@ -146,7 +146,7 @@ export function AdminPostsClient() {
         </select>
       </div>
 
-      <div className="rounded-[2rem] border border-border-subtle bg-white">
+      <div className="rounded-[2rem] border border-border-subtle bg-card">
         {filteredPosts.length === 0 ? (
           <div className="p-10 text-center text-text-muted">
             Nenhum artigo encontrado com esses filtros.

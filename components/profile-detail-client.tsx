@@ -329,7 +329,7 @@ export function ProfileDetailClient({
                 <Icon className="size-5" />
               </span>
               <span className="flex min-w-0 flex-col items-start">
-                <span className="font-semibold text-gray-800">
+                <span className="font-semibold text-text-main">
                   {action.label}
                 </span>
                 <span className="whitespace-normal text-xs text-muted-foreground">
@@ -357,7 +357,7 @@ export function ProfileDetailClient({
               />
             }
           >
-            <PiShareFat className="text-gray-700" />
+            <PiShareFat className="text-text-muted" />
           </TooltipTrigger>
           <TooltipContent>
             <p>Compartilhar</p>
@@ -376,7 +376,7 @@ export function ProfileDetailClient({
                   <Button variant="outline"  className={` ${className || 'rounded-sm size-10'}`} />
                 }
               >
-                <PiShareFat className="text-gray-700" />
+                <PiShareFat className="text-text-muted" />
               </TooltipTrigger>
             }
           />
@@ -613,7 +613,7 @@ export function ProfileDetailClient({
           className="space-y-2"
         >
           {/* Top Profile Card */}
-          <section className="border-border-subtle border-b bg-white dark:bg-card">
+          <section className="border-border-subtle border-b bg-card">
             <div className="relative h-26 md:h-52 bg-gradient-to-r from-blue-400/20 to-indigo-400/20">
               {targetProfile.bannerURL ? (
                 <Image
@@ -655,7 +655,7 @@ export function ProfileDetailClient({
                               className="rounded-md size-10 flex border justify-center items-center hover:bg-neutral-100 transition-colors"
                               href="/profile"
                             >
-                              <LuPencil className="text-gray-700" />
+                              <LuPencil className="text-text-muted" />
                             </Link>
                           }
                         />
@@ -699,7 +699,7 @@ export function ProfileDetailClient({
                   </div>
                 </div>
                 <div className="-mt-28 sm:-mt-34 md:-mt-38 mb-4 relative z-10 size-28 sm:size-32 md:size-40">
-                  <Avatar className="w-full h-full border-6 border-white dark:border-card bg-white dark:bg-card shadow-sm shadow-black/30">
+                  <Avatar className="w-full h-full border-6 border-card bg-card shadow-sm shadow-black/30">
                     <AvatarImage
                       src={targetProfile.photoURL}
                       className="object-cover"
@@ -723,7 +723,7 @@ export function ProfileDetailClient({
                       )}
                     </div>
 
-                    <p className="text-base text-gray-600 font-normal">
+                    <p className="text-base text-text-muted font-normal">
                       {targetProfile.serviceType ||
                         targetProfile.category ||
                         "Membro da Comunidade Skillsy"}
@@ -733,13 +733,13 @@ export function ProfileDetailClient({
                     <div className="flex items-center space-x-2">
                       {targetProfile.companyName && (
                         <div className="flex items-center space-x-2">
-                          <Building2 size={18} className="text-gray-800" />
-                          <p className="text-sm font-normal text-gray-800">
+                          <Building2 size={18} className="text-text-main" />
+                          <p className="text-sm font-normal text-text-main">
                             {targetProfile.companyName}
                           </p>
                         </div>
                       )}
-                      <span className="font-bold block  text-gray-900">·</span>
+                      <span className="font-bold block text-text-main">·</span>
                       {targetProfile.category && (
                         <Badge
                           variant="secondary"
@@ -752,16 +752,16 @@ export function ProfileDetailClient({
 
                     {targetProfile.location && (
                       <div className="flex items-center space-x-2">
-                        <LuMapPin size={18} className="text-gray-800" />
-                        <p className="text-sm text-gray-800 font-normal">
+                        <LuMapPin size={18} className="text-text-main" />
+                        <p className="text-sm text-text-main font-normal">
                           {targetProfile.location}
                         </p>
                       </div>
                     )}
                     {targetProfile.ward && (
                       <div className="flex items-center space-x-2">
-                        <Briefcase size={16} className="text-gray-800" />
-                        <p className="text-sm text-gray-800 font-normal">
+                        <Briefcase size={16} className="text-text-main" />
+                        <p className="text-sm text-text-main font-normal">
                           {targetProfile.ward}
                         </p>
                       </div>
@@ -769,8 +769,8 @@ export function ProfileDetailClient({
                     {typeof membershipYears === "number" &&
                       membershipYears >= 0 && (
                         <div className="flex items-center space-x-2">
-                          <CalendarDays size={16} className="text-gray-800" />
-                          <p className="text-sm text-gray-800 font-normal">
+                          <CalendarDays size={16} className="text-text-main" />
+                          <p className="text-sm text-text-main font-normal">
                             Membro há {membershipYears}{" "}
                             {membershipYears === 1 ? "ano" : "anos"}
                           </p>
@@ -806,7 +806,7 @@ export function ProfileDetailClient({
                                   className="rounded-md size-10 flex border justify-center items-center hover:bg-neutral-100 transition-colors"
                                   href="/profile"
                                 >
-                                  <LuPencil className="text-gray-700" />
+                                  <LuPencil className="text-text-muted" />
                                 </Link>
                               }
                             />
@@ -857,9 +857,9 @@ export function ProfileDetailClient({
           </section>
 
           {/* About Section */}
-          <section className="bg-white dark:bg-card border-y border-border-subtle ">
+          <section className="bg-card border-y border-border-subtle ">
             <div className="mx-auto container p-4 space-y-4">
-              <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+              <h3 className="md:text-xl text-base font-semibold text-text-main">
                 Sobre membro
               </h3>
               <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap max-w-3xl">
@@ -872,17 +872,17 @@ export function ProfileDetailClient({
           {/* disponibilidade e avaliações */}
           <div className="w-full flex flex-col md:flex-row gap-2">
             {hasAvailabilityInfo && (
-              <div className=" bg-white w-full border-y md:border-r border-r-0 ">
+              <div className="bg-card w-full border-y border-border-subtle md:border-r border-r-0 ">
                 <div className="h-full w-full md:ps-7 p-4 mx-auto container space-y-4">
-                  <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 md:text-xl">
+                  <h3 className="text-base font-semibold text-text-main md:text-xl">
                     Disponibilidade
                   </h3>
 
                   {availabilityDays.length > 0 && (
                     <div className="space-y-3">
                       <div className=" flex items-center gap-1 ">
-                        <CalendarDays size={16} className="text-gray-600" />
-                        <p className="text-xs font-bold uppercase tracking-wider text-gray-600">
+                        <CalendarDays size={16} className="text-text-muted" />
+                        <p className="text-xs font-bold uppercase tracking-wider text-text-muted">
                           Dias de atendimento
                         </p>
                       </div>
@@ -901,13 +901,13 @@ export function ProfileDetailClient({
                   {targetProfile?.serviceHours?.trim() && (
                     <div className="space-y-3 ">
                       <div className="flex items-center gap-1 ">
-                        <Clock size={16} className="text-gray-600" />{" "}
-                        <p className="text-xs font-bold uppercase tracking-wider text-gray-600">
+                        <Clock size={16} className="text-text-muted" />{" "}
+                        <p className="text-xs font-bold uppercase tracking-wider text-text-muted">
                           Horário de atendimento
                         </p>
                       </div>
                       <div className="bg-surface px-4 py-2">
-                        <p className="text-sm font-medium text-gray-700">
+                        <p className="text-sm font-medium text-text-main">
                           {targetProfile.serviceHours}
                         </p>
                       </div>
@@ -917,9 +917,9 @@ export function ProfileDetailClient({
               </div>
             )}
             {targetProfile.isProvider && (
-              <div className=" bg-white w-full border-y md:border-l border-l-0 ">
+              <div className="bg-card w-full border-y border-border-subtle md:border-l border-l-0 ">
                 <div className="h-full w-full p-4 mx-auto container md:pe-7 space-y-4">
-                  <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                  <h3 className="md:text-xl text-base font-semibold text-text-main">
                     Avaliações da Comunidade
                   </h3>
                   <div className="w-full h-full flex space-x-2 md:space-x-4">
@@ -942,7 +942,7 @@ export function ProfileDetailClient({
                     </div>
 
                     <div className="flex flex-col space-y-1.5">
-                      <p className="text-sm text-gray-700 font-medium">
+                      <p className="text-sm text-text-main font-medium">
                         Avalie o serviço prestado por este membro.
                       </p>
                       <div className="flex items-center gap-1.5">
@@ -978,11 +978,11 @@ export function ProfileDetailClient({
           </div>
 
           <div className="w-full flex flex-col md:flex-row gap-2">
-            <div className=" bg-white w-full border-y md:border-l border-l-0 ">
+            <div className="bg-card w-full border-y border-border-subtle md:border-l border-l-0 ">
               <div className="h-full w-full p-4 mx-auto container md:pe-7">
                 {hasContactInfo && (
                   <div className="space-y-4">
-                    <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                    <h3 className="md:text-xl text-base font-semibold text-text-main">
                       Contato e Redes
                     </h3>
                     <div className="space-y-3">
@@ -993,7 +993,7 @@ export function ProfileDetailClient({
                           className="flex w-full items-center gap-2.5 bg-surface md:px-3 px-1 py-2 text-left"
                         >
                           <FaWhatsapp size={16} className="text-green-600" />
-                          <p className="md:text-sm text-xs font-normal text-gray-700">
+                          <p className="md:text-sm text-xs font-normal text-text-muted">
                             {targetProfile.whatsapp}
                           </p>
                         </button>
@@ -1005,7 +1005,7 @@ export function ProfileDetailClient({
                           className="flex w-full items-center gap-2 bg-surface md:px-3 px-1 py-2 text-left "
                         >
                           <FaPhone size={16} className="text-primary" />
-                          <p className="md:text-sm text-xs font-normal text-gray-700">
+                          <p className="md:text-sm text-xs font-normal text-text-muted">
                             {targetProfile.phone}
                           </p>
                         </button>
@@ -1020,7 +1020,7 @@ export function ProfileDetailClient({
                           className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
                         >
                           <FaInstagram size={16} className="text-pink-600" />
-                          <span className="md:text-sm text-xs font-normal text-gray-700 break-all">
+                          <span className="md:text-sm text-xs font-normal text-text-muted break-all">
                             {targetProfile.instagram}
                           </span>
                         </a>
@@ -1033,7 +1033,7 @@ export function ProfileDetailClient({
                           className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
                         >
                           <FaFacebookF size={16} className="text-blue-600" />
-                          <p className="md:text-sm text-xs font-normal text-gray-700 break-all">
+                          <p className="md:text-sm text-xs font-normal text-text-muted break-all">
                             {targetProfile.facebook}
                           </p>
                         </a>
@@ -1046,7 +1046,7 @@ export function ProfileDetailClient({
                           className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
                         >
                           <FaLinkedinIn size={16} className="text-sky-700" />
-                          <p className="md:text-sm text-xs font-normal text-gray-700 break-all ">
+                          <p className="md:text-sm text-xs font-normal text-text-muted break-all ">
                             {targetProfile.linkedin}
                           </p>
                         </a>
@@ -1059,7 +1059,7 @@ export function ProfileDetailClient({
                           className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
                         >
                           <Globe size={16} className="text-primary" />
-                          <p className="md:text-sm text-xs font-normal text-gray-700 break-all">
+                          <p className="md:text-sm text-xs font-normal text-text-muted break-all">
                             {targetProfile.website}
                           </p>
                         </a>
@@ -1074,10 +1074,10 @@ export function ProfileDetailClient({
           {/* Gallery Section */}
           {(targetProfile.gallery && targetProfile.gallery.length > 0) ||
           user?.uid === targetProfile.uid ? (
-            <section className="bg-white dark:bg-card border border-border-subtle relative overflow-hidden">
+            <section className="bg-card border border-border-subtle relative overflow-hidden">
               <div className="mx-auto container p-4 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="md:text-xl text-base font-semibold text-gray-800 dark:text-gray-200">
+                  <h3 className="md:text-xl text-base font-semibold text-text-main">
                     Galeria de Fotos
                   </h3>
                 </div>
@@ -1131,7 +1131,7 @@ export function ProfileDetailClient({
                             />
                           </div>
                           {typeof photo === "object" && photo.description && (
-                            <DialogFooter className="bg-white  dark:bg-card">
+                            <DialogFooter className="bg-card">
                               <h4 className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
                                 Comentário
                               </h4>
