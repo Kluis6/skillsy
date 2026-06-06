@@ -24,7 +24,7 @@ export function HeroSection({
   setLocationFilter,
 }: HeroSectionProps) {
   return (
-    <section className="w-full h-[78vh] md:h-[84vh]">
+    <section className="w-full h-[58vh] md:h-[84vh]">
       <div className="container mx-auto space-y-4 flex flex-col justify-center items-center h-full px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -56,7 +56,7 @@ export function HeroSection({
               />
               <Input
                 name="q"
-                placeholder="O que você procura? Pintor, Advogado, Bolo de Pote..."
+                placeholder="O que você procura?"
                 className="pl-12 h-12 w-full bg-card border-border-subtle text-text-main placeholder:text-text-muted shadow-sm rounded-full"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -85,7 +85,7 @@ export function HeroSection({
               <Button
                 type="submit"
                 variant="default"
-                className=" px-7 h-12 w-xs bg-blue-500 hover:bg-blue-600 dark:text-white active:bg-blue-700"
+                className=" px-7 h-12 w-xs font-bold text-base bg-blue-500 hover:bg-blue-600 dark:text-white active:bg-blue-700"
               >
                 {searching ? "Pesquisando..." : "Pesquisar"}
               </Button>
