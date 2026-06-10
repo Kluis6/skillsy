@@ -27,6 +27,7 @@ import Link from "next/link";
 import { UserProfile } from "@/models/types";
 import Image from "next/image";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
+import { Categorywall } from "./categorywall";
 
 export function HomeClient({
   initialProviders = [],
@@ -65,7 +66,9 @@ export function HomeClient({
       />
 
       {/* Categories Carousel */}
-      <CategoryCarousel />
+      {/* <CategoryCarousel /> */}
+      <Categorywall />
+      
 
       {!user && <BenefitsSection />}
 
