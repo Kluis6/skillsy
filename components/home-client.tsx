@@ -66,7 +66,7 @@ export function HomeClient({
       />
 
       {/* Categories Carousel */}
-      {/* <CategoryCarousel /> */}
+      <CategoryCarousel />
       <Categorywall />
       
 

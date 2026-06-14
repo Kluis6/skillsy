@@ -190,7 +190,7 @@ export function Categorywall() {
   };
 
   return (
-    <section className="relative z-10 mb-20">
+    <section className="relative z-10 mb-20 md:hidden">
       <div className="container mx-auto px-4">
         <div className="flex justify-center items-center rounded-xl z-10 shadow-2xl object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)]" />
 
@@ -201,7 +201,7 @@ export function Categorywall() {
             </h3>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-2 md:gap-4">
             {categories.map((cat, idx) => (
               <motion.button
                 key={cat.name}
