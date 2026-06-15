@@ -42,7 +42,7 @@ export default function HeaderSection({
         initial={{ scale: 1.04, opacity: 0.88 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
-        className="absolute inset-0"
+        className="absolute inset-0 "
       >
         <Image
           src={backgroundImageSrc}
@@ -59,7 +59,7 @@ export default function HeaderSection({
         initial={{ opacity: 0, y: 22 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
-        className={headlineWrapperClassName}
+        className={`${headlineWrapperClassName}`}
       >
         <h1 className={headlineClassName}>
           {headlineSegments.map((segment, index) => (
@@ -71,7 +71,7 @@ export default function HeaderSection({
       </motion.div>
 
       <div className="absolute bottom-0 w-full">
-        <div className="relative flex items-end justify-end ">
+        <div className="relative flex items-end justify-end">
           {imageItems.map((image) => (
             <motion.div
               key={image.src}
@@ -84,7 +84,7 @@ export default function HeaderSection({
               }}
               className={image.wrapperClassName}
             >
-              <div className="relative h-full w-full overflow-hidden rounded-t-full shadow-2xl">
+              <div className="relative h-full w-full overflow-hidden rounded-t-full shadow-2xl hidden lg:block">
                 <Image
                   src={image.src}
                   alt={image.alt}

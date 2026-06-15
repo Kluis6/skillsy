@@ -28,7 +28,7 @@ export function ThemeToggle() {
       className="size-10 transition-discrete"
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
-      {isDark ? <BsMoon className="size-[18px]" /> : <BsSun className="text-foreground size-[18px]" />}
+      {isDark ? <BsMoon className="size-4" /> : <BsSun className="text-foreground size-4" />}
 
       <span className="sr-only">Alternar tema</span>
     </Button>

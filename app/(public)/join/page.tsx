@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import {
   ArrowRight,
-  CheckCircle2,
   Heart,
   ShieldCheck,
   Star,
@@ -11,7 +10,6 @@ import {
   Zap,
 } from "lucide-react";
 import { AuthModal } from "@/components/auth-modal";
-import { Footer } from "@/components/footer";
 import HeaderSection, {
   type HeaderImageItem,
   type HeaderTextSegment,

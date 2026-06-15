@@ -247,7 +247,7 @@ export function Navbar({
           >
             <DrawerTrigger asChild className="hidden md:flex">
               <Button size="icon" className="size-10" variant="ghost">
-                <BsList className="size-[18px] text-foreground" />
+                <BsList className="size-5 text-foreground" />
               </Button>
             </DrawerTrigger>
             <DrawerContent>
@@ -400,7 +400,7 @@ export function Navbar({
                 title="Faça login ou cria sua conta"
                 className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 w-10 md:w-auto md:px-4 h-10 dark:text-white font-normal"
               >
-                <LuLogIn className="flex md:hidden size-[18px]" />
+                <LuLogIn className="flex md:hidden size-4" />
                 <p className="hidden font-medium md:block"> Entrar</p>
               </Button>
             </AuthModal>
