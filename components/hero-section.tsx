@@ -85,7 +85,7 @@ export function HeroSection({
               <Button
                 type="submit"
                 variant="default"
-                className="px-7 h-12 w-xs font-bold text-base bg-blue-500 hover:bg-blue-600 dark:text-white active:bg-blue-700"
+                className="px-7 h-12 w-xs font-medium text-base bg-blue-500 hover:bg-blue-600 dark:text-white active:bg-blue-700"
               >
                 {searching ? "Pesquisando..." : "Pesquisar"}
               </Button>

@@ -13,31 +13,31 @@ export function BenefitsSection() {
         "Conecte-se com profissionais que compartilham os mesmos princípios e valores que você.",
       icon: ShieldCheck,
       color: "text-primary",
-      bg: "bg-primary/10",
+      bg: "bg-blue-50 dark:bg-blue-900/40 dark:shadow-blue-500/60 shadow-md",
     },
     {
       title: "Visibilidade Total",
       description:
         "Tenha seu talento exposto para centenas de membros na sua ala, estaca e região.",
       icon: Zap,
-      color: "text-accent",
-      bg: "bg-accent/10",
+      color: "text-sky-500 dark:text-white",
+      bg: "bg-sky-50 dark:bg-sky-900/40 dark:shadow-sky-500/60 shadow-md",
     },
     {
       title: "Excelência Avaliada",
       description:
         "Sistema de avaliações anônimas que garante a qualidade e confiabilidade do serviço.",
       icon: Star,
-      color: "text-highlight",
-      bg: "bg-highlight/10",
+      color: "text-yellow-500 dark:text-white",
+      bg: "bg-highlight/10 dark:bg-yellow-900/40 dark:shadow-yellow-500/60 shadow-md",
     },
     {
       title: "Networking Real",
       description:
         "Construa uma rede de contatos profissionais sólida dentro de uma rede de confiança.",
       icon: Users,
-      color: "text-blue-500",
-      bg: "bg-blue-100",
+      color: "text-blue-500 dark:text-white",
+      bg: "bg-blue-100 dark:bg-blue-900/40 dark:shadow-blue-500/60 shadow-md  ",
     },
   ];
 
@@ -56,8 +56,8 @@ export function BenefitsSection() {
             >
               <div className="space-y-2">
                 <h2 className="text-2xl md:text-3xl xl:text-4xl font-bold text-text-main leading-tight text-center lg:text-start">
-                  Por que fazer <br className="hidden lg:flex" /> parte da
-                  <span className="text-primary"> Skillsy ?</span>
+                  Por que fazer <br className="" /> parte da
+                  <span className="text-primary"> Skillsy?</span>
                 </h2>
                 <p className="text-base lg:text-lg text-text-muted leading-relaxed">
                   O Skillsy não é apenas uma plataforma de serviços. É uma rede
@@ -70,7 +70,7 @@ export function BenefitsSection() {
                 <AuthModal>
                   <Button
                     variant="default"
-                    className="w-fit bg-primary text-white hover:shadow-2xl shadow-primary border-0 rounded-full px-10 h-12 md:h-14 font-bold text-sm md:text-base lg:text-lg group"
+                    className="w-fit bg-blue-600 text-white hover:shadow-2xl shadow-primary border-0 rounded-full px-10 h-12 md:h-14 font-bold text-sm md:text-base lg:text-lg group"
                   >
                     Criar minha conta agora
                     <ArrowRight
@@ -98,7 +98,7 @@ export function BenefitsSection() {
                 className={`lg:p-8 md:p-6 p-4 flex flex-col space-y-4 md:space-y-6 rounded-xl border border-border-subtle bg-card transition-all hover:shadow-xl hover:shadow-primary/5 group ${idx % 3 === 0 ? "md:col-span-1" : ""}`}
               >
                 <div
-                  className={`size-12 md:size-14 xl:size-14 shadow-sm ${benefit.bg} ${benefit.color} rounded-md flex items-center justify-center  group-hover:scale-110 transition-transform duration-300`}
+                  className={`size-12 md:size-14 xl:size-14  ${benefit.bg} ${benefit.color} rounded-md flex items-center justify-center  group-hover:scale-110 transition-transform duration-300`}
                 >
                   <benefit.icon className="lg:size-8 size-6" />
                 </div>

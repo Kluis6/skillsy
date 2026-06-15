@@ -69,7 +69,7 @@ export function Navbar({
             >
               <DrawerTrigger asChild className="flex md:hidden">
                 <Button size="icon" className="size-10" variant="ghost">
-                  <BsList className="size-5 text-foreground" />
+                  <BsList className="size-[20px] text-foreground" />
                 </Button>
               </DrawerTrigger>
               <DrawerContent>
@@ -85,7 +85,7 @@ export function Navbar({
                   <DrawerTrigger asChild>
                     <Button
                       size="icon"
-                      className="bg-card hover:bg-accent"
+                      className="bg-card hover:bg-neutral-200 dark:hover:bg-neutral-600"
                     >
                       <BsXLg className="text-foreground" />
                     </Button>
@@ -247,7 +247,7 @@ export function Navbar({
           >
             <DrawerTrigger asChild className="hidden md:flex">
               <Button size="icon" className="size-10" variant="ghost">
-                <BsList className="size-5 text-foreground" />
+                <BsList className="size-[18px] text-foreground" />
               </Button>
             </DrawerTrigger>
             <DrawerContent>
@@ -261,7 +261,7 @@ export function Navbar({
                 <DrawerTrigger asChild>
                   <Button
                     size="icon"
-                    className="bg-card hover:bg-accent"
+                    className="bg-card hover:bg-neutral-200 dark:hover:bg-neutral-600"
                   >
                     <BsXLg className="text-foreground" />
                   </Button>
@@ -377,7 +377,7 @@ export function Navbar({
               <DrawerFooter>
                 <DrawerClose asChild>
                   <Link
-                    className="text-center bg-primary h-10 hover:bg-blue-700 active:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 black:active:bg-blue-800 p-2 font-medium text-sm text-white rounded-md"
+                    className="text-center flex justify-center items-center bg-primary h-10 hover:bg-blue-700 active:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 black:active:bg-blue-800 p-2 font-medium text-sm text-white rounded-md"
                     href={"/donation"}
                   >
                     Ajude o projeto
@@ -391,7 +391,7 @@ export function Navbar({
             <Avatar className="size-7 ring-2 ring-offset-2 ring-offset-background ring-border-subtle md:ml-1.5 mr-1">
               <AvatarImage src={user.photoURL || undefined} />
               <AvatarFallback>
-                <UserIcon className="size-7" />
+                <UserIcon className="size-6" />
               </AvatarFallback>
             </Avatar>
           ) : (
@@ -400,7 +400,7 @@ export function Navbar({
                 title="Faça login ou cria sua conta"
                 className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 w-10 md:w-auto md:px-4 h-10 dark:text-white font-normal"
               >
-                <LuLogIn className="flex md:hidden" />
+                <LuLogIn className="flex md:hidden size-[18px]" />
                 <p className="hidden font-medium md:block"> Entrar</p>
               </Button>
             </AuthModal>
