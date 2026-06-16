@@ -198,7 +198,7 @@ export function HomeClient({
             <AuthModal>
               <button
                 type="button"
-                className="bg-transparent font-bold text-accent hover:underline"
+                className="bg-transparent font-bold text-blue-500 hover:underline"
               >
                 Cadastre sua Skill agora
               </button>
