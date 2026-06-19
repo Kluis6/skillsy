@@ -36,6 +36,7 @@ import {
   Loader2,
   Clock,
   CalendarDays,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -78,14 +79,6 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 import { 
   Tooltip,
   TooltipContent,
@@ -454,18 +447,21 @@ export function AdminUsersClient() {
               </div>
               <div className="space-y-2">
                 <Label className="text-xs font-bold text-text-muted uppercase ml-1">Estado (UF)</Label>
-                <Select value={filterState} onValueChange={(val) => setFilterState(val || 'all')}>
-                  <SelectTrigger className="bg-surface border-none rounded-2xl h-12 text-sm w-full">
-                    <SelectValue placeholder="Selecione o Estado" />
-                  </SelectTrigger>
-                  <SelectContent>
+                <div className="relative">
+                  <select
+                    value={filterState}
+                    onChange={(e) => setFilterState(e.target.value || 'all')}
+                    className="w-full appearance-none rounded-2xl border border-transparent bg-surface h-12 px-4 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
+                  >
+                    <option value="all">Todos os estados</option>
                     {BRAZIL_STATES.map((state) => (
-                      <SelectItem key={state.value} value={state.value}>
+                      <option key={state.value} value={state.value}>
                         {state.label}
-                      </SelectItem>
+                      </option>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
+                </div>
               </div>
               <div className="flex items-center gap-3 h-12 px-4 bg-surface rounded-2xl">
                 <Switch 

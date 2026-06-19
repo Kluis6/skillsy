@@ -14,6 +14,7 @@ import {
   MapPin,
   Star,
   ShieldCheck,
+  ChevronDown,
   ChevronRight,
   SlidersHorizontal,
   ChevronLeft,
@@ -25,14 +26,6 @@ import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 
 import { Skeleton } from "@/components/ui/skeleton";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { AuthModal } from "./auth-modal";
 import { BRAZIL_STATES } from "@/lib/brazil-states";
@@ -436,37 +429,38 @@ function SearchResultsContent() {
                   <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4">
                     Estado
                   </p>
-                  <Select
-                    value={state || "all"}
-                    onValueChange={(selectedState) => {
-                      const params = new URLSearchParams(
-                        searchParams.toString(),
-                      );
+                  <div className="relative">
+                    <select
+                      value={state || "all"}
+                      onChange={(e) => {
+                        const selectedState = e.target.value;
+                        const params = new URLSearchParams(
+                          searchParams.toString(),
+                        );
 
-                      if (selectedState === "all" || selectedState == null) {
-                        params.delete("state");
-                        params.delete("city");
-                      } else {
-                        params.set("state", selectedState);
-                        if (selectedState !== state) {
+                        if (selectedState === "all") {
+                          params.delete("state");
                           params.delete("city");
+                        } else {
+                          params.set("state", selectedState);
+                          if (selectedState !== state) {
+                            params.delete("city");
+                          }
                         }
-                      }
 
-                      router.push(`/search?${params.toString()}`);
-                    }}
-                  >
-                    <SelectTrigger className="w-full rounded-sm border-border-subtle bg-plate-100 h-12 text-sm">
-                      <SelectValue placeholder="Selecione um estado" />
-                    </SelectTrigger>
-                    <SelectContent alignItemWithTrigger={false}>
+                        router.push(`/search?${params.toString()}`);
+                      }}
+                      className="w-full appearance-none rounded-sm border border-border-subtle bg-plate-100 h-12 px-3 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
+                    >
+                      <option value="all">Todos os estados</option>
                       {BRAZIL_STATES.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
+                        <option key={item.value} value={item.value}>
                           {item.label}
-                        </SelectItem>
+                        </option>
                       ))}
-                    </SelectContent>
-                  </Select>
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
+                  </div>
                 </div>
 
                 <div>
@@ -579,40 +573,38 @@ function SearchResultsContent() {
                           <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4">
                             Estado
                           </p>
-                          <Select
-                            value={state || "all"}
-                            onValueChange={(selectedState) => {
-                              const params = new URLSearchParams(
-                                searchParams.toString(),
-                              );
+                          <div className="relative">
+                            <select
+                              value={state || "all"}
+                              onChange={(e) => {
+                                const selectedState = e.target.value;
+                                const params = new URLSearchParams(
+                                  searchParams.toString(),
+                                );
 
-                              if (
-                                selectedState === "all" ||
-                                selectedState == null
-                              ) {
-                                params.delete("state");
-                                params.delete("city");
-                              } else {
-                                params.set("state", selectedState);
-                                if (selectedState !== state) {
+                                if (selectedState === "all") {
+                                  params.delete("state");
                                   params.delete("city");
+                                } else {
+                                  params.set("state", selectedState);
+                                  if (selectedState !== state) {
+                                    params.delete("city");
+                                  }
                                 }
-                              }
 
-                              router.push(`/search?${params.toString()}`);
-                            }}
-                          >
-                            <SelectTrigger className="w-full rounded-sm bg-surface h-12 text-sm">
-                              <SelectValue placeholder="Selecione um estado" />
-                            </SelectTrigger>
-                            <SelectContent>
+                                router.push(`/search?${params.toString()}`);
+                              }}
+                              className="w-full appearance-none rounded-sm border border-border-subtle bg-surface h-12 px-3 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
+                            >
+                              <option value="all">Todos os estados</option>
                               {BRAZIL_STATES.map((item) => (
-                                <SelectItem key={item.value} value={item.value}>
+                                <option key={item.value} value={item.value}>
                                   {item.label}
-                                </SelectItem>
+                                </option>
                               ))}
-                            </SelectContent>
-                          </Select>
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
+                          </div>
                         </div>
 
                         <div className="no-scrollbar space-y-6 overflow-y-auto h-[60dvh]">

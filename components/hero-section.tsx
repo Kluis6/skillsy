@@ -23,13 +23,43 @@ export function HeroSection({
   locationFilter,
   setLocationFilter,
 }: HeroSectionProps) {
+  const heroTransition = {
+    type: "spring" as const,
+    visualDuration: 0.7,
+    bounce: 0.18,
+  };
+
+  const heroVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.08,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 18 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: heroTransition,
+    },
+  };
+
   return (
     <section className="w-full h-[58vh] md:h-[84vh]">
-      <div className="container mx-auto space-y-4 flex flex-col justify-center items-center h-full px-4">
+      <motion.div
+        initial="hidden"
+        animate="show"
+        variants={heroVariants}
+        className="container mx-auto space-y-4 flex flex-col justify-center items-center h-full px-4"
+      >
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full space-y-4 text-center"
+          variants={itemVariants}
+          className="w-full space-y-4 text-center will-change-transform"
         >
           <h2 className="font-black text-primary dark:text-blue-700 lg:text-9xl md:text-7xl text-6xl tracking-tighter">
             Skillsy
@@ -40,10 +70,8 @@ export function HeroSection({
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="w-full"
+          variants={itemVariants}
+          className="w-full will-change-transform"
         >
           <Form
             action="/search"
@@ -92,7 +120,7 @@ export function HeroSection({
             </div>
           </Form>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }
