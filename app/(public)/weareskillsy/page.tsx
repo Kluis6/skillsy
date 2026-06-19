@@ -9,7 +9,6 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
-import { Footer } from "@/components/footer";
 import Image from "next/image";
 import HeaderSection, {
   type HeaderImageItem,
@@ -35,21 +34,21 @@ const principles = [
     description:
       "A plataforma existe para abrir espaço para talentos locais, ampliar visibilidade e gerar oportunidades reais.",
     icon: Sparkles,
-    tone: "bg-red-50 text-red-500",
+    tone: "bg-red-50 dark:bg-red-900/40 text-red-500 dark:shadow-red-500/60 shadow-md",
   },
   {
     title: "Serviço",
     description:
       "Acreditamos que trabalho bem-feito, disponibilidade para ajudar e responsabilidade prática fortalecem a vida em comunidade.",
     icon: HeartHandshake,
-    tone: "bg-yellow-50 text-yellow-500",
+    tone: "bg-yellow-50 dark:bg-yellow-900/40 text-yellow-500 dark:shadow-yellow-500/60 shadow-md",
   },
   {
     title: "Confiança",
     description:
       "Queremos facilitar conexões mais seguras, claras e respeitosas entre pessoas que buscam ou oferecem serviços.",
     icon: ShieldCheck,
-    tone: "bg-blue-50 text-blue-500",
+    tone: "bg-blue-50 dark:bg-blue-900/40 text-blue-500 dark:shadow-blue-500/60 shadow-md",
   },
 ];
 
@@ -249,7 +248,7 @@ export default function WeAreSkillsyPage() {
             <div className="col-span-12 md:col-span-6">
               <div className="w-full md:h-full h-90 relative overflow-hidden rounded-2xl">
                 <Image
-                  src={"/Gemini_Generated_Image_mpk4kumpk4kumpk4.png"}
+                  src={"/Gemini_Generated_Image_g8p7zcg8p7zcg8p7.png"}
                   alt={""}
                   className="object-top object-cover "
                   fill
@@ -279,7 +278,7 @@ export default function WeAreSkillsyPage() {
               {values.map((value) => (
                 <div key={value.title} className="md:col-span-4 col-span-12">
                   <div className="border border-border-subtle p-4 h-full rounded-md space-y-2 bg-surface">
-                    <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md  ">
+                    <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md  dark:bg-blue-900/20 dark:text-blue-500 dark:shadow-blue-500/60">
                       <value.icon size={22} />
                     </div>
                     <h3 className="text-base font-bold text-text-main">

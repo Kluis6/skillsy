@@ -73,7 +73,7 @@ export function HomeClient({
       {!user && <BenefitsSection />}
 
       {/* Main Content */}
-      <main className="container mx-auto px-4">
+      <main className="container mx-auto px-4 mt-20">
         <AnimatePresence mode="wait">
           <motion.div
             key="explore"

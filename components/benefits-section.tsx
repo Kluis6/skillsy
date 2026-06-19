@@ -41,6 +41,42 @@ export function BenefitsSection() {
     },
   ];
 
+  const sectionTransition = {
+    type: "spring" as const,
+    visualDuration: 0.72,
+    bounce: 0.16,
+  };
+
+  const contentVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.14,
+        delayChildren: 0.06,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 18 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: sectionTransition,
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 22, scale: 0.985 },
+    show: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: sectionTransition,
+    },
+  };
+
   return (
     <section className="w-full h-full bg-surface py-8 my-16">
       <section className="px-4 container mx-auto">
@@ -48,13 +84,16 @@ export function BenefitsSection() {
           {/* Left Side: Content */}
           <div className="lg:col-span-5 w-full">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={contentVariants}
               className="lg:space-y-12 space-y-8 text-center lg:text-start justify-center lg:items-start flex flex-col w-full"
             >
-              <div className="space-y-2">
+              <motion.div
+                variants={itemVariants}
+                className="space-y-2 will-change-transform"
+              >
                 <h2 className="text-2xl md:text-3xl xl:text-4xl font-bold text-text-main leading-tight text-center lg:text-start">
                   Por que fazer <br className="" /> parte da
                   <span className="text-primary"> Skillsy?</span>
@@ -64,9 +103,12 @@ export function BenefitsSection() {
                   de confiança desenhada para fortalecer os laços profissionais
                   e comunitários.
                 </p>
-              </div>
+              </motion.div>
 
-              <div className="flex flex-col space-y-8 justify-center items-center w-full">
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-col space-y-8 justify-center items-center w-full will-change-transform"
+              >
                 <AuthModal>
                   <Button
                     variant="default"
@@ -82,19 +124,22 @@ export function BenefitsSection() {
                 <p className="text-xs font-bold text-text-muted uppercase tracking-widest text-center">
                   Junte-se a centenas de membros já cadastrados
                 </p>
-              </div>
+              </motion.div>
             </motion.div>
           </div>
 
           {/* Right Side: Bento Grid of Benefits */}
-          <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={contentVariants}
+            className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
             {benefits.map((benefit, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1, duration: 0.5 }}
+                variants={cardVariants}
                 className={`lg:p-8 md:p-6 p-4 flex flex-col space-y-4 md:space-y-6 rounded-xl border border-border-subtle bg-card transition-all hover:shadow-xl hover:shadow-primary/5 group ${idx % 3 === 0 ? "md:col-span-1" : ""}`}
               >
                 <div
@@ -113,7 +158,7 @@ export function BenefitsSection() {
                 </div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
     </section>
