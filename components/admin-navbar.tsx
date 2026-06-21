@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
@@ -20,11 +20,6 @@ import {
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { NotificationService, AdminNotification } from '@/services/notification-service';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -33,6 +28,8 @@ export function AdminNavbar() {
   const { user, profile, logout } = useAuth();
   const [notifications, setNotifications] = useState<AdminNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const notificationsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (profile?.role === 'admin') {
@@ -43,6 +40,35 @@ export function AdminNavbar() {
       return () => unsubscribe();
     }
   }, [profile]);
+
+  useEffect(() => {
+    if (!notificationsOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target as Node)
+      ) {
+        setNotificationsOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setNotificationsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [notificationsOpen]);
 
   const handleMarkAsRead = async (id: string) => {
     await NotificationService.markAsRead(id);
@@ -100,15 +126,14 @@ export function AdminNavbar() {
 
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-2 mr-2">
-            <Popover>
-              <PopoverTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="relative rounded-full text-text-muted hover:text-primary"
-                  />
-                }
+            <div className="relative" ref={notificationsRef}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative rounded-full text-text-muted hover:text-primary"
+                onClick={() => setNotificationsOpen((open) => !open)}
+                aria-expanded={notificationsOpen}
+                aria-haspopup="dialog"
               >
                   <Bell size={18} />
                   {unreadCount > 0 && (
@@ -116,8 +141,9 @@ export function AdminNavbar() {
                       {unreadCount}
                     </span>
                   )}
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-0 rounded-2xl border-border-subtle shadow-2xl overflow-hidden" align="end">
+              </Button>
+              {notificationsOpen && (
+                <div className="absolute right-0 top-12 z-50 w-80 overflow-hidden rounded-2xl border border-border-subtle bg-popover p-0 text-popover-foreground shadow-2xl">
                 <div className="p-4 bg-surface border-b border-border-subtle flex items-center justify-between">
                   <h3 className="text-xs font-bold uppercase tracking-widest text-text-main flex items-center gap-2">
                     <Bell size={14} className="text-primary" /> Notificações
@@ -138,7 +164,12 @@ export function AdminNavbar() {
                         <div 
                           key={n.id} 
                           className={`p-4 hover:bg-surface transition-colors cursor-pointer group relative ${!n.read ? 'bg-primary/5' : ''}`}
-                          onClick={() => !n.read && handleMarkAsRead(n.id)}
+                          onClick={() => {
+                            if (!n.read) {
+                              void handleMarkAsRead(n.id);
+                            }
+                            setNotificationsOpen(false);
+                          }}
                         >
                           <div className="flex gap-3">
                             <div className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${!n.read ? 'bg-card shadow-sm' : 'bg-surface'}`}>
@@ -175,12 +206,17 @@ export function AdminNavbar() {
                   )}
                 </ScrollArea>
                 <div className="p-3 bg-surface border-t border-border-subtle text-center">
-                  <Link href="/admin/usuarios" className="text-[10px] font-bold text-text-muted hover:text-primary flex items-center justify-center gap-1">
+                  <Link
+                    href="/admin/usuarios"
+                    className="text-[10px] font-bold text-text-muted hover:text-primary flex items-center justify-center gap-1"
+                    onClick={() => setNotificationsOpen(false)}
+                  >
                     Ir para a área administrativa <ChevronRight size={10} />
                   </Link>
                 </div>
-              </PopoverContent>
-            </Popover>
+                </div>
+              )}
+            </div>
             <ThemeToggle />
           </div>
 

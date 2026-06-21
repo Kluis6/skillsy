@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { UserService } from "@/services/user-service";
-import { UserProfile } from "@/models/types";
+import { Rating, UserProfile } from "@/models/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,6 +22,7 @@ import {
   Clock,
   Flag,
   ShieldCheck,
+  MessageSquareText,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
@@ -63,6 +64,8 @@ import { FaTelegramPlane } from "react-icons/fa";
 import { AVAILABILITY_OPTIONS } from "@/lib/profile-form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { reportUserSchema, type ReportUserFormData } from "@/lib/validations";
 import { REPORT_REASON_LABELS, REPORT_REASON_OPTIONS } from "@/lib/reporting";
 import {
@@ -93,6 +96,9 @@ export function ProfileDetailClient({
   const [loading, setLoading] = useState(!initialProfile);
   const [userRating, setUserRating] = useState(0);
   const [ratingHover, setRatingHover] = useState(0);
+  const [ratingComment, setRatingComment] = useState("");
+  const [ratings, setRatings] = useState<Rating[]>([]);
+  const [loadingRatings, setLoadingRatings] = useState(false);
   const [submittingRating, setSubmittingRating] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
@@ -145,6 +151,28 @@ export function ProfileDetailClient({
     };
     fetchProfile();
   }, [id, initialProfile]);
+
+  useEffect(() => {
+    const fetchRatings = async () => {
+      if (!targetProfile?.isProvider) {
+        setRatings([]);
+        return;
+      }
+
+      setLoadingRatings(true);
+      try {
+        const nextRatings = await UserService.getRatings(targetProfile.uid);
+        setRatings(nextRatings);
+      } catch (error) {
+        console.error("Error fetching ratings:", error);
+        toast.error("Não foi possível carregar os comentários.");
+      } finally {
+        setLoadingRatings(false);
+      }
+    };
+
+    fetchRatings();
+  }, [targetProfile?.uid, targetProfile?.isProvider]);
 
   const isContact = currentUserProfile?.contacts?.includes(id);
 
@@ -516,7 +544,30 @@ export function ProfileDetailClient({
     availabilityDays.length || targetProfile?.serviceHours?.trim(),
   );
 
-  const handleRate = async (score: number) => {
+  const ratingsWithComment = ratings.filter(
+    (rating) => typeof rating.comment === "string" && rating.comment.trim().length > 0,
+  );
+
+  const formatRatingDate = (createdAt: Rating["createdAt"]) => {
+    if (!createdAt || typeof createdAt !== "object" || !("seconds" in createdAt)) {
+      return "Agora há pouco";
+    }
+
+    return formatDistanceToNow(new Date(createdAt.seconds * 1000), {
+      addSuffix: true,
+      locale: ptBR,
+    });
+  };
+
+  const handleRatingSelect = (score: number) => {
+    if (!canRateProfile || submittingRating) {
+      return;
+    }
+
+    setUserRating(score);
+  };
+
+  const handleRate = async () => {
     if (!user) {
       toast.error("Login necessário", {
         description: "Você precisa estar logado para avaliar serviços.",
@@ -538,16 +589,32 @@ export function ProfileDetailClient({
       return;
     }
 
+    if (!userRating) {
+      toast.error("Selecione uma nota", {
+        description: "Escolha de 1 a 5 estrelas para enviar sua avaliação.",
+      });
+      return;
+    }
+
     setSubmittingRating(true);
     try {
-      await UserService.submitRating(user.uid, id, score);
-      setUserRating(score);
+      await UserService.submitRating(
+        user.uid,
+        id,
+        userRating,
+        ratingComment.trim() || undefined,
+      );
       toast.success("Avaliação enviada!", {
         description: "Obrigado por compartilhar sua experiência.",
       });
       // Refresh profile to show new rating
-      const updated = await UserService.getPublicProfile(id);
+      const [updated, updatedRatings] = await Promise.all([
+        UserService.getPublicProfile(id),
+        UserService.getRatings(id),
+      ]);
       setTargetProfile(updated);
+      setRatings(updatedRatings);
+      setRatingComment("");
     } catch (error: any) {
       console.error("Error submitting rating:", error);
 
@@ -945,6 +1012,9 @@ export function ProfileDetailClient({
                       <p className="text-sm text-text-main font-medium">
                         Avalie o serviço prestado por este membro.
                       </p>
+                      <p className="text-xs text-text-muted">
+                        Sua avaliação é anônima e pode incluir um comentário opcional.
+                      </p>
                       <div className="flex items-center gap-1.5">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <button
@@ -952,7 +1022,7 @@ export function ProfileDetailClient({
                             disabled={!canRateProfile || submittingRating}
                             onMouseEnter={() => setRatingHover(star)}
                             onMouseLeave={() => setRatingHover(0)}
-                            onClick={() => handleRate(star)}
+                            onClick={() => handleRatingSelect(star)}
                             className={`transition-all ${
                               (ratingHover || userRating || 0) >= star
                                 ? "text-highlight"
@@ -970,12 +1040,98 @@ export function ProfileDetailClient({
                           </button>
                         ))}
                       </div>
+                      <Textarea
+                        value={ratingComment}
+                        onChange={(event) => setRatingComment(event.target.value)}
+                        placeholder="Conte como foi sua experiência com este profissional. Opcional."
+                        maxLength={500}
+                        disabled={!canRateProfile || submittingRating}
+                        className="min-h-24 bg-background"
+                      />
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-[10px] font-medium text-text-muted">
+                          {ratingComment.length}/500 caracteres
+                        </p>
+                        <Button
+                          type="button"
+                          onClick={handleRate}
+                          disabled={!canRateProfile || submittingRating || !userRating}
+                          className="bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700"
+                        >
+                          {submittingRating ? "Enviando..." : "Enviar avaliação"}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             )}
           </div>
+
+          {targetProfile.isProvider && (
+            <section className="bg-card border-y border-border-subtle">
+              <div className="mx-auto container p-4 space-y-4">
+                <div className="flex items-center gap-2">
+                  <MessageSquareText size={18} className="text-primary" />
+                  <h3 className="md:text-xl text-base font-semibold text-text-main">
+                    Comentários da Comunidade
+                  </h3>
+                </div>
+
+                {loadingRatings ? (
+                  <p className="text-sm text-text-muted">
+                    Carregando comentários...
+                  </p>
+                ) : ratingsWithComment.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-border-subtle bg-surface p-4">
+                    <p className="text-sm text-text-muted">
+                      Ainda não há comentários públicos sobre este profissional.
+                    </p>
+                    <p className="mt-1 text-xs text-text-muted">
+                      As avaliações continuam anônimas e opcionais.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {ratingsWithComment.map((rating) => (
+                      <article
+                        key={rating.id}
+                        className="rounded-lg border border-border-subtle bg-surface p-4 space-y-3"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1 text-highlight">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star
+                                  key={star}
+                                  size={14}
+                                  fill={rating.score >= star ? "currentColor" : "none"}
+                                  className={
+                                    rating.score >= star
+                                      ? "text-highlight"
+                                      : "text-border-subtle"
+                                  }
+                                />
+                              ))}
+                            </div>
+                            <p className="text-[11px] font-medium uppercase tracking-wide text-text-muted">
+                              Avaliação anônima
+                            </p>
+                          </div>
+                          <p className="text-xs text-text-muted">
+                            {formatRatingDate(rating.createdAt)}
+                          </p>
+                        </div>
+                        <p className="text-sm leading-relaxed text-text-main whitespace-pre-wrap">
+                          {rating.comment}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
 
           <div className="w-full flex flex-col md:flex-row gap-2">
             <div className="bg-card w-full border-y border-border-subtle md:border-l border-l-0 ">

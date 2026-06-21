@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import React, { useEffect, useMemo, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
-import { UserService } from "@/services/user-service";
 import { UserProfile } from "@/models/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,8 +23,6 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
-
-import { Skeleton } from "@/components/ui/skeleton";
 
 import { AuthModal } from "./auth-modal";
 import { BRAZIL_STATES } from "@/lib/brazil-states";
@@ -53,74 +50,107 @@ import { LuLogIn } from "react-icons/lu";
 import { Footer } from "./footer";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 
-function SearchResultsContent() {
-  const { profile, toggleContact } = useAuth();
-  const searchParams = useSearchParams();
+const SEARCH_CATEGORIES = [
+  "Tecnologia",
+  "Design",
+  "Marketing",
+  "Consultoria",
+  "Vendas",
+  "Aulas",
+  "Cozinha",
+  "Doméstico",
+  "Limpeza",
+  "Marcenaria",
+  "Manutenção",
+  "Construção Civil",
+  "Beleza",
+  "Educação",
+  "Saúde",
+  "Eventos",
+  "Jurídico",
+  "Financeiro",
+  "Assistência",
+  "Reformas",
+  "Automotivo",
+  "Moda",
+  "Bem Estar",
+  "Pet Care",
+  "Fotografia",
+  "Música",
+  "Idiomas",
+  "Esportes",
+  "Festas",
+  "Transporte",
+] as const;
+
+interface SearchClientProps {
+  initialQuery: string;
+  initialCity: string;
+  initialState: string;
+  initialResults: UserProfile[];
+  initialSuggestions: UserProfile[];
+}
+
+export function SearchClient({
+  initialQuery,
+  initialCity,
+  initialState,
+  initialResults,
+  initialSuggestions,
+}: SearchClientProps) {
+  const { profile } = useAuth();
+  const auth = useAuth();
   const router = useRouter();
-  const query = searchParams.get("q") || "";
-  const city = searchParams.get("city") || "";
-  const state = searchParams.get("state") || "";
+  const pathname = usePathname();
+
+  const query = initialQuery;
+  const city = initialCity;
+  const state = initialState;
+  const logout = auth.logout;
+  const user = profile;
+
   const selectedStateLabel =
     BRAZIL_STATES.find((item) => item.value === state)?.label || state;
 
   const [searchTerm, setSearchTerm] = useState(query);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [results, setResults] = useState<UserProfile[]>([]);
-  const [suggestions, setSuggestions] = useState<UserProfile[]>([]);
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
   const ITEMS_PER_PAGE = 10;
 
   useEffect(() => {
-    setCurrentPage(1); // Reset pagination on filter change
-    const fetchResults = async () => {
-      setLoading(true);
-      try {
-        const location = city || state ? { city, state } : undefined;
-        let data = await UserService.searchProviders(query, location);
+    setSearchTerm(query);
+  }, [query]);
 
-        if (selectedCategory) {
-          data = data.filter(
-            (p) =>
-              p.category === selectedCategory ||
-              p.serviceType
-                ?.toLowerCase()
-                .includes(selectedCategory.toLowerCase()),
-          );
-        }
-
-        setResults(data);
-
-        // If no results, fetch suggestions from the same location
-        if (data.length === 0 && location) {
-          const suggestedData = await UserService.searchProviders("", location);
-          setSuggestions(suggestedData.slice(0, 3));
-        } else if (data.length === 0) {
-          // If no location, fetch any featured providers
-          const featured = await UserService.getProviders(3);
-          setSuggestions(featured);
-        }
-      } catch (error) {
-        console.error("Error searching:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchResults();
+  useEffect(() => {
+    setCurrentPage(1);
   }, [query, city, state, selectedCategory]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("q", searchTerm);
-    router.push(`/search?${params.toString()}`);
-  };
-  const auth = useAuth();
-  const user = profile;
-  const logout = auth.logout;
+  const results = useMemo(() => {
+    if (!selectedCategory) {
+      return initialResults;
+    }
 
-  const pathname = usePathname();
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+    return initialResults.filter(
+      (provider) =>
+        provider.category === selectedCategory ||
+        provider.serviceType
+          ?.toLowerCase()
+          .includes(selectedCategory.toLowerCase()),
+    );
+  }, [initialResults, selectedCategory]);
+
+  const paginatedResults = useMemo(
+    () =>
+      results.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE,
+      ),
+    [currentPage, results],
+  );
+
+  const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
 
   const shouldShowBackButton =
     pathname === "/profile" ||
@@ -128,11 +158,59 @@ function SearchResultsContent() {
     pathname.startsWith("/profile/") ||
     pathname.startsWith("/contacts/");
 
+  const createRouteParams = (overrides?: {
+    q?: string | null;
+    city?: string | null;
+    state?: string | null;
+  }) => {
+    const params = new URLSearchParams();
+    const nextQuery = overrides?.q ?? query;
+    const nextCity = overrides?.city ?? city;
+    const nextState = overrides?.state ?? state;
+
+    if (nextQuery?.trim()) {
+      params.set("q", nextQuery.trim());
+    }
+
+    if (nextState?.trim()) {
+      params.set("state", nextState.trim());
+    }
+
+    if (nextCity?.trim()) {
+      params.set("city", nextCity.trim());
+    }
+
+    return params;
+  };
+
+  const handleSearch = (event: React.FormEvent) => {
+    event.preventDefault();
+    const params = createRouteParams({
+      q: searchTerm.trim() || null,
+    });
+    router.push(`/search?${params.toString()}`);
+  };
+
+  const handleStateChange = (selectedState: string) => {
+    const params = createRouteParams();
+
+    if (selectedState === "all") {
+      params.delete("state");
+      params.delete("city");
+    } else {
+      params.set("state", selectedState);
+      if (selectedState !== state) {
+        params.delete("city");
+      }
+    }
+
+    router.push(`/search?${params.toString()}`);
+  };
+
   return (
     <div className="min-h-screen bg-surface/30 w-full space-y-2">
-      {/* Header / Search Bar */}
       <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle">
-        <div className="container px-4 mx-auto flex items-center justify-between gap-4  py-2">
+        <div className="container px-4 mx-auto flex items-center justify-between gap-4 py-2">
           <Drawer
             key={`search-drawer-${pathname}`}
             direction="left"
@@ -165,9 +243,11 @@ function SearchResultsContent() {
                 </DrawerTrigger>
               </DrawerHeader>
               <div className="px-4 space-y-4">
-                <h3 className="font-medium text-sm text-text-main">Navegação</h3>
+                <h3 className="font-medium text-sm text-text-main">
+                  Navegação
+                </h3>
                 <ul className="w-full space-y-1">
-                  <li className=" p-2 hover:bg-surface">
+                  <li className="p-2 hover:bg-surface">
                     <DrawerClose asChild>
                       <Link
                         href="/weareskillsy"
@@ -187,7 +267,7 @@ function SearchResultsContent() {
                       </Link>
                     </DrawerClose>
                   </li>
-                  <li className=" p-2 hover:bg-surface">
+                  <li className="p-2 hover:bg-surface">
                     <DrawerClose asChild>
                       <Link
                         href="/join"
@@ -197,7 +277,7 @@ function SearchResultsContent() {
                       </Link>
                     </DrawerClose>
                   </li>
-                  <li className=" p-2 hover:bg-surface">
+                  <li className="p-2 hover:bg-surface">
                     <DrawerClose asChild>
                       <Link
                         href="/privacidade"
@@ -207,7 +287,7 @@ function SearchResultsContent() {
                       </Link>
                     </DrawerClose>
                   </li>
-                  <li className=" p-2 hover:bg-surface">
+                  <li className="p-2 hover:bg-surface">
                     <DrawerClose asChild>
                       <Link
                         href="/termos"
@@ -264,7 +344,7 @@ function SearchResultsContent() {
                 <DrawerClose asChild>
                   <Link
                     className="text-center bg-primary p-2 h-10 font-medium text-sm text-white rounded-sm"
-                    href={"/donation"}
+                    href="/donation"
                   >
                     Ajude o projeto
                   </Link>
@@ -272,7 +352,7 @@ function SearchResultsContent() {
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
-          <Link href="/" className="">
+          <Link href="/">
             <h1 className="text-xl font-bold text-primary tracking-tighter">
               Skillsy
             </h1>
@@ -291,17 +371,19 @@ function SearchResultsContent() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="O que você procura? Pintor, Advogado, Bolo de Pote..."
-                className="pl-12 h-10 w-full bg-card border-border-subtle text-text-main placeholder:text-text-muted shadow-sm rounded-full placeholder:sm:text-sm "
+                className="pl-12 h-10 w-full bg-card border-border-subtle text-text-main placeholder:text-text-muted shadow-sm rounded-full placeholder:sm:text-sm"
               />
+              <Button
+                type="submit"
+                size="icon"
+                className="rounded-r-full absolute right-1 top-1/2 -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white px-6 h-8 font-bold hidden sm:flex justify-center items-center transition-all"
+              >
+                <Search
+                  className=" text-white"
+                  size={20}
+                />
+              </Button>
             </div>
-
-            <Button
-              type="submit"
-              size="sm"
-              className="rounded-sm bg-blue-500 hover:bg-blue-600 text-white px-6 h-10 font-bold hidden sm:flex transition-all"
-            >
-              Pesquisar
-            </Button>
           </form>
 
           {user ? (
@@ -315,15 +397,15 @@ function SearchResultsContent() {
             <AuthModal>
               <Button
                 title="Faça login ou cria sua conta"
-                className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 w-10 md:w-auto md:px-4 h-10 "
+                className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 w-10 md:w-auto md:px-4 h-10"
               >
-                <LuLogIn />
+                <LuLogIn className="block md:hidden" />
                 <p className="hidden md:block"> Entrar</p>
               </Button>
             </AuthModal>
           )}
         </div>
-        <div className="container px-4 mx-auto flex items-center justify-between gap-4  py-2 md:hidden">
+        <div className="container px-4 mx-auto flex items-center justify-between gap-4 py-2 md:hidden">
           <form
             onSubmit={handleSearch}
             className="md:hidden items-center gap-4 w-full max-w-2xl flex"
@@ -352,70 +434,8 @@ function SearchResultsContent() {
         </div>
       </nav>
 
-      {/* <div className="bg-card border-b border-border-subtle py-4 px-4 md:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-6">
-            <CepFilter
-              initialLocation={city && state ? { city, state } : null}
-              onLocationChange={(loc) => {
-                const params = new URLSearchParams(searchParams.toString());
-                if (loc) {
-                  params.set("city", loc.city);
-                  params.set("state", loc.state);
-                } else {
-                  params.delete("city");
-                  params.delete("state");
-                }
-                router.push(`/search?${params.toString()}`);
-              }}
-            />
-          </div>
-          <div className="hidden lg:flex items-center gap-4 border-l border-border-subtle pl-6 py-1">
-            <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
-              Filtrando por:{" "}
-              <span className="text-primary">
-                {city && state
-                  ? `${city}, ${state}`
-                  : state
-                    ? selectedStateLabel
-                    : "Todo o Brasil"}
-              </span>
-            </p>
-            {(city || state) && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          const params = new URLSearchParams(
-                            searchParams.toString(),
-                          );
-                          params.delete("city");
-                          params.delete("state");
-                          router.push(`/search?${params.toString()}`);
-                        }}
-                        className="h-8 w-8 rounded-full text-red-500 hover:bg-red-50 hover:text-red-600 transition-all"
-                      />
-                    }
-                  >
-                    <X size={14} />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">Remover Filtro de Localização</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-          </div>
-        </div>
-      </div> */}
-
       <main className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar / Filters */}
           <aside className="w-full lg:w-72 shrink-0 space-y-8 hidden lg:block">
             <div className="bg-card p-4 border border-border-subtle">
               <div className="flex items-center justify-between mb-6">
@@ -432,24 +452,7 @@ function SearchResultsContent() {
                   <div className="relative">
                     <select
                       value={state || "all"}
-                      onChange={(e) => {
-                        const selectedState = e.target.value;
-                        const params = new URLSearchParams(
-                          searchParams.toString(),
-                        );
-
-                        if (selectedState === "all") {
-                          params.delete("state");
-                          params.delete("city");
-                        } else {
-                          params.set("state", selectedState);
-                          if (selectedState !== state) {
-                            params.delete("city");
-                          }
-                        }
-
-                        router.push(`/search?${params.toString()}`);
-                      }}
+                      onChange={(e) => handleStateChange(e.target.value)}
                       className="w-full appearance-none rounded-sm border border-border-subtle bg-plate-100 h-12 px-3 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
                     >
                       <option value="all">Todos os estados</option>
@@ -468,38 +471,7 @@ function SearchResultsContent() {
                     Categorias
                   </p>
                   <div className="space-y-3">
-                    {[
-                      "Tecnologia",
-                      "Design",
-                      "Marketing",
-                      "Consultoria",
-                      "Vendas",
-                      "Aulas",
-                      "Cozinha",
-                      "Doméstico",
-                      "Limpeza",
-                      "Marcenaria",
-                      "Manutenção",
-                      "Construção Civil",
-                      "Beleza",
-                      "Educação",
-                      "Saúde",
-                      "Eventos",
-                      "Jurídico",
-                      "Financeiro",
-                      "Assistência",
-                      "Reformas",
-                      "Automotivo",
-                      "Moda",
-                      "Bem Estar",
-                      "Pet Care",
-                      "Fotografia",
-                      "Música",
-                      "Idiomas",
-                      "Esportes",
-                      "Festas",
-                      "Transporte",
-                    ].map((cat) => (
+                    {SEARCH_CATEGORIES.map((cat) => (
                       <label
                         key={cat}
                         className="flex items-center gap-3 text-sm font-medium text-text-muted hover:text-primary cursor-pointer transition-colors group"
@@ -540,13 +512,10 @@ function SearchResultsContent() {
             </div>
           </aside>
 
-          {/* Results List */}
           <div className="flex-grow space-y-6">
             <div className="flex items-center justify-between">
               <p className="text-xs font-bold text-text-muted tracking-widest">
-                {loading
-                  ? "Buscando membros..."
-                  : `${results.length} Resultados encontrados`}
+                {`${results.length} Resultados encontrados`}
               </p>
 
               <Sheet>
@@ -554,20 +523,23 @@ function SearchResultsContent() {
                   render={
                     <Button
                       size="icon"
-                      className="rounded-sm md:hidden  size-10"
+                      className="rounded-sm md:hidden size-10"
                       variant="outline"
                       title="Filtros"
                     >
-                      <SlidersHorizontal size={18} className="text-foreground" />
+                      <SlidersHorizontal
+                        size={18}
+                        className="text-foreground"
+                      />
                     </Button>
                   }
                 />
                 <SheetContent side="bottom">
                   <SheetHeader>
-                    <SheetTitle> Filtros</SheetTitle>
+                    <SheetTitle>Filtros</SheetTitle>
                   </SheetHeader>
                   <section className="w-full">
-                    <div className="px-4  h-full">
+                    <div className="px-4 h-full">
                       <div className="space-y-6">
                         <div>
                           <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4">
@@ -576,24 +548,9 @@ function SearchResultsContent() {
                           <div className="relative">
                             <select
                               value={state || "all"}
-                              onChange={(e) => {
-                                const selectedState = e.target.value;
-                                const params = new URLSearchParams(
-                                  searchParams.toString(),
-                                );
-
-                                if (selectedState === "all") {
-                                  params.delete("state");
-                                  params.delete("city");
-                                } else {
-                                  params.set("state", selectedState);
-                                  if (selectedState !== state) {
-                                    params.delete("city");
-                                  }
-                                }
-
-                                router.push(`/search?${params.toString()}`);
-                              }}
+                              onChange={(e) =>
+                                handleStateChange(e.target.value)
+                              }
                               className="w-full appearance-none rounded-sm border border-border-subtle bg-surface h-12 px-3 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
                             >
                               <option value="all">Todos os estados</option>
@@ -608,42 +565,11 @@ function SearchResultsContent() {
                         </div>
 
                         <div className="no-scrollbar space-y-6 overflow-y-auto h-[60dvh]">
-                          <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] ">
+                          <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">
                             Categorias
                           </p>
                           <div className="space-y-3">
-                            {[
-                              "Tecnologia",
-                              "Design",
-                              "Marketing",
-                              "Consultoria",
-                              "Vendas",
-                              "Aulas",
-                              "Cozinha",
-                              "Doméstico",
-                              "Limpeza",
-                              "Marcenaria",
-                              "Manutenção",
-                              "Construção Civil",
-                              "Beleza",
-                              "Educação",
-                              "Saúde",
-                              "Eventos",
-                              "Jurídico",
-                              "Financeiro",
-                              "Assistência",
-                              "Reformas",
-                              "Automotivo",
-                              "Moda",
-                              "Bem Estar",
-                              "Pet Care",
-                              "Fotografia",
-                              "Música",
-                              "Idiomas",
-                              "Esportes",
-                              "Festas",
-                              "Transporte",
-                            ].map((cat) => (
+                            {SEARCH_CATEGORIES.map((cat) => (
                               <label
                                 key={cat}
                                 className="flex items-center gap-3 text-sm font-medium text-text-muted hover:text-primary cursor-pointer transition-colors group"
@@ -688,178 +614,92 @@ function SearchResultsContent() {
             </div>
 
             <AnimatePresence mode="popLayout">
-              {loading ? (
-                <div className="space-y-6">
-                  {[1, 2, 3, 4].map((i) => (
-                    <Skeleton key={i} className="h-48 w-full rounded-sm" />
-                  ))}
-                </div>
-              ) : results.length > 0 ? (
+              {results.length > 0 ? (
                 <div className="space-y-2 md:space-y-6">
-                  {results
-                    .slice(
-                      (currentPage - 1) * ITEMS_PER_PAGE,
-                      currentPage * ITEMS_PER_PAGE,
-                    )
-                    .map((p, idx) => (
-                      <motion.div
-                        key={p.uid}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.05 }}
-                      >
-                        <Link href={`/profile/${p.uid}`}>
-                          <div className="flex flex-row gap-6 p-4 md:p-8 border border-border-subtle hover:shadow-2xl transition-all duration-300 bg-card cursor-pointer relative overflow-hidden">
-                            <div className="shrink-0 flex flex-col items-center gap-2.5 md:gap-3">
-                              <Avatar className="md:size-24 size-12 border-1 md:border-4 border-surface shadow-sm">
-                                <AvatarImage src={p.photoURL} />
-                                <AvatarFallback className="bg-primary/10 text-primary font-bold text-3xl">
-                                  {p.name[0]}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="flex items-center gap-1 text-highlight ">
-                                <Star size={14} fill="currentColor" />
-                                <p className="text-sm font-semibold">
-                                  {p.rating || "0.0"}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="flex-grow md:space-y-4">
-                              <div className="flex flex-wrap items-start justify-between gap-4">
-                                <div>
-                                  <div className="flex items-center gap-1">
-                                    <h3 className="text-base md:text-2xl font-bold text-text-main  font-heading">
-                                      {p.name}
-                                    </h3>
-                                    {shouldShowVerifiedBadge(p) ? (
-                                      <ShieldCheck
-                                        size={15}
-                                        className="text-primary"
-                                      />
-                                    ) : null}
-                                  </div>
-
-                                  <div className="">
-                                    {p.companyName && (
-                                      <p className="font-medium text-xs md:text-sm text-text-main">
-                                        {p.companyName}
-                                      </p>
-                                    )}
-
-                                    <p className="text-text-muted font-normal text-xs md:text-sm">
-                                      {p.serviceType ||
-                                        p.category ||
-                                        "Profissional"}
-                                    </p>
-                                    <div className="flex items-center space-x-1">
-                                      <p className="text-text-main block md:hidden font-medium text-xs md:text-sm">
-                                        {p.location || "Brasil"}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                                <Badge
-                                  variant="secondary"
-                                  className="py-2 px-3 hidden md:flex"
-                                >
-                                  <MapPin size={12} className="mr-2" />
-                                  {p.location || "Brasil"}
-                                </Badge>
-                              </div>
-                              <div className="hidden md:flex">
-                                <p className="text-text-muted text-sm line-clamp-2 max-w-2xl">
-                                  {p.bio ||
-                                    "Este membro da comunidade oferece serviços de alta qualidade com valores compartilhados. Clique para ver mais detalhes e entrar em contato."}
-                                </p>
-
-                                {/* <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
-                                  {p.baptismYear && (
-                                    <div className="flex items-center gap-1.5">
-                                      <Church
-                                        size={12}
-                                        className="text-primary/60"
-                                      />
-                                      <span>
-                                        Membro há{" "}
-                                        {new Date().getFullYear() -
-                                          p.baptismYear}{" "}
-                                        anos
-                                      </span>
-                                    </div>
-                                  )}
-                                  {p.availability &&
-                                    p.availability.length > 0 && (
-                                      <div className="flex items-center gap-1.5">
-                                        <CalendarDays
-                                          size={12}
-                                          className="text-primary/60"
-                                        />
-                                        <span>{p.availability.join(", ")}</span>
-                                      </div>
-                                    )}
-                                  {p.serviceHours && (
-                                    <div className="flex items-center gap-1.5">
-                                      <Clock
-                                        size={12}
-                                        className="text-primary/60"
-                                      />
-                                      <span>{p.serviceHours}</span>
-                                    </div>
-                                  )}
-                                </div> */}
-                              </div>
-
-                              {/* <div className="flex flex-wrap gap-3 pt-2">
-                                <div className="flex-grow" />
-                                <Button
-                                  size="sm"
-                                  variant={
-                                    profile?.contacts?.includes(p.uid)
-                                      ? "destructive"
-                                      : "default"
-                                  }
-                                  className={`h-8 rounded-sm text-[10px] font-bold  tracking-widest transition-all ${profile?.contacts?.includes(p.uid) ? "" : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"}`}
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    toggleContact(p.uid)
-                                      .then(() => {
-                                        if (profile)
-                                          toast.success(
-                                            "Lista de contatos atualizada",
-                                          );
-                                      })
-                                      .catch(() => {});
-                                  }}
-                                >
-                                  {profile?.contacts?.includes(p.uid) ? (
-                                    <>
-                                      <UserMinus size={14} className="md:mr-1.5" />
-                                      <p className="hidden md:block">Remover</p>
-                                      
-                                    </>
-                                  ) : (
-                                    <>
-                                      <UserPlus size={14} className="md:mr-1.5" />
-                                      <p className="hidden md:block">Conectar</p>
-                                    </>
-                                  )}
-                                </Button>
-                              </div> */}
+                  {paginatedResults.map((provider, idx) => (
+                    <motion.div
+                      key={provider.uid}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                    >
+                      <Link href={`/profile/${provider.uid}`}>
+                        <div className="flex flex-row gap-6 p-4 md:p-8 border border-border-subtle hover:shadow-2xl transition-all duration-300 bg-card cursor-pointer relative overflow-hidden">
+                          <div className="shrink-0 flex flex-col items-center gap-2.5 md:gap-3">
+                            <Avatar className="md:size-24 size-12 border-1 md:border-4 border-surface shadow-sm">
+                              <AvatarImage src={provider.photoURL} />
+                              <AvatarFallback className="bg-primary/10 text-primary font-bold text-3xl">
+                                {provider.name[0]}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex items-center gap-1 text-highlight">
+                              <Star size={14} fill="currentColor" />
+                              <p className="text-sm font-semibold">
+                                {provider.rating || "0.0"}
+                              </p>
                             </div>
                           </div>
-                        </Link>
-                      </motion.div>
-                    ))}
 
-                  {/* Pagination Component */}
+                          <div className="flex-grow md:space-y-4">
+                            <div className="flex flex-wrap items-start justify-between gap-4">
+                              <div>
+                                <div className="flex items-center gap-1">
+                                  <h3 className="text-base md:text-2xl font-bold text-text-main font-heading">
+                                    {provider.name}
+                                  </h3>
+                                  {shouldShowVerifiedBadge(provider) ? (
+                                    <ShieldCheck
+                                      size={15}
+                                      className="text-primary"
+                                    />
+                                  ) : null}
+                                </div>
+
+                                <div>
+                                  {provider.companyName && (
+                                    <p className="font-medium text-xs md:text-sm text-text-main">
+                                      {provider.companyName}
+                                    </p>
+                                  )}
+
+                                  <p className="text-text-muted font-normal text-xs md:text-sm">
+                                    {provider.serviceType ||
+                                      provider.category ||
+                                      "Profissional"}
+                                  </p>
+                                  <div className="flex items-center space-x-1">
+                                    <p className="text-text-main block md:hidden font-medium text-xs md:text-sm">
+                                      {provider.location || "Brasil"}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                              <Badge
+                                variant="secondary"
+                                className="py-2 px-3 hidden md:flex"
+                              >
+                                <MapPin size={12} className="mr-2" />
+                                {provider.location || "Brasil"}
+                              </Badge>
+                            </div>
+                            <div className="hidden md:flex">
+                              <p className="text-text-muted text-sm line-clamp-2 max-w-2xl">
+                                {provider.bio ||
+                                  "Este membro da comunidade oferece serviços de alta qualidade com valores compartilhados. Clique para ver mais detalhes e entrar em contato."}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </motion.div>
+                  ))}
+
                   {results.length > ITEMS_PER_PAGE && (
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-10 pb-20 border-t border-border-subtle mt-10">
                       <p className="text-sm font-bold text-text-muted uppercase tracking-widest">
-                        Página
-                        <span className="text-primary">{currentPage}</span> de
-                        {Math.ceil(results.length / ITEMS_PER_PAGE)}
+                        Página{" "}
+                        <span className="text-primary">{currentPage}</span> de{" "}
+                        {totalPages}
                       </p>
 
                       <div className="flex items-center gap-2">
@@ -884,58 +724,57 @@ function SearchResultsContent() {
                           <ChevronLeft size={18} />
                         </Button>
 
-                        {/* Mobile pagination simplified, Desktop shows numbers */}
                         <div className="hidden sm:flex items-center gap-1">
-                          {Array.from({
-                            length: Math.ceil(results.length / ITEMS_PER_PAGE),
-                          }).map((_, i) => {
-                            const pageNum = i + 1;
-                            // Show first, last, current, and neighbors
-                            if (
-                              pageNum === 1 ||
-                              pageNum ===
-                                Math.ceil(results.length / ITEMS_PER_PAGE) ||
-                              (pageNum >= currentPage - 1 &&
-                                pageNum <= currentPage + 1)
-                            ) {
-                              return (
-                                <Button
-                                  key={pageNum}
-                                  variant={
-                                    currentPage === pageNum
-                                      ? "default"
-                                      : "outline"
-                                  }
-                                  onClick={() => setCurrentPage(pageNum)}
-                                  className={`h-10 w-10 rounded-xl transition-all font-bold ${
-                                    currentPage === pageNum
-                                      ? "bg-primary text-white shadow-lg shadow-primary/20 scale-110 z-10"
-                                      : "border-border-subtle hover:border-primary/50"
-                                  }`}
-                                >
-                                  {pageNum}
-                                </Button>
-                              );
-                            } else if (
-                              (pageNum === currentPage - 2 && pageNum > 1) ||
-                              (pageNum === currentPage + 2 &&
-                                pageNum <
-                                  Math.ceil(results.length / ITEMS_PER_PAGE))
-                            ) {
-                              return (
-                                <span
-                                  key={pageNum}
-                                  className="px-1 text-text-muted"
-                                >
-                                  ...
-                                </span>
-                              );
-                            }
-                            return null;
-                          })}
+                          {Array.from({ length: totalPages }).map(
+                            (_, index) => {
+                              const pageNum = index + 1;
+
+                              if (
+                                pageNum === 1 ||
+                                pageNum === totalPages ||
+                                (pageNum >= currentPage - 1 &&
+                                  pageNum <= currentPage + 1)
+                              ) {
+                                return (
+                                  <Button
+                                    key={pageNum}
+                                    variant={
+                                      currentPage === pageNum
+                                        ? "default"
+                                        : "outline"
+                                    }
+                                    onClick={() => setCurrentPage(pageNum)}
+                                    className={`h-10 w-10 rounded-xl transition-all font-bold ${
+                                      currentPage === pageNum
+                                        ? "bg-primary text-white shadow-lg shadow-primary/20 scale-110 z-10"
+                                        : "border-border-subtle hover:border-primary/50"
+                                    }`}
+                                  >
+                                    {pageNum}
+                                  </Button>
+                                );
+                              }
+
+                              if (
+                                (pageNum === currentPage - 2 && pageNum > 1) ||
+                                (pageNum === currentPage + 2 &&
+                                  pageNum < totalPages)
+                              ) {
+                                return (
+                                  <span
+                                    key={pageNum}
+                                    className="px-1 text-text-muted"
+                                  >
+                                    ...
+                                  </span>
+                                );
+                              }
+
+                              return null;
+                            },
+                          )}
                         </div>
 
-                        {/* Mobile page number display */}
                         <div className="sm:hidden font-bold text-primary bg-primary/5 px-4 h-10 flex items-center rounded-xl">
                           {currentPage}
                         </div>
@@ -945,16 +784,10 @@ function SearchResultsContent() {
                           size="icon"
                           onClick={() =>
                             setCurrentPage((prev) =>
-                              Math.min(
-                                Math.ceil(results.length / ITEMS_PER_PAGE),
-                                prev + 1,
-                              ),
+                              Math.min(totalPages, prev + 1),
                             )
                           }
-                          disabled={
-                            currentPage ===
-                            Math.ceil(results.length / ITEMS_PER_PAGE)
-                          }
+                          disabled={currentPage === totalPages}
                           className="size-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
                         >
                           <ChevronRight size={18} />
@@ -962,15 +795,8 @@ function SearchResultsContent() {
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() =>
-                            setCurrentPage(
-                              Math.ceil(results.length / ITEMS_PER_PAGE),
-                            )
-                          }
-                          disabled={
-                            currentPage ===
-                            Math.ceil(results.length / ITEMS_PER_PAGE)
-                          }
+                          onClick={() => setCurrentPage(totalPages)}
+                          disabled={currentPage === totalPages}
                           className="h-10 w-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
                         >
                           <ChevronsRight size={18} />
@@ -983,7 +809,7 @@ function SearchResultsContent() {
                 <div className="space-y-12">
                   <div className="text-center py-20 space-y-6">
                     <div className="space-y-2">
-                      <Search className="mx-auto size-10 md:size-16 text-blue-300 " />
+                      <Search className="mx-auto size-10 md:size-16 text-blue-300" />
                       <h4 className="text-xl md:text-2xl font-bold text-text-main">
                         Nenhum resultado exato encontrado
                       </h4>
@@ -1002,20 +828,17 @@ function SearchResultsContent() {
                     <Button
                       onClick={() => {
                         setSearchTerm("");
-                        const params = new URLSearchParams(
-                          searchParams.toString(),
-                        );
-                        params.delete("q");
+                        const params = createRouteParams({ q: null });
                         router.push(`/search?${params.toString()}`);
                       }}
                       variant="outline"
-                      className=" px-4 h-10 "
+                      className="px-4 h-10"
                     >
                       Limpar Filtro de Busca
                     </Button>
                   </div>
 
-                  {suggestions.length > 0 && (
+                  {initialSuggestions.length > 0 && (
                     <div className="space-y-6">
                       <div className="flex items-center gap-4">
                         <div className="h-px flex-grow bg-border-subtle" />
@@ -1030,20 +853,23 @@ function SearchResultsContent() {
                       </div>
 
                       <div className="grid grid-cols-1 gap-4">
-                        {suggestions.map((p) => (
-                          <Link href={`/profile/${p.uid}`} key={p.uid}>
+                        {initialSuggestions.map((provider) => (
+                          <Link
+                            href={`/profile/${provider.uid}`}
+                            key={provider.uid}
+                          >
                             <div className="flex flex-row gap-6 p-4 md:p-8 border border-border-subtle hover:shadow-2xl transition-all duration-300 bg-card cursor-pointer relative overflow-hidden">
                               <div className="shrink-0 flex flex-col items-center gap-2.5 md:gap-3">
                                 <Avatar className="md:size-24 size-12 border-1 md:border-4 border-surface shadow-sm">
-                                  <AvatarImage src={p.photoURL} />
+                                  <AvatarImage src={provider.photoURL} />
                                   <AvatarFallback className="bg-primary/10 text-primary font-bold text-3xl">
-                                    {p.name[0]}
+                                    {provider.name[0]}
                                   </AvatarFallback>
                                 </Avatar>
-                                <div className="flex items-center gap-1 text-highlight ">
+                                <div className="flex items-center gap-1 text-highlight">
                                   <Star size={14} fill="currentColor" />
                                   <p className="text-sm font-semibold">
-                                    {p.rating || "0.0"}
+                                    {provider.rating || "0.0"}
                                   </p>
                                 </div>
                               </div>
@@ -1052,10 +878,10 @@ function SearchResultsContent() {
                                 <div className="flex flex-wrap items-start justify-between gap-4">
                                   <div>
                                     <div className="flex items-center gap-1">
-                                      <h3 className="text-base md:text-2xl font-bold text-text-main  font-heading">
-                                        {p.name}
+                                      <h3 className="text-base md:text-2xl font-bold text-text-main font-heading">
+                                        {provider.name}
                                       </h3>
-                                      {shouldShowVerifiedBadge(p) ? (
+                                      {shouldShowVerifiedBadge(provider) ? (
                                         <ShieldCheck
                                           size={15}
                                           className="text-primary"
@@ -1063,21 +889,21 @@ function SearchResultsContent() {
                                       ) : null}
                                     </div>
 
-                                    <div className="">
-                                      {p.companyName && (
+                                    <div>
+                                      {provider.companyName && (
                                         <p className="font-medium text-xs md:text-sm text-text-main">
-                                          {p.companyName}
+                                          {provider.companyName}
                                         </p>
                                       )}
 
                                       <p className="text-text-muted font-normal text-xs md:text-sm">
-                                        {p.serviceType ||
-                                          p.category ||
+                                        {provider.serviceType ||
+                                          provider.category ||
                                           "Profissional"}
                                       </p>
                                       <div className="flex items-center space-x-1">
                                         <p className="text-text-main block md:hidden font-medium text-xs md:text-sm">
-                                          {p.location || "Brasil"}
+                                          {provider.location || "Brasil"}
                                         </p>
                                       </div>
                                     </div>
@@ -1087,89 +913,15 @@ function SearchResultsContent() {
                                     className="py-2 px-3 hidden md:flex"
                                   >
                                     <MapPin size={12} className="mr-2" />
-                                    {p.location || "Brasil"}
+                                    {provider.location || "Brasil"}
                                   </Badge>
                                 </div>
                                 <div className="hidden md:flex">
                                   <p className="text-text-muted text-sm line-clamp-2 max-w-2xl">
-                                    {p.bio ||
+                                    {provider.bio ||
                                       "Este membro da comunidade oferece serviços de alta qualidade com valores compartilhados. Clique para ver mais detalhes e entrar em contato."}
                                   </p>
-
-                                  {/* <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-text-muted/60">
-                                  {p.baptismYear && (
-                                    <div className="flex items-center gap-1.5">
-                                      <Church
-                                        size={12}
-                                        className="text-primary/60"
-                                      />
-                                      <span>
-                                        Membro há{" "}
-                                        {new Date().getFullYear() -
-                                          p.baptismYear}{" "}
-                                        anos
-                                      </span>
-                                    </div>
-                                  )}
-                                  {p.availability &&
-                                    p.availability.length > 0 && (
-                                      <div className="flex items-center gap-1.5">
-                                        <CalendarDays
-                                          size={12}
-                                          className="text-primary/60"
-                                        />
-                                        <span>{p.availability.join(", ")}</span>
-                                      </div>
-                                    )}
-                                  {p.serviceHours && (
-                                    <div className="flex items-center gap-1.5">
-                                      <Clock
-                                        size={12}
-                                        className="text-primary/60"
-                                      />
-                                      <span>{p.serviceHours}</span>
-                                    </div>
-                                  )}
-                                </div> */}
                                 </div>
-
-                                {/* <div className="flex flex-wrap gap-3 pt-2">
-                                <div className="flex-grow" />
-                                <Button
-                                  size="sm"
-                                  variant={
-                                    profile?.contacts?.includes(p.uid)
-                                      ? "destructive"
-                                      : "default"
-                                  }
-                                  className={`h-8 rounded-sm text-[10px] font-bold  tracking-widest transition-all ${profile?.contacts?.includes(p.uid) ? "" : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"}`}
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    toggleContact(p.uid)
-                                      .then(() => {
-                                        if (profile)
-                                          toast.success(
-                                            "Lista de contatos atualizada",
-                                          );
-                                      })
-                                      .catch(() => {});
-                                  }}
-                                >
-                                  {profile?.contacts?.includes(p.uid) ? (
-                                    <>
-                                      <UserMinus size={14} className="md:mr-1.5" />
-                                      <p className="hidden md:block">Remover</p>
-                                      
-                                    </>
-                                  ) : (
-                                    <>
-                                      <UserPlus size={14} className="md:mr-1.5" />
-                                      <p className="hidden md:block">Conectar</p>
-                                    </>
-                                  )}
-                                </Button>
-                              </div> */}
                               </div>
                             </div>
                           </Link>
@@ -1186,36 +938,5 @@ function SearchResultsContent() {
 
       <Footer />
     </div>
-  );
-}
-
-export function SearchClient() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-surface p-6 md:p-10">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-10">
-              <Skeleton className="h-10 w-40 rounded-xl" />
-              <Skeleton className="h-10 w-10 rounded-full" />
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
-              <div className="lg:col-span-1 space-y-6">
-                <Skeleton className="h-40 w-full rounded-3xl" />
-                <Skeleton className="h-64 w-full rounded-3xl" />
-              </div>
-              <div className="lg:col-span-3 space-y-8">
-                <Skeleton className="h-16 w-full rounded-full" />
-                {[...Array(4)].map((_, i) => (
-                  <Skeleton key={i} className="h-40 w-full rounded-[2rem]" />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      }
-    >
-      <SearchResultsContent />
-    </Suspense>
   );
 }

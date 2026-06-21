@@ -21,7 +21,7 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import { toPlainValue } from '@/lib/firestore-plain';
-import { UserProfile, UserReport } from '@/models/types';
+import { Rating, UserProfile, UserReport } from '@/models/types';
 import { AVAILABILITY_OPTIONS, PROVIDER_CATEGORIES } from '@/lib/profile-form';
 import { NotificationService } from './notification-service';
 import {
@@ -1362,14 +1362,25 @@ export const UserService = {
     }
   },
 
-  async getRatings(toId: string): Promise<any[]> {
+  async getRatings(toId: string): Promise<Rating[]> {
     const path = 'ratings';
     try {
       const q = query(collection(db, 'ratings'), where('toId', '==', toId));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map((doc) =>
-        toPlainValue({ id: doc.id, ...doc.data() }),
-      );
+      return querySnapshot.docs
+        .map((doc) => toPlainValue({ id: doc.id, ...doc.data() }) as Rating)
+        .sort((a, b) => {
+          const aSeconds =
+            a.createdAt && typeof a.createdAt === 'object' && 'seconds' in a.createdAt
+              ? a.createdAt.seconds
+              : 0;
+          const bSeconds =
+            b.createdAt && typeof b.createdAt === 'object' && 'seconds' in b.createdAt
+              ? b.createdAt.seconds
+              : 0;
+
+          return bSeconds - aSeconds;
+        });
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, path);
       return [];
