@@ -401,7 +401,10 @@ export function ProfileDetailClient({
             render={
               <TooltipTrigger
                 render={
-                  <Button variant="outline"  className={` ${className || 'rounded-sm size-10'}`} />
+                  <Button
+                    variant="outline"
+                    className={` ${className || "rounded-sm size-10"}`}
+                  />
                 }
               >
                 <PiShareFat className="text-text-muted" />
@@ -430,7 +433,7 @@ export function ProfileDetailClient({
               <Button
                 variant="destructive"
                 size="icon"
-                className={` ${className && 'rounded-sm size-10'}`}
+                className={` ${className && "rounded-sm size-10"}`}
                 onClick={() => setReportDialogOpen(true)}
               />
             }
@@ -545,11 +548,16 @@ export function ProfileDetailClient({
   );
 
   const ratingsWithComment = ratings.filter(
-    (rating) => typeof rating.comment === "string" && rating.comment.trim().length > 0,
+    (rating) =>
+      typeof rating.comment === "string" && rating.comment.trim().length > 0,
   );
 
   const formatRatingDate = (createdAt: Rating["createdAt"]) => {
-    if (!createdAt || typeof createdAt !== "object" || !("seconds" in createdAt)) {
+    if (
+      !createdAt ||
+      typeof createdAt !== "object" ||
+      !("seconds" in createdAt)
+    ) {
       return "Agora há pouco";
     }
 
@@ -1013,9 +1021,10 @@ export function ProfileDetailClient({
                         Avalie o serviço prestado por este membro.
                       </p>
                       <p className="text-xs text-text-muted">
-                        Sua avaliação é anônima e pode incluir um comentário opcional.
+                        Sua avaliação é anônima e pode incluir um comentário
+                        opcional.
                       </p>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 ">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <button
                             key={star}
@@ -1040,13 +1049,17 @@ export function ProfileDetailClient({
                           </button>
                         ))}
                       </div>
+                    </div>
+                  </div>
+                  {user && (
+                    <>
                       <Textarea
                         value={ratingComment}
                         onChange={(event) => setRatingComment(event.target.value)}
                         placeholder="Conte como foi sua experiência com este profissional. Opcional."
                         maxLength={500}
                         disabled={!canRateProfile || submittingRating}
-                        className="min-h-24 bg-background"
+                        className="min-h-24 w-full bg-background flex"
                       />
                       <div className="flex items-center justify-between gap-3">
                         <p className="text-[10px] font-medium text-text-muted">
@@ -1055,14 +1068,16 @@ export function ProfileDetailClient({
                         <Button
                           type="button"
                           onClick={handleRate}
-                          disabled={!canRateProfile || submittingRating || !userRating}
+                          disabled={
+                            !canRateProfile || submittingRating || !userRating
+                          }
                           className="bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700"
                         >
                           {submittingRating ? "Enviando..." : "Enviar avaliação"}
                         </Button>
                       </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -1105,7 +1120,11 @@ export function ProfileDetailClient({
                                 <Star
                                   key={star}
                                   size={14}
-                                  fill={rating.score >= star ? "currentColor" : "none"}
+                                  fill={
+                                    rating.score >= star
+                                      ? "currentColor"
+                                      : "none"
+                                  }
                                   className={
                                     rating.score >= star
                                       ? "text-highlight"
