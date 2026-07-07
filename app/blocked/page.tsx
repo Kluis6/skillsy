@@ -1,13 +1,10 @@
-import { Metadata } from 'next';
 import { BlockedClient } from '@/components/blocked-client';
+import { createPrivateMetadata } from '@/lib/public-metadata';
 
-export const metadata: Metadata = {
+export const metadata = createPrivateMetadata({
   title: 'Acesso Bloqueado',
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+  description: 'Página de aviso para acesso bloqueado no Skillsy.',
+});
 
 export default function BlockedPage() {
   return <BlockedClient />;

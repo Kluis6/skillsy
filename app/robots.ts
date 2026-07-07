@@ -1,13 +1,23 @@
 import { MetadataRoute } from 'next';
+import { getPublicBaseUrl } from '@/lib/public-metadata';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://skillsy.com.br';
+  const baseUrl = getPublicBaseUrl();
   
   return {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin/', '/blocked/'],
+      disallow: [
+        '/admin',
+        '/admin/',
+        '/blocked',
+        '/contacts',
+        '/meus-artigos',
+        '/meus-artigos/',
+        '/recovery',
+        '/signin',
+      ],
     },
     sitemap: `${baseUrl}/sitemap.xml`,
   };

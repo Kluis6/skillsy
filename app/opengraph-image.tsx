@@ -417,7 +417,7 @@ export default function OpenGraphImage() {
                         color: "#1D4ED8",
                       }}
                     >
-                      {card.rating} ★
+                      Nota {card.rating}
                     </div>
                   </div>
                 </div>

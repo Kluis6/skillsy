@@ -1,13 +1,10 @@
-import { Metadata } from 'next';
 import { AdminUsersClient } from '@/components/admin-users-client';
+import { createPrivateMetadata } from '@/lib/public-metadata';
 
-export const metadata: Metadata = {
+export const metadata = createPrivateMetadata({
   title: 'Gerenciar Usuários | Painel Administrativo',
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+  description: 'Área restrita para gerenciar usuários do Skillsy.',
+});
 
 export default function AdminUsersPage() {
   return <AdminUsersClient />;

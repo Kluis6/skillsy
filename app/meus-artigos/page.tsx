@@ -1,13 +1,10 @@
-import type { Metadata } from "next";
 import { MyPostsClient } from "@/components/posts/my-posts-client";
+import { createPrivateMetadata } from "@/lib/public-metadata";
 
-export const metadata: Metadata = {
+export const metadata = createPrivateMetadata({
   title: "Minhas Publicações",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+  description: "Área restrita para acompanhar suas publicações no Skillsy.",
+});
 
 export default function MeusArtigosPage() {
   return (

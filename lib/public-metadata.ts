@@ -15,6 +15,15 @@ type PublicMetadataOptions = {
   keywords?: string[];
 };
 
+type PrivateMetadataOptions = {
+  title: string;
+  description?: string;
+};
+
+function normalizeBaseUrl(url: string) {
+  return url.replace(/\/$/, "");
+}
+
 function createOgImageUrl({
   title,
   description,
@@ -88,5 +97,23 @@ export function createPublicMetadata({
 }
 
 export function getPublicBaseUrl() {
-  return baseUrl;
+  return normalizeBaseUrl(baseUrl);
+}
+
+export function createPrivateMetadata({
+  title,
+  description,
+}: PrivateMetadataOptions): Metadata {
+  return {
+    title,
+    description,
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
+    },
+  };
 }

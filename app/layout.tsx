@@ -3,10 +3,11 @@ import "./globals.css";
 import { Inter, Outfit } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/hooks/use-auth";
+import { getPublicBaseUrl } from "@/lib/public-metadata";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading" });
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://skillsy.com.br";
+const baseUrl = getPublicBaseUrl();
 const defaultDescription =
   "Conectando talentos e serviços na comunidade de membros. Uma plataforma para impulsionar pessoas.";
 

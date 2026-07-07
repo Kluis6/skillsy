@@ -18,17 +18,17 @@ const results = [
   {
     name: "Rafael Lima",
     service: "Aulas particulares de inglês",
-    meta: "Campinas, SP • 4.9 ★",
+    meta: "Campinas, SP • Nota 4.9",
   },
   {
     name: "Fernanda Costa",
     service: "Serviços domésticos e organização",
-    meta: "Sorocaba, SP • 5.0 ★",
+    meta: "Sorocaba, SP • Nota 5.0",
   },
   {
     name: "João Victor",
     service: "Marcenaria sob medida",
-    meta: "Jundiaí, SP • 4.8 ★",
+    meta: "Jundiaí, SP • Nota 4.8",
   },
 ];
 

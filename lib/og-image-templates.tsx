@@ -348,6 +348,15 @@ export function createProfileOgImage({
   const description =
     bio?.trim() ||
     `${name} faz parte da comunidade Skillsy e pode ser encontrado por meio do perfil público.`;
+  const hasPhoto = Boolean(photoUrl?.trim());
+  const ratingLabel =
+    typeof rating === "number"
+      ? `${rating.toFixed(1)} de 5`
+      : "Sem avaliações";
+  const reviewLabel =
+    typeof reviewCount === "number" && reviewCount > 0
+      ? `${reviewCount} avaliações`
+      : "Perfil novo";
 
   return new ImageResponse(
     (
@@ -376,13 +385,13 @@ export function createProfileOgImage({
         >
           <div
             style={{
-              width: "38%",
+              width: "46%",
               height: "100%",
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
-              padding: "32px",
-              background: OG_BRAND.heroBlueAlt,
+              padding: "34px",
+              background: OG_BRAND.heroDark,
               color: "#ffffff",
             }}
           >
@@ -400,75 +409,125 @@ export function createProfileOgImage({
               Perfil público
             </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "16px",
-                }}
-              >
-                {photoUrl ? (
-                  <img
-                    src={photoUrl}
-                    alt={name}
-                    style={{
-                      width: "172px",
-                      height: "172px",
-                      borderRadius: "999px",
-                      objectFit: "cover",
-                      border: "8px solid rgba(255,255,255,0.92)",
-                    }}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "20px",
+              }}
+            >
+              {hasPhoto ? (
+                <img
+                  src={photoUrl}
+                  alt={name}
+                  style={{
+                    width: "100%",
+                    height: "300px",
+                    borderRadius: "30px",
+                    objectFit: "cover",
+                    border: "8px solid rgba(255,255,255,0.92)",
+                    background: OG_BRAND.primary,
+                  }}
                 />
               ) : (
                 <div
                   style={{
-                    width: "180px",
-                    height: "180px",
-                    borderRadius: "999px",
+                    width: "100%",
+                    height: "300px",
+                    borderRadius: "30px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    background: OG_BRAND.whiteOverlay,
+                    background: OG_BRAND.primaryStrong,
                     border: "8px solid rgba(255,255,255,0.92)",
-                    fontSize: "72px",
-                    fontWeight: 800,
+                    color: "#ffffff",
+                    fontSize: "148px",
+                    fontWeight: 900,
+                    lineHeight: 1,
                   }}
                 >
-                  {name.charAt(0).toUpperCase()}
+                  S
                 </div>
               )}
-
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "8px",
-                    textAlign: "center",
-                  }}
-                >
-                  <div style={{ fontSize: "32px", fontWeight: 800 }}>
-                    {truncateOgText(name, 36)}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "19px",
-                      color: "rgba(255,255,255,0.88)",
-                    }}
-                  >
-                    {truncateOgText(headline, 48)}
-                  </div>
-                </div>
-              </div>
 
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: "10px",
+                  gap: "12px",
+                  padding: "22px",
+                  borderRadius: "26px",
+                  background: "rgba(255,255,255,0.14)",
+                  border: "1px solid rgba(255,255,255,0.22)",
                 }}
               >
+                <div
+                  style={{
+                    display: "flex",
+                    fontSize: "37px",
+                    lineHeight: 1.08,
+                    fontWeight: 800,
+                  }}
+                >
+                  {truncateOgText(name, 42)}
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    fontSize: "21px",
+                    lineHeight: 1.3,
+                    color: "rgba(255,255,255,0.9)",
+                  }}
+                >
+                  {truncateOgText(headline, 64)}
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "10px",
+                    flexWrap: "wrap",
+                    marginTop: "4px",
+                  }}
+                >
+                  {location ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        borderRadius: "999px",
+                        padding: "8px 13px",
+                        background: "rgba(255,255,255,0.16)",
+                        fontSize: "16px",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {truncateOgText(location, 32)}
+                    </div>
+                  ) : null}
+                  {category ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        borderRadius: "999px",
+                        padding: "8px 13px",
+                        background: "rgba(255,255,255,0.16)",
+                        fontSize: "16px",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {truncateOgText(category, 28)}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+              }}
+            >
                 <div
                   style={{
                     display: "flex",
@@ -477,32 +536,15 @@ export function createProfileOgImage({
                     color: "rgba(255,255,255,0.88)",
                   }}
                 >
-                  <div>{reviewCount || 0} avaliações</div>
-                  <div>
-                    {typeof rating === "number" ? rating.toFixed(1) : "0.0"} ★
-                  </div>
+                  <div>{reviewLabel}</div>
+                  <div>{ratingLabel}</div>
                 </div>
-                {category ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignSelf: "flex-start",
-                      borderRadius: "999px",
-                      padding: "10px 14px",
-                      background: "rgba(255,255,255,0.16)",
-                      fontSize: "16px",
-                      fontWeight: 700,
-                    }}
-                  >
-                    {truncateOgText(category, 22)}
-                  </div>
-                ) : null}
-              </div>
             </div>
+          </div>
 
           <div
             style={{
-              width: "62%",
+              width: "54%",
               height: "100%",
               display: "flex",
               flexDirection: "column",
@@ -588,7 +630,7 @@ export function createProfileOgImage({
                     letterSpacing: "-0.03em",
                   }}
                 >
-                  {truncateOgText(name, 60)}
+                  {truncateOgText(headline, 72)}
                 </div>
                 <div
                   style={{
@@ -597,7 +639,7 @@ export function createProfileOgImage({
                     color: "#4B5563",
                   }}
                 >
-                  {truncateOgText(description, 190)}
+                  {truncateOgText(description, 220)}
                 </div>
               </div>
 

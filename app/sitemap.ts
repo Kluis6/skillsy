@@ -1,15 +1,19 @@
 import { MetadataRoute } from 'next';
+import { getPublicBaseUrl } from '@/lib/public-metadata';
 import { UserService } from '@/services/user-service';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://skillsy.com.br';
+  const baseUrl = getPublicBaseUrl();
 
-  // Base routes
   const routes = [
     '',
     '/search',
-    '/contacts',
     '/artigosevagas',
+    '/join',
+    '/weareskillsy',
+    '/donation',
+    '/termos',
+    '/privacidade',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),

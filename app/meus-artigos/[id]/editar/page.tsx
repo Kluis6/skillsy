@@ -1,13 +1,10 @@
-import type { Metadata } from "next";
 import { EditPostPageClient } from "@/components/posts/edit-post-page-client";
+import { createPrivateMetadata } from "@/lib/public-metadata";
 
-export const metadata: Metadata = {
+export const metadata = createPrivateMetadata({
   title: "Editar Publicação",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+  description: "Área restrita para editar uma publicação no Skillsy.",
+});
 
 type PageProps = {
   params: Promise<{ id: string }>;

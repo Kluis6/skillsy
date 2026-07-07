@@ -1,13 +1,10 @@
-import { Metadata } from 'next';
 import { ContactsClient } from '@/components/contacts-client';
+import { createPrivateMetadata } from '@/lib/public-metadata';
 
-export const metadata: Metadata = {
+export const metadata = createPrivateMetadata({
   title: 'Meus Contatos',
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+  description: 'Área restrita para gerenciar seus contatos no Skillsy.',
+});
 
 export default function ContactsPage() {
   return <ContactsClient />;

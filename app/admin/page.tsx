@@ -1,13 +1,10 @@
-import { Metadata } from 'next';
 import { AdminDashboardClient } from '@/components/admin-dashboard-client';
+import { createPrivateMetadata } from '@/lib/public-metadata';
 
-export const metadata: Metadata = {
+export const metadata = createPrivateMetadata({
   title: 'Painel Administrativo',
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+  description: 'Área restrita para gestão administrativa do Skillsy.',
+});
 
 export default function AdminPage() {
   return <AdminDashboardClient />;

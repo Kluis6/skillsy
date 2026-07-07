@@ -1,13 +1,10 @@
-import type { Metadata } from "next";
 import { PostEditorClient } from "@/components/posts/post-editor-client";
+import { createPrivateMetadata } from "@/lib/public-metadata";
 
-export const metadata: Metadata = {
+export const metadata = createPrivateMetadata({
   title: "Nova Publicação",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+  description: "Área restrita para criar uma nova publicação no Skillsy.",
+});
 
 export default function NovoArtigoPage() {
   return (
