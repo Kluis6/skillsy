@@ -33,21 +33,21 @@ const summaries = [
     description:
       "Tratamos dados de cadastro, perfil e uso da plataforma na medida necessária para a operação do Skillsy.",
     icon: Database,
-    tone: "bg-blue-500/10 text-blue-700 border-blue-200",
+    tone: "bg-blue-500/10 text-blue-700 border-blue-200 dark:shadow-blue-500",
   },
   {
     title: "Uso com finalidade clara",
     description:
       "Os dados ajudam a exibir perfis, facilitar conexões, proteger contas e manter a experiência funcionando.",
     icon: Eye,
-    tone: "bg-amber-500/10 text-amber-700 border-amber-200",
+    tone: "bg-amber-500/10 text-amber-700 border-amber-200 dark:shadow-amber-500",
   },
   {
     title: "Direitos do titular",
     description:
       "Você pode acessar, corrigir e solicitar exclusão de dados, observadas as hipóteses legais aplicáveis.",
     icon: UserCheck,
-    tone: "bg-red-500/10 text-red-600 border-red-200",
+    tone: "bg-red-500/10 text-red-600 border-red-200 dark:shadow-red-500",
   },
 ];
 
@@ -225,7 +225,7 @@ export default function PrivacidadePage() {
                 {useCases.map((item) => (
                   <div key={item} className="rounded-md border border-border-subtle bg-card p-4">
                     <div className="flex items-start gap-3">
-                      <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700">
+                      <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 dark:shadow-blue-700">
                         <Eye size={18} />
                       </div>
                       <p className="text-sm leading-relaxed text-text-muted">
@@ -259,7 +259,7 @@ export default function PrivacidadePage() {
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               <div className="col-span-12 md:col-span-4">
                 <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
+                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md dark:shadow-blue-700">
                     <Share2 size={22} />
                   </div>
                   <h3 className="text-base font-bold text-text-main">
@@ -274,7 +274,7 @@ export default function PrivacidadePage() {
               </div>
               <div className="col-span-12 md:col-span-4">
                 <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
+                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md dark:shadow-blue-700">
                     <Lock size={22} />
                   </div>
                   <h3 className="text-base font-bold text-text-main">
@@ -289,7 +289,7 @@ export default function PrivacidadePage() {
               </div>
               <div className="col-span-12 md:col-span-4">
                 <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
+                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md dark:shadow-blue-700">
                     <ShieldCheck size={22} />
                   </div>
                   <h3 className="text-base font-bold text-text-main">

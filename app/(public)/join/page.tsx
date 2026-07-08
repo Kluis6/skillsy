@@ -36,21 +36,21 @@ const benefits = [
     description:
       "Conecte-se com pessoas que valorizam honestidade, respeito e bom atendimento em cada contato.",
     icon: ShieldCheck,
-    tone: "bg-blue-500/10 text-blue-700",
+    tone: "bg-blue-500/10 text-blue-700 dark:shadow-blue-500",
   },
   {
     title: "Visibilidade na sua região",
     description:
       "Mostre seu trabalho para pessoas da sua cidade e arredores que buscam indicações mais confiáveis.",
     icon: Zap,
-    tone: "bg-amber-500/10 text-amber-700",
+    tone: "bg-amber-500/10 text-amber-700 dark:shadow-amber-500",
   },
   {
     title: "Reputação com experiência real",
     description:
       "Receba avaliações de quem contratou você e ajude outros usuários a decidir com mais segurança.",
     icon: Star,
-    tone: "bg-red-500/10 text-red-600",
+    tone: "bg-red-500/10 text-red-600 dark:shadow-red-500",
   },
 ];
 
@@ -206,7 +206,7 @@ export default function JoinPage() {
               {highlights.map((item) => (
                 <div key={item.title} className="col-span-12 md:col-span-4">
                   <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
-                    <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
+                    <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md dark:shadow-blue-700">
                       <item.icon size={22} />
                     </div>
                     <h3 className="text-base font-bold text-text-main">

@@ -35,21 +35,21 @@ const pillars = [
     description:
       "A Skillsy aproxima quem precisa de um serviço e quem deseja oferecê-lo.",
     icon: Info,
-    tone: "bg-blue-500/10 text-blue-700 border-blue-200",
+    tone: "bg-blue-500/10 text-blue-700 border-blue-200 dark:shadow-blue-500",
   },
   {
     title: "Sem intermediação",
     description:
       "Pagamentos, contratos, valores e combinados são feitos diretamente entre as partes.",
     icon: AlertTriangle,
-    tone: "bg-amber-500/10 text-amber-700 border-amber-200",
+    tone: "bg-amber-500/10 text-amber-700 border-amber-200 dark:shadow-amber-500",
   },
   {
     title: "Responsabilidade",
     description:
       "A plataforma não emprega, certifica, supervisiona nem garante os serviços anunciados.",
     icon: ShieldCheck,
-    tone: "bg-red-500/10 text-red-600 border-red-200",
+    tone: "bg-red-500/10 text-red-600 border-red-200 dark:shadow-red-500",
   },
 ];
 
@@ -146,7 +146,7 @@ export default function TermosPage() {
                 className={`col-span-12 rounded-md border p-4 md:col-span-4 space-y-4  `}
               >
                 <div
-                  className={`flex size-12 items-center justify-center rounded-sm ${item.tone} shadow-md`}
+                  className={`flex size-12 items-center justify-center rounded-sm ${item.tone} shadow-md dark:shadow-md`}
                 >
                   <item.icon size={22} />
                 </div>
@@ -176,7 +176,7 @@ export default function TermosPage() {
           <div className="col-span-12">
             <div className="rounded-xl border border-border-subtle bg-surface p-4 md:p-6 lg:p-8 space-y-4">
               <div className="flex items-start gap-4 ">
-                <div className="flex size-12 shrink-0 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 dark:shadow-blue-700">
                   <Scale size={22} />
                 </div>
               </div>
@@ -288,7 +288,7 @@ export default function TermosPage() {
 
               <div className="col-span-12 lg:col-span-6">
                 <div className="h-full rounded-md border border-border-subtle bg-surface p-4 space-y-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
+                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md dark:shadow-blue-700">
                     <ShieldCheck size={22} />
                   </div>
 
@@ -320,7 +320,7 @@ export default function TermosPage() {
                 Privacidade e dados
               </h2>
               <div className="flex items-start gap-3">
-                <div className="flex size-10 md:size-12 shrink-0 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md">
+                <div className="flex size-10 md:size-12 shrink-0 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md dark:shadow-blue-700">
                   <UserCheck size={18} />
                 </div>
                 <p className="text-sm leading-relaxed text-text-muted">
