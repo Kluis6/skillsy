@@ -8,35 +8,34 @@ export const ogSize = {
 export const ogContentType = "image/png";
 
 export const OG_BRAND = {
-  bg: "radial-gradient(circle at top left, #dbeafe 0%, #eef6ff 38%, #ffffff 100%)",
+  bg: "radial-gradient(circle at top left, #F0F7FF 0%, #ffffff 48%, #ffffff 100%)",
   cardBg: "#ffffff",
-  cardBorder: "1px solid rgba(191,219,254,0.9)",
-  cardShadow: "0 18px 60px rgba(0, 26, 65, 0.10)",
-  heroBlue: "linear-gradient(120deg, #1D4ED8 0%, #2563EB 42%, #60A5FA 100%)",
-  heroBlueAlt: "linear-gradient(160deg, #0066FF 0%, #3B82F6 44%, #93C5FD 100%)",
-  heroDark: "linear-gradient(120deg, #0F172A 0%, #1E3A8A 42%, #2563EB 100%)",
+  cardBorder: "1px solid #E5E7EB",
+  cardShadow: "0 8px 24px rgba(0, 26, 65, 0.10)",
+  heroBlue: "linear-gradient(120deg, #0066FF 0%, #0066FF 48%, #00A3FF 100%)",
+  heroBlueAlt: "linear-gradient(160deg, #0066FF 0%, #0066FF 48%, #00A3FF 100%)",
+  heroDark: "linear-gradient(120deg, #0F172A 0%, #001A41 48%, #0066FF 100%)",
   surface: "linear-gradient(180deg, rgba(246,250,255,1) 0%, rgba(255,255,255,1) 100%)",
   surfaceSoft:
-    "linear-gradient(180deg, rgba(240,247,255,0.98) 0%, rgba(255,255,255,1) 100%)",
-  primary: "#1D4ED8",
+    "linear-gradient(180deg, #F0F7FF 0%, #ffffff 100%)",
+  primary: "#0066FF",
   primaryStrong: "#0066FF",
-  primarySoft: "#DBEAFE",
-  primaryPill: "#E0F2FE",
-  primaryPillText: "#0369A1",
-  text: "#0F172A",
-  muted: "#475569",
-  subtle: "#64748B",
-  panelBg: "#F8FAFC",
-  panelBorder: "1px solid #E2E8F0",
-  chipBg: "#EFF6FF",
+  primarySoft: "#F0F7FF",
+  primaryPill: "#F0F7FF",
+  primaryPillText: "#0066FF",
+  text: "#001A41",
+  muted: "#4B5563",
+  subtle: "#4B5563",
+  panelBg: "#F0F7FF",
+  panelBorder: "1px solid #E5E7EB",
+  chipBg: "#F0F7FF",
   whiteOverlay: "rgba(255,255,255,0.16)",
   whiteOverlayBorder: "1px solid rgba(255,255,255,0.2)",
   eyebrow: {
     fontSize: "17px",
     fontWeight: 800,
-    color: "#64748B",
-    textTransform: "uppercase",
-    letterSpacing: "0.16em",
+    color: "#4B5563",
+    letterSpacing: "0",
   },
 } as const;
 
@@ -73,7 +72,7 @@ export function createMarketingOgImage({
   kicker = "Skillsy",
   accentFrom = "#0066FF",
   accentTo = "#93C5FD",
-  surfaceTint = "#E0F2FE",
+  surfaceTint = OG_BRAND.primaryPill,
   sideHeading,
   sideBody,
   cards = [],
@@ -97,7 +96,7 @@ export function createMarketingOgImage({
             width: "100%",
             height: "100%",
             overflow: "hidden",
-            borderRadius: "36px",
+            borderRadius: "16px",
             background: OG_BRAND.cardBg,
             border: OG_BRAND.cardBorder,
             boxShadow: OG_BRAND.cardShadow,
@@ -131,7 +130,7 @@ export function createMarketingOgImage({
                   style={{
                     width: "68px",
                     height: "68px",
-                    borderRadius: "20px",
+                    borderRadius: "16px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -167,7 +166,7 @@ export function createMarketingOgImage({
                   padding: "10px 18px",
                   fontSize: "18px",
                   fontWeight: 700,
-                  textTransform: "uppercase",
+                  letterSpacing: "0",
                 }}
               >
                 {badge}
@@ -207,7 +206,7 @@ export function createMarketingOgImage({
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                color: "#6B7280",
+                color: OG_BRAND.muted,
                 fontSize: "19px",
               }}
             >
@@ -254,7 +253,7 @@ export function createMarketingOgImage({
                   flexDirection: "column",
                   gap: "14px",
                   padding: "24px",
-                  borderRadius: "28px",
+                  borderRadius: "16px",
                   background: "rgba(255,255,255,0.14)",
                   border: "1px solid rgba(255,255,255,0.22)",
                 }}
@@ -289,7 +288,7 @@ export function createMarketingOgImage({
                         flexDirection: "column",
                         gap: "4px",
                         padding: "16px 18px",
-                        borderRadius: "22px",
+                        borderRadius: "12px",
                         background: "rgba(255,255,255,0.12)",
                         border: "1px solid rgba(255,255,255,0.16)",
                       }}
@@ -377,7 +376,7 @@ export function createProfileOgImage({
             width: "100%",
             height: "100%",
             overflow: "hidden",
-            borderRadius: "36px",
+            borderRadius: "16px",
             background: OG_BRAND.cardBg,
             border: OG_BRAND.cardBorder,
             boxShadow: OG_BRAND.cardShadow,
@@ -423,7 +422,7 @@ export function createProfileOgImage({
                   style={{
                     width: "100%",
                     height: "300px",
-                    borderRadius: "30px",
+                    borderRadius: "16px",
                     objectFit: "cover",
                     border: "8px solid rgba(255,255,255,0.92)",
                     background: OG_BRAND.primary,
@@ -434,7 +433,7 @@ export function createProfileOgImage({
                   style={{
                     width: "100%",
                     height: "300px",
-                    borderRadius: "30px",
+                    borderRadius: "16px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -456,7 +455,7 @@ export function createProfileOgImage({
                   flexDirection: "column",
                   gap: "12px",
                   padding: "22px",
-                  borderRadius: "26px",
+                  borderRadius: "16px",
                   background: "rgba(255,255,255,0.14)",
                   border: "1px solid rgba(255,255,255,0.22)",
                 }}
@@ -571,7 +570,7 @@ export function createProfileOgImage({
                   style={{
                     width: "68px",
                     height: "68px",
-                    borderRadius: "20px",
+                    borderRadius: "12px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -603,12 +602,12 @@ export function createProfileOgImage({
                     display: "flex",
                     alignSelf: "flex-start",
                     borderRadius: "999px",
-                    background: "#E0F2FE",
-                    color: "#0369A1",
+                    background: OG_BRAND.primaryPill,
+                    color: OG_BRAND.primaryPillText,
                     padding: "10px 18px",
                     fontSize: "18px",
                     fontWeight: 700,
-                    textTransform: "uppercase",
+                    letterSpacing: "0",
                   }}
                 >
                   Membro verificado
@@ -656,12 +655,12 @@ export function createProfileOgImage({
                     style={{
                       display: "flex",
                       alignSelf: "flex-start",
-                      borderRadius: "20px",
+                      borderRadius: "12px",
                       padding: "12px 16px",
-                      background: "#F8FAFC",
-                      border: "1px solid #E2E8F0",
+                      background: OG_BRAND.panelBg,
+                      border: OG_BRAND.panelBorder,
                       fontSize: "18px",
-                      color: "#1F2937",
+                      color: OG_BRAND.text,
                     }}
                   >
                     Atua em {truncateOgText(companyName, 34)}
@@ -679,12 +678,12 @@ export function createProfileOgImage({
                       style={{
                         display: "flex",
                         borderRadius: "999px",
-                        background: "#E0F2FE",
-                        color: "#0369A1",
+                        background: OG_BRAND.primaryPill,
+                        color: OG_BRAND.primaryPillText,
                         padding: "10px 16px",
                         fontSize: "17px",
                         fontWeight: 700,
-                        textTransform: "uppercase",
+                        letterSpacing: "0",
                       }}
                     >
                       Membro verificado
@@ -696,7 +695,7 @@ export function createProfileOgImage({
                         display: "flex",
                         borderRadius: "999px",
                         background: "#F1F5F9",
-                        color: "#475569",
+                        color: OG_BRAND.muted,
                         padding: "10px 16px",
                         fontSize: "17px",
                         fontWeight: 600,
@@ -714,7 +713,7 @@ export function createProfileOgImage({
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                color: "#6B7280",
+                color: OG_BRAND.muted,
                 fontSize: "19px",
               }}
             >

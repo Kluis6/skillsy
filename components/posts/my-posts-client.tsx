@@ -8,6 +8,7 @@ import { POST_CATEGORY_LABELS, getPostExcerpt } from "@/lib/post-utils";
 import { PostService } from "@/services/post-service";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState, PageHeader, SurfacePanel } from "@/components/ui/page-layout";
 import { PostPublicActions } from "@/components/posts/post-public-actions";
 import { MyPostsPageLoading } from "@/components/loading/route-loaders";
 import { toast } from "sonner";
@@ -51,34 +52,38 @@ export function MyPostsClient() {
 
   if (!user) {
     return (
-      <div className="rounded-[2rem] border border-border-subtle bg-card p-10 text-center">
-        <h1 className="text-2xl font-bold text-text-main">Faça login para acessar suas publicações</h1>
-        <p className="mt-2 text-text-muted">
-          A área de publicação é restrita a usuários autenticados.
-        </p>
-      </div>
+      <SurfacePanel>
+        <EmptyState
+          title="Faça login para acessar suas publicações"
+          description="A área de publicação é restrita a usuários autenticados."
+        />
+      </SurfacePanel>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-[2rem] border border-border-subtle bg-card p-6 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-text-main">Minhas publicações</h1>
-          <p className="mt-1 text-text-muted">
-            Crie rascunhos, publique conteúdo e acompanhe o status.
-          </p>
-        </div>
-        <Link href="/meus-artigos/novo">
-          <Button>Nova publicação</Button>
-        </Link>
-      </div>
+      <PageHeader
+        title="Minhas publicações"
+        description="Crie rascunhos, publique conteúdo e acompanhe o status."
+        action={
+          <Button render={<Link href="/meus-artigos/novo" />} nativeButton={false}>
+            Nova publicação
+          </Button>
+        }
+      />
 
-      <div className="rounded-[2rem] border border-border-subtle bg-card">
+      <SurfacePanel className="p-0 md:p-0">
         {posts.length === 0 ? (
-          <div className="p-10 text-center text-text-muted">
-            Você ainda não criou nenhuma publicação.
-          </div>
+          <EmptyState
+            title="Você ainda não criou nenhuma publicação."
+            description="Compartilhe uma notícia, oportunidade ou conteúdo útil para a comunidade."
+            action={
+              <Button render={<Link href="/meus-artigos/novo" />} nativeButton={false}>
+                Criar primeira publicação
+              </Button>
+            }
+          />
         ) : (
           <div className="divide-y divide-border-subtle">
             {posts.map((post) => (
@@ -102,16 +107,19 @@ export function MyPostsClient() {
                 <div className="flex gap-3">
                   <PostPublicActions post={post} compact />
                   {post.status === "published" ? (
-                    <Link href={`/artigosevagas/${post.slug}`}>
-                      <Button>Ver publicado</Button>
-                    </Link>
+                    <Button
+                      render={<Link href={`/artigosevagas/${post.slug}`} />}
+                      nativeButton={false}
+                    >
+                      Ver publicado
+                    </Button>
                   ) : null}
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </SurfacePanel>
     </div>
   );
 }

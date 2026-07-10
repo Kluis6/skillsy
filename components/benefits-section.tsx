@@ -8,36 +8,36 @@ import { AuthModal } from "@/components/auth-modal";
 export function BenefitsSection() {
   const benefits = [
     {
-      title: "Comunidade Segura",
+      title: "Confiança antes do contato",
       description:
-        "Conecte-se com profissionais que compartilham os mesmos princípios e valores que você.",
+        "Encontre pessoas com rosto, história e vínculos reais com a comunidade.",
       icon: ShieldCheck,
       color: "text-primary",
-      bg: "bg-blue-50 dark:bg-blue-900/40 dark:shadow-blue-500/60 shadow-md",
+      bg: "bg-primary/10 text-primary",
     },
     {
-      title: "Visibilidade Total",
+      title: "Talentos com dignidade",
       description:
-        "Tenha seu talento exposto para centenas de membros na sua ala, estaca e região.",
+        "Mostre o que você sabe fazer de forma simples, clara e pronta para ser indicada.",
       icon: Zap,
       color: "text-sky-500 dark:text-white",
-      bg: "bg-sky-50 dark:bg-sky-900/40 dark:shadow-sky-500/60 shadow-md",
+      bg: "bg-sky-50 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
     },
     {
-      title: "Excelência Avaliada",
+      title: "Indicações que ajudam",
       description:
-        "Sistema de avaliações anônimas que garante a qualidade e confiabilidade do serviço.",
+        "Avaliações e perfis públicos ajudam a transformar uma recomendação em decisão.",
       icon: Star,
       color: "text-yellow-500 dark:text-white",
-      bg: "bg-highlight/10 dark:bg-yellow-900/40 dark:shadow-yellow-500/60 shadow-md",
+      bg: "bg-highlight/10 text-highlight",
     },
     {
-      title: "Networking Real",
+      title: "Apoio que fica perto",
       description:
-        "Construa uma rede de contatos profissionais sólida dentro de uma rede de confiança.",
+        "Procure por cidade, região ou necessidade e fortaleça quem está ao seu redor.",
       icon: Users,
       color: "text-blue-500 dark:text-white",
-      bg: "bg-blue-100 dark:bg-blue-900/40 dark:shadow-blue-500/60 shadow-md  ",
+      bg: "bg-primary/10 text-primary",
     },
   ];
 
@@ -95,13 +95,13 @@ export function BenefitsSection() {
                 className="space-y-2 will-change-transform"
               >
                 <h2 className="text-2xl md:text-3xl xl:text-4xl font-bold text-text-main leading-tight text-center lg:text-start">
-                  Por que fazer <br className="" /> parte da
-                  <span className="text-primary"> Skillsy?</span>
+                  Uma rede feita por pessoas,
+                  <br className="" /> não por anúncios.
                 </h2>
                 <p className="text-base lg:text-lg text-text-muted leading-relaxed">
-                  O Skillsy não é apenas uma plataforma de serviços. É uma rede
-                  de confiança desenhada para fortalecer os laços profissionais
-                  e comunitários.
+                  O Skillsy aproxima necessidades reais de talentos reais:
+                  alguém que ensina, conserta, cozinha, atende, orienta ou
+                  simplesmente sabe fazer bem feito.
                 </p>
               </motion.div>
 
@@ -112,9 +112,9 @@ export function BenefitsSection() {
                 <AuthModal>
                   <Button
                     variant="default"
-                    className="w-fit bg-blue-600 text-white hover:shadow-2xl shadow-primary border-0 rounded-full px-10 h-12 md:h-14 font-bold text-sm md:text-base lg:text-lg group"
+                    className="w-fit bg-primary text-white hover:bg-primary/90 border-0 rounded-full px-10 h-12 md:h-14 font-bold text-sm md:text-base lg:text-lg group"
                   >
-                    Criar minha conta agora
+                    Criar meu perfil na comunidade
                     <ArrowRight
                       size={20}
                       className="ml-2 group-hover:translate-x-1 transition-transform"
@@ -122,7 +122,7 @@ export function BenefitsSection() {
                   </Button>
                 </AuthModal>
                 <p className="text-xs font-bold text-text-muted uppercase tracking-widest text-center">
-                  Junte-se a centenas de membros já cadastrados
+                  Cadastre sua skill para ser encontrado com mais confiança
                 </p>
               </motion.div>
             </motion.div>

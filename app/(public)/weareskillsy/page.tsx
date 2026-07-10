@@ -34,21 +34,21 @@ const principles = [
     description:
       "A plataforma existe para abrir espaço para talentos locais, ampliar visibilidade e gerar oportunidades reais.",
     icon: Sparkles,
-    tone: "bg-red-50 dark:bg-red-900/40 text-red-500 dark:shadow-red-500/60 shadow-md",
+    tone: "bg-red-50 dark:bg-red-900/40 text-red-500",
   },
   {
     title: "Serviço",
     description:
       "Acreditamos que trabalho bem-feito, disponibilidade para ajudar e responsabilidade prática fortalecem a vida em comunidade.",
     icon: HeartHandshake,
-    tone: "bg-yellow-50 dark:bg-yellow-900/40 text-yellow-500 dark:shadow-yellow-500/60 shadow-md",
+    tone: "bg-yellow-50 dark:bg-yellow-900/40 text-yellow-500",
   },
   {
     title: "Confiança",
     description:
       "Queremos facilitar conexões mais seguras, claras e respeitosas entre pessoas que buscam ou oferecem serviços.",
     icon: ShieldCheck,
-    tone: "bg-blue-50 dark:bg-blue-900/40 text-blue-500 dark:shadow-blue-500/60 shadow-md",
+    tone: "bg-primary/10 dark:bg-blue-900/40 text-primary",
   },
 ];
 
@@ -125,11 +125,10 @@ export default function WeAreSkillsyPage() {
       />
 
       <div className="mx-auto px-4 container w-full z-[99999] isolate -mt-14 lg:-mt-10 mb-16">
-        <div className="w-full xl:p-8 p-4 bg-card z-50 shadow-2xl rounded-lg border border-border-subtle">
+        <div className="w-full xl:p-8 p-4 bg-card z-50 shadow-sm rounded-xl border border-border-subtle">
           <div className="grid grid-cols-12 gap-2 md:gap-4 md:gap-y-8 xl:gap-8 gap-y-8">
             <div className="col-span-12 space-y-4">
               <h3 className="text-2xl font-bold text-text-main">Ser Skillsy</h3>
-              {/* <div className="w-full p-8 bg-amber-500 sm:bg-blue-500 md:bg-red-500 lg:bg-emerald-500 xl:bg-fuchsia-500 2xl:bg-orange-500"></div> */}
               <p className="text-base font-normal text-text-muted">
                 Mais do que um diretório de profissionais, o Skillsy nasce como
                 uma iniciativa independente para aproximar pessoas, fortalecer
@@ -143,7 +142,7 @@ export default function WeAreSkillsyPage() {
                 className={`rounded-md col-span-12 lg:col-span-4 p-4 border space-y-4`}
               >
                 <div
-                  className={`${principle.tone} flex size-12 items-center justify-center rounded-sm shadow-md`}
+                  className={`${principle.tone} flex size-12 items-center justify-center rounded-sm`}
                 >
                   <principle.icon size={22} />
                 </div>
@@ -249,9 +248,10 @@ export default function WeAreSkillsyPage() {
               <div className="w-full md:h-full h-90 relative overflow-hidden rounded-2xl">
                 <Image
                   src={"/Gemini_Generated_Image_g8p7zcg8p7zcg8p7.png"}
-                  alt={""}
+                  alt={"Pessoa apresentando seu trabalho na comunidade"}
                   className="object-top object-cover "
                   fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
                 />
               </div>
             </div>
@@ -278,7 +278,7 @@ export default function WeAreSkillsyPage() {
               {values.map((value) => (
                 <div key={value.title} className="md:col-span-4 col-span-12">
                   <div className="border border-border-subtle p-4 h-full rounded-md space-y-2 bg-surface">
-                    <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md  dark:bg-blue-900/20 dark:text-blue-500 dark:shadow-blue-500/60">
+                    <div className="flex size-12 items-center justify-center rounded-sm bg-primary/10 text-primary dark:bg-blue-900/20 dark:text-blue-500">
                       <value.icon size={22} />
                     </div>
                     <h3 className="text-base font-bold text-text-main">
@@ -339,7 +339,7 @@ export default function WeAreSkillsyPage() {
             <div className="flex flex-col gap-4 xl:flex-row">
               <Link
                 href="/join"
-                className="inline-flex items-center justify-center rounded-full bg-blue-700 px-6 py-3 text-base font-bold text-white transition-colors  w-full"
+                className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-base font-bold text-white transition-colors hover:bg-primary/90 w-full"
               >
                 Quero Participar
                 <ArrowRight size={18} className="ml-2" />
@@ -356,19 +356,19 @@ export default function WeAreSkillsyPage() {
       </div>
 
       <div className="container mx-auto px-4 mb-24">
-        <section className="rounded-xl border border-amber-200 bg-amber-50 p-4 md:p-8">
+        <section className="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/30 md:p-8">
           <div className="max-w-4xl space-y-4">
-            <h2 className="text-xl font-bold text-amber-900">
+            <h2 className="text-xl font-bold text-amber-900 dark:text-amber-100">
               Comunicado importante
             </h2>
-            <p className="text-sm leading-relaxed text-amber-950/90">
+            <p className="text-sm leading-relaxed text-amber-950/90 dark:text-amber-100/85">
               O Skillsy não possui vínculo institucional, administrativo ou
               oficial com A Igreja de Jesus Cristo dos Santos dos Últimos Dias.
               A plataforma nasceu como uma iniciativa independente de membros
               que desejam incentivar conexões de confiança, apoio prático e
               visibilidade para talentos da comunidade.
             </p>
-            <p className="text-sm leading-relaxed text-amber-950/90">
+            <p className="text-sm leading-relaxed text-amber-950/90 dark:text-amber-100/85">
               Isso significa que o uso da plataforma, seus conteúdos e as
               relações estabelecidas por meio dela não representam
               posicionamentos oficiais da Igreja, nem substituem orientações

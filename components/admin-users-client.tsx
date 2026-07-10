@@ -379,9 +379,9 @@ export function AdminUsersClient() {
         <ShieldAlert size={64} className="text-red-500 mb-6" />
         <h1 className="text-3xl font-bold mb-4">Acesso Negado</h1>
         <p className="text-text-muted mb-8">Esta área é restrita a administradores do sistema.</p>
-        <Link href="/">
-          <Button className="bg-primary text-white font-bold rounded-xl px-8">Voltar para Home</Button>
-        </Link>
+        <Button render={<Link href="/" />} nativeButton={false} className="bg-primary text-white font-bold rounded-xl px-8">
+          Voltar para Home
+        </Button>
       </div>
     );
   }
@@ -391,11 +391,16 @@ export function AdminUsersClient() {
       <div className="pb-20 px-6 md:px-10 py-8 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           <div className="flex items-center gap-4">
-             <Link href="/admin">
-               <Button variant="ghost" size="icon" className="rounded-full hover:bg-surface">
-                 <ArrowLeft size={20} />
-               </Button>
-             </Link>
+             <Button
+               render={<Link href="/admin" />}
+               nativeButton={false}
+               variant="ghost"
+               size="icon"
+               className="rounded-full hover:bg-surface"
+               aria-label="Voltar ao painel administrativo"
+             >
+               <ArrowLeft size={20} />
+             </Button>
              <div>
                <h2 className="text-3xl font-bold text-text-main font-heading">Gerenciar Usuários</h2>
                <p className="text-text-muted mt-1">Total de {users.length} membros cadastrados.</p>
@@ -420,13 +425,14 @@ export function AdminUsersClient() {
         </div>
 
         {/* Filters & Search */}
-        <Card className="bg-card border-none shadow-sm rounded-[2.5rem] p-8 mb-8">
+        <Card className="bg-card border-none shadow-sm rounded-xl p-8 mb-8">
           <div className="flex flex-col lg:flex-row gap-6 items-end">
             <div className="flex-grow space-y-2 w-full">
-              <Label className="text-xs font-bold text-text-muted uppercase ml-1">Buscar Usuário</Label>
+              <Label htmlFor="admin-user-search" className="text-xs font-bold text-text-muted uppercase ml-1">Buscar Usuário</Label>
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
                 <Input 
+                  id="admin-user-search"
                   placeholder="Ex: João ou joao@exemplo.com" 
                   className="pl-12 bg-surface border-none rounded-2xl h-12 text-sm"
                   value={searchTerm}
@@ -437,8 +443,9 @@ export function AdminUsersClient() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full lg:w-auto">
               <div className="space-y-2">
-                <Label className="text-xs font-bold text-text-muted uppercase ml-1">Ala/Ramo</Label>
+                <Label htmlFor="admin-user-ward-filter" className="text-xs font-bold text-text-muted uppercase ml-1">Ala/Ramo</Label>
                 <Input 
+                  id="admin-user-ward-filter"
                   placeholder="Ex: Ala Centro" 
                   className="bg-surface border-none rounded-2xl h-12 text-sm"
                   value={filterWard}
@@ -446,9 +453,10 @@ export function AdminUsersClient() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs font-bold text-text-muted uppercase ml-1">Estado (UF)</Label>
+                <Label htmlFor="admin-user-state-filter" className="text-xs font-bold text-text-muted uppercase ml-1">Estado (UF)</Label>
                 <div className="relative">
                   <select
+                    id="admin-user-state-filter"
                     value={filterState}
                     onChange={(e) => setFilterState(e.target.value || 'all')}
                     className="w-full appearance-none rounded-2xl border border-transparent bg-surface h-12 px-4 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
@@ -486,13 +494,13 @@ export function AdminUsersClient() {
         </Card>
 
         {/* Users Table */}
-        <Card className="bg-card border-none shadow-sm rounded-[2.5rem] overflow-hidden mb-10">
+        <Card className="bg-card border-none shadow-sm rounded-xl overflow-hidden mb-10">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader className="bg-surface/50">
                 <TableRow className="border-border-subtle hover:bg-transparent">
                   <TableHead 
-                    className="w-[300px] py-6 pl-8 font-bold text-text-muted uppercase text-[10px] tracking-widest cursor-pointer group hover:text-primary transition-colors"
+                    className="w-[300px] py-6 pl-8 font-bold text-text-muted uppercase text-xs tracking-widest cursor-pointer group hover:text-primary transition-colors"
                     onClick={() => {
                       setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
                       setFilterRecent(false);
@@ -503,11 +511,11 @@ export function AdminUsersClient() {
                       <ArrowUpDown size={12} className={`transition-opacity ${sortOrder ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
                     </div>
                   </TableHead>
-                  <TableHead className="font-bold text-text-muted uppercase text-[10px] tracking-widest">Localização / Ala</TableHead>
-                  <TableHead className="font-bold text-text-muted uppercase text-[10px] tracking-widest">Status</TableHead>
-                  <TableHead className="font-bold text-text-muted uppercase text-[10px] tracking-widest">Denúncias</TableHead>
-                  <TableHead className="font-bold text-text-muted uppercase text-[10px] tracking-widest">Avaliação</TableHead>
-                  <TableHead className="text-right pr-8 font-bold text-text-muted uppercase text-[10px] tracking-widest">Ações</TableHead>
+                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-widest">Localização / Ala</TableHead>
+                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-widest">Status</TableHead>
+                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-widest">Denúncias</TableHead>
+                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-widest">Avaliação</TableHead>
+                  <TableHead className="text-right pr-8 font-bold text-text-muted uppercase text-xs tracking-widest">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -528,11 +536,11 @@ export function AdminUsersClient() {
                             <span className="font-bold text-text-main flex items-center gap-1">
                               {u.name}
                               {shouldShowVerifiedBadge(u) && <ShieldCheck size={14} className="text-primary" />}
-                              {u.role === 'admin' && <Badge variant="secondary" className="text-[8px] h-4 px-1 bg-red-50 text-red-500 border-red-100">Admin</Badge>}
+                              {u.role === 'admin' && <Badge variant="secondary" className="text-[8px] h-4 px-1 bg-red-500/10 text-red-500 border-red-500/20 dark:text-red-300">Admin</Badge>}
                             </span>
                             <span className="text-xs text-text-muted flex items-center gap-1"><Mail size={10} /> {u.email}</span>
                             {(u.companyName || u.category) && (
-                              <span className="text-[10px] text-primary font-bold mt-0.5">
+                              <span className="text-xs text-primary font-bold mt-0.5">
                                 {u.companyName && <span>{u.companyName}</span>}
                                 {u.companyName && u.category && <span> • </span>}
                                 {u.category && <span>{u.category}</span>}
@@ -550,19 +558,19 @@ export function AdminUsersClient() {
                       <TableCell>
                         <div className="flex flex-wrap gap-2">
                           {u.isProvider ? (
-                            <Badge className="bg-green-50 text-green-600 border-green-100 text-[10px]">Prestador</Badge>
+                            <Badge className="bg-green-500/10 text-green-600 border-green-500/20 text-xs dark:text-green-300">Prestador</Badge>
                           ) : (
-                            <Badge variant="outline" className="text-[10px] text-text-muted">Membro</Badge>
+                            <Badge variant="outline" className="text-xs text-text-muted">Membro</Badge>
                           )}
                           {u.isBlocked && (
-                            <Badge className="bg-red-50 text-red-600 border-red-100 text-[10px]">Bloqueado</Badge>
+                            <Badge className="bg-red-500/10 text-red-600 border-red-500/20 text-xs dark:text-red-300">Bloqueado</Badge>
                           )}
                         </div>
                       </TableCell>
                       <TableCell>
                         {reportCountsByUser[u.uid] ? (
                           <div className="space-y-1">
-                            <Badge className="bg-red-50 text-red-600 border-red-100 text-[10px] inline-flex items-center gap-1">
+                            <Badge className="bg-red-500/10 text-red-600 border-red-500/20 text-xs inline-flex items-center gap-1 dark:text-red-300">
                               <AlertTriangle size={12} />
                               {reportCountsByUser[u.uid]} denúncia{reportCountsByUser[u.uid] > 1 ? 's' : ''}
                             </Badge>
@@ -595,8 +603,8 @@ export function AdminUsersClient() {
                                   onClick={() => handleToggleBlock(u)}
                                   className={`w-9 h-9 rounded-xl transition-all ${
                                     u.isBlocked 
-                                      ? 'text-green-600 hover:bg-green-50 hover:text-green-700 bg-green-50/10' 
-                                      : 'text-red-500 hover:bg-red-50 hover:text-red-600'
+                                      ? 'text-green-600 hover:bg-green-500/10 hover:text-green-700 bg-green-500/10 dark:text-green-300 dark:hover:text-green-200' 
+                                      : 'text-red-500 hover:bg-red-500/10 hover:text-red-600 dark:text-red-300 dark:hover:text-red-200'
                                   }`}
                                 />
                               }
@@ -609,18 +617,21 @@ export function AdminUsersClient() {
                           </Tooltip>
 
                           <DropdownMenu>
-                            <DropdownMenuTrigger className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-surface transition-colors cursor-pointer outline-none">
+                            <DropdownMenuTrigger
+                              aria-label={`Abrir ações para ${u.name}`}
+                              className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-surface transition-colors cursor-pointer outline-none"
+                            >
                               <MoreVertical size={18} />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="rounded-2xl border-border-subtle shadow-xl p-2 w-48">
-                              <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-text-muted px-3 py-2">Gerenciar</DropdownMenuLabel>
+                              <DropdownMenuLabel className="text-xs font-bold uppercase tracking-widest text-text-muted px-3 py-2">Gerenciar</DropdownMenuLabel>
                               <DropdownMenuItem onClick={() => handleEditClick(u)} className="rounded-xl cursor-pointer focus:bg-primary/5 focus:text-primary">
                                 <Edit3 size={16} className="mr-2" /> Editar Perfil
                               </DropdownMenuItem>
                               <DropdownMenuSeparator className="bg-border-subtle my-1" />
                               <DropdownMenuItem 
                                 onClick={() => handleToggleBlock(u)} 
-                                className={`rounded-xl cursor-pointer ${u.isBlocked ? 'text-green-600 focus:bg-green-50 focus:text-green-600' : 'text-red-600 focus:bg-red-50 focus:text-red-600'}`}
+                                className={`rounded-xl cursor-pointer ${u.isBlocked ? 'text-green-600 focus:bg-green-500/10 focus:text-green-600 dark:text-green-300 dark:focus:text-green-200' : 'text-red-600 focus:bg-red-500/10 focus:text-red-600 dark:text-red-300 dark:focus:text-red-200'}`}
                               >
                                 {u.isBlocked ? (
                                   <><CheckCircle size={16} className="mr-2" /> Desbloquear</>
@@ -703,7 +714,7 @@ export function AdminUsersClient() {
 
       {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="rounded-[2.5rem] border-none shadow-2xl p-8 max-w-2xl overflow-y-auto max-h-[90vh]">
+        <DialogContent className="rounded-xl border-none shadow-lg p-8 max-w-2xl overflow-y-auto max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold font-heading">Editar Perfil de Usuário</DialogTitle>
             <DialogDescription>
@@ -713,7 +724,7 @@ export function AdminUsersClient() {
           
           <form onSubmit={editForm.handleSubmit(onSaveEdit)}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
-              <div className="md:col-span-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] text-amber-900 space-y-1">
+              <div className="md:col-span-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900 space-y-1 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100/85">
                 <p className="font-semibold text-sm">Atenção aos limites</p>
                 <p>
                   Campos longos demais ou em formato inválido podem ser rejeitados
@@ -729,10 +740,10 @@ export function AdminUsersClient() {
                   maxLength={ADMIN_FORM_LIMITS.name}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
-                <p className="text-[10px] text-text-muted ml-2">
+                <p className="text-xs text-text-muted ml-2">
                   Entre 2 e {ADMIN_FORM_LIMITS.name} caracteres.
                 </p>
-                {editForm.formState.errors.name && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.name.message}</p>}
+                {editForm.formState.errors.name && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.name.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">E-mail</Label>
@@ -765,10 +776,10 @@ export function AdminUsersClient() {
                     {detectingLocation ? <Loader2 size={18} className="animate-spin" /> : <Navigation size={18} />}
                   </Button>
                 </div>
-                <p className="text-[10px] text-text-muted ml-2">
+                <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.location} caracteres.
                 </p>
-                {editForm.formState.errors.location && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.location.message}</p>}
+                {editForm.formState.errors.location && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.location.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="ward" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Ala / Ramo</Label>
@@ -779,10 +790,10 @@ export function AdminUsersClient() {
                   maxLength={ADMIN_FORM_LIMITS.ward}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
-                <p className="text-[10px] text-text-muted ml-2">
+                <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.ward} caracteres.
                 </p>
-                {editForm.formState.errors.ward && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.ward.message}</p>}
+                {editForm.formState.errors.ward && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.ward.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="serviceType" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Serviço / Categoria</Label>
@@ -793,10 +804,10 @@ export function AdminUsersClient() {
                   maxLength={ADMIN_FORM_LIMITS.serviceType}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
-                <p className="text-[10px] text-text-muted ml-2">
+                <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.serviceType} caracteres.
                 </p>
-                {editForm.formState.errors.serviceType && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.serviceType.message}</p>}
+                {editForm.formState.errors.serviceType && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.serviceType.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Papel no Sistema</Label>
@@ -818,14 +829,14 @@ export function AdminUsersClient() {
                   {...editForm.register('baptismYear', { valueAsNumber: true })}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
-                {editForm.formState.errors.baptismYear && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.baptismYear.message}</p>}
-                <p className="text-[10px] text-primary/70 ml-2">
+                {editForm.formState.errors.baptismYear && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.baptismYear.message}</p>}
+                <p className="text-xs text-primary/70 ml-2">
                   Com o ano de batismo e a ala ou ramo preenchidos, o selo é exibido automaticamente.
                 </p>
               </div>
 
               <div className="md:col-span-2 space-y-4 pt-2">
-                <h4 className="text-sm font-bold text-text-main border-l-4 border-primary pl-3">Endereço Comercial (Opcional)</h4>
+                <h4 className="text-sm font-bold text-text-main">Endereço Comercial (Opcional)</h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2 space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Endereço (Rua/Avenida)</Label>
@@ -835,7 +846,7 @@ export function AdminUsersClient() {
                       maxLength={ADMIN_FORM_LIMITS.address}
                       className="bg-surface border-none rounded-2xl h-12"
                     />
-                    {editForm.formState.errors.businessAddress && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.businessAddress.message}</p>}
+                    {editForm.formState.errors.businessAddress && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessAddress.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Número</Label>
@@ -845,7 +856,7 @@ export function AdminUsersClient() {
                       maxLength={ADMIN_FORM_LIMITS.addressNumber}
                       className="bg-surface border-none rounded-2xl h-12"
                     />
-                    {editForm.formState.errors.businessAddressNumber && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.businessAddressNumber.message}</p>}
+                    {editForm.formState.errors.businessAddressNumber && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessAddressNumber.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Bairro</Label>
@@ -855,7 +866,7 @@ export function AdminUsersClient() {
                       maxLength={ADMIN_FORM_LIMITS.neighborhood}
                       className="bg-surface border-none rounded-2xl h-12"
                     />
-                    {editForm.formState.errors.businessNeighborhood && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.businessNeighborhood.message}</p>}
+                    {editForm.formState.errors.businessNeighborhood && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessNeighborhood.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Estado</Label>
@@ -865,7 +876,7 @@ export function AdminUsersClient() {
                       maxLength={ADMIN_FORM_LIMITS.state}
                       className="bg-surface border-none rounded-2xl h-12"
                     />
-                    {editForm.formState.errors.businessState && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.businessState.message}</p>}
+                    {editForm.formState.errors.businessState && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessState.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Complemento</Label>
@@ -875,7 +886,7 @@ export function AdminUsersClient() {
                       maxLength={ADMIN_FORM_LIMITS.complement}
                       className="bg-surface border-none rounded-2xl h-12"
                     />
-                    {editForm.formState.errors.businessComplement && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.businessComplement.message}</p>}
+                    {editForm.formState.errors.businessComplement && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessComplement.message}</p>}
                   </div>
                 </div>
               </div>
@@ -920,10 +931,10 @@ export function AdminUsersClient() {
                   maxLength={ADMIN_FORM_LIMITS.serviceHours}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
-                <p className="text-[10px] text-text-muted ml-2">
+                <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.serviceHours} caracteres.
                 </p>
-                {editForm.formState.errors.serviceHours && <p className="text-[10px] text-red-500 font-bold ml-2">{editForm.formState.errors.serviceHours.message}</p>}
+                {editForm.formState.errors.serviceHours && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.serviceHours.message}</p>}
               </div>
             </div>
 
@@ -960,7 +971,7 @@ export function AdminUsersClient() {
 
       {/* Add Admin Dialog */}
       <Dialog open={isAddAdminDialogOpen} onOpenChange={setIsAddAdminDialogOpen}>
-        <DialogContent className="rounded-[2.5rem] border-none shadow-2xl p-8 max-w-md">
+        <DialogContent className="rounded-xl border-none shadow-lg p-8 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold font-heading">Novo Administrador</DialogTitle>
             <DialogDescription>
@@ -970,7 +981,7 @@ export function AdminUsersClient() {
           
           <form onSubmit={adminForm.handleSubmit(onCreateAdmin)}>
             <div className="space-y-6 py-6">
-              <div className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-[11px] text-text-muted space-y-1">
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-xs text-text-muted space-y-1">
                 <p className="font-semibold text-text-main">
                   Regras do pré-cadastro administrativo
                 </p>
@@ -988,8 +999,8 @@ export function AdminUsersClient() {
                   maxLength={ADMIN_FORM_LIMITS.name}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
-                {adminForm.formState.errors.name && <p className="text-[10px] text-red-500 font-bold ml-2">{adminForm.formState.errors.name.message}</p>}
-                <p className="text-[10px] text-text-muted ml-2">
+                {adminForm.formState.errors.name && <p className="text-xs text-red-500 font-bold ml-2">{adminForm.formState.errors.name.message}</p>}
+                <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.name} caracteres.
                 </p>
               </div>
@@ -1003,8 +1014,8 @@ export function AdminUsersClient() {
                   maxLength={ADMIN_FORM_LIMITS.adminEmail}
                   className="bg-surface border-none rounded-2xl h-12"
                 />
-                {adminForm.formState.errors.email && <p className="text-[10px] text-red-500 font-bold ml-2">{adminForm.formState.errors.email.message}</p>}
-                <p className="text-[10px] text-text-muted ml-2">
+                {adminForm.formState.errors.email && <p className="text-xs text-red-500 font-bold ml-2">{adminForm.formState.errors.email.message}</p>}
+                <p className="text-xs text-text-muted ml-2">
                   Use um e-mail válido com até {ADMIN_FORM_LIMITS.adminEmail} caracteres.
                 </p>
               </div>

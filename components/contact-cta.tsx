@@ -51,7 +51,7 @@ export function ContactCTA() {
   };
 
   return (
-    <section className="my-24 bg-blue-700 p-4 lg:p-6 xl:p-8  rounded-2xl">
+    <section className="my-24 bg-primary p-4 lg:p-6 xl:p-8 rounded-xl">
       <div className="grid grid-cols-12 gap-y-12 md:gap-8">
         <div className="col-span-12 lg:col-span-6 xl:col-span-7 w-full h-full">
           <div className="space-y-4 justify-center pt-4 lg:pt-0 items-center md:items-start flex flex-col w-full h-full">
@@ -99,11 +99,11 @@ export function ContactCTA() {
                     </div>
                   </div>
                   {errors.name && (
-                    <p className="text-[10px] text-red-500 font-bold ml-2">
+                    <p className="text-xs text-red-500 font-bold ml-2">
                       {errors.name.message}
                     </p>
                   )}
-                  <p className="text-[10px] text-text-muted ml-2">
+                  <p className="text-xs text-text-muted ml-2">
                     Limite de {CONTACT_LIMITS.name} caracteres.
                   </p>
                 </div>
@@ -132,22 +132,22 @@ export function ContactCTA() {
                     </div>
                   </div>
                   {errors.email && (
-                    <p className="text-[10px] text-red-500 font-bold ml-2">
+                    <p className="text-xs text-red-500 font-bold ml-2">
                       {errors.email.message}
                     </p>
                   )}
-                  <p className="text-[10px] text-text-muted ml-2">
+                  <p className="text-xs text-text-muted ml-2">
                     Informe um e-mail válido.
                   </p>
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex justify-between items-center px-1 mb-1">
-                    <span className="text-[10px] font-normal text-text-muted uppercase tracking-widest">
+                    <span className="text-xs font-normal text-text-muted uppercase">
                       Sua Mensagem *
                     </span>
                     <span
-                      className={`text-[10px] font-bold ${messageText?.length > 1000 ? "text-red-500" : "text-text-muted"}`}
+                      className={`text-xs font-bold ${messageText?.length > 1000 ? "text-red-500" : "text-text-muted"}`}
                     >
                       {messageText?.length || 0} / {CONTACT_LIMITS.message}
                     </span>
@@ -174,18 +174,18 @@ export function ContactCTA() {
                     </div>
                   </div>
                   {errors.message && (
-                    <p className="text-[10px] text-red-500 font-bold ml-2">
+                    <p className="text-xs text-red-500 font-bold ml-2">
                       {errors.message.message}
                     </p>
                   )}
-                  <p className="text-[10px] text-text-muted ml-2">
+                  <p className="text-xs text-text-muted ml-2">
                     Descreva sua dúvida, mínimo de 10 caracteres.
                   </p>
                 </div>
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full rounded-md bg-blue-500 hover:bg-blue-600 active:bg-blue-700 transition-colors text-white h-10 md:h-12  font-bold "
+                  className="w-full rounded-md bg-primary hover:bg-primary/90 active:bg-primary/80 transition-colors text-white h-10 md:h-12 font-bold"
                 >
                   {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
                 </Button>

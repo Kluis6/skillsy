@@ -192,13 +192,16 @@ export function Categorywall() {
   return (
     <section className="relative z-10 mb-20 md:hidden">
       <div className="container mx-auto px-4">
-        <div className="flex justify-center items-center rounded-xl z-10 shadow-2xl object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)]" />
+        <div className="flex justify-center items-center rounded-xl z-10 shadow-sm object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)]" />
 
-        <div className="-mt-24 md:-mt-20 lg:-mt-16 mx-4 md:mx-8 lg:mx-12 rounded-xl z-40 bg-card p-4 sm:p-6 md:p-8 shadow-2xl border border-border-subtle space-y-8 transition-all">
+        <div className="-mt-24 md:-mt-20 lg:-mt-16 mx-4 md:mx-8 lg:mx-12 rounded-xl z-40 bg-card p-4 sm:p-6 md:p-8 shadow-sm border border-border-subtle space-y-8 transition-all">
           <div className="w-full">
             <h3 className="text-xl lg:text-2xl font-bold text-text-main font-heading tracking-tight text-center">
-              Categorias mais populares
+              Comece por uma necessidade
             </h3>
+            <p className="mt-2 text-center text-sm text-text-muted">
+              Escolha uma área e encontre talentos da comunidade prontos para ajudar.
+            </p>
           </div>
 
           <div className="flex flex-wrap justify-center gap-2 md:gap-4">

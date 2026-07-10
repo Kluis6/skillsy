@@ -49,6 +49,7 @@ export default function HeaderSection({
           alt={backgroundImageAlt}
           className="object-cover"
           fill
+          sizes="100vw"
           priority
         />
       </motion.div>
@@ -84,12 +85,13 @@ export default function HeaderSection({
               }}
               className={image.wrapperClassName}
             >
-              <div className="relative h-full w-full overflow-hidden rounded-t-full shadow-2xl hidden lg:block">
+              <div className="relative h-full w-full overflow-hidden rounded-t-full shadow-lg hidden lg:block">
                 <Image
                   src={image.src}
                   alt={image.alt}
                   className="object-cover transition-transform duration-700 ease-out hover:scale-105"
                   fill
+                  sizes="12rem"
                   priority={image.priority}
                 />
               </div>

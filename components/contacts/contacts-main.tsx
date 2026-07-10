@@ -297,7 +297,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                     <BsWhatsapp className="size-4" /> <p>WhatsApp</p>
                   </Button>
                   <div className="flex justify-end md:text-right md:hidden flex-col">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted drop-shadow-xl">
+                    <p className="text-xs font-bold text-text-muted">
                       Avaliação
                     </p>
                     <div className="flex items-center justify-start drop-shadow-xl gap-1 font-bold text-highlight text-base">
@@ -325,7 +325,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                       </div>
 
                       <div className="text-center md:text-left md:flex flex-col hidden">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted drop-shadow-xl">
+                        <p className="text-xs font-bold text-text-muted">
                           Avaliação
                         </p>
                         <div className="flex items-center justify-center drop-shadow-xl md:justify-start gap-1 font-bold text-highlight text-base">
@@ -374,27 +374,6 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   </div>
                 </div>
 
-                {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4  w-full">
-                  <div className="text-center md:text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">
-                      Especialidade
-                    </p>
-                    <p className="font-bold text-primary truncate text-sm">
-                      {selectedContact.serviceType ||
-                        selectedContact.category ||
-                        "Membro"}
-                    </p>
-                  </div>
-                  <div className="text-center md:text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">
-                      Avaliação
-                    </p>
-                    <div className="flex items-center justify-center md:justify-start gap-1 font-bold text-highlight text-sm">
-                      <Star size={14} fill="currentColor" />{" "}
-                      {selectedContact.rating || "0.0"}
-                    </div>
-                  </div>
-                </div> */}
               </div>
             </div>
 
@@ -411,27 +390,6 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   </p>
                 </section>
 
-                {/* {selectedContact.isProvider && (
-                  <section className="bg-card rounded-[2rem] p-6 shadow-sm border border-border-subtle">
-                    <h3 className="text-lg font-bold mb-4 font-heading flex items-center gap-2">
-                      <Briefcase size={18} className="text-primary" /> Serviços
-                      Oferecidos
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {(selectedContact.serviceType || "Serviços Gerais")
-                        .split(",")
-                        .map((s, i) => (
-                          <Badge
-                            key={i}
-                            variant="secondary"
-                            className="bg-surface text-text-main px-3 py-1.5 rounded-lg border-none font-medium text-xs"
-                          >
-                            {s.trim()}
-                          </Badge>
-                        ))}
-                    </div>
-                  </section>
-                )} */}
               </div>
             </div>
             <div className="p-4 bg-card w-full border-y border-border-subtle flex flex-col md:flex-row gap-2 flex-nowrap">
@@ -448,7 +406,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                 <UserMinus size={18} /> <p>Remover contato</p>
               </Button>
               <Link
-                className="h-10 w-full flex justify-center items-center space-x-2 text-white font-bold bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-sm"
+                className="h-10 w-full flex justify-center items-center space-x-2 text-white font-bold bg-primary hover:bg-primary/90 active:bg-primary/80 rounded-sm"
                 href={`/profile/${selectedContact.uid}`}
               >
                 <LuUserRound size={18} /> <p className="text-sm">Ver contato</p>

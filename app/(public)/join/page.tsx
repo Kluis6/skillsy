@@ -36,21 +36,21 @@ const benefits = [
     description:
       "Conecte-se com pessoas que valorizam honestidade, respeito e bom atendimento em cada contato.",
     icon: ShieldCheck,
-    tone: "bg-blue-500/10 text-blue-700 dark:shadow-blue-500",
+    tone: "bg-primary/10 text-primary",
   },
   {
     title: "Visibilidade na sua região",
     description:
       "Mostre seu trabalho para pessoas da sua cidade e arredores que buscam indicações mais confiáveis.",
     icon: Zap,
-    tone: "bg-amber-500/10 text-amber-700 dark:shadow-amber-500",
+    tone: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
   },
   {
     title: "Reputação com experiência real",
     description:
       "Receba avaliações de quem contratou você e ajude outros usuários a decidir com mais segurança.",
     icon: Star,
-    tone: "bg-red-500/10 text-red-600 dark:shadow-red-500",
+    tone: "bg-red-500/10 text-red-600 dark:text-red-300",
   },
 ];
 
@@ -137,7 +137,7 @@ export default function JoinPage() {
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
-        <div className="w-full rounded-lg bg-card p-4 shadow-2xl xl:p-8 border border-border-subtle">
+        <div className="w-full rounded-xl bg-card p-4 shadow-sm xl:p-8 border border-border-subtle">
           <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
             <div className="col-span-12 space-y-4">
               <h2 className="text-xl md:text-2xl font-bold text-text-main">
@@ -157,7 +157,7 @@ export default function JoinPage() {
                 className={`col-span-12 rounded-md border p-4 lg:col-span-4 space-y-4 `}
               >
                 <div
-                  className={`flex size-12 items-center justify-center rounded-sm shadow-md ${benefit.tone}`}
+                  className={`flex size-12 items-center justify-center rounded-sm ${benefit.tone}`}
                 >
                   <benefit.icon size={22} />
                 </div>
@@ -174,7 +174,7 @@ export default function JoinPage() {
 
             <div className="col-span-12 flex flex-col gap-4 sm:flex-row">
               <AuthModal>
-                <Button className="h-12 w-full rounded-full bg-blue-700 px-6 text-base font-bold text-white hover:bg-blue-700/90 sm:w-auto">
+                <Button className="h-12 w-full rounded-full bg-primary px-6 text-base font-bold text-white hover:bg-primary/90 sm:w-auto">
                   Criar Minha Conta
                   <ArrowRight size={18} className="ml-2" />
                 </Button>
@@ -206,7 +206,7 @@ export default function JoinPage() {
               {highlights.map((item) => (
                 <div key={item.title} className="col-span-12 md:col-span-4">
                   <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
-                    <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md dark:shadow-blue-700">
+                    <div className="flex size-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                       <item.icon size={22} />
                     </div>
                     <h3 className="text-base font-bold text-text-main">
@@ -262,6 +262,7 @@ export default function JoinPage() {
                   alt="Pessoas em colaboração e atendimento"
                   className="object-cover object-top"
                   fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
                 />
               </div>
             </div>
@@ -270,17 +271,17 @@ export default function JoinPage() {
       </section>
 
       <div className="container mx-auto mb-24 px-4">
-        <section className="rounded-xl border border-amber-200 bg-amber-50 p-4 md:p-8">
+        <section className="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/30 md:p-8">
           <div className="max-w-4xl space-y-4">
-            <h2 className="text-xl md:text-2xl font-bold text-amber-900">
+            <h2 className="text-xl md:text-2xl font-bold text-amber-900 dark:text-amber-100">
               Comunicado importante
             </h2>
-            <p className="text-sm leading-relaxed text-amber-950/90">
+            <p className="text-sm leading-relaxed text-amber-950/90 dark:text-amber-100/85">
               O Skillsy não intermedeia pagamentos, não certifica tecnicamente
               os profissionais cadastrados e não substitui a responsabilidade
               pessoal de avaliar um serviço antes de contratar.
             </p>
-            <p className="text-sm leading-relaxed text-amber-950/90">
+            <p className="text-sm leading-relaxed text-amber-950/90 dark:text-amber-100/85">
               A plataforma existe para facilitar conexões com mais contexto e
               confiança, mas acordos, valores, prazos e decisões finais
               continuam sendo definidos diretamente entre as partes.
@@ -289,12 +290,12 @@ export default function JoinPage() {
         </section>
       </div>
 
-      <section className="bg-blue-700 py-20 text-white">
+      <section className="bg-primary py-20 text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold md:text-4xl">
             Trabalho, confiança e serviço também fortalecem a comunidade.
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-blue-50">
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-white/85">
             Ao entrar no Skillsy, você ajuda a transformar habilidades em apoio
             real e abre espaço para que oportunidades circulem com mais clareza
             entre pessoas da mesma rede.

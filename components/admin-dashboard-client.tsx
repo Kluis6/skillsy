@@ -78,21 +78,21 @@ export function AdminDashboardClient() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <Card className="bg-card border-none shadow-sm rounded-3xl overflow-hidden">
             <CardHeader className="pb-2">
-              <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Total de Usuários</CardDescription>
+              <CardDescription className="text-xs font-bold text-text-muted">Total de Usuários</CardDescription>
               <CardTitle className="text-4xl font-bold font-heading">{loading ? '...' : users.length}</CardTitle>
             </CardHeader>
             <div className="h-1 bg-primary w-full opacity-20" />
           </Card>
           <Card className="bg-card border-none shadow-sm rounded-3xl overflow-hidden">
             <CardHeader className="pb-2">
-              <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Prestadores de Serviço</CardDescription>
+              <CardDescription className="text-xs font-bold text-text-muted">Prestadores de Serviço</CardDescription>
               <CardTitle className="text-4xl font-bold font-heading">{loading ? '...' : users.filter(u => u.isProvider).length}</CardTitle>
             </CardHeader>
             <div className="h-1 bg-green-500 w-full opacity-20" />
           </Card>
           <Card className="bg-card border-none shadow-sm rounded-3xl overflow-hidden">
             <CardHeader className="pb-2">
-              <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Membros Verificados</CardDescription>
+              <CardDescription className="text-xs font-bold text-text-muted">Membros Verificados</CardDescription>
               <CardTitle className="text-4xl font-bold font-heading">{loading ? '...' : users.filter(shouldShowVerifiedBadge).length}</CardTitle>
             </CardHeader>
             <div className="h-1 bg-amber-500 w-full opacity-20" />
@@ -106,9 +106,9 @@ export function AdminDashboardClient() {
             transition={{ delay: 0.1 }}
           >
             <Link href="/admin/usuarios">
-              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all rounded-[2.5rem] p-8 cursor-pointer h-full">
+              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all rounded-xl p-8 cursor-pointer h-full">
                 <div className="flex justify-between items-start mb-6">
-                  <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                  <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                     <Users size={28} />
                   </div>
                   <ArrowRight size={24} className="text-text-muted group-hover:translate-x-1 transition-transform" />
@@ -127,9 +127,9 @@ export function AdminDashboardClient() {
             transition={{ delay: 0.2 }}
           >
             <Link href="/admin/artigos">
-              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all rounded-[2.5rem] p-8 cursor-pointer h-full">
+              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all rounded-xl p-8 cursor-pointer h-full">
                 <div className="flex justify-between items-start mb-6">
-                  <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                  <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                     <FileText size={28} />
                   </div>
                   <ArrowRight size={24} className="text-text-muted group-hover:translate-x-1 transition-transform" />

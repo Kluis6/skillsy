@@ -53,9 +53,9 @@ export default function DonationPage() {
   return (
     <div className="min-h-screen bg-surface w-full pb-8">
       <section className="relative h-[45vh] md:h-[50vh] w-full bg-cover bg-right md:bg-center object-fill bg-[url(/donate.png)]">
-        <div className={`absolute inset-0 bg-blue-700/30 brightness-30`}></div>
+        <div className="absolute inset-0 bg-primary/35 brightness-30"></div>
         <div className="space-y-4 p-4 container mx-auto flex flex-col items-start md:justify-center h-full w-full">
-          <div className="space-y-2 bg-gray-700/40 shadow-md p-4 backdrop-blur-xs rounded">
+          <div className="space-y-2 bg-foreground/45 p-4 backdrop-blur-xs rounded-md">
             <h2 className="text-xl lg:text-4xl font-bold text-white">
               Sua contribuição pode ajudar!
             </h2>
@@ -66,7 +66,7 @@ export default function DonationPage() {
         </div>
       </section>
       <div className="container mx-auto px-4 isolate -mt-8 ">
-        <section className="relative overflow-hidden rounded-xl border border-border-subtle bg-card p-4 md:p-6 lg:p-10 shadow-2xl mb-8">
+        <section className="relative overflow-hidden rounded-xl border border-border-subtle bg-card p-4 md:p-6 lg:p-10 shadow-sm mb-8">
           <div className="space-y-4">
             <h2 className="text-xl md:text-2xl font-bold text-text-main">
               Apoio Voluntário
@@ -85,7 +85,7 @@ export default function DonationPage() {
                 className="rounded-md col-span-12 lg:col-span-4 border border-border-subtle p-4 lg:p-6 bg-card space-y-4"
               >
                 <div
-                  className={`flex h-12 w-12 shadow-md items-center justify-center rounded-sm ${item.tone}`}
+                  className={`flex h-12 w-12 items-center justify-center rounded-sm ${item.tone}`}
                 >
                   <item.icon size={22} />
                 </div>
@@ -118,7 +118,7 @@ export default function DonationPage() {
               </div>
 
               {hasQrCode ? (
-                <div className="mx-auto flex size-70 shadow-lg lg:size-80 items-center justify-center rounded-md overflow-hidden border">
+                <div className="mx-auto flex size-70 lg:size-80 items-center justify-center rounded-md overflow-hidden border border-border-subtle">
                   {/* Substitua PIX_QR_CODE_SRC pelo caminho real da imagem do QR Code */}
                   <Image
                     src={PIX_QR_CODE_SRC}
@@ -129,7 +129,7 @@ export default function DonationPage() {
                   />
                 </div>
               ) : (
-                <div className="mx-auto flex min-h-[320px] max-w-sm flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-border-subtle bg-surface p-8 text-center">
+                <div className="mx-auto flex min-h-[320px] max-w-sm flex-col items-center justify-center rounded-xl border-2 border-dashed border-border-subtle bg-surface p-8 text-center">
                   <QrCode size={56} className="mb-4 text-text-muted" />
                   <h3 className="text-lg font-bold text-text-main">
                     Área reservada para o QR Code Pix
@@ -165,7 +165,7 @@ export default function DonationPage() {
 
               <div className="space-y-5">
                 <div className="rounded-xl border bg-surface p-4">
-                  <span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.18em] text-text-muted">
+                  <span className="mb-1 block text-xs font-bold text-text-muted">
                     Recebedor
                   </span>
                   <p className="text-sm font-medium text-text-main">
@@ -174,7 +174,7 @@ export default function DonationPage() {
                 </div>
 
                 <div className="rounded-xl border bg-surface p-4">
-                  <span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.18em] text-text-muted">
+                  <span className="mb-1 block text-xs font-bold text-text-muted">
                     Tipo de chave
                   </span>
                   <p className="text-sm font-medium text-text-main">
@@ -187,9 +187,9 @@ export default function DonationPage() {
             </div>
           </section>
 
-          <div className=" border border-yellow-200  bg-yellow-50 p-4 w-full mb-8">
-            <h3 className="text-lg font-bold text-yellow-900">Importante</h3>
-            <p className="mt-2 text-sm leading-relaxed text-yellow-800">
+          <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4 w-full mb-8 dark:border-amber-900/50 dark:bg-amber-950/30">
+            <h3 className="text-lg font-bold text-yellow-900 dark:text-amber-100">Importante</h3>
+            <p className="mt-2 text-sm leading-relaxed text-yellow-800 dark:text-amber-100/85">
               A doação é espontânea e não concede prioridade em resultados,
               benefícios exclusivos, posição de destaque ou qualquer tipo de
               favorecimento dentro da plataforma.
@@ -227,8 +227,8 @@ export default function DonationPage() {
           </section>
         </section>
 
-        <div className="p-4 bg-yellow-50 border border-yellow-200">
-          <p className="text-sm font-normal text-yellow-800">
+        <div className="rounded-xl p-4 bg-yellow-50 border border-yellow-200 dark:border-amber-900/50 dark:bg-amber-950/30">
+          <p className="text-sm font-normal text-yellow-800 dark:text-amber-100/85">
             As contribuições são voluntárias e não representam vínculo
             institucional. <br /> O Skillsy não é afiliado nem representa
             oficialmente A Igreja de Jesus Cristo dos Santos dos Últimos Dias.

@@ -21,8 +21,8 @@ const principles = [
   {
     title: "Confiança",
     body: "Facilitar conexões mais seguras, claras e respeitosas.",
-    toneBg: "#DBEAFE",
-    toneText: "#1D4ED8",
+    toneBg: "#F0F7FF",
+    toneText: "#0066FF",
   },
 ];
 
@@ -53,7 +53,7 @@ export default function OpenGraphImage() {
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
-            borderRadius: "34px",
+            borderRadius: "16px",
             background: OG_BRAND.cardBg,
             border: OG_BRAND.cardBorder,
             boxShadow: OG_BRAND.cardShadow,
@@ -113,7 +113,7 @@ export default function OpenGraphImage() {
                   style={{
                     width: "64px",
                     height: "64px",
-                    borderRadius: "18px",
+                    borderRadius: "16px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -266,7 +266,7 @@ export default function OpenGraphImage() {
                   style={{
                     fontSize: "19px",
                     lineHeight: 1.35,
-                    color: "#475569",
+                    color: "#4B5563",
                   }}
                 >
                   A página institucional apresenta missão, valores e a forma
@@ -276,12 +276,12 @@ export default function OpenGraphImage() {
 
               <div
                 style={{
-                  borderRadius: "22px",
+                  borderRadius: "12px",
                   padding: "18px",
                   background: OG_BRAND.panelBg,
                   border: OG_BRAND.panelBorder,
                   fontSize: "18px",
-                  color: "#334155",
+                  color: "#001A41",
                   lineHeight: 1.32,
                 }}
               >
@@ -308,9 +308,9 @@ export default function OpenGraphImage() {
                     justifyContent: "space-between",
                     gap: "14px",
                     padding: "20px 18px",
-                    borderRadius: "24px",
+                    borderRadius: "16px",
                     background: "#ffffff",
-                    border: "1px solid #E2E8F0",
+                    border: "1px solid #E5E7EB",
                     boxShadow: "0 8px 24px rgba(15,23,42,0.04)",
                   }}
                 >
@@ -351,7 +351,7 @@ export default function OpenGraphImage() {
                       style={{
                         fontSize: "16px",
                         lineHeight: 1.32,
-                        color: "#475569",
+                        color: "#4B5563",
                       }}
                     >
                       {principle.body}

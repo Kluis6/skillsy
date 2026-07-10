@@ -6,39 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { SurfacePanel } from "@/components/ui/page-layout";
+import { TrustBadge } from "@/components/ui/trust-signals";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  User as UserIcon,
   Camera,
   Plus,
   Trash2,
-  Instagram,
-  Facebook,
-  Linkedin,
-  Globe,
-  MessageCircle,
   ArrowLeft,
   Save,
-  ShieldCheck,
-  Briefcase,
-  MapPin,
-  Church,
   Loader2,
   AlertCircle,
   CheckCircle2,
   Navigation,
-  Clock,
-  CalendarDays,
-  Phone,
+  Eye,
+  ListChecks,
 } from "lucide-react";
-import { motion } from "motion/react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -144,6 +127,44 @@ export function ProfileSettingsClient() {
   });
 
   const formData = watch();
+  const readinessItems = [
+    {
+      label: "Nome público",
+      done: Boolean(formData.name?.trim()),
+    },
+    {
+      label: "Foto de perfil",
+      done: Boolean(formData.photoURL),
+    },
+    {
+      label: "Cidade ou região",
+      done: Boolean(formData.location?.trim()),
+    },
+    {
+      label: "Bio resumida",
+      done: Boolean(formData.bio?.trim()),
+    },
+    {
+      label: "Contato para retorno",
+      done: Boolean(formData.whatsapp?.trim() || formData.phone?.trim()),
+    },
+    {
+      label: "Serviço anunciado",
+      done:
+        !formData.isProvider ||
+        Boolean(formData.category?.trim() && formData.serviceType?.trim()),
+    },
+  ];
+  const readinessDoneCount = readinessItems.filter((item) => item.done).length;
+  const readinessPercent = Math.round(
+    (readinessDoneCount / readinessItems.length) * 100,
+  );
+  const publicFieldsSummary = [
+    "Nome, foto, capa e bio",
+    "Cidade, ala/ramo e selo verificado quando aplicável",
+    "Serviço, categoria, disponibilidade e galeria",
+    "Contatos e redes preenchidos",
+  ];
 
   useEffect(() => {
     if (profile) {
@@ -350,11 +371,13 @@ export function ProfileSettingsClient() {
         <p className="text-text-muted mb-8">
           Você precisa estar logado para editar seu perfil.
         </p>
-        <Link href="/">
-          <Button className="bg-primary text-white font-bold rounded-xl px-8">
-            Voltar para Home
-          </Button>
-        </Link>
+        <Button
+          render={<Link href="/" />}
+          nativeButton={false}
+          className="bg-primary text-white font-bold rounded-xl px-8"
+        >
+          Voltar para Home
+        </Button>
       </div>
     );
   }
@@ -377,7 +400,7 @@ export function ProfileSettingsClient() {
               type="submit"
               form="profile-settings-form"
               disabled={loading || uploading !== null || !isDirty}
-              className="bg-blue-500 text-white hover:bg-blue-600 active:to-blue-700 transition-colors rounded-sm px-6 font-bold h-10"
+              className="bg-primary text-white hover:bg-primary/90 active:bg-primary/80 transition-colors rounded-sm px-6 font-bold h-10"
             >
               {loading ? (
                 "Salvando..."
@@ -395,23 +418,25 @@ export function ProfileSettingsClient() {
         <form id="profile-settings-form" onSubmit={handleSubmit(onFormSubmit)}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
             {/* Left Column: Avatar & Basic Info */}
-            <div className="space-y-2">
+            <div className="space-y-2 lg:sticky lg:top-20 lg:self-start">
               <div className="md:border border-b bg-card overflow-hidden">
                 <div className="relative h-32 bg-gradient-to-r from-primary/10 to-accent/10">
                   {formData.bannerURL && (
                     <Image
                       src={formData.bannerURL!}
-                      alt="Banner"
+                      alt="Capa do perfil"
                       fill
                       className="object-cover"
                       referrerPolicy="no-referrer"
                     />
                   )}
                   <button
+                    type="button"
                     onClick={() => bannerInputRef.current?.click()}
                     disabled={uploading === "banner"}
                     className="absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white p-2 rounded-xl hover:bg-white/30 transition-colors disabled:opacity-50"
                     title="Alterar Banner"
+                    aria-label="Alterar capa do perfil"
                   >
                     {uploading === "banner" ? (
                       <Loader2 size={18} className="animate-spin" />
@@ -436,9 +461,11 @@ export function ProfileSettingsClient() {
                       </AvatarFallback>
                     </Avatar>
                     <button
+                      type="button"
                       onClick={() => avatarInputRef.current?.click()}
                       disabled={uploading === "avatar"}
-                      className="absolute bottom-0 right-0 bg-blue-500 text-white p-2.5 rounded-2xl shadow-lg hover:scale-110 transition-transform disabled:opacity-50"
+                      aria-label="Alterar foto do perfil"
+                      className="absolute bottom-0 right-0 bg-primary text-white p-2.5 rounded-xl shadow-sm hover:scale-105 transition-transform disabled:opacity-50"
                     >
                       {uploading === "avatar" ? (
                         <Loader2 size={18} className="animate-spin" />
@@ -458,48 +485,89 @@ export function ProfileSettingsClient() {
                     {formData.name || "Seu Nome"}
                   </h2>
                   <p className="text-sm text-text-muted mb-4">{user.email}</p>
-                  {shouldShowVerifiedBadge(formData) && (
-                    <Badge className="bg-primary/10 text-primary border-none font-bold px-4 py-1.5 rounded-full flex items-center gap-2">
-                      <ShieldCheck size={14} /> Membro Verificado
-                    </Badge>
-                  )}
-                  <div className="mt-4 space-y-1  w-full rounded-md  border bg-amber-50 p-4 text-xs text-amber-700">
-                    <p className="font-semibold text-amber-900">
-                      Limites de imagem
-                    </p>
-                    <p className="text-[10px] md:text-xs">
-                      Avatar e banner: até 10 MB por arquivo em{" "}
-                      {SUPPORTED_IMAGE_FORMATS_LABEL}.
-                    </p>
-                  </div>
+                  {shouldShowVerifiedBadge(formData) && <TrustBadge />}
                 </div>
               </div>
-              {/* status profissional */}
+              <SurfacePanel className="space-y-4 p-4 md:p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-text-main flex items-center gap-2">
+                      <ListChecks className="size-4 text-primary" />
+                      Prontidão do perfil
+                    </p>
+                    <p className="text-xs text-text-muted">
+                      O que ajuda seu perfil a passar confiança na busca.
+                    </p>
+                  </div>
+                  <Badge className="bg-primary/10 text-primary border-primary/10">
+                    {readinessPercent}%
+                  </Badge>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-surface">
+                  <div
+                    className="h-full rounded-full bg-primary transition-all"
+                    style={{ width: `${readinessPercent}%` }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  {readinessItems.map((item) => (
+                    <div
+                      key={item.label}
+                      className="flex items-center justify-between gap-3 text-xs"
+                    >
+                      <span className="text-text-muted">{item.label}</span>
+                      {item.done ? (
+                        <CheckCircle2 className="size-4 text-green-600" />
+                      ) : (
+                        <AlertCircle className="size-4 text-amber-600" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </SurfacePanel>
+              <SurfacePanel className="space-y-3 p-4 md:p-4">
+                <p className="text-sm font-bold text-text-main flex items-center gap-2">
+                  <Eye className="size-4 text-primary" />
+                  O que fica público
+                </p>
+                <ul className="space-y-2 text-xs text-text-muted">
+                  {publicFieldsSummary.map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-primary" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="rounded-md bg-surface p-3 text-xs text-text-muted">
+                  Imagens: até 10 MB por arquivo em{" "}
+                  {SUPPORTED_IMAGE_FORMATS_LABEL}.
+                </p>
+              </SurfacePanel>
             </div>
 
             {/* Right Column: Detailed Info */}
             <div className="lg:col-span-2 space-y-2">
-              <div className="md:rounded-md   border-y md:border bg-amber-50 px-4 py-4 md:px-8">
+              <SurfacePanel className="rounded-none border-x-0 px-4 py-4 md:rounded-xl md:border-x md:px-8">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="mt-0.5 size-4 shrink-0 text-amber-700" />
+                  <Eye className="mt-0.5 size-4 shrink-0 text-primary" />
                   <div className="space-y-1">
-                    <p className="font-semibold text-xs md:text-sm text-amber-900">
-                      Preencha dentro dos limites para evitar erro ao salvar
+                    <p className="font-semibold text-xs md:text-sm text-text-main">
+                      Edite pensando em como visitantes verão seu perfil
                     </p>
-                    <p className="text-[10px] md:text-xs text-amber-700">
-                      Textos longos, links inválidos e imagens fora do padrão
-                      podem ser bloqueados pelas validações do app.
+                    <p className="text-xs text-text-muted">
+                      Campos públicos alimentam sua página, os cards da busca e
+                      as informações de contato.
                     </p>
                   </div>
                 </div>
-              </div>
+              </SurfacePanel>
               <div className="bg-card md:p-8 p-4 md:border border-y space-y-6 ">
                 <div className="space-y-1 ">
                   <h3 className="md:text-xl text-base font-semibold text-text-main">
-                    Informações Pessoais
+                    Identidade pública
                   </h3>
                   <p className="text-xs font-normal text-text-muted">
-                    Estes dados ajudam outros membros a te encontrarem.
+                    Dados básicos exibidos no perfil e usados para confiança.
                   </p>
                 </div>
                 <section className="space-y-6">
@@ -531,11 +599,11 @@ export function ProfileSettingsClient() {
                           ) : null}
                         </div>
                       </div>
-                      <p className="text-[10px] text-text-muted ml-1">
+                      <p className="text-xs text-text-muted ml-1">
                         Use entre 2 e {PROFILE_LIMITS.name} caracteres.
                       </p>
                       {errors.name && (
-                        <p className="text-[10px] text-red-500 font-bold ml-1">
+                        <p className="text-xs text-red-500 font-bold ml-1">
                           {errors.name.message}
                         </p>
                       )}
@@ -556,7 +624,8 @@ export function ProfileSettingsClient() {
                           size="icon"
                           onClick={handleDetectLocation}
                           disabled={detectingLocation}
-                          className="size-12 rounded-sm bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 transition-colors disabled:opacity-50"
+                          aria-label="Detectar minha localização"
+                          className="size-12 rounded-sm bg-primary text-white hover:bg-primary/90 active:bg-primary/80 transition-colors disabled:opacity-50"
                           title="Detectar minha localização"
                         >
                           {detectingLocation ? (
@@ -567,11 +636,11 @@ export function ProfileSettingsClient() {
                         </Button>
                       </div>
                       {errors.location && (
-                        <p className="text-[10px] text-red-500 font-bold ml-1">
+                        <p className="text-xs text-red-500 font-bold ml-1">
                           {errors.location.message}
                         </p>
                       )}
-                      <p className="text-[10px] text-text-muted ml-1">
+                      <p className="text-xs text-text-muted ml-1">
                         Até {PROFILE_LIMITS.location} caracteres.
                       </p>
                     </div>
@@ -585,11 +654,11 @@ export function ProfileSettingsClient() {
                         maxLength={PROFILE_LIMITS.ward}
                         className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.ward ? "ring-2 ring-red-500" : ""}`}
                       />
-                      <p className="text-[10px] text-text-muted ml-1">
+                      <p className="text-xs text-text-muted ml-1">
                         Até {PROFILE_LIMITS.ward} caracteres.
                       </p>
                       {errors.ward && (
-                        <p className="text-[10px] text-red-500 font-bold ml-1">
+                        <p className="text-xs text-red-500 font-bold ml-1">
                           {errors.ward.message}
                         </p>
                       )}
@@ -605,11 +674,11 @@ export function ProfileSettingsClient() {
                         className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.baptismYear ? "ring-2 ring-red-500" : ""}`}
                       />
                       {errors.baptismYear && (
-                        <p className="text-[10px] text-red-500 font-bold ml-1">
+                        <p className="text-xs text-red-500 font-bold ml-1">
                           {errors.baptismYear.message}
                         </p>
                       )}
-                      <p className="text-[10px] text-primary/60 font-medium ml-1">
+                      <p className="text-xs text-primary/60 font-medium ml-1">
                         Preencha junto com a ala ou ramo para exibir o selo de
                         membro verificado no perfil.
                       </p>
@@ -622,7 +691,7 @@ export function ProfileSettingsClient() {
                         Bio / Descrição
                       </Label>
                       <span
-                        className={`text-[10px] font-semibold ${formData.bio && formData.bio.length > 500 ? "text-red-500" : "text-text-muted"}`}
+                        className={`text-xs font-semibold ${formData.bio && formData.bio.length > 500 ? "text-red-500" : "text-text-muted"}`}
                       >
                         {formData.bio?.length || 0} / 500
                       </span>
@@ -633,11 +702,11 @@ export function ProfileSettingsClient() {
                       className={`bg-surface focus:bg-card transition-all text-sm rounded-sm min-h-[150px] p-4 focus:ring-2 focus:ring-primary/20 ${errors.bio ? "ring-2 ring-red-500" : ""}`}
                       maxLength={PROFILE_LIMITS.bio}
                     />
-                    <p className="text-[10px] text-text-muted ml-1">
+                    <p className="text-xs text-text-muted ml-1">
                       Até {PROFILE_LIMITS.bio} caracteres.
                     </p>
                     {errors.bio && (
-                      <p className="text-[10px] text-red-500 font-bold ml-1">
+                      <p className="text-xs text-red-500 font-bold ml-1">
                         {errors.bio.message}
                       </p>
                     )}
@@ -649,10 +718,10 @@ export function ProfileSettingsClient() {
                 <div className="flex flex-col md:flex-row gap-4 justify-between items-start">
                   <div className="space-y-1">
                     <h3 className="md:text-xl text-base font-semibold text-text-main">
-                      Status Profissional
+                      Perfil de serviço
                     </h3>
                     <p className="text-xs font-normal text-text-muted">
-                      Ative para cadastrar seu serviço ou empresa
+                      Ative para aparecer nas buscas de profissionais.
                     </p>
                   </div>
 
@@ -661,12 +730,13 @@ export function ProfileSettingsClient() {
                       <Label className="text-sm font-bold text-text-main">
                         Quero Anunciar
                       </Label>
-                      <p className="text-[10px] text-text-muted">
+                      <p className="text-xs text-text-muted">
                         Apareça nos resultados das buscas de serviços
                       </p>
                     </div>
                     <Switch
                       checked={formData.isProvider}
+                      aria-label="Ativar ou desativar anúncio de serviços"
                       onCheckedChange={(checked) => {
                         if (!checked) {
                           reset(clearProviderFields(getValues()), {
@@ -685,7 +755,13 @@ export function ProfileSettingsClient() {
                 </div>
 
                 <div className="space-y-6">
-                  {formData.isProvider && (
+                  {!formData.isProvider ? (
+                    <div className="rounded-md border border-border-subtle bg-surface p-4 text-sm text-text-muted">
+                      Ative <span className="font-semibold text-text-main">Quero Anunciar</span>{" "}
+                      quando quiser que seu serviço apareça na busca. Seu
+                      perfil pessoal continua editável mesmo sem anunciar.
+                    </div>
+                  ) : (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                       <div className="space-y-2">
                         <Label className="text-xs md:text-sm font-medium text-text-muted">
@@ -705,11 +781,11 @@ export function ProfileSettingsClient() {
                           </select>
                         </div>
                         {errors.category && (
-                          <p className="text-[10px] text-red-500 font-bold ml-1">
+                          <p className="text-xs text-red-500 font-bold ml-1">
                             {errors.category.message}
                           </p>
                         )}
-                        <p className="text-[10px] text-text-muted ml-1">
+                        <p className="text-xs text-text-muted ml-1">
                           Escolha uma categoria para aparecer nas buscas.
                         </p>
                       </div>
@@ -723,11 +799,11 @@ export function ProfileSettingsClient() {
                           maxLength={PROFILE_LIMITS.serviceType}
                           className={`bg-surface focus:bg-card text-sm transition-all rounded-sm h-12 ${errors.serviceType ? "ring-2 ring-red-500" : ""}`}
                         />
-                        <p className="text-[10px] text-text-muted ml-1">
+                        <p className="text-xs text-text-muted ml-1">
                           Até {PROFILE_LIMITS.serviceType} caracteres.
                         </p>
                         {errors.serviceType && (
-                          <p className="text-[10px] text-red-500 font-bold ml-1">
+                          <p className="text-xs text-red-500 font-bold ml-1">
                             {errors.serviceType.message}
                           </p>
                         )}
@@ -747,7 +823,7 @@ export function ProfileSettingsClient() {
                           className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.companyName ? "ring-2 ring-red-500" : ""}`}
                         />
                         {errors.companyName && (
-                          <p className="text-[10px] text-red-500 font-bold ml-1">
+                          <p className="text-xs text-red-500 font-bold ml-1">
                             {errors.companyName.message}
                           </p>
                         )}
@@ -777,8 +853,8 @@ export function ProfileSettingsClient() {
                                 }}
                                 className={`h-10 px-4 text-xs font-bold transition-all  ${
                                   isSelected
-                                    ? "bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700"
-                                    : "bg-blue-100 text-blue-500 hover:bg-blue-200 "
+                                    ? "bg-primary text-white hover:bg-primary/90 active:bg-primary/80"
+                                    : "bg-primary/10 text-primary hover:bg-primary/15"
                                 }`}
                               >
                                 {day}
@@ -789,19 +865,21 @@ export function ProfileSettingsClient() {
                       </div>
 
                       <div className="space-y-2 pt-2">
-                        <Label className="text-xs md:text-sm font-medium text-text-muted"></Label>
+                        <Label className="text-xs md:text-sm font-medium text-text-muted">
+                          Horário de atendimento
+                        </Label>
                         <Input
                           {...register("serviceHours")}
                           placeholder="Ex: 08:00 - 18:00 ou Por agendamento"
                           maxLength={PROFILE_LIMITS.serviceHours}
                           className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.serviceHours ? "ring-2 ring-red-500" : ""}`}
                         />
-                        <p className="text-[10px] text-text-muted ml-1">
+                        <p className="text-xs text-text-muted ml-1">
                           Horário ou disponibilidade resumida, até{" "}
                           {PROFILE_LIMITS.serviceHours} caracteres.
                         </p>
                         {errors.serviceHours && (
-                          <p className="text-[10px] text-red-500 font-bold ml-1">
+                          <p className="text-xs text-red-500 font-bold ml-1">
                             {errors.serviceHours.message}
                           </p>
                         )}
@@ -881,9 +959,14 @@ export function ProfileSettingsClient() {
               </div>
 
               <div className="bg-card md:p-8 p-4 md:border border-y space-y-6">
-                <h3 className="md:text-xl text-base font-semibold text-text-main">
-                  Redes Sociais & Contato
-                </h3>
+                <div className="space-y-1">
+                  <h3 className="md:text-xl text-base font-semibold text-text-main">
+                    Contatos públicos
+                  </h3>
+                  <p className="text-xs font-normal text-text-muted">
+                    Preencha apenas canais em que você aceita receber contato.
+                  </p>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2 col-span-2 md:col-span-1">
                     <Label className="text-xs md:text-sm font-medium text-text-muted">
@@ -896,12 +979,12 @@ export function ProfileSettingsClient() {
                       maxLength={PROFILE_LIMITS.whatsappDigitsMax}
                       className={`bg-surface rounded-sm text-sm h-12 ${errors.whatsapp ? "ring-2 ring-red-500" : ""}`}
                     />
-                    <p className="text-[10px] text-text-muted ml-1">
+                    <p className="text-xs text-text-muted ml-1">
                       Somente números, de {PROFILE_LIMITS.whatsappDigitsMin} a{" "}
                       {PROFILE_LIMITS.whatsappDigitsMax} dígitos.
                     </p>
                     {errors.whatsapp && (
-                      <p className="text-[10px] text-red-500 font-bold ml-1">
+                      <p className="text-xs text-red-500 font-bold ml-1">
                         {errors.whatsapp.message}
                       </p>
                     )}
@@ -920,12 +1003,12 @@ export function ProfileSettingsClient() {
                       maxLength={PROFILE_LIMITS.phoneDigitsMax}
                       className={`bg-surface rounded-sm text-sm h-12 ${errors.phone ? "ring-2 ring-red-500" : ""}`}
                     />
-                    <p className="text-[10px] text-text-muted ml-1">
+                    <p className="text-xs text-text-muted ml-1">
                       Somente números, até {PROFILE_LIMITS.phoneDigitsMax}{" "}
                       dígitos.
                     </p>
                     {errors.phone && (
-                      <p className="text-[10px] text-red-500 font-bold ml-1">
+                      <p className="text-xs text-red-500 font-bold ml-1">
                         {errors.phone.message}
                       </p>
                     )}
@@ -940,12 +1023,12 @@ export function ProfileSettingsClient() {
                       maxLength={PROFILE_LIMITS.socialHandle}
                       className={`bg-surface rounded-sm text-sm h-12 ${errors.instagram ? "ring-2 ring-red-500" : ""}`}
                     />
-                    <p className="text-[10px] text-text-muted ml-1">
+                    <p className="text-xs text-text-muted ml-1">
                       Usuário do Instagram com até {PROFILE_LIMITS.socialHandle}{" "}
                       caracteres.
                     </p>
                     {errors.instagram && (
-                      <p className="text-[10px] text-red-500 font-bold ml-1">
+                      <p className="text-xs text-red-500 font-bold ml-1">
                         {errors.instagram.message}
                       </p>
                     )}
@@ -961,7 +1044,7 @@ export function ProfileSettingsClient() {
                       className={`bg-surface rounded-sm text-sm h-12 ${errors.facebook ? "ring-2 ring-red-500" : ""}`}
                     />
                     {errors.facebook && (
-                      <p className="text-[10px] text-red-500 font-bold ml-1">
+                      <p className="text-xs text-red-500 font-bold ml-1">
                         {errors.facebook.message}
                       </p>
                     )}
@@ -977,7 +1060,7 @@ export function ProfileSettingsClient() {
                       className={`bg-surface rounded-sm text-sm h-12 ${errors.linkedin ? "ring-2 ring-red-500" : ""}`}
                     />
                     {errors.linkedin && (
-                      <p className="text-[10px] text-red-500 font-bold ml-1">
+                      <p className="text-xs text-red-500 font-bold ml-1">
                         {errors.linkedin.message}
                       </p>
                     )}
@@ -992,12 +1075,12 @@ export function ProfileSettingsClient() {
                       maxLength={PROFILE_LIMITS.website}
                       className={`bg-surface rounded-sm h-12 text-sm  ${errors.website ? "ring-2 ring-red-500" : ""}`}
                     />
-                    <p className="text-[10px] text-text-muted ml-1">
+                    <p className="text-xs text-text-muted ml-1">
                       URL completa com `https://`, até {PROFILE_LIMITS.website}{" "}
                       caracteres.
                     </p>
                     {errors.website && (
-                      <p className="text-[10px] text-red-500 font-bold ml-1">
+                      <p className="text-xs text-red-500 font-bold ml-1">
                         {errors.website.message}
                       </p>
                     )}
@@ -1009,19 +1092,20 @@ export function ProfileSettingsClient() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <h3 className="md:text-xl text-base font-semibold text-text-main">
-                      Galeria de Fotos
+                      Mídia e portfólio
                     </h3>
                     <Badge
-                      className={`text-xs font-bold px-2 py-0.5 ${formData.gallery.length >= PROFILE_LIMITS.galleryMaxItems ? "bg-red-50 text-red-500 border-red-100" : "bg-primary/5 text-primary border-primary/10"}`}
+                      className={`text-xs font-bold px-2 py-0.5 ${formData.gallery.length >= PROFILE_LIMITS.galleryMaxItems ? "bg-red-500/10 text-red-500 border-red-500/20 dark:text-red-300" : "bg-primary/5 text-primary border-primary/10"}`}
                     >
                       {formData.gallery.length}/{PROFILE_LIMITS.galleryMaxItems}
                     </Badge>
                   </div>
                   <Button
+                    type="button"
                     variant="default"
                     onClick={handleAddPhoto}
                     disabled={uploading === "gallery"}
-                    className="hidden md:flex rounded-sm h-10 text-sm bg-blue-500 px-4 hover:bg-blue-600 active:bg-blue-700 text-white font-bold disabled:opacity-50"
+                    className="hidden md:flex rounded-sm h-10 text-sm bg-primary px-4 hover:bg-primary/90 active:bg-primary/80 text-white font-bold disabled:opacity-50"
                   >
                     {uploading === "gallery" ? (
                       <Loader2 size={16} className="mr-2 animate-spin" />
@@ -1038,7 +1122,7 @@ export function ProfileSettingsClient() {
                     onChange={(e) => handleFileChange(e, "gallery")}
                   />
                 </div>
-                <div className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-[11px] text-text-muted space-y-1">
+                <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-xs text-text-muted space-y-1">
                   <p className="font-semibold text-text-main">
                     Regras da galeria
                   </p>
@@ -1069,6 +1153,7 @@ export function ProfileSettingsClient() {
                             size="icon"
                             type="button"
                             onClick={() => removePhoto(index)}
+                            aria-label={`Remover foto ${index + 1} da galeria`}
                             className="rounded-full w-8 h-8"
                           >
                             <Trash2 size={14} />
@@ -1091,9 +1176,9 @@ export function ProfileSettingsClient() {
                             shouldValidate: true,
                           });
                         }}
-                        className="text-[10px] min-h-[50px] h-auto p-2 bg-surface border-none resize-none rounded-xl"
+                        className="text-xs min-h-[50px] h-auto p-2 bg-surface border-none resize-none rounded-xl"
                       />
-                      <p className="text-[10px] text-text-muted ml-1">
+                      <p className="text-xs text-text-muted ml-1">
                         {(photo.description || "").length}/
                         {PROFILE_LIMITS.galleryDescription}
                       </p>
@@ -1111,10 +1196,11 @@ export function ProfileSettingsClient() {
 
                 <div className="flex justify-end">
                   <Button
+                    type="button"
                     variant="default"
                     onClick={handleAddPhoto}
                     disabled={uploading === "gallery"}
-                    className="md:hidden flex rounded-sm h-10 text-sm bg-blue-500 px-4 hover:bg-blue-600 active:bg-blue-700 text-white font-bold disabled:opacity-50"
+                    className="md:hidden flex rounded-sm h-10 text-sm bg-primary px-4 hover:bg-primary/90 active:bg-primary/80 text-white font-bold disabled:opacity-50"
                   >
                     {uploading === "gallery" ? (
                       <Loader2 size={16} className="mr-2 animate-spin" />
@@ -1136,12 +1222,12 @@ export function ProfileSettingsClient() {
                   </p>
                 </div>
 
-                <div className="flex flex-col gap-4 rounded-sm border border-red-200 bg-red-50 p-4 md:p-5">
+                <div className="flex flex-col gap-4 rounded-sm border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950/30 md:p-5">
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold text-red-700">
+                    <p className="text-sm font-semibold text-red-700 dark:text-red-200">
                       Cancelar minha conta
                     </p>
-                    <p className="text-xs text-red-600">
+                    <p className="text-xs text-red-600 dark:text-red-200/80">
                       todos seus dados serão apagados na plataforma, deseja
                       continuar?
                     </p>

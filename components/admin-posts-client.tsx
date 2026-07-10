@@ -7,7 +7,18 @@ import { Post, PostStatus } from "@/models/types";
 import { PostService } from "@/services/post-service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState, PageHeader, SurfacePanel } from "@/components/ui/page-layout";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { AdminPostsPageLoading } from "@/components/loading/route-loaders";
 import { toast } from "sonner";
 
@@ -25,6 +36,11 @@ export function AdminPostsClient() {
   const [statusFilter, setStatusFilter] = useState<"all" | PostStatus>("all");
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
+  const [reviewIntent, setReviewIntent] = useState<{
+    post: Post;
+    status: "published" | "rejected";
+  } | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   const loadPosts = async () => {
     try {
@@ -58,21 +74,34 @@ export function AdminPostsClient() {
     });
   }, [posts, query, statusFilter]);
 
-  const handleReview = (post: Post, status: "published" | "rejected") => {
+  const openReviewDialog = (post: Post, status: "published" | "rejected") => {
+    setReviewIntent({ post, status });
+    setRejectionReason(post.rejectionReason || "");
+  };
+
+  const handleReview = () => {
+    const postId = reviewIntent?.post.id;
+
+    if (!postId) {
+      return;
+    }
+
     startTransition(async () => {
       try {
-        const rejectionReason =
-          status === "rejected"
-            ? window.prompt("Motivo da rejeição (opcional):", post.rejectionReason || "") || ""
-            : "";
-
         await PostService.reviewPost({
-          id: post.id!,
-          status,
-          rejectionReason,
-          isFeatured: post.isFeatured || false,
+          id: postId,
+          status: reviewIntent.status,
+          rejectionReason:
+            reviewIntent.status === "rejected" ? rejectionReason.trim() : "",
+          isFeatured: reviewIntent.post.isFeatured || false,
         });
-        toast.success(status === "published" ? "Artigo publicado." : "Artigo rejeitado.");
+        toast.success(
+          reviewIntent.status === "published"
+            ? "Artigo publicado."
+            : "Artigo rejeitado.",
+        );
+        setReviewIntent(null);
+        setRejectionReason("");
         await loadPosts();
       } catch (error) {
         console.error(error);
@@ -109,48 +138,59 @@ export function AdminPostsClient() {
 
   if (profile?.role !== "admin") {
     return (
-      <div className="rounded-[2rem] border border-border-subtle bg-card p-10 text-center">
-        <h1 className="text-2xl font-bold text-text-main">Acesso restrito</h1>
-        <p className="mt-2 text-text-muted">
-          Apenas administradores podem revisar artigos.
-        </p>
-      </div>
+      <SurfacePanel>
+        <EmptyState
+          title="Acesso restrito"
+          description="Apenas administradores podem revisar artigos."
+        />
+      </SurfacePanel>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[2rem] border border-border-subtle bg-card p-6">
-        <h1 className="text-3xl font-bold text-text-main">Artigos</h1>
-        <p className="mt-1 text-text-muted">
-          Revise envios, publique conteúdo e destaque notícias importantes.
-        </p>
-      </div>
+      <PageHeader
+        title="Artigos"
+        description="Revise envios, publique conteúdo e destaque notícias importantes."
+      />
 
-      <div className="grid gap-4 rounded-[2rem] border border-border-subtle bg-card p-6 md:grid-cols-[1fr_220px]">
-        <Input
-          placeholder="Buscar por título ou autor"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-        />
-        <select
-          value={statusFilter}
-          onChange={(event) => setStatusFilter(event.target.value as "all" | PostStatus)}
-          className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-        >
-          <option value="all">Todos os status</option>
-          <option value="draft">Rascunhos</option>
-          <option value="pending_review">Em revisão</option>
-          <option value="published">Publicados</option>
-          <option value="rejected">Rejeitados</option>
-        </select>
-      </div>
+      <SurfacePanel className="grid gap-4 md:grid-cols-[1fr_220px]">
+        <div className="space-y-2">
+          <Label htmlFor="admin-post-search" className="text-xs font-bold text-text-muted">
+            Buscar artigo
+          </Label>
+          <Input
+            id="admin-post-search"
+            placeholder="Buscar por título ou autor"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="admin-post-status" className="text-xs font-bold text-text-muted">
+            Status
+          </Label>
+          <select
+            id="admin-post-status"
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value as "all" | PostStatus)}
+            className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+          >
+            <option value="all">Todos os status</option>
+            <option value="draft">Rascunhos</option>
+            <option value="pending_review">Em revisão</option>
+            <option value="published">Publicados</option>
+            <option value="rejected">Rejeitados</option>
+          </select>
+        </div>
+      </SurfacePanel>
 
-      <div className="rounded-[2rem] border border-border-subtle bg-card">
+      <SurfacePanel className="p-0 md:p-0">
         {filteredPosts.length === 0 ? (
-          <div className="p-10 text-center text-text-muted">
-            Nenhum artigo encontrado com esses filtros.
-          </div>
+          <EmptyState
+            title="Nenhum artigo encontrado"
+            description="Ajuste a busca ou o status para encontrar envios pendentes, publicados ou rejeitados."
+          />
         ) : (
           <div className="divide-y divide-border-subtle">
             {filteredPosts.map((post) => (
@@ -180,9 +220,13 @@ export function AdminPostsClient() {
                 </div>
                 <div className="flex flex-wrap gap-3">
                   {post.status === "published" ? (
-                    <Link href={`/artigosevagas/${post.slug}`}>
-                      <Button variant="outline">Ver público</Button>
-                    </Link>
+                    <Button
+                      render={<Link href={`/artigosevagas/${post.slug}`} />}
+                      nativeButton={false}
+                      variant="outline"
+                    >
+                      Ver público
+                    </Button>
                   ) : null}
                   <Button
                     variant="outline"
@@ -192,7 +236,7 @@ export function AdminPostsClient() {
                     {post.isFeatured ? "Remover destaque" : "Destacar"}
                   </Button>
                   {post.status !== "published" ? (
-                    <Button disabled={isPending} onClick={() => handleReview(post, "published")}>
+                    <Button disabled={isPending} onClick={() => openReviewDialog(post, "published")}>
                       Publicar
                     </Button>
                   ) : null}
@@ -200,7 +244,7 @@ export function AdminPostsClient() {
                     <Button
                       variant="destructive"
                       disabled={isPending}
-                      onClick={() => handleReview(post, "rejected")}
+                      onClick={() => openReviewDialog(post, "rejected")}
                     >
                       Rejeitar
                     </Button>
@@ -210,7 +254,65 @@ export function AdminPostsClient() {
             ))}
           </div>
         )}
-      </div>
+      </SurfacePanel>
+
+      <Dialog open={Boolean(reviewIntent)} onOpenChange={(open) => !open && setReviewIntent(null)}>
+        <DialogContent className="sm:h-auto sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {reviewIntent?.status === "published"
+                ? "Publicar artigo?"
+                : "Rejeitar artigo?"}
+            </DialogTitle>
+            <DialogDescription>
+              {reviewIntent?.status === "published"
+                ? "O artigo ficará visível para todos na área pública de novidades e vagas."
+                : "O autor verá que o artigo foi rejeitado. Informe um motivo claro quando possível."}
+            </DialogDescription>
+          </DialogHeader>
+
+          {reviewIntent ? (
+            <div className="rounded-md border border-border-subtle bg-surface p-4">
+              <p className="text-sm font-bold text-text-main">{reviewIntent.post.title}</p>
+              <p className="mt-1 text-xs text-text-muted">
+                por {reviewIntent.post.authorName} • {reviewIntent.post.authorEmail}
+              </p>
+            </div>
+          ) : null}
+
+          {reviewIntent?.status === "rejected" ? (
+            <div className="space-y-2">
+              <Label htmlFor="admin-post-rejection-reason">Motivo da rejeição</Label>
+              <Textarea
+                id="admin-post-rejection-reason"
+                value={rejectionReason}
+                onChange={(event) => setRejectionReason(event.target.value)}
+                placeholder="Ex: faltam informações, conteúdo duplicado, imagem inadequada..."
+                className="min-h-28"
+              />
+            </div>
+          ) : null}
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isPending}
+              onClick={() => setReviewIntent(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              variant={reviewIntent?.status === "rejected" ? "destructive" : "default"}
+              disabled={isPending}
+              onClick={handleReview}
+            >
+              {reviewIntent?.status === "published" ? "Publicar artigo" : "Rejeitar artigo"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

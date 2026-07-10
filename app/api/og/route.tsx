@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { OG_BRAND } from "@/lib/og-image-templates";
 
 export const runtime = "edge";
 
@@ -36,8 +37,7 @@ export async function GET(request: Request) {
           width: "100%",
           height: "100%",
           padding: "40px",
-          background:
-            "radial-gradient(circle at top left, #dbeafe 0%, #f8fbff 36%, #ffffff 100%)",
+          background: OG_BRAND.bg,
           color: "#001A41",
           fontFamily: "sans-serif",
         }}
@@ -47,11 +47,11 @@ export async function GET(request: Request) {
             display: "flex",
             width: "100%",
             height: "100%",
-            borderRadius: "36px",
+            borderRadius: "16px",
             overflow: "hidden",
             background: "#ffffff",
-            boxShadow: "0 18px 60px rgba(0, 26, 65, 0.10)",
-            border: "1px solid rgba(191, 219, 254, 0.8)",
+            boxShadow: OG_BRAND.cardShadow,
+            border: OG_BRAND.cardBorder,
           }}
         >
           <div
@@ -61,8 +61,7 @@ export async function GET(request: Request) {
               justifyContent: "space-between",
               width: "62%",
               padding: "44px",
-              background:
-                "linear-gradient(180deg, rgba(240,247,255,0.98) 0%, rgba(255,255,255,1) 100%)",
+              background: OG_BRAND.surfaceSoft,
             }}
           >
             <div
@@ -86,7 +85,7 @@ export async function GET(request: Request) {
                     justifyContent: "center",
                     width: "74px",
                     height: "74px",
-                    borderRadius: "22px",
+                    borderRadius: "12px",
                     background: "#0066FF",
                     color: "#ffffff",
                     fontSize: "34px",
@@ -114,8 +113,8 @@ export async function GET(request: Request) {
                   display: "flex",
                   alignSelf: "flex-start",
                   borderRadius: "999px",
-                  background: "#E0F2FE",
-                  color: "#0369A1",
+                  background: "#F0F7FF",
+                  color: "#0066FF",
                   padding: "10px 18px",
                   fontSize: "18px",
                   fontWeight: 700,
@@ -163,7 +162,7 @@ export async function GET(request: Request) {
                 justifyContent: "space-between",
                 gap: "18px",
                 fontSize: "20px",
-                color: "#6B7280",
+                color: "#4B5563",
               }}
             >
               <div>skillsy.com.br</div>
@@ -179,8 +178,7 @@ export async function GET(request: Request) {
               justifyContent: "space-between",
               width: "38%",
               padding: "34px",
-              background:
-                "linear-gradient(160deg, #0066FF 0%, #3B82F6 44%, #93C5FD 100%)",
+              background: OG_BRAND.heroBlueAlt,
             }}
           >
             <div
@@ -235,7 +233,7 @@ export async function GET(request: Request) {
                   flexDirection: "column",
                   gap: "14px",
                   padding: "24px",
-                  borderRadius: "28px",
+                  borderRadius: "16px",
                   background: "rgba(255,255,255,0.14)",
                   border: "1px solid rgba(255,255,255,0.22)",
                   color: "#ffffff",
@@ -270,7 +268,7 @@ export async function GET(request: Request) {
                 style={{
                   width: "112px",
                   height: "150px",
-                  borderRadius: "30px 30px 0 0",
+                  borderRadius: "16px 16px 0 0",
                   background: "rgba(255,255,255,0.92)",
                 }}
               />
@@ -278,7 +276,7 @@ export async function GET(request: Request) {
                 style={{
                   width: "132px",
                   height: "220px",
-                  borderRadius: "36px 36px 0 0",
+                  borderRadius: "16px 16px 0 0",
                   background: "rgba(255,255,255,0.95)",
                 }}
               />
@@ -286,7 +284,7 @@ export async function GET(request: Request) {
                 style={{
                   width: "96px",
                   height: "122px",
-                  borderRadius: "24px 24px 0 0",
+                  borderRadius: "16px 16px 0 0",
                   background: "rgba(255,255,255,0.8)",
                 }}
               />

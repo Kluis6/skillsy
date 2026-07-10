@@ -22,8 +22,8 @@ export function BlockedClient() {
 
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-card rounded-[2.5rem] p-10 shadow-2xl shadow-primary/10 border border-border-subtle text-center">
-        <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-8">
+      <div className="max-w-md w-full bg-card rounded-xl p-8 md:p-10 shadow-lg border border-border-subtle text-center">
+        <div className="w-20 h-20 bg-red-500/10 rounded-xl flex items-center justify-center mx-auto mb-8">
           <ShieldAlert size={40} className="text-red-500" />
         </div>
         
@@ -36,13 +36,13 @@ export function BlockedClient() {
         <div className="space-y-4 mb-10">
           <a 
             href="mailto:suporte@skillsy.com" 
-            className="flex items-center justify-center gap-3 p-4 bg-surface rounded-2xl text-text-main font-semibold hover:bg-primary/5 transition-colors"
+            className="flex items-center justify-center gap-3 p-4 bg-surface rounded-xl text-text-main font-semibold hover:bg-primary/5 transition-colors"
           >
             <Mail size={20} className="text-primary" /> suporte@skillsy.com
           </a>
           <button 
             onClick={() => toast.info('Suporte Indisponível', { description: 'O suporte via WhatsApp está temporariamente fora do ar. Por favor, use o e-mail.' })}
-            className="flex items-center justify-center gap-3 p-4 bg-surface rounded-2xl text-text-main font-semibold hover:bg-green-50 transition-colors w-full border-none cursor-pointer"
+            className="flex items-center justify-center gap-3 p-4 bg-surface rounded-xl text-text-main font-semibold hover:bg-green-500/10 transition-colors w-full border-none cursor-pointer"
           >
             <MessageCircle size={20} className="text-green-500" /> Suporte via WhatsApp
           </button>

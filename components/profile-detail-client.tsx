@@ -456,7 +456,7 @@ export function ProfileDetailClient({
             onSubmit={reportForm.handleSubmit(handleSubmitReport)}
             className="space-y-4"
           >
-            <div className=" border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] text-amber-900">
+            <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100/85">
               Use a denúncia apenas para casos reais de conteúdo inadequado,
               fraude, spam ou informações enganosas.
             </div>
@@ -475,7 +475,7 @@ export function ProfileDetailClient({
                 ))}
               </select>
               {reportForm.formState.errors.reason && (
-                <p className="text-[10px] font-bold text-red-500">
+                <p className="text-xs font-bold text-red-500">
                   {reportForm.formState.errors.reason.message}
                 </p>
               )}
@@ -490,12 +490,12 @@ export function ProfileDetailClient({
                 maxLength={1000}
                 className="min-h-28"
               />
-              <div className="flex items-center justify-between text-[10px] text-text-muted">
+              <div className="flex items-center justify-between text-xs text-text-muted">
                 <span>Opcional, mas ajuda na análise.</span>
                 <span>{(reportForm.watch("details") || "").length}/1000</span>
               </div>
               {reportForm.formState.errors.details && (
-                <p className="text-[10px] font-bold text-red-500">
+                <p className="text-xs font-bold text-red-500">
                   {reportForm.formState.errors.details.message}
                 </p>
               )}
@@ -511,7 +511,7 @@ export function ProfileDetailClient({
               <Button
                 type="submit"
                 variant="default"
-                className="rounded-sm h-10 w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-medium"
+                className="rounded-sm h-10 w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white font-medium"
                 disabled={reportForm.formState.isSubmitting}
               >
                 {reportForm.formState.isSubmitting
@@ -677,6 +677,37 @@ export function ProfileDetailClient({
     );
   }
 
+  const profileRoleLabel =
+    targetProfile.serviceType ||
+    targetProfile.category ||
+    "Membro da Comunidade Skillsy";
+  const profileTrustItems = [
+    {
+      label: "Verificacao",
+      value: shouldShowVerifiedBadge(targetProfile)
+        ? "Membro verificado"
+        : "Perfil publico",
+      detail: shouldShowVerifiedBadge(targetProfile)
+        ? "Sinal de identidade e participacao revisado pela plataforma."
+        : "Veja as informacoes publicas antes de entrar em contato.",
+      icon: ShieldCheck,
+    },
+    {
+      label: "Reputacao",
+      value: `${targetProfile.rating || "0.0"} de 5`,
+      detail: `${targetProfile.reviewCount || 0} avaliacao${(targetProfile.reviewCount || 0) === 1 ? "" : "es"} registradas na comunidade.`,
+      icon: Star,
+    },
+    {
+      label: "Contexto",
+      value: targetProfile.location || "Brasil",
+      detail: hasAvailabilityInfo
+        ? "Inclui disponibilidade ou horario de atendimento."
+        : "Combine disponibilidade diretamente com o membro.",
+      icon: MapPin,
+    },
+  ];
+
   return (
     <>
       <Navbar user={user} profile={profile} logout={logout} />
@@ -693,7 +724,7 @@ export function ProfileDetailClient({
               {targetProfile.bannerURL ? (
                 <Image
                   src={targetProfile.bannerURL}
-                  alt="Banner"
+                  alt={`Capa do perfil de ${targetProfile.name}`}
                   fill
                   className="object-cover"
                   referrerPolicy="no-referrer"
@@ -747,7 +778,7 @@ export function ProfileDetailClient({
                             className={`rounded-md h-10 px-6 font-bold transition-all ${
                               isContact
                                 ? ""
-                                : "bg-blue-500 text-white hover:bg-blue-600"
+                                : "bg-primary text-white hover:bg-primary/90"
                             }`}
                           >
                             {isContact ? (
@@ -799,31 +830,35 @@ export function ProfileDetailClient({
                     </div>
 
                     <p className="text-base text-text-muted font-normal">
-                      {targetProfile.serviceType ||
-                        targetProfile.category ||
-                        "Membro da Comunidade Skillsy"}
+                      {profileRoleLabel}
                       {targetProfile.companyName &&
                         ` na ${targetProfile.companyName}`}
                     </p>
-                    <div className="flex items-center space-x-2">
-                      {targetProfile.companyName && (
-                        <div className="flex items-center space-x-2">
-                          <Building2 size={18} className="text-text-main" />
-                          <p className="text-sm font-normal text-text-main">
-                            {targetProfile.companyName}
-                          </p>
-                        </div>
+                    {(targetProfile.companyName || targetProfile.category) && (
+                      <div className="flex flex-wrap items-center gap-2">
+                        {targetProfile.companyName && (
+                          <div className="flex items-center space-x-2">
+                            <Building2 size={18} className="text-text-main" />
+                            <p className="text-sm font-normal text-text-main">
+                              {targetProfile.companyName}
+                            </p>
+                          </div>
+                        )}
+                        {targetProfile.companyName && targetProfile.category ? (
+                          <span className="font-bold block text-text-main">
+                            ·
+                          </span>
+                        ) : null}
+                        {targetProfile.category && (
+                          <Badge
+                            variant="secondary"
+                            className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                          >
+                            {targetProfile.category}
+                          </Badge>
+                        )}
+                      </div>
                       )}
-                      <span className="font-bold block text-text-main">·</span>
-                      {targetProfile.category && (
-                        <Badge
-                          variant="secondary"
-                          className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
-                        >
-                          {targetProfile.category}
-                        </Badge>
-                      )}
-                    </div>
 
                     {targetProfile.location && (
                       <div className="flex items-center space-x-2">
@@ -855,7 +890,7 @@ export function ProfileDetailClient({
 
                   <div className="flex flex-col w-full sm:w-auto">
                     <div className="text-center bg-surface rounded-sm border p-4 space-y-2 hidden sm:block">
-                      <p className="text-[10px] font-bold text-text-muted uppercase">
+                      <p className="text-xs font-bold text-text-muted">
                         {targetProfile.reviewCount || 0} avaliações
                       </p>
                       <div className="flex items-baseline justify-center space-x-2">
@@ -898,7 +933,7 @@ export function ProfileDetailClient({
                                 className={`rounded-sm h-10 px-6 flex-1 font-bold transition-all ${
                                   isContact
                                     ? ""
-                                    : "bg-blue-500 text-white hover:bg-blue-600"
+                                    : "bg-primary text-white hover:bg-primary/90"
                                 }`}
                               >
                                 {isContact ? (
@@ -931,15 +966,41 @@ export function ProfileDetailClient({
             </section>
           </section>
 
+          <section className="border-y border-border-subtle bg-surface">
+            <div className="container mx-auto grid grid-cols-1 gap-2 px-4 py-3 md:grid-cols-3">
+              {profileTrustItems.map((item) => (
+                <div
+                  key={item.label}
+                  className="flex gap-3 rounded-md border border-border-subtle bg-card p-4"
+                >
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                    <item.icon size={18} />
+                  </div>
+                  <div className="min-w-0 space-y-1">
+                    <p className="text-xs font-semibold text-text-muted">
+                      {item.label}
+                    </p>
+                    <p className="text-sm font-bold text-text-main">
+                      {item.value}
+                    </p>
+                    <p className="text-xs leading-relaxed text-text-muted">
+                      {item.detail}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* About Section */}
           <section className="bg-card border-y border-border-subtle ">
             <div className="mx-auto container p-4 space-y-4">
               <h3 className="md:text-xl text-base font-semibold text-text-main">
-                Sobre membro
+                Sobre este perfil
               </h3>
               <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap max-w-3xl">
                 {targetProfile.bio ||
-                  "Este membro ainda não adicionou uma descrição detalhada."}
+                  "Este membro ainda nao adicionou uma descricao detalhada. Use os sinais do perfil, avaliacoes e canais de contato para entender se faz sentido conversar."}
               </p>
             </div>
           </section>
@@ -1010,7 +1071,7 @@ export function ProfileDetailClient({
                           <Star size={12} fill="currentColor" />
                           <Star size={12} fill="currentColor" />
                         </div>
-                        <p className="text-[10px] font-bold text-text-muted uppercase">
+                        <p className="text-xs font-bold text-text-muted">
                           {targetProfile.reviewCount || 0} avaliações
                         </p>
                       </div>
@@ -1062,7 +1123,7 @@ export function ProfileDetailClient({
                         className="min-h-24 w-full bg-background flex"
                       />
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-[10px] font-medium text-text-muted">
+                        <p className="text-xs font-medium text-text-muted">
                           {ratingComment.length}/500 caracteres
                         </p>
                         <Button
@@ -1071,7 +1132,7 @@ export function ProfileDetailClient({
                           disabled={
                             !canRateProfile || submittingRating || !userRating
                           }
-                          className="bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700"
+                          className="bg-primary text-white hover:bg-primary/90 active:bg-primary/80"
                         >
                           {submittingRating ? "Enviando..." : "Enviar avaliação"}
                         </Button>
@@ -1133,7 +1194,7 @@ export function ProfileDetailClient({
                                 />
                               ))}
                             </div>
-                            <p className="text-[11px] font-medium uppercase tracking-wide text-text-muted">
+                            <p className="text-xs font-medium text-text-muted">
                               Avaliação anônima
                             </p>
                           </div>
@@ -1165,10 +1226,10 @@ export function ProfileDetailClient({
                         <button
                           type="button"
                           onClick={handleWhatsApp}
-                          className="flex w-full items-center gap-2.5 bg-surface md:px-3 px-1 py-2 text-left"
+                          className="flex w-full items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 text-left transition-colors hover:border-primary/30"
                         >
                           <FaWhatsapp size={16} className="text-green-600" />
-                          <p className="md:text-sm text-xs font-normal text-text-muted">
+                          <p className="text-sm font-medium text-text-main">
                             {targetProfile.whatsapp}
                           </p>
                         </button>
@@ -1177,10 +1238,10 @@ export function ProfileDetailClient({
                         <button
                           type="button"
                           onClick={handlePhoneCall}
-                          className="flex w-full items-center gap-2 bg-surface md:px-3 px-1 py-2 text-left "
+                          className="flex w-full items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 text-left transition-colors hover:border-primary/30"
                         >
                           <FaPhone size={16} className="text-primary" />
-                          <p className="md:text-sm text-xs font-normal text-text-muted">
+                          <p className="text-sm font-medium text-text-main">
                             {targetProfile.phone}
                           </p>
                         </button>
@@ -1192,10 +1253,10 @@ export function ProfileDetailClient({
                           )}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
+                          className="flex items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
                         >
                           <FaInstagram size={16} className="text-pink-600" />
-                          <span className="md:text-sm text-xs font-normal text-text-muted break-all">
+                          <span className="break-all text-sm font-medium text-text-main">
                             {targetProfile.instagram}
                           </span>
                         </a>
@@ -1205,10 +1266,10 @@ export function ProfileDetailClient({
                           href={formatUrl(targetProfile.facebook)}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
+                          className="flex items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
                         >
                           <FaFacebookF size={16} className="text-blue-600" />
-                          <p className="md:text-sm text-xs font-normal text-text-muted break-all">
+                          <p className="break-all text-sm font-medium text-text-main">
                             {targetProfile.facebook}
                           </p>
                         </a>
@@ -1218,10 +1279,10 @@ export function ProfileDetailClient({
                           href={formatUrl(targetProfile.linkedin)}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
+                          className="flex items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
                         >
                           <FaLinkedinIn size={16} className="text-sky-700" />
-                          <p className="md:text-sm text-xs font-normal text-text-muted break-all ">
+                          <p className="break-all text-sm font-medium text-text-main">
                             {targetProfile.linkedin}
                           </p>
                         </a>
@@ -1231,10 +1292,10 @@ export function ProfileDetailClient({
                           href={formatUrl(targetProfile.website)}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-2 bg-surface md:px-3 px-1 py-2"
+                          className="flex items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
                         >
                           <Globe size={16} className="text-primary" />
-                          <p className="md:text-sm text-xs font-normal text-text-muted break-all">
+                          <p className="break-all text-sm font-medium text-text-main">
                             {targetProfile.website}
                           </p>
                         </a>
@@ -1307,7 +1368,7 @@ export function ProfileDetailClient({
                           </div>
                           {typeof photo === "object" && photo.description && (
                             <DialogFooter className="bg-card">
-                              <h4 className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                              <h4 className="mb-2 text-xs font-bold text-primary">
                                 Comentário
                               </h4>
                               <DialogDescription className="text-base leading-relaxed tracking-tight text-text-main">
@@ -1346,7 +1407,7 @@ export function ProfileDetailClient({
                         )}
                       <Link
                         href="/profile"
-                        className="text-xs font-bold text-white rounded-sm flex justify-center items-center px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 h-8"
+                        className="text-xs font-bold text-white rounded-sm flex justify-center items-center px-4 bg-primary hover:bg-primary/90 active:bg-primary/80 h-8"
                       >
                         Gerenciar Galeria
                       </Link>

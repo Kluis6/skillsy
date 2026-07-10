@@ -67,6 +67,7 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
                 src={post.coverImageUrl}
                 alt={post.title}
                 fill
+                sizes="100vw"
                 className="object-cover "
               />
             </div>
@@ -84,7 +85,7 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
             <div>
               <Badge
                 variant="secondary"
-                className={` ${POST_CATEGORY_LABELS[post.category] === "Vagas" ? "bg-green-500/20 text-green-800" : "bg-amber-500/20 text-amber-800"} `}
+                className={` ${POST_CATEGORY_LABELS[post.category] === "Vagas" ? "bg-green-500/15 text-green-800 dark:text-green-300" : "bg-amber-500/15 text-amber-800 dark:text-amber-300"} `}
               >
                 {POST_CATEGORY_LABELS[post.category]}
               </Badge>

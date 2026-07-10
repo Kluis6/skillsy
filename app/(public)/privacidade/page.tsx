@@ -33,21 +33,21 @@ const summaries = [
     description:
       "Tratamos dados de cadastro, perfil e uso da plataforma na medida necessária para a operação do Skillsy.",
     icon: Database,
-    tone: "bg-blue-500/10 text-blue-700 border-blue-200 dark:shadow-blue-500",
+    tone: "bg-primary/10 text-primary border-primary/20",
   },
   {
     title: "Uso com finalidade clara",
     description:
       "Os dados ajudam a exibir perfis, facilitar conexões, proteger contas e manter a experiência funcionando.",
     icon: Eye,
-    tone: "bg-amber-500/10 text-amber-700 border-amber-200 dark:shadow-amber-500",
+    tone: "bg-amber-500/10 text-amber-700 border-amber-200 dark:border-amber-900/50 dark:text-amber-300",
   },
   {
     title: "Direitos do titular",
     description:
       "Você pode acessar, corrigir e solicitar exclusão de dados, observadas as hipóteses legais aplicáveis.",
     icon: UserCheck,
-    tone: "bg-red-500/10 text-red-600 border-red-200 dark:shadow-red-500",
+    tone: "bg-red-500/10 text-red-600 border-red-200 dark:border-red-900/50 dark:text-red-300",
   },
 ];
 
@@ -128,7 +128,7 @@ export default function PrivacidadePage() {
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
-        <div className="w-full rounded-lg bg-card p-4 shadow-2xl xl:p-8 border border-border-subtle">
+        <div className="w-full rounded-xl bg-card p-4 shadow-sm xl:p-8 border border-border-subtle">
           <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
             <div className="col-span-12 space-y-4">
               <h2 className="text-xl md:text-2xl font-bold text-text-main">
@@ -154,7 +154,7 @@ export default function PrivacidadePage() {
                 className={`col-span-12 rounded-md border p-4 lg:col-span-4 space-y-4 `}
               >
                 <div
-                  className={`flex size-12 items-center justify-center rounded-sm ${item.tone}  shadow-md`}
+                  className={`flex size-12 items-center justify-center rounded-sm ${item.tone}`}
                 >
                   <item.icon size={22} />
                 </div>
@@ -182,11 +182,11 @@ export default function PrivacidadePage() {
 
           {dataTypes.map((item, index) => (
             <div key={item} className="col-span-12 md:col-span-4">
-              <div className="h-full rounded-xl bg-blue-600 p-6 text-white">
-                <span className="text-sm font-bold uppercase tracking-[0.18em] text-blue-100">
+              <div className="h-full rounded-xl bg-primary p-6 text-white">
+                <span className="text-sm font-bold text-white/80">
                   Grupo {index + 1}
                 </span>
-                <p className="mt-3 text-sm font-normal text-blue-50">{item}</p>
+                <p className="mt-3 text-sm font-normal text-white/85">{item}</p>
               </div>
             </div>
           ))}
@@ -225,7 +225,7 @@ export default function PrivacidadePage() {
                 {useCases.map((item) => (
                   <div key={item} className="rounded-md border border-border-subtle bg-card p-4">
                     <div className="flex items-start gap-3">
-                      <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 dark:shadow-blue-700">
+                      <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-primary/10 text-primary">
                         <Eye size={18} />
                       </div>
                       <p className="text-sm leading-relaxed text-text-muted">
@@ -259,7 +259,7 @@ export default function PrivacidadePage() {
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               <div className="col-span-12 md:col-span-4">
                 <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md dark:shadow-blue-700">
+                  <div className="flex size-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                     <Share2 size={22} />
                   </div>
                   <h3 className="text-base font-bold text-text-main">
@@ -274,7 +274,7 @@ export default function PrivacidadePage() {
               </div>
               <div className="col-span-12 md:col-span-4">
                 <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md dark:shadow-blue-700">
+                  <div className="flex size-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                     <Lock size={22} />
                   </div>
                   <h3 className="text-base font-bold text-text-main">
@@ -289,7 +289,7 @@ export default function PrivacidadePage() {
               </div>
               <div className="col-span-12 md:col-span-4">
                 <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-blue-700/10 text-blue-700 shadow-md dark:shadow-blue-700">
+                  <div className="flex size-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                     <ShieldCheck size={22} />
                   </div>
                   <h3 className="text-base font-bold text-text-main">
@@ -348,23 +348,20 @@ export default function PrivacidadePage() {
               <p>
                 Para contexto complementar sobre funcionamento,
                 responsabilidades e limites da plataforma, consulte também os{" "}
-                <Link
-                  href="/termos"
-                  className="font-semibold text-blue-700 hover:underline"
-                >
+                <Link href="/termos" className="font-semibold text-primary hover:underline">
                   Termos de Uso
                 </Link>
                 .
               </p>
             </div>
 
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950/90">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950/90 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100/85">
               <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-amber-100 text-amber-800">
+                <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-100">
                   <RefreshCcw size={18} />
                 </div>
                 <div>
-                  <strong className="text-amber-900">
+                  <strong className="text-amber-900 dark:text-amber-100">
                     Última atualização:
                   </strong>
                   <br />

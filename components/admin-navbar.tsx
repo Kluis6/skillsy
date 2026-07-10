@@ -96,31 +96,23 @@ export function AdminNavbar() {
             </div>
             <div className="flex flex-col">
               <h1 className="text-lg font-black tracking-tighter uppercase leading-none">Skillsy</h1>
-              <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">Admin Panel</span>
+              <span className="text-xs font-bold text-primary">Admin Panel</span>
             </div>
           </Link>
 
           <div className="hidden md:flex items-center gap-1 bg-surface rounded-xl p-1 border border-border-subtle">
-            <Link href="/admin">
-              <Button variant="ghost" size="sm" className="rounded-lg gap-2 font-bold text-xs h-9 px-4 bg-card shadow-sm">
-                <LayoutDashboard size={14} /> Dashboard
-              </Button>
-            </Link>
-            <Link href="/admin/usuarios">
-              <Button variant="ghost" size="sm" className="rounded-lg gap-2 font-bold text-xs h-9 px-4 text-text-muted hover:text-primary">
-                <Users size={14} /> Usuários
-              </Button>
-            </Link>
-            <Link href="/admin/artigos">
-              <Button variant="ghost" size="sm" className="rounded-lg gap-2 font-bold text-xs h-9 px-4 text-text-muted hover:text-primary">
-                <FileText size={14} /> Artigos
-              </Button>
-            </Link>
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="rounded-lg gap-2 font-bold text-xs h-9 px-4 text-text-muted hover:text-primary">
-                <Home size={14} /> Ver Site
-              </Button>
-            </Link>
+            <Button render={<Link href="/admin" />} nativeButton={false} variant="ghost" size="sm" className="rounded-lg gap-2 font-bold text-xs h-9 px-4 bg-card shadow-sm">
+              <LayoutDashboard size={14} /> Dashboard
+            </Button>
+            <Button render={<Link href="/admin/usuarios" />} nativeButton={false} variant="ghost" size="sm" className="rounded-lg gap-2 font-bold text-xs h-9 px-4 text-text-muted hover:text-primary">
+              <Users size={14} /> Usuários
+            </Button>
+            <Button render={<Link href="/admin/artigos" />} nativeButton={false} variant="ghost" size="sm" className="rounded-lg gap-2 font-bold text-xs h-9 px-4 text-text-muted hover:text-primary">
+              <FileText size={14} /> Artigos
+            </Button>
+            <Button render={<Link href="/" />} nativeButton={false} variant="ghost" size="sm" className="rounded-lg gap-2 font-bold text-xs h-9 px-4 text-text-muted hover:text-primary">
+              <Home size={14} /> Ver Site
+            </Button>
           </div>
         </div>
 
@@ -137,7 +129,7 @@ export function AdminNavbar() {
               >
                   <Bell size={18} />
                   {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-background">
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-background">
                       {unreadCount}
                     </span>
                   )}
@@ -151,7 +143,7 @@ export function AdminNavbar() {
                   {unreadCount > 0 && (
                     <button 
                       onClick={handleMarkAllAsRead}
-                      className="text-[10px] font-bold text-primary hover:underline"
+                      className="text-xs font-bold text-primary hover:underline"
                     >
                       Ler todas
                     </button>
@@ -184,7 +176,7 @@ export function AdminNavbar() {
                               </p>
                               <div className="flex items-center gap-2 mt-2">
                                 <Clock size={10} className="text-text-muted/50" />
-                                <span className="text-[9px] text-text-muted/50 font-medium">
+                                <span className="text-xs text-text-muted/60 font-medium">
                                   {n.createdAt?.seconds 
                                     ? formatDistanceToNow(new Date(n.createdAt.seconds * 1000), { addSuffix: true, locale: ptBR })
                                     : 'Agora'}
@@ -208,7 +200,7 @@ export function AdminNavbar() {
                 <div className="p-3 bg-surface border-t border-border-subtle text-center">
                   <Link
                     href="/admin/usuarios"
-                    className="text-[10px] font-bold text-text-muted hover:text-primary flex items-center justify-center gap-1"
+                    className="text-xs font-bold text-text-muted hover:text-primary flex items-center justify-center gap-1"
                     onClick={() => setNotificationsOpen(false)}
                   >
                     Ir para a área administrativa <ChevronRight size={10} />

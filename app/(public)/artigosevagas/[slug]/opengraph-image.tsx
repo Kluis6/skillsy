@@ -59,7 +59,7 @@ export default async function Image({ params }: ImageProps) {
             width: "100%",
             height: "100%",
             overflow: "hidden",
-            borderRadius: "36px",
+            borderRadius: "16px",
             background: OG_BRAND.cardBg,
             border: OG_BRAND.cardBorder,
             boxShadow: OG_BRAND.cardShadow,
@@ -104,7 +104,7 @@ export default async function Image({ params }: ImageProps) {
                     flexDirection: "column",
                     gap: "14px",
                     padding: "24px",
-                    borderRadius: "28px",
+                    borderRadius: "16px",
                     background: "rgba(255,255,255,0.14)",
                     border: "1px solid rgba(255,255,255,0.22)",
                     maxWidth: "430px",
@@ -165,7 +165,7 @@ export default async function Image({ params }: ImageProps) {
                     style={{
                       width: "58px",
                       height: "58px",
-                      borderRadius: "18px",
+                      borderRadius: "16px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -213,8 +213,8 @@ export default async function Image({ params }: ImageProps) {
                     <div
                       style={{
                         borderRadius: "999px",
-                        background: "#E0F2FE",
-                        color: "#0369A1",
+                        background: "#F0F7FF",
+                        color: "#0066FF",
                         padding: "10px 16px",
                         fontSize: "16px",
                         fontWeight: 700,
@@ -248,7 +248,7 @@ export default async function Image({ params }: ImageProps) {
                   style={{
                     fontSize: "23px",
                     lineHeight: 1.35,
-                    color: "#475569",
+                    color: "#4B5563",
                   }}
                 >
                   {description}
@@ -261,7 +261,7 @@ export default async function Image({ params }: ImageProps) {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                color: "#6B7280",
+                color: "#4B5563",
                 fontSize: "18px",
               }}
             >

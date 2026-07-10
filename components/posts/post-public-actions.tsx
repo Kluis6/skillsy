@@ -190,12 +190,15 @@ export function PostPublicActions({
 
       {isOwnPost && post.id ? (
         <div className="space-x-2 flex">
-          <Link href={`/meus-artigos/${post.id}/editar`}>
-            <Button variant="outline" size={compact ? "sm" : "default"}>
-              <Pencil size={16} className="sm:mr-2" />
-              <p className="hidden sm:flex"> Editar</p>
-            </Button>
-          </Link>
+          <Button
+            render={<Link href={`/meus-artigos/${post.id}/editar`} />}
+            nativeButton={false}
+            variant="outline"
+            size={compact ? "sm" : "default"}
+          >
+            <Pencil size={16} className="sm:mr-2" />
+            <p className="hidden sm:flex"> Editar</p>
+          </Button>
           <Button
             type="button"
             variant="destructive"

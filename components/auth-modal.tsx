@@ -214,6 +214,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     src={image.src}
                     alt={image.alt}
                     fill
+                    sizes="(min-width: 768px) 16vw, 0vw"
                     className="object-cover bg-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </motion.div>
@@ -270,7 +271,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     {loginErrors.email && (
                       <p
                         id="login-email-error"
-                        className="text-[10px] text-red-500 font-bold ml-1"
+                        className="text-xs text-red-500 font-bold ml-1"
                       >
                         {loginErrors.email.message}
                       </p>
@@ -298,7 +299,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     {loginErrors.password && (
                       <p
                         id="login-password-error"
-                        className="text-[10px] text-red-500 font-bold ml-1"
+                        className="text-xs text-red-500 font-bold ml-1"
                       >
                         {loginErrors.password.message}
                       </p>
@@ -307,7 +308,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white h-10 font-semibold transition-all"
+                    className="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white h-10 font-semibold transition-colors"
                   >
                     {loading ? (
                       <Loader2 className="mr-2 size-4 animate-spin" />
@@ -352,7 +353,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     {signUpErrors.name && (
                       <p
                         id="signup-name-error"
-                        className="text-[10px] text-red-500 font-bold ml-1"
+                        className="text-xs text-red-500 font-bold ml-1"
                       >
                         {signUpErrors.name.message}
                       </p>
@@ -387,7 +388,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     {signUpErrors.email && (
                       <p
                         id="signup-email-error"
-                        className="text-[10px] text-red-500 font-bold ml-1"
+                        className="text-xs text-red-500 font-bold ml-1"
                       >
                         {signUpErrors.email.message}
                       </p>
@@ -424,7 +425,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     {signUpErrors.password && (
                       <p
                         id="signup-password-error"
-                        className="text-[10px] text-red-500 font-bold ml-1"
+                        className="text-xs text-red-500 font-bold ml-1"
                       >
                         {signUpErrors.password.message}
                       </p>
@@ -434,7 +435,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white h-10 font-semibold transition-all"
+                    className="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white h-10 font-semibold transition-colors"
                   >
                     {loading ? (
                       <Loader2 className="mr-2 size-4 animate-spin" />

@@ -116,7 +116,7 @@ export function ContactsAside({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className=" h-10 rounded-full text-text-muted hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
+                        className=" h-10 rounded-full text-text-muted hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleContact(c.uid).then(() => {
@@ -135,7 +135,7 @@ export function ContactsAside({
                       />
                     </div> */}
                   </div>
-                  <p className="text-[10px] text-text-muted truncate font-medium">
+                  <p className="text-xs text-text-muted truncate font-medium">
                     {c.companyName || c.category || "Membro"}
                   </p>
                 </div>

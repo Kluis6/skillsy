@@ -52,7 +52,7 @@ export default function OpenGraphImage() {
             height: "100%",
             display: "flex",
             overflow: "hidden",
-            borderRadius: "34px",
+            borderRadius: "16px",
             background: OG_BRAND.cardBg,
             border: OG_BRAND.cardBorder,
             boxShadow: OG_BRAND.cardShadow,
@@ -68,7 +68,7 @@ export default function OpenGraphImage() {
               padding: "30px 24px",
               background:
                 "linear-gradient(180deg, rgba(246,250,255,1) 0%, rgba(255,255,255,1) 100%)",
-              borderRight: "1px solid #E2E8F0",
+              borderRight: "1px solid #E5E7EB",
             }}
           >
             <div
@@ -102,7 +102,7 @@ export default function OpenGraphImage() {
                 }}
               >
                 <div style={{ fontSize: "24px", fontWeight: 800 }}>Skillsy</div>
-                <div style={{ fontSize: "16px", color: "#64748B" }}>Busca pública</div>
+                <div style={{ fontSize: "16px", color: "#4B5563" }}>Busca pública</div>
               </div>
             </div>
 
@@ -136,7 +136,7 @@ export default function OpenGraphImage() {
                   flexDirection: "column",
                   gap: "5px",
                   padding: "16px",
-                  borderRadius: "20px",
+                  borderRadius: "12px",
                   background: OG_BRAND.panelBg,
                   border: OG_BRAND.panelBorder,
                 }}
@@ -202,7 +202,7 @@ export default function OpenGraphImage() {
                   justifyContent: "space-between",
                   alignItems: "center",
                   padding: "14px 16px",
-                  borderRadius: "20px",
+                  borderRadius: "12px",
                   background: OG_BRAND.whiteOverlay,
                   border: OG_BRAND.whiteOverlayBorder,
                 }}
@@ -256,9 +256,9 @@ export default function OpenGraphImage() {
                     alignItems: "center",
                     gap: "18px",
                     padding: "16px 18px",
-                    borderRadius: "22px",
-                    background: "#F8FAFC",
-                    border: "1px solid #E2E8F0",
+                    borderRadius: "12px",
+                    background: "#F0F7FF",
+                    border: "1px solid #E5E7EB",
                   }}
                 >
                   <div
@@ -294,7 +294,7 @@ export default function OpenGraphImage() {
                       <div style={{ fontSize: "20px", fontWeight: 800 }}>
                         {result.name}
                       </div>
-                      <div style={{ fontSize: "17px", color: "#475569" }}>
+                      <div style={{ fontSize: "17px", color: "#4B5563" }}>
                         {result.service}
                       </div>
                     </div>
@@ -302,7 +302,7 @@ export default function OpenGraphImage() {
                   <div
                     style={{
                       fontSize: "16px",
-                      color: "#64748B",
+                      color: "#4B5563",
                       fontWeight: 700,
                     }}
                   >

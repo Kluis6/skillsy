@@ -100,12 +100,12 @@ export function CepFilter({
   };
 
   return (
-    <div className="">
+    <>
       {location ? (
         <Button
           variant="outline"
           onClick={clearLocation}
-          className="flex justify-center items-center px-7 py-5 "
+          className="flex justify-center items-center px-7 h-12 w-full"
         >
           <X className="size-4 text-text-muted" />
           <p className="text-text-muted">Remover localização</p>
@@ -115,7 +115,7 @@ export function CepFilter({
           variant="outline"
           onClick={handleDetectLocation}
           disabled={loading}
-          className="h-12 w-xs text-text-muted min-w-28 flex justify-center text-center items-center"
+          className="h-12 text-text-muted w-full flex justify-center text-center items-center"
         >
           {loading ? (
             <div className="w-full flex justify-center items-center">
@@ -131,6 +131,6 @@ export function CepFilter({
           )}
         </Button>
       )}
-    </div>
+    </>
   );
 }

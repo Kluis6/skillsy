@@ -3,18 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSearchController } from "@/hooks/use-search-controller";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Star, Briefcase, ShieldCheck } from "lucide-react";
+import { Briefcase } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -23,11 +12,9 @@ import { BenefitsSection } from "@/components/benefits-section";
 import { ContactCTA } from "@/components/contact-cta";
 import { CategoryCarousel } from "@/components/category-carousel";
 import { AuthModal } from "@/components/auth-modal";
-import Link from "next/link";
 import { UserProfile } from "@/models/types";
-import Image from "next/image";
-import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 import { Categorywall } from "./categorywall";
+import { ProviderProfileCard } from "@/components/profile/provider-profile-card";
 
 export function HomeClient({
   initialProviders = [],
@@ -63,12 +50,12 @@ export function HomeClient({
         searching={searching}
         locationFilter={locationFilter}
         setLocationFilter={setLocationFilter}
+        showSignupCta={!user}
       />
 
       {/* Categories Carousel */}
       <CategoryCarousel />
       <Categorywall />
-      
 
       {!user && <BenefitsSection />}
 
@@ -84,10 +71,11 @@ export function HomeClient({
           >
             <div className="text-center space-y-2">
               <h3 className="text-2xl font-bold text-text-main font-heading tracking-tight text-center">
-                Membros em Destaque
+                Pessoas da comunidade colocando talento em movimento
               </h3>
-              <p className="text-base font-normal text-text-muted">
-                Conheça os profissionais <br className="flex lg:hidden" /> mais bem avaliados da nossa rede.
+              <p className="mx-auto max-w-2xl text-base font-normal text-text-muted">
+                Conheça membros que oferecem serviços, compartilham experiência
+                e ajudam outras famílias a encontrar soluções confiáveis.
               </p>
             </div>
 
@@ -101,76 +89,7 @@ export function HomeClient({
                     transition={{ delay: idx * 0.05 }}
                     className="col-span-12 md:col-span-6 xl:col-span-4"
                   >
-                    <Card className="relative mx-auto w-full h-full bg-card pt-0">
-                      <div className="relative w-full h-25 md:h-40">
-                        <div className="absolute inset-0 z-30 h-25 md:h-40 bg-black/25" />
-                        {p.bannerURL ? (
-                          <Image
-                            src={p.bannerURL}
-                            alt="Event cover"
-                            fill
-                            className="z-20 aspect-auto h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 z-20 bg-surface" />
-                        )}
-                        <div className="flex items-center gap-1 text-base font-bold text-highlight z-30 absolute right-4 top-4 drop-shadow-xl">
-                          <Star size={16} fill="currentColor" />
-                          {p.rating || "0.0"}
-                        </div>
-                        <div className="absolute z-30 bottom-4 left-4">
-                          {p.companyName && (
-                            <p className="text-sm font-bold text-white uppercase tracking-wider drop-shadow-xl">
-                              {p.companyName}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <CardHeader>
-                        <section className="flex gap-4 items-center ">
-                          <Avatar className="size-10 md:size-14">
-                            <AvatarImage src={p.photoURL} />
-                            <AvatarFallback className="bg-surface text-primary font-bold text-xl">
-                              {p.name[0]}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex flex-col">
-                            <CardTitle className="text-base md:text-xl flex justify-start gap-x-1 md:gap-x-2 items-center font-bold text-text-main">
-                              {p.name}
-                              {shouldShowVerifiedBadge(p) ? (
-                                <ShieldCheck className="size-4 text-primary" />
-                              ) : null}
-                            </CardTitle>
-                            <CardDescription className="lg:text-base text-xs flex items-center gap-1">
-                              <MapPin size={12} /> {p.location || "Brasil"}
-                            </CardDescription>
-                          </div>
-                        </section>
-
-                        <CardAction>
-                          <Badge className="bg-surface text-primary font-normal">
-                            {p.category || "Geral"}
-                          </Badge>
-                        </CardAction>
-                      </CardHeader>
-
-                      <CardContent className="flex-grow text-sm">
-                        <p className="text-text-muted leading-relaxed line-clamp-2 mb-4">
-                          {p.bio ||
-                            "Membro dedicado da comunidade oferecendo serviços com excelência e valores compartilhados."}
-                        </p>
-                      </CardContent>
-
-                      <CardFooter>
-                        <Link
-                          href={`/profile/${p.uid}`}
-                          className="w-full text-center font-medium text-sm bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-sm h-10 flex justify-center items-center"
-                        >
-                          Ver Detalhes
-                        </Link>
-                      </CardFooter>
-                    </Card>
+                    <ProviderProfileCard provider={p} />
                   </motion.div>
                 ))}
               </div>
@@ -193,14 +112,16 @@ export function HomeClient({
 
         {!user && (
           <div className="my-24 text-center flex-col md:flex-row flex w-full justify-center items-center space-x-2 ">
-            <p className="text-sm text-text-muted"> Possui uma empresa ou presta serviços?</p>
+            <p className="text-sm text-text-muted">
+              Seu talento também pode ajudar alguém hoje.
+            </p>
 
             <AuthModal>
               <button
                 type="button"
                 className="bg-transparent font-bold text-blue-500 hover:underline"
               >
-                Cadastre sua Skill agora
+                Crie seu perfil na comunidade
               </button>
             </AuthModal>
           </div>

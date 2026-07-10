@@ -15,7 +15,7 @@ export function CreatePostCta() {
   return (
     <Link
       href="/meus-artigos/novo"
-      className="w-full md:w-fit flex justify-center items-center text-center h-10 px-4 bg-blue-500 text-white font-medium  rounded-sm text-sm hover:bg-blue-600 active:bg-blue-700 transition-colors"
+      className="w-full md:w-fit flex justify-center items-center text-center h-10 px-4 bg-primary text-white font-medium rounded-sm text-sm hover:bg-primary/90 active:bg-primary/80 transition-colors"
     >
       Criar publicação
     </Link>

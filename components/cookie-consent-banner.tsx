@@ -42,7 +42,7 @@ export function CookieConsentBanner() {
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 p-4">
-      <div className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-2xl">
+      <div className="mx-auto max-w-4xl overflow-hidden rounded-xl border border-border-subtle bg-card shadow-lg">
         <div className="bg-linear-to-r from-blue-600 via-sky-500 to-cyan-400 px-5 py-3 text-white">
           <div className="flex items-center gap-2 text-sm font-semibold tracking-tight">
             <ShieldCheck size={18} />
@@ -73,7 +73,7 @@ export function CookieConsentBanner() {
             </Button>
             <Button
               type="button"
-              className="bg-blue-600 text-white hover:bg-blue-700"
+              className="bg-primary text-white hover:bg-primary/90"
               onClick={() => handleChoice("accepted")}
             >
               Entendi

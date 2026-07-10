@@ -31,28 +31,28 @@ export default function Error({
       <div className="flex flex-col sm:flex-row gap-4">
         <Button 
           onClick={() => reset()}
-          className="bg-primary text-white hover:bg-primary/90 rounded-2xl px-8 h-12 font-bold shadow-lg shadow-primary/20"
+          className="bg-primary text-white hover:bg-primary/90 rounded-md px-8 h-12 font-bold"
         >
           <RotateCcw size={18} className="mr-2" /> Tentar Novamente
         </Button>
         
-        <Link href="/">
-          <Button 
-            variant="outline"
-            className="rounded-2xl px-8 h-12 font-bold border-border-subtle hover:bg-surface"
-          >
-            <Home size={18} className="mr-2" /> Voltar para Home
-          </Button>
-        </Link>
+        <Button
+          render={<Link href="/" />}
+          nativeButton={false}
+          variant="outline"
+          className="rounded-md px-8 h-12 font-bold border-border-subtle hover:bg-surface"
+        >
+          <Home size={18} className="mr-2" /> Voltar para Home
+        </Button>
       </div>
 
       {process.env.NODE_ENV === 'development' && (
-        <div className="mt-12 p-6 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded-3xl text-left max-w-2xl w-full overflow-hidden">
+        <div className="mt-12 p-6 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded-xl text-left max-w-2xl w-full overflow-hidden">
           <p className="text-xs font-mono text-red-500 break-words">
             {error.message || 'Erro desconhecido'}
           </p>
           {error.stack && (
-            <pre className="mt-4 text-[10px] font-mono text-red-400 overflow-x-auto">
+            <pre className="mt-4 text-xs font-mono text-red-400 overflow-x-auto">
               {error.stack}
             </pre>
           )}

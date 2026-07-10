@@ -35,14 +35,14 @@ export default function AdminError({
           <RotateCcw size={18} className="mr-2" /> Tentar Novamente
         </Button>
         
-        <Link href="/admin">
-          <Button 
-            variant="outline"
-            className="rounded-2xl px-8 h-12 font-bold border-border-subtle hover:bg-surface"
-          >
-            <ArrowLeft size={18} className="mr-2" /> Voltar ao Dashboard
-          </Button>
-        </Link>
+        <Button
+          render={<Link href="/admin" />}
+          nativeButton={false}
+          variant="outline"
+          className="rounded-2xl px-8 h-12 font-bold border-border-subtle hover:bg-surface"
+        >
+          <ArrowLeft size={18} className="mr-2" /> Voltar ao Dashboard
+        </Button>
       </div>
 
       <div className="mt-12 text-xs text-text-muted">

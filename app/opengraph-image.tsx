@@ -50,7 +50,7 @@ export default function OpenGraphImage() {
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
-            borderRadius: "34px",
+            borderRadius: "16px",
             background: OG_BRAND.cardBg,
             border: OG_BRAND.cardBorder,
             boxShadow: OG_BRAND.cardShadow,
@@ -108,7 +108,7 @@ export default function OpenGraphImage() {
                   style={{
                     width: "64px",
                     height: "64px",
-                    borderRadius: "18px",
+                    borderRadius: "16px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -207,7 +207,7 @@ export default function OpenGraphImage() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   padding: "14px 16px",
-                  borderRadius: "20px",
+                  borderRadius: "12px",
                   background: "rgba(255,255,255,0.16)",
                   border: "1px solid rgba(255,255,255,0.2)",
                   fontSize: "18px",
@@ -283,7 +283,7 @@ export default function OpenGraphImage() {
                     flexDirection: "column",
                     gap: "4px",
                     padding: "18px",
-                    borderRadius: "22px",
+                    borderRadius: "12px",
                     background: OG_BRAND.panelBg,
                     border: OG_BRAND.panelBorder,
                   }}
@@ -291,7 +291,7 @@ export default function OpenGraphImage() {
                   <div style={{ display: "flex", fontSize: "18px", fontWeight: 800 }}>
                     Busca contextual
                   </div>
-                  <div style={{ display: "flex", fontSize: "16px", color: "#475569", lineHeight: 1.3 }}>
+                  <div style={{ display: "flex", fontSize: "16px", color: "#4B5563", lineHeight: 1.3 }}>
                     Combine categoria, região e reputação para encontrar ajuda
                     com mais clareza.
                   </div>
@@ -302,7 +302,7 @@ export default function OpenGraphImage() {
                     flexDirection: "column",
                     gap: "4px",
                     padding: "18px",
-                    borderRadius: "22px",
+                    borderRadius: "12px",
                     background: OG_BRAND.panelBg,
                     border: OG_BRAND.panelBorder,
                   }}
@@ -310,7 +310,7 @@ export default function OpenGraphImage() {
                   <div style={{ display: "flex", fontSize: "18px", fontWeight: 800 }}>
                     Rede de confiança
                   </div>
-                  <div style={{ display: "flex", fontSize: "16px", color: "#475569", lineHeight: 1.3 }}>
+                  <div style={{ display: "flex", fontSize: "16px", color: "#4B5563", lineHeight: 1.3 }}>
                     Transforme indicação em conexão prática entre membros.
                   </div>
                 </div>
@@ -341,9 +341,9 @@ export default function OpenGraphImage() {
                     justifyContent: "space-between",
                     alignItems: "center",
                     padding: "20px 22px",
-                    borderRadius: "24px",
+                    borderRadius: "16px",
                     background: "#ffffff",
-                    border: "1px solid #E2E8F0",
+                    border: "1px solid #E5E7EB",
                     boxShadow: "0 8px 24px rgba(15,23,42,0.04)",
                   }}
                 >
@@ -380,10 +380,10 @@ export default function OpenGraphImage() {
                       <div style={{ display: "flex", fontSize: "22px", fontWeight: 800 }}>
                         {card.name}
                       </div>
-                      <div style={{ display: "flex", fontSize: "18px", color: "#475569" }}>
+                      <div style={{ display: "flex", fontSize: "18px", color: "#4B5563" }}>
                         {card.service}
                       </div>
-                      <div style={{ display: "flex", fontSize: "16px", color: "#64748B" }}>
+                      <div style={{ display: "flex", fontSize: "16px", color: "#4B5563" }}>
                         {card.location}
                       </div>
                     </div>
@@ -401,8 +401,8 @@ export default function OpenGraphImage() {
                         display: "flex",
                         borderRadius: "999px",
                         padding: "8px 14px",
-                        background: "#E0F2FE",
-                        color: "#0369A1",
+                        background: "#F0F7FF",
+                        color: "#0066FF",
                         fontSize: "15px",
                         fontWeight: 700,
                       }}
@@ -414,7 +414,7 @@ export default function OpenGraphImage() {
                         display: "flex",
                         fontSize: "20px",
                         fontWeight: 800,
-                        color: "#1D4ED8",
+                        color: "#0066FF",
                       }}
                     >
                       Nota {card.rating}

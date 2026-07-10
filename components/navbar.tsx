@@ -68,7 +68,12 @@ export function Navbar({
               onOpenChange={setMobileDrawerOpen}
             >
               <DrawerTrigger asChild className="flex md:hidden">
-                <Button size="icon" className="size-10" variant="ghost">
+                <Button
+                  size="icon"
+                  className="size-10"
+                  variant="ghost"
+                  aria-label="Abrir menu principal"
+                >
                   <BsList className="size-[20px] text-foreground" />
                 </Button>
               </DrawerTrigger>
@@ -85,7 +90,8 @@ export function Navbar({
                   <DrawerTrigger asChild>
                     <Button
                       size="icon"
-                      className="bg-card hover:bg-neutral-200 dark:hover:bg-neutral-600"
+                      className="bg-card hover:bg-surface"
+                      aria-label="Fechar menu principal"
                     >
                       <BsXLg className="text-foreground" />
                     </Button>
@@ -202,7 +208,7 @@ export function Navbar({
                 <DrawerFooter>
                   <DrawerClose asChild>
                     <Link
-                      className="text-center bg-primary hover:bg-blue-700 active:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 black:active:bg-blue-800 p-2 font-medium text-sm text-white rounded-md"
+                      className="text-center bg-primary hover:bg-primary/90 active:bg-primary/80 p-2 font-medium text-sm text-white rounded-md"
                       href={"/donation"}
                     >
                       Ajude o projeto
@@ -217,12 +223,7 @@ export function Navbar({
             <></>
           ) : (
             <div className="md:flex hidden items-center gap-2">
-              <Link
-                href="/weareskillsy"
-                className="text-sm font-normal text-text-muted hover:text-foreground decoration-1 hover:underline transition-all underline-offset-2 decoration-foreground"
-              >
-                O que é Skillsy
-              </Link>
+              <h1 className="font-bold text-primary tracking-tight text-2xl">Skillsy</h1>
             </div>
           )}
 
@@ -231,6 +232,7 @@ export function Navbar({
               variant="ghost"
               className="h-10 text-foreground"
               onClick={() => router.back()}
+              aria-label="Voltar para a página anterior"
             >
               <ArrowLeft /> <p className="hidden md:flex">Voltar</p>
             </Button>
@@ -246,7 +248,12 @@ export function Navbar({
             onOpenChange={setDesktopDrawerOpen}
           >
             <DrawerTrigger asChild className="hidden md:flex">
-              <Button size="icon" className="size-10" variant="ghost">
+              <Button
+                size="icon"
+                className="size-10"
+                variant="ghost"
+                aria-label="Abrir menu principal"
+              >
                 <BsList className="size-5 text-foreground" />
               </Button>
             </DrawerTrigger>
@@ -261,7 +268,8 @@ export function Navbar({
                 <DrawerTrigger asChild>
                   <Button
                     size="icon"
-                    className="bg-card hover:bg-neutral-200 dark:hover:bg-neutral-600"
+                    className="bg-card hover:bg-surface"
+                    aria-label="Fechar menu principal"
                   >
                     <BsXLg className="text-foreground" />
                   </Button>
@@ -377,7 +385,7 @@ export function Navbar({
               <DrawerFooter>
                 <DrawerClose asChild>
                   <Link
-                    className="text-center flex justify-center items-center bg-primary h-10 hover:bg-blue-700 active:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 black:active:bg-blue-800 p-2 font-medium text-sm text-white rounded-md"
+                    className="text-center flex justify-center items-center bg-primary h-10 hover:bg-primary/90 active:bg-primary/80 p-2 font-medium text-sm text-white rounded-md"
                     href={"/donation"}
                   >
                     Ajude o projeto
@@ -398,7 +406,8 @@ export function Navbar({
             <AuthModal>
               <Button
                 title="Faça login ou cria sua conta"
-                className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 w-10 md:w-auto md:px-4 h-10 dark:text-white font-normal"
+                aria-label="Entrar ou criar conta"
+                className="bg-primary hover:bg-primary/90 active:bg-primary/80 w-10 md:w-auto md:px-4 h-10 dark:text-white font-normal"
               >
                 <LuLogIn className="flex md:hidden size-4" />
                 <p className="hidden font-medium md:block"> Entrar</p>

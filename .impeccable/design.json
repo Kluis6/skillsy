@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-08T20:32:00-03:00",
+  "title": "Design System: Skillsy",
+  "extensions": {
+    "colorMeta": {
+      "trust-blue": {
+        "role": "primary",
+        "displayName": "Trust Blue",
+        "canonical": "#0066FF",
+        "tonalRamp": ["#001A41", "#003A91", "#0052CC", "#0066FF", "#3B82F6", "#7DB0FF", "#CFE2FF", "#F0F7FF"]
+      },
+      "connection-blue": {
+        "role": "secondary",
+        "displayName": "Connection Blue",
+        "canonical": "#00A3FF",
+        "tonalRamp": ["#00324F", "#005B8F", "#0088D6", "#00A3FF", "#46BEFF", "#8ED8FF", "#D6F0FF", "#F0FAFF"]
+      },
+      "proof-gold": {
+        "role": "tertiary",
+        "displayName": "Proof Gold",
+        "canonical": "#FFB800",
+        "tonalRamp": ["#3D2A00", "#7A5400", "#B87F00", "#FFB800", "#FFCB3D", "#FFDD7A", "#FFEFB8", "#FFF8E5"]
+      },
+      "clean-white": {
+        "role": "neutral",
+        "displayName": "Clean White",
+        "canonical": "#FFFFFF",
+        "tonalRamp": ["#001A41", "#33415C", "#4B5563", "#94A3B8", "#E5E7EB", "#F0F7FF", "#F8FAFC", "#FFFFFF"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Brand Display",
+        "purpose": "Hero headlines and public brand moments only."
+      },
+      "headline": {
+        "displayName": "Page Headline",
+        "purpose": "Primary title for page and section headers."
+      },
+      "body": {
+        "displayName": "Product Body",
+        "purpose": "Readable descriptions, help text, form context and content."
+      },
+      "label": {
+        "displayName": "Control Label",
+        "purpose": "Form labels, filters, chips, badges and compact metadata."
+      }
+    },
+    "shadows": [
+      {
+        "name": "state-lift",
+        "value": "0 8px 24px rgba(0, 102, 255, 0.10)",
+        "purpose": "Subtle state emphasis for interactive cards and key CTAs."
+      },
+      {
+        "name": "dialog-lift",
+        "value": "0 20px 60px rgba(0, 26, 65, 0.18)",
+        "purpose": "Modal and overlay separation."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-transition",
+        "value": "150ms ease-out",
+        "purpose": "Default product transition for hover, selected and focus states."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary action with Trust Blue, white text and compact product height.",
+      "html": "<button class=\"ds-button-primary\">Buscar talento</button>",
+      "css": ".ds-button-primary{height:40px;padding:10px 24px;border:0;border-radius:4px;background:#0066FF;color:#FFFFFF;font:600 14px/1.2 Inter,Arial,sans-serif;transition:background-color 150ms ease-out,box-shadow 150ms ease-out}.ds-button-primary:hover{background:#005CE6}.ds-button-primary:focus-visible{outline:3px solid rgba(0,102,255,.28);outline-offset:2px}"
+    },
+    {
+      "name": "Surface Panel",
+      "kind": "card",
+      "refersTo": "surface-panel",
+      "description": "Default product container for forms, filters, list shells and settings panels.",
+      "html": "<section class=\"ds-surface-panel\"><h2>Identidade pública</h2><p>Dados básicos exibidos no perfil e usados para confiança.</p></section>",
+      "css": ".ds-surface-panel{padding:24px;border:1px solid #E5E7EB;border-radius:16px;background:#FFFFFF;color:#001A41}.ds-surface-panel h2{margin:0 0 4px;font:700 20px/1.25 Outfit,Inter,Arial,sans-serif}.ds-surface-panel p{margin:0;color:#4B5563;font:400 14px/1.5 Inter,Arial,sans-serif}"
+    },
+    {
+      "name": "Trust Chip",
+      "kind": "chip",
+      "refersTo": "trust-chip",
+      "description": "Compact signal for verified members, active filters and readiness markers.",
+      "html": "<span class=\"ds-trust-chip\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg>Membro verificado</span>",
+      "css": ".ds-trust-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid rgba(0,102,255,.12);border-radius:999px;background:#F0F7FF;color:#0066FF;font:700 12px/1.2 Inter,Arial,sans-serif}.ds-trust-chip svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Rede Confiável",
+    "overview": "Skillsy deve parecer uma rede comunitária confiável antes de parecer um marketplace. A experiência visual precisa dizer: aqui existem pessoas reais, serviços reais, indicações responsáveis e uma forma simples de encontrar ajuda sem ruído.",
+    "keyCharacteristics": [
+      "Humano, direto e comunitário.",
+      "Azul como sinal de ação e confiança, não decoração.",
+      "Superfícies claras, bordas discretas e sombras raras.",
+      "Copy curta que explica consequência, visibilidade e próximos passos.",
+      "Componentes consistentes antes de efeitos visuais."
+    ],
+    "rules": [
+      {
+        "name": "The Blue Has A Job Rule",
+        "section": "colors",
+        "body": "Azul forte só entra quando há ação, estado selecionado, foco ou confiança. Azul decorativo repetido enfraquece a marca."
+      },
+      {
+        "name": "The Product Type Rule",
+        "section": "typography",
+        "body": "Telas de produto não usam display gigante. Headings devem guiar tarefa, não disputar atenção."
+      },
+      {
+        "name": "The Flat By Default Rule",
+        "section": "elevation",
+        "body": "Se um painel já tem borda e fundo, não adicione sombra. Profundidade precisa indicar estado ou camada."
+      }
+    ],
+    "dos": [
+      "Do usar PageHeader, SurfacePanel e EmptyState para novas páginas de produto.",
+      "Do escrever copy que explique consequência: quem vê, o que muda, qual próximo passo.",
+      "Do usar Trust Blue para ação principal, seleção e foco.",
+      "Do mostrar sinais de confiança perto da decisão: perfil, busca, contato e moderação."
+    ],
+    "donts": [
+      "Don't criar novos cards com rounded-[2rem], shadow-2xl ou decoração gratuita.",
+      "Don't usar azul forte como textura de fundo repetida em telas de produto.",
+      "Don't usar text-[10px] para ajuda, erro, limite de campo ou informação pública.",
+      "Don't colocar botão dentro de link ou link dentro de botão."
+    ]
+  }
+}

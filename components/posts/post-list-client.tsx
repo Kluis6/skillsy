@@ -37,14 +37,14 @@ export function PostListClient({ posts }: { posts: Post[] }) {
 
   return (
     <div className="mx-auto container w-full mb-8  space-y-8 -mt-7 z-50">
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 isolate bg-card rounded-lg p-4 shadow-2xl border border-border-subtle">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 isolate bg-card rounded-xl p-4 shadow-sm border border-border-subtle">
         <div className="flex  justify-center items-center gap-1 w-full md:w-fit">
           <button
             type="button"
             onClick={() => setFilter("all")}
             className={`w-full md:w-fit md:px-4 h-10 text-sm font-semibold transition-colors cursor-pointer ${
               filter === "all"
-                ? "text-blue-700 bg-blue-500/10"
+                ? "text-primary bg-primary/10"
                 : "text-text-muted hover:bg-surface"
             }`}
           >
@@ -55,7 +55,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
             onClick={() => setFilter("article")}
             className={`w-full md:w-fit md:px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
               filter === "article"
-                ? "text-blue-700 bg-blue-500/10"
+                ? "text-primary bg-primary/10"
                 : "text-text-muted hover:bg-surface"
             }`}
           >
@@ -66,7 +66,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
             onClick={() => setFilter("job")}
             className={`w-full md:w-fit md:px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
               filter === "job"
-                ? "text-blue-700 bg-blue-500/10"
+                ? "text-primary bg-primary/10"
                 : "text-text-muted hover:bg-surface"
             }`}
           >

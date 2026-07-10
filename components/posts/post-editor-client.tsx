@@ -257,7 +257,7 @@ export function PostEditorClient({
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-3xl rounded-[2rem] border border-border-subtle bg-card p-10 text-center">
+      <div className="mx-auto max-w-3xl rounded-xl border border-border-subtle bg-card p-10 text-center">
         <h1 className="text-2xl font-bold text-text-main">Acesso restrito</h1>
         <p className="mt-2 text-text-muted">
           Faça login para escrever e gerenciar seus artigos.
@@ -271,7 +271,7 @@ export function PostEditorClient({
 
   if (!canPublish) {
     return (
-      <div className="mx-auto max-w-3xl rounded-[2rem] border border-border-subtle bg-card p-10 text-center">
+      <div className="mx-auto max-w-3xl rounded-xl border border-border-subtle bg-card p-10 text-center">
         <h1 className="text-2xl font-bold text-text-main">
           Publicação disponível para membros verificados
         </h1>
@@ -290,12 +290,12 @@ export function PostEditorClient({
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <div className="rounded-[2rem] border border-blue-100 bg-blue-50/80 p-5 text-sm text-text-muted">
+      <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 text-sm text-text-muted">
         Escolha entre artigo e vaga. Para publicar, a postagem precisa ter pelo menos
         texto ou imagem de capa. O resumo é opcional e as tags continuam limitadas a 5.
       </div>
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 rounded-[2rem] border border-border-subtle bg-card p-6 md:p-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 rounded-xl border border-border-subtle bg-card p-6 md:p-8">
         <div className="space-y-2">
           <Label htmlFor="category">Categoria</Label>
           <select
@@ -307,7 +307,7 @@ export function PostEditorClient({
             <option value="job">{POST_CATEGORY_LABELS.job}</option>
           </select>
           {form.formState.errors.category ? (
-            <p className="text-[10px] font-bold text-red-500">
+            <p className="text-xs font-bold text-red-500">
               {form.formState.errors.category.message}
             </p>
           ) : null}
@@ -321,7 +321,7 @@ export function PostEditorClient({
             {...form.register("title")}
           />
           {form.formState.errors.title ? (
-            <p className="text-[10px] font-bold text-red-500">
+            <p className="text-xs font-bold text-red-500">
               {form.formState.errors.title.message}
             </p>
           ) : null}
@@ -338,7 +338,7 @@ export function PostEditorClient({
               })}
             />
             {form.formState.errors.slug ? (
-              <p className="text-[10px] font-bold text-red-500">
+              <p className="text-xs font-bold text-red-500">
                 {form.formState.errors.slug.message}
               </p>
             ) : null}
@@ -382,11 +382,11 @@ export function PostEditorClient({
               className="hidden"
               onChange={handleCoverFileChange}
             />
-            <p className="text-[10px] text-text-muted">
+            <p className="text-xs text-text-muted">
               Você pode colar uma URL ou enviar um arquivo JPG, PNG ou WEBP de até 10 MB.
             </p>
             {form.formState.errors.coverImageUrl ? (
-              <p className="text-[10px] font-bold text-red-500">
+              <p className="text-xs font-bold text-red-500">
                 {form.formState.errors.coverImageUrl.message}
               </p>
             ) : null}
@@ -416,12 +416,12 @@ export function PostEditorClient({
             className="min-h-24"
             {...form.register("excerpt")}
           />
-          <div className="flex justify-between text-[10px] text-text-muted">
+          <div className="flex justify-between text-xs text-text-muted">
             <span>Opcional. Se vazio, usamos um resumo automático.</span>
             <span>{excerptValue.length}/240</span>
           </div>
           {form.formState.errors.excerpt ? (
-            <p className="text-[10px] font-bold text-red-500">
+            <p className="text-xs font-bold text-red-500">
               {form.formState.errors.excerpt.message}
             </p>
           ) : null}
@@ -435,12 +435,12 @@ export function PostEditorClient({
             maxLength={20000}
             {...form.register("content")}
           />
-          <div className="flex justify-between text-[10px] text-text-muted">
+          <div className="flex justify-between text-xs text-text-muted">
             <span>O texto é opcional se você enviar uma capa, mas quando existir deve ter pelo menos 40 caracteres.</span>
             <span>{contentValue.length}/20000</span>
           </div>
           {form.formState.errors.content ? (
-            <p className="text-[10px] font-bold text-red-500">
+            <p className="text-xs font-bold text-red-500">
               {form.formState.errors.content.message}
             </p>
           ) : null}
@@ -455,7 +455,7 @@ export function PostEditorClient({
             {...form.register("tags")}
           />
           {form.formState.errors.tags ? (
-            <p className="text-[10px] font-bold text-red-500">
+            <p className="text-xs font-bold text-red-500">
               {form.formState.errors.tags.message}
             </p>
           ) : null}

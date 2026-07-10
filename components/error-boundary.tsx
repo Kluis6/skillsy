@@ -56,7 +56,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="min-h-screen flex items-center justify-center bg-surface p-6">
-          <div className="max-w-md w-full bg-card rounded-[2.5rem] p-10 shadow-2xl shadow-primary/5 text-center border border-border-subtle">
+          <div className="max-w-md w-full bg-card rounded-xl p-8 md:p-10 shadow-lg text-center border border-border-subtle">
             <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <AlertCircle size={40} className="text-red-500" />
             </div>
@@ -67,21 +67,21 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="flex flex-col gap-3">
               <Button 
                 onClick={this.handleReset}
-                className="w-full bg-primary text-white font-bold h-12 rounded-2xl shadow-lg shadow-primary/20"
+                className="w-full bg-primary text-white font-bold h-12 rounded-md hover:bg-primary/90"
               >
                 <RefreshCcw size={18} className="mr-2" /> Tentar Novamente
               </Button>
               <Link href="/" className="w-full">
                 <Button 
                   variant="outline"
-                  className="w-full border-border-subtle text-text-main font-bold h-12 rounded-2xl"
+                  className="w-full border-border-subtle text-text-main font-bold h-12 rounded-md"
                 >
                   <Home size={18} className="mr-2" /> Voltar para o Início
                 </Button>
               </Link>
             </div>
             {isFirestoreError && (
-              <p className="mt-6 text-[10px] text-text-muted/50 font-mono break-all">
+              <p className="mt-6 text-xs text-text-muted/70 font-mono break-all">
                 ID do Erro: {this.state.error?.message.substring(0, 50)}...
               </p>
             )}

@@ -161,6 +161,7 @@ export default function Sectionstart() {
                     src={image.src}
                     alt={image.alt}
                     fill
+                    sizes="(min-width: 1024px) 25vw, 50vw"
                     className="object-cover bg-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </motion.div>
