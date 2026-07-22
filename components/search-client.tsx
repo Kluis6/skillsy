@@ -673,7 +673,7 @@ export function SearchClient({
 
                   {results.length > ITEMS_PER_PAGE && (
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-10 pb-20 border-t border-border-subtle mt-10">
-                      <p className="text-sm font-bold text-text-muted uppercase tracking-widest">
+                      <p className="text-sm font-bold text-text-muted">
                         Página{" "}
                         <span className="text-primary">{currentPage}</span> de{" "}
                         {totalPages}
@@ -729,9 +729,9 @@ export function SearchClient({
                                         : undefined
                                     }
                                     onClick={() => setCurrentPage(pageNum)}
-                                    className={`h-10 w-10 rounded-xl transition-all font-bold ${
+                                    className={`h-10 w-10 rounded-md transition-all font-bold ${
                                       currentPage === pageNum
-                                        ? "bg-primary text-white shadow-lg shadow-primary/20 scale-110 z-10"
+                                        ? "bg-primary text-white scale-105"
                                         : "border-border-subtle hover:border-primary/50"
                                     }`}
                                   >
@@ -825,7 +825,7 @@ export function SearchClient({
                     <div className="space-y-6">
                       <div className="flex items-center gap-4">
                         <div className="h-px flex-grow bg-border-subtle" />
-                        <h3 className="md:text-lg text-base font-bold text-text-muted tracking-widest shrink-0">
+                        <h3 className="md:text-lg text-base font-bold text-text-muted tracking-normal shrink-0">
                           {city
                             ? `Membros em ${city}`
                             : state

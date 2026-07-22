@@ -55,8 +55,8 @@ export function Navbar({
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle">
-      <div className="container mx-auto flex justify-between items-center px-4 py-2">
+    <nav className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_oklab,var(--md-sys-color-surface)_86%,transparent)] backdrop-blur-md">
+      <div className="container mx-auto flex min-h-16 items-center justify-between px-4 py-2">
         <div className="flex items-center space-x-4">
           {shouldShowBackButton ? (
             <> </>
@@ -90,7 +90,7 @@ export function Navbar({
                   <DrawerTrigger asChild>
                     <Button
                       size="icon"
-                      className="bg-card hover:bg-surface"
+                      className="bg-transparent hover:bg-primary/10"
                       aria-label="Fechar menu principal"
                     >
                       <BsXLg className="text-foreground" />
@@ -102,7 +102,7 @@ export function Navbar({
                     Navegação
                   </h3>
                   <ul className="w-full space-y-1">
-                    <li className="p-2 hover:bg-surface">
+                    <li className="rounded-full p-2 hover:bg-primary/10">
                       <DrawerClose asChild>
                         <Link
                           href="/"
@@ -112,7 +112,7 @@ export function Navbar({
                         </Link>
                       </DrawerClose>
                     </li>
-                    <li className="p-2 hover:bg-surface">
+                    <li className="rounded-full p-2 hover:bg-primary/10">
                       <DrawerClose asChild>
                         <Link
                           href="/weareskillsy"
@@ -122,7 +122,7 @@ export function Navbar({
                         </Link>
                       </DrawerClose>
                     </li>
-                    <li className="p-2 hover:bg-surface">
+                    <li className="rounded-full p-2 hover:bg-primary/10">
                       <DrawerClose asChild>
                         <Link
                           href="/artigosevagas"
@@ -133,7 +133,7 @@ export function Navbar({
                       </DrawerClose>
                     </li>
 
-                    <li className="p-2 hover:bg-surface">
+                    <li className="rounded-full p-2 hover:bg-primary/10">
                       <DrawerClose asChild>
                         <Link
                           href="/join"
@@ -143,7 +143,7 @@ export function Navbar({
                         </Link>
                       </DrawerClose>
                     </li>
-                    <li className="p-2 hover:bg-surface">
+                    <li className="rounded-full p-2 hover:bg-primary/10">
                       <DrawerClose asChild>
                         <Link
                           href="/privacidade"
@@ -153,7 +153,7 @@ export function Navbar({
                         </Link>
                       </DrawerClose>
                     </li>
-                    <li className="p-2 hover:bg-surface">
+                    <li className="rounded-full p-2 hover:bg-primary/10">
                       <DrawerClose asChild>
                         <Link
                           href="/termos"
@@ -172,7 +172,7 @@ export function Navbar({
                       </h3>
 
                       <ul className="space-y-1">
-                        <li className="hover:bg-surface p-2">
+                        <li className="rounded-full p-2 hover:bg-primary/10">
                           <DrawerClose asChild>
                             <Link
                               className="flex text-sm font-normal text-text-muted"
@@ -182,7 +182,7 @@ export function Navbar({
                             </Link>
                           </DrawerClose>
                         </li>
-                        <li className="hover:bg-surface p-2">
+                        <li className="rounded-full p-2 hover:bg-primary/10">
                           <DrawerClose asChild>
                             <Link
                               className="flex text-sm font-normal text-text-muted"
@@ -194,7 +194,7 @@ export function Navbar({
                         </li>
                         <li>
                           <Button
-                            className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-text-muted rounded-none bg-transparent"
+                            className="w-full justify-start px-3 text-sm font-normal text-text-muted"
                             onClick={handleLogout}
                           >
                             Sair da Conta
@@ -208,7 +208,7 @@ export function Navbar({
                 <DrawerFooter>
                   <DrawerClose asChild>
                     <Link
-                      className="text-center bg-primary hover:bg-primary/90 active:bg-primary/80 p-2 font-medium text-sm text-white rounded-md"
+                      className="flex h-10 items-center justify-center rounded-full bg-primary px-5 text-center text-sm font-medium text-primary-foreground shadow-[var(--md-sys-elevation-level1)] hover:bg-primary/90 active:bg-primary/80"
                       href={"/donation"}
                     >
                       Ajude o projeto
@@ -223,7 +223,9 @@ export function Navbar({
             <></>
           ) : (
             <div className="md:flex hidden items-center gap-2">
-              <h1 className="font-bold text-primary tracking-tight text-2xl">Skillsy</h1>
+              <Link href="/" className="flex items-center gap-2">
+                  <h1 className="font-heading text-2xl font-semibold tracking-normal text-primary">Skillsy</h1>
+              </Link>
             </div>
           )}
 
@@ -268,7 +270,7 @@ export function Navbar({
                 <DrawerTrigger asChild>
                   <Button
                     size="icon"
-                    className="bg-card hover:bg-surface"
+                    className="bg-transparent hover:bg-primary/10"
                     aria-label="Fechar menu principal"
                   >
                     <BsXLg className="text-foreground" />
@@ -280,7 +282,7 @@ export function Navbar({
                   Navegação
                 </h3>
                 <ul className="w-full space-y-1">
-                  <li className="p-2 hover:bg-surface">
+                  <li className="rounded-full p-2 hover:bg-primary/10">
                     <DrawerClose asChild>
                       <Link
                         href="/"
@@ -290,7 +292,7 @@ export function Navbar({
                       </Link>
                     </DrawerClose>
                   </li>
-                  <li className="p-2 hover:bg-surface">
+                  <li className="rounded-full p-2 hover:bg-primary/10">
                     <DrawerClose asChild>
                       <Link
                         href="/weareskillsy"
@@ -300,7 +302,7 @@ export function Navbar({
                       </Link>
                     </DrawerClose>
                   </li>
-                  <li className="p-2 hover:bg-surface">
+                  <li className="rounded-full p-2 hover:bg-primary/10">
                     <DrawerClose asChild>
                       <Link
                         href="/artigosevagas"
@@ -310,7 +312,7 @@ export function Navbar({
                       </Link>
                     </DrawerClose>
                   </li>
-                  <li className="p-2 hover:bg-surface">
+                  <li className="rounded-full p-2 hover:bg-primary/10">
                     <DrawerClose asChild>
                       <Link
                         href="/join"
@@ -320,7 +322,7 @@ export function Navbar({
                       </Link>
                     </DrawerClose>
                   </li>
-                  <li className="p-2 hover:bg-surface">
+                  <li className="rounded-full p-2 hover:bg-primary/10">
                     <DrawerClose asChild>
                       <Link
                         href="/privacidade"
@@ -330,7 +332,7 @@ export function Navbar({
                       </Link>
                     </DrawerClose>
                   </li>
-                  <li className="p-2 hover:bg-surface">
+                  <li className="rounded-full p-2 hover:bg-primary/10">
                     <DrawerClose asChild>
                       <Link
                         href="/termos"
@@ -349,7 +351,7 @@ export function Navbar({
                     </h3>
 
                     <ul className="space-y-1">
-                      <li className="hover:bg-surface p-2">
+                      <li className="rounded-full p-2 hover:bg-primary/10">
                         <DrawerClose asChild>
                           <Link
                             className="flex text-sm font-normal text-text-muted"
@@ -359,7 +361,7 @@ export function Navbar({
                           </Link>
                         </DrawerClose>
                       </li>
-                      <li className="hover:bg-surface p-2">
+                      <li className="rounded-full p-2 hover:bg-primary/10">
                         <DrawerClose asChild>
                           <Link
                             className="flex text-sm font-normal text-text-muted"
@@ -371,7 +373,7 @@ export function Navbar({
                       </li>
                       <li>
                         <Button
-                          className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-text-muted rounded-none bg-transparent"
+                          className="w-full justify-start px-3 text-sm font-normal text-text-muted"
                           onClick={handleLogout}
                         >
                           Sair da Conta
@@ -385,7 +387,7 @@ export function Navbar({
               <DrawerFooter>
                 <DrawerClose asChild>
                   <Link
-                    className="text-center flex justify-center items-center bg-primary h-10 hover:bg-primary/90 active:bg-primary/80 p-2 font-medium text-sm text-white rounded-md"
+                    className="flex h-10 items-center justify-center rounded-full bg-primary px-5 text-center text-sm font-medium text-primary-foreground shadow-[var(--md-sys-elevation-level1)] hover:bg-primary/90 active:bg-primary/80"
                     href={"/donation"}
                   >
                     Ajude o projeto
@@ -405,9 +407,10 @@ export function Navbar({
           ) : (
             <AuthModal>
               <Button
+              variant="default"
                 title="Faça login ou cria sua conta"
                 aria-label="Entrar ou criar conta"
-                className="bg-primary hover:bg-primary/90 active:bg-primary/80 w-10 md:w-auto md:px-4 h-10 dark:text-white font-normal"
+                // className="bg-primary hover:bg-primary/90 active:bg-primary/80 w-10 md:w-auto md:px-4 h-10 dark:text-white font-normal"
               >
                 <LuLogIn className="flex md:hidden size-4" />
                 <p className="hidden font-medium md:block"> Entrar</p>

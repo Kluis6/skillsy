@@ -186,6 +186,7 @@ Skillsy usa profundidade por camadas tonais, bordas e espaçamento. Sombras são
 - **Verified badge:** ShieldCheck + texto curto; use para membro verificado e nunca para promessa genérica.
 - **Rating badge:** estrela dourada + número; use apenas quando representar avaliação real.
 - **Readiness panel:** checklist de perfil deve explicar o que aumenta confiança e descoberta.
+- **Trust path:** sequência Perfil / Contexto / Contato para explicar a lógica Skillsy perto de busca, home e decisões de contato. Use como assinatura do produto, não como decoração repetida.
 
 ## 6. Do's and Don'ts
 

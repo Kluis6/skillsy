@@ -411,13 +411,13 @@ export function AdminUsersClient() {
               variant="outline"
               onClick={handleSeedData}
               disabled={isSeeding}
-              className="rounded-2xl px-6 font-bold h-11 border-border-subtle hover:bg-surface"
+              className="rounded-md px-6 font-bold h-11 border-border-subtle hover:bg-surface"
             >
               {isSeeding ? 'Gerando...' : 'Gerar Dados'}
             </Button>
             <Button 
               onClick={() => setIsAddAdminDialogOpen(true)}
-              className="bg-primary text-white hover:bg-primary/90 rounded-2xl px-6 font-bold shadow-lg shadow-primary/20 h-11"
+              className="bg-primary text-white hover:bg-primary/90 rounded-md px-6 font-bold  h-11"
             >
               <ShieldCheck size={18} className="mr-2" /> Novo Admin
             </Button>
@@ -425,7 +425,7 @@ export function AdminUsersClient() {
         </div>
 
         {/* Filters & Search */}
-        <Card className="bg-card border-none shadow-sm rounded-xl p-8 mb-8">
+        <Card className="bg-card border border-border-subtle rounded-xl p-8 mb-8">
           <div className="flex flex-col lg:flex-row gap-6 items-end">
             <div className="flex-grow space-y-2 w-full">
               <Label htmlFor="admin-user-search" className="text-xs font-bold text-text-muted uppercase ml-1">Buscar Usuário</Label>
@@ -434,7 +434,7 @@ export function AdminUsersClient() {
                 <Input 
                   id="admin-user-search"
                   placeholder="Ex: João ou joao@exemplo.com" 
-                  className="pl-12 bg-surface border-none rounded-2xl h-12 text-sm"
+                  className="pl-12 bg-surface border border-border-subtle rounded-md h-12 text-sm"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -447,7 +447,7 @@ export function AdminUsersClient() {
                 <Input 
                   id="admin-user-ward-filter"
                   placeholder="Ex: Ala Centro" 
-                  className="bg-surface border-none rounded-2xl h-12 text-sm"
+                  className="bg-surface border border-border-subtle rounded-md h-12 text-sm"
                   value={filterWard}
                   onChange={(e) => setFilterWard(e.target.value)}
                 />
@@ -459,7 +459,7 @@ export function AdminUsersClient() {
                     id="admin-user-state-filter"
                     value={filterState}
                     onChange={(e) => setFilterState(e.target.value || 'all')}
-                    className="w-full appearance-none rounded-2xl border border-transparent bg-surface h-12 px-4 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
+                    className="w-full appearance-none rounded-md border border-border-subtle bg-surface h-12 px-4 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
                   >
                     <option value="all">Todos os estados</option>
                     {BRAZIL_STATES.map((state) => (
@@ -471,7 +471,7 @@ export function AdminUsersClient() {
                   <ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
                 </div>
               </div>
-              <div className="flex items-center gap-3 h-12 px-4 bg-surface rounded-2xl">
+              <div className="flex items-center gap-3 h-12 px-4 bg-surface rounded-md">
                 <Switch 
                   id="providers-only" 
                   checked={filterHasServices}
@@ -479,7 +479,7 @@ export function AdminUsersClient() {
                 />
                 <Label htmlFor="providers-only" className="text-sm font-medium cursor-pointer">Apenas Prestadores</Label>
               </div>
-              <div className="flex items-center gap-3 h-12 px-4 bg-surface rounded-2xl">
+              <div className="flex items-center gap-3 h-12 px-4 bg-surface rounded-md">
                 <Switch
                   id="reported-only"
                   checked={filterReported}
@@ -494,13 +494,13 @@ export function AdminUsersClient() {
         </Card>
 
         {/* Users Table */}
-        <Card className="bg-card border-none shadow-sm rounded-xl overflow-hidden mb-10">
+        <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden mb-10">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader className="bg-surface/50">
                 <TableRow className="border-border-subtle hover:bg-transparent">
                   <TableHead 
-                    className="w-[300px] py-6 pl-8 font-bold text-text-muted uppercase text-xs tracking-widest cursor-pointer group hover:text-primary transition-colors"
+                    className="w-[300px] py-6 pl-8 font-bold text-text-muted uppercase text-xs tracking-normal cursor-pointer group hover:text-primary transition-colors"
                     onClick={() => {
                       setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
                       setFilterRecent(false);
@@ -511,11 +511,11 @@ export function AdminUsersClient() {
                       <ArrowUpDown size={12} className={`transition-opacity ${sortOrder ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
                     </div>
                   </TableHead>
-                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-widest">Localização / Ala</TableHead>
-                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-widest">Status</TableHead>
-                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-widest">Denúncias</TableHead>
-                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-widest">Avaliação</TableHead>
-                  <TableHead className="text-right pr-8 font-bold text-text-muted uppercase text-xs tracking-widest">Ações</TableHead>
+                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Localização / Ala</TableHead>
+                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Status</TableHead>
+                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Denúncias</TableHead>
+                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Avaliação</TableHead>
+                  <TableHead className="text-right pr-8 font-bold text-text-muted uppercase text-xs tracking-normal">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -574,7 +574,7 @@ export function AdminUsersClient() {
                               <AlertTriangle size={12} />
                               {reportCountsByUser[u.uid]} denúncia{reportCountsByUser[u.uid] > 1 ? 's' : ''}
                             </Badge>
-                            <p className="text-[11px] text-text-muted max-w-[220px] line-clamp-2">
+                            <p className="text-xs text-text-muted max-w-[220px] line-clamp-2">
                               Última: {latestReportByUser[u.uid]
                                 ? REPORT_REASON_LABELS[
                                     latestReportByUser[u.uid].reason as keyof typeof REPORT_REASON_LABELS
@@ -601,7 +601,7 @@ export function AdminUsersClient() {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => handleToggleBlock(u)}
-                                  className={`w-9 h-9 rounded-xl transition-all ${
+                                  className={`w-9 h-9 rounded-md transition-all ${
                                     u.isBlocked 
                                       ? 'text-green-600 hover:bg-green-500/10 hover:text-green-700 bg-green-500/10 dark:text-green-300 dark:hover:text-green-200' 
                                       : 'text-red-500 hover:bg-red-500/10 hover:text-red-600 dark:text-red-300 dark:hover:text-red-200'
@@ -611,7 +611,7 @@ export function AdminUsersClient() {
                             >
                               {u.isBlocked ? <CheckCircle size={18} /> : <Ban size={18} />}
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="rounded-xl font-bold text-xs uppercase tracking-widest bg-card border-border-subtle shadow-xl px-3 py-2 text-text-main">
+                            <TooltipContent side="top" className="rounded-xl font-bold text-xs bg-card border-border-subtle shadow-sm px-3 py-2 text-text-main">
                               {u.isBlocked ? 'Desbloquear Acesso' : 'Bloquear Acesso'}
                             </TooltipContent>
                           </Tooltip>
@@ -623,15 +623,15 @@ export function AdminUsersClient() {
                             >
                               <MoreVertical size={18} />
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="rounded-2xl border-border-subtle shadow-xl p-2 w-48">
-                              <DropdownMenuLabel className="text-xs font-bold uppercase tracking-widest text-text-muted px-3 py-2">Gerenciar</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => handleEditClick(u)} className="rounded-xl cursor-pointer focus:bg-primary/5 focus:text-primary">
+                            <DropdownMenuContent align="end" className="rounded-md border-border-subtle shadow-sm p-2 w-48">
+                              <DropdownMenuLabel className="text-xs font-bold text-text-muted px-3 py-2">Gerenciar</DropdownMenuLabel>
+                              <DropdownMenuItem onClick={() => handleEditClick(u)} className="rounded-md cursor-pointer focus:bg-primary/5 focus:text-primary">
                                 <Edit3 size={16} className="mr-2" /> Editar Perfil
                               </DropdownMenuItem>
                               <DropdownMenuSeparator className="bg-border-subtle my-1" />
                               <DropdownMenuItem 
                                 onClick={() => handleToggleBlock(u)} 
-                                className={`rounded-xl cursor-pointer ${u.isBlocked ? 'text-green-600 focus:bg-green-500/10 focus:text-green-600 dark:text-green-300 dark:focus:text-green-200' : 'text-red-600 focus:bg-red-500/10 focus:text-red-600 dark:text-red-300 dark:focus:text-red-200'}`}
+                                className={`rounded-md cursor-pointer ${u.isBlocked ? 'text-green-600 focus:bg-green-500/10 focus:text-green-600 dark:text-green-300 dark:focus:text-green-200' : 'text-red-600 focus:bg-red-500/10 focus:text-red-600 dark:text-red-300 dark:focus:text-red-200'}`}
                               >
                                 {u.isBlocked ? (
                                   <><CheckCircle size={16} className="mr-2" /> Desbloquear</>
@@ -657,7 +657,7 @@ export function AdminUsersClient() {
           {/* Pagination UI */}
           {!loading && filteredUsers.length > 0 && (
             <div className="bg-surface/50 px-8 py-5 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-xs font-bold text-text-muted uppercase tracking-widest">
+              <div className="text-xs font-bold text-text-muted">
                 Mostrando <span className="text-primary">{Math.min(filteredUsers.length, (currentPage - 1) * ITEMS_PER_PAGE + 1)}</span> - <span className="text-primary">{Math.min(filteredUsers.length, currentPage * ITEMS_PER_PAGE)}</span> de {filteredUsers.length} registros
               </div>
               
@@ -682,11 +682,11 @@ export function AdminUsersClient() {
                 </Button>
                 
                 <div className="flex items-center mx-2 gap-1">
-                  <span className="text-xs font-bold text-text-muted uppercase tracking-widest">Página</span>
+                  <span className="text-xs font-bold text-text-muted">Página</span>
                   <div className="bg-surface px-3 py-1.5 rounded-lg text-xs font-black text-primary border border-border-subtle/50 min-w-[2.5rem] text-center">
                     {currentPage}
                   </div>
-                  <span className="text-xs font-bold text-text-muted uppercase tracking-widest">de {Math.ceil(filteredUsers.length / ITEMS_PER_PAGE)}</span>
+                  <span className="text-xs font-bold text-text-muted">de {Math.ceil(filteredUsers.length / ITEMS_PER_PAGE)}</span>
                 </div>
                 
                 <Button 
@@ -714,7 +714,7 @@ export function AdminUsersClient() {
 
       {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="rounded-xl border-none shadow-lg p-8 max-w-2xl overflow-y-auto max-h-[90vh]">
+        <DialogContent className="rounded-xl border border-border-subtle shadow-sm p-8 max-w-2xl overflow-y-auto max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold font-heading">Editar Perfil de Usuário</DialogTitle>
             <DialogDescription>
@@ -732,13 +732,13 @@ export function AdminUsersClient() {
                 </p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome Completo</Label>
+                <Label htmlFor="name" className="text-xs font-bold text-text-muted ml-1">Nome Completo</Label>
                 <Input 
                   id="name" 
                   placeholder="Ex: João da Silva"
                   {...editForm.register('name')}
                   maxLength={ADMIN_FORM_LIMITS.name}
-                  className="bg-surface border-none rounded-2xl h-12"
+                  className="bg-surface border border-border-subtle rounded-md h-12"
                 />
                 <p className="text-xs text-text-muted ml-2">
                   Entre 2 e {ADMIN_FORM_LIMITS.name} caracteres.
@@ -746,23 +746,23 @@ export function AdminUsersClient() {
                 {editForm.formState.errors.name && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.name.message}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">E-mail</Label>
+                <Label htmlFor="email" className="text-xs font-bold text-text-muted ml-1">E-mail</Label>
                 <Input 
                   id="email" 
                   value={editingUser?.email || ''} 
                   disabled
-                  className="bg-surface border-none rounded-2xl h-12 opacity-60"
+                  className="bg-surface border border-border-subtle rounded-md h-12 opacity-60"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="location" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Localização</Label>
+                <Label htmlFor="location" className="text-xs font-bold text-text-muted ml-1">Localização</Label>
                 <div className="flex gap-2">
                   <Input 
                     id="location" 
                     placeholder="Ex: São Paulo, SP"
                     {...editForm.register('location')}
                     maxLength={ADMIN_FORM_LIMITS.location}
-                    className="bg-surface border-none rounded-2xl h-12 flex-grow"
+                    className="bg-surface border border-border-subtle rounded-md h-12 flex-grow"
                   />
                   <Button
                     type="button"
@@ -770,7 +770,7 @@ export function AdminUsersClient() {
                     size="icon"
                     onClick={handleDetectLocation}
                     disabled={detectingLocation}
-                    className="shrink-0 h-12 w-12 rounded-2xl bg-surface border-none hover:bg-primary/5 hover:text-primary transition-all"
+                    className="shrink-0 h-12 w-12 rounded-md bg-surface border border-border-subtle hover:bg-primary/5 hover:text-primary transition-all"
                     title="Detectar localização"
                   >
                     {detectingLocation ? <Loader2 size={18} className="animate-spin" /> : <Navigation size={18} />}
@@ -782,13 +782,13 @@ export function AdminUsersClient() {
                 {editForm.formState.errors.location && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.location.message}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="ward" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Ala / Ramo</Label>
+                <Label htmlFor="ward" className="text-xs font-bold text-text-muted ml-1">Ala / Ramo</Label>
                 <Input 
                   id="ward" 
                   placeholder="Ex: Ala Centro"
                   {...editForm.register('ward')}
                   maxLength={ADMIN_FORM_LIMITS.ward}
-                  className="bg-surface border-none rounded-2xl h-12"
+                  className="bg-surface border border-border-subtle rounded-md h-12"
                 />
                 <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.ward} caracteres.
@@ -796,13 +796,13 @@ export function AdminUsersClient() {
                 {editForm.formState.errors.ward && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.ward.message}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="serviceType" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Serviço / Categoria</Label>
+                <Label htmlFor="serviceType" className="text-xs font-bold text-text-muted ml-1">Serviço / Categoria</Label>
                 <Input 
                   id="serviceType" 
                   placeholder="Ex: Pintura Residencial"
                   {...editForm.register('serviceType')}
                   maxLength={ADMIN_FORM_LIMITS.serviceType}
-                  className="bg-surface border-none rounded-2xl h-12"
+                  className="bg-surface border border-border-subtle rounded-md h-12"
                 />
                 <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.serviceType} caracteres.
@@ -810,24 +810,24 @@ export function AdminUsersClient() {
                 {editForm.formState.errors.serviceType && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.serviceType.message}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="role" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Papel no Sistema</Label>
+                <Label htmlFor="role" className="text-xs font-bold text-text-muted ml-1">Papel no Sistema</Label>
                 <select 
                   id="role"
                   {...editForm.register('role')}
-                  className="w-full bg-surface border-none rounded-2xl h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none"
+                  className="w-full bg-surface border border-border-subtle rounded-md h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none"
                 >
                   <option value="user">Usuário Comum</option>
                   <option value="admin">Administrador</option>
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="baptismYear" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Ano de Batismo</Label>
+                <Label htmlFor="baptismYear" className="text-xs font-bold text-text-muted ml-1">Ano de Batismo</Label>
                 <Input 
                   id="baptismYear" 
                   type="number"
                   placeholder="Ex: 2010"
                   {...editForm.register('baptismYear', { valueAsNumber: true })}
-                  className="bg-surface border-none rounded-2xl h-12"
+                  className="bg-surface border border-border-subtle rounded-md h-12"
                 />
                 {editForm.formState.errors.baptismYear && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.baptismYear.message}</p>}
                 <p className="text-xs text-primary/70 ml-2">
@@ -839,52 +839,52 @@ export function AdminUsersClient() {
                 <h4 className="text-sm font-bold text-text-main">Endereço Comercial (Opcional)</h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2 space-y-2">
-                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Endereço (Rua/Avenida)</Label>
+                    <Label className="text-xs font-bold text-text-muted ml-1">Endereço (Rua/Avenida)</Label>
                     <Input 
                       placeholder="Ex: Rua das Flores"
                       {...editForm.register('businessAddress')}
                       maxLength={ADMIN_FORM_LIMITS.address}
-                      className="bg-surface border-none rounded-2xl h-12"
+                      className="bg-surface border border-border-subtle rounded-md h-12"
                     />
                     {editForm.formState.errors.businessAddress && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessAddress.message}</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Número</Label>
+                    <Label className="text-xs font-bold text-text-muted ml-1">Número</Label>
                     <Input 
                       placeholder="Ex: 123"
                       {...editForm.register('businessAddressNumber')}
                       maxLength={ADMIN_FORM_LIMITS.addressNumber}
-                      className="bg-surface border-none rounded-2xl h-12"
+                      className="bg-surface border border-border-subtle rounded-md h-12"
                     />
                     {editForm.formState.errors.businessAddressNumber && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessAddressNumber.message}</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Bairro</Label>
+                    <Label className="text-xs font-bold text-text-muted ml-1">Bairro</Label>
                     <Input 
                       placeholder="Ex: Centro"
                       {...editForm.register('businessNeighborhood')}
                       maxLength={ADMIN_FORM_LIMITS.neighborhood}
-                      className="bg-surface border-none rounded-2xl h-12"
+                      className="bg-surface border border-border-subtle rounded-md h-12"
                     />
                     {editForm.formState.errors.businessNeighborhood && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessNeighborhood.message}</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Estado</Label>
+                    <Label className="text-xs font-bold text-text-muted ml-1">Estado</Label>
                     <Input 
                       placeholder="Ex: SP"
                       {...editForm.register('businessState')}
                       maxLength={ADMIN_FORM_LIMITS.state}
-                      className="bg-surface border-none rounded-2xl h-12"
+                      className="bg-surface border border-border-subtle rounded-md h-12"
                     />
                     {editForm.formState.errors.businessState && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessState.message}</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Complemento</Label>
+                    <Label className="text-xs font-bold text-text-muted ml-1">Complemento</Label>
                     <Input 
                       placeholder="Ex: Sala 10, Bloco B"
                       {...editForm.register('businessComplement')}
                       maxLength={ADMIN_FORM_LIMITS.complement}
-                      className="bg-surface border-none rounded-2xl h-12"
+                      className="bg-surface border border-border-subtle rounded-md h-12"
                     />
                     {editForm.formState.errors.businessComplement && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessComplement.message}</p>}
                   </div>
@@ -892,7 +892,7 @@ export function AdminUsersClient() {
               </div>
 
               <div className="space-y-4 pt-2 md:col-span-2">
-                <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
+                <Label className="text-xs font-bold text-text-muted ml-1 flex items-center gap-1">
                   <CalendarDays size={12} /> Disponibilidade
                 </Label>
                 <div className="flex flex-wrap gap-2">
@@ -911,7 +911,7 @@ export function AdminUsersClient() {
                         }}
                         className={`h-10 px-4 rounded-xl text-xs font-bold transition-all border-2 ${
                           isSelected 
-                            ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20' 
+                            ? 'bg-primary border-primary text-white'
                             : 'bg-surface border-transparent text-text-muted hover:border-primary/20'
                         }`}
                       >
@@ -922,14 +922,14 @@ export function AdminUsersClient() {
                 </div>
               </div>
               <div className="space-y-2 pt-2 md:col-span-2">
-                <Label className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1 flex items-center gap-1">
+                <Label className="text-xs font-bold text-text-muted ml-1 flex items-center gap-1">
                   <Clock size={12} /> Horário de Atendimento
                 </Label>
                 <Input 
                   {...editForm.register('serviceHours')}
                   placeholder="Ex: 08:00 - 18:00 ou Por agendamento"
                   maxLength={ADMIN_FORM_LIMITS.serviceHours}
-                  className="bg-surface border-none rounded-2xl h-12"
+                  className="bg-surface border border-border-subtle rounded-md h-12"
                 />
                 <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.serviceHours} caracteres.
@@ -938,7 +938,7 @@ export function AdminUsersClient() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-6 p-6 bg-surface rounded-3xl mb-6">
+            <div className="flex flex-wrap gap-6 p-6 bg-surface rounded-xl mb-6">
               <div className="flex items-center gap-3">
                 <Switch 
                   id="edit-isProvider" 
@@ -958,10 +958,10 @@ export function AdminUsersClient() {
             </div>
 
             <DialogFooter className="gap-3">
-              <Button type="button" variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="rounded-2xl h-12 px-8 font-bold">
+              <Button type="button" variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="rounded-md h-12 px-8 font-bold">
                 Cancelar
               </Button>
-              <Button type="submit" disabled={editForm.formState.isSubmitting} className="bg-primary text-white hover:bg-primary/90 rounded-2xl h-12 px-8 font-bold shadow-lg shadow-primary/20">
+              <Button type="submit" disabled={editForm.formState.isSubmitting} className="bg-primary text-white hover:bg-primary/90 rounded-md h-12 px-8 font-bold ">
                 {editForm.formState.isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
               </Button>
             </DialogFooter>
@@ -971,7 +971,7 @@ export function AdminUsersClient() {
 
       {/* Add Admin Dialog */}
       <Dialog open={isAddAdminDialogOpen} onOpenChange={setIsAddAdminDialogOpen}>
-        <DialogContent className="rounded-xl border-none shadow-lg p-8 max-w-md">
+        <DialogContent className="rounded-xl border border-border-subtle shadow-sm p-8 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold font-heading">Novo Administrador</DialogTitle>
             <DialogDescription>
@@ -991,13 +991,13 @@ export function AdminUsersClient() {
                 </p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="new-name" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">Nome</Label>
+                <Label htmlFor="new-name" className="text-xs font-bold text-text-muted ml-1">Nome</Label>
                 <Input 
                   id="new-name" 
                   placeholder="Ex: João Silva"
                   {...adminForm.register('name')}
                   maxLength={ADMIN_FORM_LIMITS.name}
-                  className="bg-surface border-none rounded-2xl h-12"
+                  className="bg-surface border border-border-subtle rounded-md h-12"
                 />
                 {adminForm.formState.errors.name && <p className="text-xs text-red-500 font-bold ml-2">{adminForm.formState.errors.name.message}</p>}
                 <p className="text-xs text-text-muted ml-2">
@@ -1005,14 +1005,14 @@ export function AdminUsersClient() {
                 </p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="new-email" className="text-xs font-bold uppercase tracking-wider text-text-muted ml-1">E-mail</Label>
+                <Label htmlFor="new-email" className="text-xs font-bold text-text-muted ml-1">E-mail</Label>
                 <Input 
                   id="new-email" 
                   type="email"
                   placeholder="Ex: joao@exemplo.com"
                   {...adminForm.register('email')}
                   maxLength={ADMIN_FORM_LIMITS.adminEmail}
-                  className="bg-surface border-none rounded-2xl h-12"
+                  className="bg-surface border border-border-subtle rounded-md h-12"
                 />
                 {adminForm.formState.errors.email && <p className="text-xs text-red-500 font-bold ml-2">{adminForm.formState.errors.email.message}</p>}
                 <p className="text-xs text-text-muted ml-2">
@@ -1022,13 +1022,13 @@ export function AdminUsersClient() {
             </div>
 
             <DialogFooter className="gap-3">
-              <Button type="button" variant="ghost" onClick={() => setIsAddAdminDialogOpen(false)} className="rounded-2xl h-12 px-8 font-bold">
+              <Button type="button" variant="ghost" onClick={() => setIsAddAdminDialogOpen(false)} className="rounded-md h-12 px-8 font-bold">
                 Cancelar
               </Button>
               <Button 
                 type="submit"
                 disabled={adminForm.formState.isSubmitting}
-                className="bg-primary text-white hover:bg-primary/90 rounded-2xl h-12 px-8 font-bold shadow-lg shadow-primary/20"
+                className="bg-primary text-white hover:bg-primary/90 rounded-md h-12 px-8 font-bold "
               >
                 {adminForm.formState.isSubmitting ? 'Criando...' : 'Criar Administrador'}
               </Button>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { BadgeCheck, QrCode, ShieldCheck, Wallet } from "lucide-react";
+import { AlertTriangle, BadgeCheck, QrCode, ShieldCheck, Wallet } from "lucide-react";
 import { PixCopyField } from "@/components/donation/pix-copy-field";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { LuHandshake, LuLightbulb } from "react-icons/lu";
@@ -25,84 +25,121 @@ const PIX_QR_CODE_SRC = "/WhatsApp Image 2026-05-28 at 16.02.56.jpeg";
 
 const impactItems = [
   {
-    title: "Infraestrutura & Operação",
+    title: "Manter a plataforma no ar",
     description:
-      "Sua ajuda pode contribuir com hospedagem, banco de dados, manutenção técnica e continuidade da plataforma.",
+      "Ajuda com hospedagem, banco de dados, manutenção técnica e continuidade dos perfis públicos.",
     icon: Wallet,
     tone: "bg-primary/5 text-primary border-primary/10",
   },
   {
-    title: "Melhorias do Produto",
+    title: "Melhorar a experiência",
     description:
-      "As contribuições ajudam a desenvolver novos recursos, corrigir problemas e tornar a experiência mais útil para todos.",
+      "Contribui para filtros melhores, compartilhamento, perfil público, segurança e correções importantes.",
     icon: LuLightbulb,
     tone: "bg-highlight/5 text-highlight",
   },
   {
-    title: "Apoio com Transparência",
+    title: "Apoio sem favorecimento",
     description:
-      "A doação é voluntária e existe para sustentar a iniciativa com responsabilidade, sem promessas exageradas ou vantagens ocultas.",
+      "A doação é voluntária e não compra destaque, prioridade, selo ou qualquer vantagem dentro do Skillsy.",
     icon: LuHandshake,
     tone: "bg-red-500/5 text-red-500",
   },
+];
+
+const donationAssurances = [
+  "Doação espontânea, sem assinatura ou cobrança recorrente.",
+  "Sem prioridade em busca, destaque de perfil ou benefício exclusivo.",
+  "Confira o recebedor no app do banco antes de confirmar.",
 ];
 
 export default function DonationPage() {
   const hasQrCode = Boolean(PIX_QR_CODE_SRC);
 
   return (
-    <div className="min-h-screen bg-surface w-full pb-8">
-      <section className="relative h-[45vh] md:h-[50vh] w-full bg-cover bg-right md:bg-center object-fill bg-[url(/donate.png)]">
-        <div className="absolute inset-0 bg-primary/35 brightness-30"></div>
-        <div className="space-y-4 p-4 container mx-auto flex flex-col items-start md:justify-center h-full w-full">
-          <div className="space-y-2 bg-foreground/45 p-4 backdrop-blur-xs rounded-md">
-            <h2 className="text-xl lg:text-4xl font-bold text-white">
-              Sua contribuição pode ajudar!
-            </h2>
-            <p className="text-base lg:text-xl text-white">
-              Ajudar a Skillsy a continuar fortalecendo conexões reais.
+    <main className="min-h-screen w-full bg-surface pb-10">
+      <section className="relative flex min-h-[58vh] w-full items-end overflow-hidden">
+        <Image
+          src="/donate.png"
+          alt="Pessoa usando tecnologia para apoiar conexões na comunidade"
+          fill
+          sizes="100vw"
+          priority
+          className="object-cover object-right md:object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#001A41]/85 via-[#001A41]/45 to-[#001A41]/15" />
+        <div className="container relative z-10 mx-auto px-4 pb-16 pt-28">
+          <div className="max-w-3xl space-y-5">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm font-semibold text-white">
+              <ShieldCheck className="size-4" />
+              Apoio voluntário
+            </div>
+            <h1 className="text-balance font-heading text-4xl font-black leading-none tracking-[-0.035em] text-white md:text-6xl">
+              Ajude o Skillsy a continuar conectando pessoas reais.
+            </h1>
+            <p className="max-w-2xl text-pretty text-base leading-relaxed text-white/88 md:text-xl">
+              Sua contribuição ajuda a manter a plataforma disponível, melhorar
+              os perfis públicos e fortalecer conexões com mais contexto e
+              confiança.
             </p>
           </div>
         </div>
       </section>
-      <div className="container mx-auto px-4 isolate -mt-8 ">
-        <section className="relative overflow-hidden rounded-xl border border-border-subtle bg-card p-4 md:p-6 lg:p-10 shadow-sm mb-8">
-          <div className="space-y-4">
-            <h2 className="text-xl md:text-2xl font-bold text-text-main">
-              Apoio Voluntário
-            </h2>
-            <p className="text-base font-normal text-text-muted">
-              O Skillsy é uma iniciativa independente criada para conectar
-              pessoas, talentos e oportunidades dentro de uma rede de confiança.
-              Se você acredita nesse propósito, sua doação pode ajudar a manter
-              e melhorar a plataforma.
-            </p>
-          </div>
-          <section className="grid grid-cols-12 gap-4 lg:gap-8 my-8">
-            {impactItems.map((item) => (
-              <div
-                key={item.title}
-                className="rounded-md col-span-12 lg:col-span-4 border border-border-subtle p-4 lg:p-6 bg-card space-y-4"
-              >
-                <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-sm ${item.tone}`}
-                >
-                  <item.icon size={22} />
-                </div>
-                <div className="">
-                  <h2 className="text-lg lg:text-xl font-bold text-text-main">
-                    {item.title}
-                  </h2>
-                  <p className="text-sm leading-relaxed text-text-muted">
-                    {item.description}
+
+      <div className="container mx-auto isolate -mt-8 space-y-10 px-4">
+        <section className="rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:p-8">
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+            <div className="space-y-3">
+              <h2 className="text-xl font-bold text-text-main md:text-2xl">
+                Doar é uma forma simples de sustentar a rede.
+              </h2>
+              <p className="max-w-3xl text-base leading-relaxed text-text-muted">
+                O Skillsy é uma iniciativa independente criada para conectar
+                pessoas, talentos e oportunidades dentro de uma rede de
+                confiança. Se você acredita nesse propósito, sua doação pode
+                ajudar a manter e melhorar a plataforma.
+              </p>
+            </div>
+
+            <div className="space-y-3 rounded-xl border border-border-subtle bg-surface p-4">
+              {donationAssurances.map((item) => (
+                <div key={item} className="flex gap-3">
+                  <BadgeCheck className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <p className="text-sm leading-relaxed text-text-main">
+                    {item}
                   </p>
                 </div>
-              </div>
-            ))}
-          </section>
+              ))}
+            </div>
+          </div>
+        </section>
 
-          <section className="grid grid-cols-12 gap-4 gap-y-8 lg:gap-8 my-16">
-            <div className="col-span-12 lg:col-span-6 space-y-8">
+        <section className="grid grid-cols-12 gap-4 lg:gap-6">
+          {impactItems.map((item) => (
+            <div
+              key={item.title}
+              className="col-span-12 space-y-4 rounded-xl border border-border-subtle bg-card p-5 md:col-span-4 lg:p-6"
+            >
+              <div
+                className={`flex h-12 w-12 items-center justify-center rounded-sm border ${item.tone}`}
+              >
+                <item.icon size={22} />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-lg font-bold text-text-main">
+                  {item.title}
+                </h2>
+                <p className="text-sm leading-relaxed text-text-muted">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        <section className="grid grid-cols-12 gap-4 gap-y-8 lg:gap-6">
+          <div className="col-span-12 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8">
+            <div className="space-y-8">
               <div className="flex items-center gap-3">
                 <div className="md:flex hidden h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
                   <QrCode size={24} />
@@ -135,9 +172,8 @@ export default function DonationPage() {
                     Área reservada para o QR Code Pix
                   </h3>
                   <p className="mt-3 text-sm leading-relaxed text-text-muted">
-                    Quando a imagem estiver pronta, adicione o arquivo e
-                    preencha a constante <code>PIX_QR_CODE_SRC</code> nesta
-                    página.
+                    Quando a imagem estiver pronta, adicione o arquivo e preencha
+                    a constante <code>PIX_QR_CODE_SRC</code> nesta página.
                   </p>
                 </div>
               )}
@@ -147,8 +183,10 @@ export default function DonationPage() {
                 recebedor estão corretos no seu banco.
               </p>
             </div>
+          </div>
 
-            <div className="col-span-12 lg:col-span-6 space-y-8">
+          <div className="col-span-12 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8">
+            <div className="space-y-8">
               <div className="flex items-center gap-3">
                 <div className="md:flex hidden h-12 w-12 items-center justify-center rounded-md bg-highlight/10 text-highlight">
                   <Wallet size={24} />
@@ -164,7 +202,7 @@ export default function DonationPage() {
               </div>
 
               <div className="space-y-5">
-                <div className="rounded-xl border bg-surface p-4">
+                <div className="rounded-xl border border-border-subtle bg-surface p-4">
                   <span className="mb-1 block text-xs font-bold text-text-muted">
                     Recebedor
                   </span>
@@ -173,7 +211,7 @@ export default function DonationPage() {
                   </p>
                 </div>
 
-                <div className="rounded-xl border bg-surface p-4">
+                <div className="rounded-xl border border-border-subtle bg-surface p-4">
                   <span className="mb-1 block text-xs font-bold text-text-muted">
                     Tipo de chave
                   </span>
@@ -185,22 +223,29 @@ export default function DonationPage() {
                 <PixCopyField pixKey={PIX_KEY} />
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4 w-full mb-8 dark:border-amber-900/50 dark:bg-amber-950/30">
-            <h3 className="text-lg font-bold text-yellow-900 dark:text-amber-100">Importante</h3>
-            <p className="mt-2 text-sm leading-relaxed text-yellow-800 dark:text-amber-100/85">
-              A doação é espontânea e não concede prioridade em resultados,
-              benefícios exclusivos, posição de destaque ou qualquer tipo de
-              favorecimento dentro da plataforma.
-            </p>
-          </div> 
+        <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900/50 dark:bg-amber-950/30">
+            <div className="flex gap-3">
+              <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-700 dark:text-amber-200" />
+              <div>
+                <h3 className="text-lg font-bold text-amber-900 dark:text-amber-100">
+                  Importante
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-amber-900/85 dark:text-amber-100/85">
+                  A doação é espontânea e não concede prioridade em resultados,
+                  benefícios exclusivos, posição de destaque ou qualquer tipo de
+                  favorecimento dentro da plataforma.
+                </p>
+              </div>
+            </div>
+          </div>
 
-          <section className=" space-y-4">
-            <h2 className="lg:text-2xl text-xl font-bold text-text-main">
-              Antes de doar
-            </h2>
-            <div className="space-y-2 text-sm leading-relaxed text-text-muted">
+          <div className="rounded-xl border border-border-subtle bg-card p-5">
+            <h2 className="text-xl font-bold text-text-main">Antes de doar</h2>
+            <div className="mt-3 space-y-2 text-sm leading-relaxed text-text-muted">
               <p>
                 Verifique sempre os dados do recebedor no app do seu banco antes
                 de concluir a transferência.
@@ -223,18 +268,16 @@ export default function DonationPage() {
                 </Link>
                 .
               </p>
+              <p>
+                As contribuições são voluntárias e não representam vínculo
+                institucional. O Skillsy não é afiliado nem representa
+                oficialmente A Igreja de Jesus Cristo dos Santos dos Últimos
+                Dias.
+              </p>
             </div>
-          </section>
+          </div>
         </section>
-
-        <div className="rounded-xl p-4 bg-yellow-50 border border-yellow-200 dark:border-amber-900/50 dark:bg-amber-950/30">
-          <p className="text-sm font-normal text-yellow-800 dark:text-amber-100/85">
-            As contribuições são voluntárias e não representam vínculo
-            institucional. <br /> O Skillsy não é afiliado nem representa
-            oficialmente A Igreja de Jesus Cristo dos Santos dos Últimos Dias.
-          </p>
-        </div>
       </div>
-    </div>
+    </main>
   );
 }

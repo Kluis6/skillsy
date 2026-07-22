@@ -27,7 +27,7 @@ export default function MeusArtigosLayout({
       <div className="min-h-screen flex items-center justify-center bg-surface">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm font-bold text-text-muted uppercase tracking-widest">
+          <p className="text-sm font-bold text-text-muted uppercase tracking-normal">
             {loading ? 'Verificando acesso...' : 'Redirecionando...'}
           </p>
         </div>

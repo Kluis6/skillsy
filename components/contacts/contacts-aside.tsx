@@ -80,7 +80,7 @@ export function ContactsAside({
         {loading ? (
           <div className="p-4 space-y-4">
             {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className="h-20 w-full rounded-2xl" />
+              <Skeleton key={i} className="h-20 w-full rounded-xl" />
             ))}
           </div>
         ) : filteredContacts.length > 0 ? (

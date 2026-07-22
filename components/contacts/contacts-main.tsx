@@ -278,7 +278,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                     />
                   )}
                 </div>
-                <Avatar className="size-30 md:size-38 border-[6px] border-card shadow-xl absolute bottom-0 md:left-4 left-1/2 -translate-x-1/2 md:translate-x-1">
+                <Avatar className="size-30 md:size-38 border-[6px] border-card shadow-sm absolute bottom-0 md:left-4 left-1/2 -translate-x-1/2 md:translate-x-1">
                   <AvatarImage src={selectedContact.photoURL} />
                   <AvatarFallback className="bg-surface text-primary font-bold text-4xl">
                     {selectedContact.name[0]}
@@ -300,7 +300,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                     <p className="text-xs font-bold text-text-muted">
                       Avaliação
                     </p>
-                    <div className="flex items-center justify-start drop-shadow-xl gap-1 font-bold text-highlight text-base">
+                    <div className="flex items-center justify-start drop-shadow-sm gap-1 font-bold text-highlight text-base">
                       <Star size={14} fill="currentColor" />
                       {selectedContact.rating || "0.0"}
                     </div>
@@ -328,7 +328,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                         <p className="text-xs font-bold text-text-muted">
                           Avaliação
                         </p>
-                        <div className="flex items-center justify-center drop-shadow-xl md:justify-start gap-1 font-bold text-highlight text-base">
+                        <div className="flex items-center justify-center drop-shadow-sm md:justify-start gap-1 font-bold text-highlight text-base">
                           <Star size={14} fill="currentColor" />
                           {selectedContact.rating || "0.0"}
                         </div>

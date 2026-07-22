@@ -135,9 +135,9 @@ export function AdminNavbar() {
                   )}
               </Button>
               {notificationsOpen && (
-                <div className="absolute right-0 top-12 z-50 w-80 overflow-hidden rounded-2xl border border-border-subtle bg-popover p-0 text-popover-foreground shadow-2xl">
+                <div className="absolute right-0 top-12 z-50 w-80 overflow-hidden rounded-md border border-border-subtle bg-popover p-0 text-popover-foreground shadow-sm">
                 <div className="p-4 bg-surface border-b border-border-subtle flex items-center justify-between">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-text-main flex items-center gap-2">
+                  <h3 className="text-xs font-bold uppercase tracking-normal text-text-main flex items-center gap-2">
                     <Bell size={14} className="text-primary" /> Notificações
                   </h3>
                   {unreadCount > 0 && (
@@ -171,7 +171,7 @@ export function AdminNavbar() {
                               <p className={`text-xs font-bold leading-tight mb-1 ${!n.read ? 'text-text-main' : 'text-text-muted'}`}>
                                 {n.title}
                               </p>
-                              <p className="text-[11px] text-text-muted line-clamp-2 leading-relaxed">
+                              <p className="text-xs text-text-muted line-clamp-2 leading-relaxed">
                                 {n.message}
                               </p>
                               <div className="flex items-center gap-2 mt-2">
@@ -217,7 +217,7 @@ export function AdminNavbar() {
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex flex-col items-end">
               <span className="text-xs font-bold text-text-main">{profile?.name}</span>
-              <span className="text-[9px] text-primary font-black uppercase tracking-widest">Administrator</span>
+              <span className="text-xs text-primary font-black uppercase tracking-normal">Administrator</span>
             </div>
             <Avatar className="w-9 h-9 border-2 border-primary/20">
               <AvatarImage src={user?.photoURL || ''} />

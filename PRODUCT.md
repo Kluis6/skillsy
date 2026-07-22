@@ -51,6 +51,8 @@ Evitar padroes visuais que denunciam UI generica: grades identicas de icone + ti
 
 5. **Um sistema, nao varios estilos.** Cards de perfil, estados vazios, badges, formularios, carregamentos e chamadas de acao devem compartilhar a mesma linguagem para o usuario reconhecer o Skillsy em qualquer rota.
 
+6. **A trilha Skillsy aparece perto da decisao.** Quando a tela precisa explicar confiança, use a sequencia Perfil -> Contexto -> Contato: quem e a pessoa, quais sinais ajudam a avaliar e qual proximo passo esta disponivel.
+
 ## Accessibility & Inclusion
 
 Skillsy deve mirar acessibilidade WCAG AA para contraste, foco visivel, navegacao por teclado e textos legiveis. Informacoes criticas nao podem depender apenas de cor, tamanho muito pequeno ou imagem.

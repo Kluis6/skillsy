@@ -17,7 +17,7 @@ export default function NotFound() {
       <Button
         render={<Link href="/" />}
         nativeButton={false}
-        className="bg-primary text-white hover:bg-primary/90 rounded-[1.5rem] px-10 h-14 text-lg font-bold shadow-xl shadow-primary/20 group"
+        className="bg-primary text-white hover:bg-primary/90 rounded-md px-10 h-14 text-lg font-bold group"
       >
         <Home size={22} className="mr-3 group-hover:-translate-y-0.5 transition-transform" />
         Ir para Página Inicial
@@ -26,7 +26,7 @@ export default function NotFound() {
       <div className="mt-16 flex gap-8">
         <div className="flex flex-col items-center opacity-50">
           <span className="text-3xl font-bold font-heading">404</span>
-          <span className="text-xs font-bold">Error Code</span>
+          <span className="text-xs font-bold">Código da página</span>
         </div>
       </div>
     </div>

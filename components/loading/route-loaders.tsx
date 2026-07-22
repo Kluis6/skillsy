@@ -103,7 +103,7 @@ export function HomePageLoading() {
           </div>
 
           <div className="w-full lg:col-span-5">
-            <div className="rounded-2xl border border-border-subtle bg-card p-4 shadow-lg shadow-blue-500/10 md:p-6">
+            <div className="rounded-md border border-border-subtle bg-card p-4 shadow-lg shadow-blue-500/10 md:p-6">
               <div className="mb-5 space-y-2">
                 <Skeleton className="h-5 w-40" />
                 <Skeleton className="h-4 w-64" />
@@ -236,7 +236,7 @@ export function PostListPageLoading() {
                 key={index}
                 className="col-span-12 md:col-span-6 xl:col-span-4"
               >
-                <Skeleton className="h-[340px] w-full rounded-2xl" />
+                <Skeleton className="h-[340px] w-full rounded-md" />
               </div>
             ))}
           </div>
@@ -378,7 +378,7 @@ export function ContactsPageLoading() {
           <div className="space-y-4 p-4">
             <Skeleton className="h-10 w-full rounded-xl" />
             {Array.from({ length: 5 }).map((_, index) => (
-              <Skeleton key={index} className="h-20 w-full rounded-2xl" />
+              <Skeleton key={index} className="h-20 w-full rounded-md" />
             ))}
           </div>
         </aside>
@@ -444,7 +444,7 @@ export function PostEditorPageLoading() {
         <Skeleton className="h-12 w-full rounded-xl" />
         <Skeleton className="h-12 w-full rounded-xl" />
         <Skeleton className="h-28 w-full rounded-xl" />
-        <Skeleton className="h-56 w-full rounded-2xl" />
+        <Skeleton className="h-56 w-full rounded-md" />
         <div className="flex gap-3">
           <Skeleton className="h-10 w-32" />
           <Skeleton className="h-10 w-40" />
@@ -640,7 +640,7 @@ export function AdminDashboardPageLoading() {
         {Array.from({ length: 3 }).map((_, index) => (
           <div
             key={index}
-            className="flex flex-col gap-2 overflow-hidden rounded-3xl bg-card p-6 shadow-sm"
+            className="flex flex-col gap-2 overflow-hidden rounded-xl bg-card p-6 shadow-sm"
           >
             <Skeleton className="h-3 w-32 rounded-full" />
             <Skeleton className="h-10 w-20 rounded-lg" />
@@ -683,8 +683,8 @@ export function AdminUsersPageLoading() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Skeleton className="h-11 w-32 rounded-2xl" />
-          <Skeleton className="h-11 w-40 rounded-2xl" />
+          <Skeleton className="h-11 w-32 rounded-md" />
+          <Skeleton className="h-11 w-40 rounded-md" />
         </div>
       </div>
 
@@ -692,19 +692,19 @@ export function AdminUsersPageLoading() {
         <div className="flex flex-col items-end gap-6 lg:flex-row">
           <div className="w-full flex-grow space-y-2">
             <Skeleton className="h-4 w-28" />
-            <Skeleton className="h-12 w-full rounded-2xl" />
+            <Skeleton className="h-12 w-full rounded-md" />
           </div>
           <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:w-auto lg:grid-cols-4">
             <div className="space-y-2">
               <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-12 w-full rounded-2xl lg:w-36" />
+              <Skeleton className="h-12 w-full rounded-md lg:w-36" />
             </div>
             <div className="space-y-2">
               <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-12 w-full rounded-2xl lg:w-40" />
+              <Skeleton className="h-12 w-full rounded-md lg:w-40" />
             </div>
-            <Skeleton className="h-12 w-full rounded-2xl lg:w-44" />
-            <Skeleton className="h-12 w-full rounded-2xl lg:w-44" />
+            <Skeleton className="h-12 w-full rounded-md lg:w-44" />
+            <Skeleton className="h-12 w-full rounded-md lg:w-44" />
           </div>
         </div>
       </div>

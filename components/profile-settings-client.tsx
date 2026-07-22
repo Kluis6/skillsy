@@ -454,7 +454,7 @@ export function ProfileSettingsClient() {
                 </div>
                 <div className="pt-10 pb-4 px-4 flex flex-col items-center -mt-16">
                   <div className="relative group mb-6">
-                    <Avatar className="w-32 h-32 border-4 border-surface shadow-xl">
+                    <Avatar className="w-32 h-32 border-4 border-surface shadow-sm">
                       <AvatarImage src={formData.photoURL || undefined} />
                       <AvatarFallback className="bg-primary/5 text-primary text-4xl font-bold">
                         {formData.name[0]}
@@ -1139,7 +1139,7 @@ export function ProfileSettingsClient() {
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {formData.gallery.map((photo, index) => (
                     <div key={index} className="flex flex-col gap-2">
-                      <div className="relative aspect-square rounded-2xl overflow-hidden group border border-border-subtle">
+                      <div className="relative aspect-square rounded-xl overflow-hidden group border border-border-subtle">
                         <Image
                           src={photo.url}
                           alt={`Galeria ${index}`}
@@ -1176,7 +1176,7 @@ export function ProfileSettingsClient() {
                             shouldValidate: true,
                           });
                         }}
-                        className="text-xs min-h-[50px] h-auto p-2 bg-surface border-none resize-none rounded-xl"
+                        className="text-xs min-h-[50px] h-auto p-2 bg-surface border border-border-subtle resize-none rounded-xl"
                       />
                       <p className="text-xs text-text-muted ml-1">
                         {(photo.description || "").length}/
@@ -1185,7 +1185,7 @@ export function ProfileSettingsClient() {
                     </div>
                   ))}
                   {formData.gallery.length === 0 && (
-                    <div className="col-span-full py-12 text-center bg-surface rounded-3xl border-2 border-dashed border-border-subtle">
+                    <div className="col-span-full py-12 text-center bg-surface rounded-xl border-2 border-dashed border-border-subtle">
                       <Camera className="mx-auto h-10 w-10 text-text-muted/20 mb-3" />
                       <p className="text-sm text-text-muted font-medium">
                         Sua galeria está vazia.

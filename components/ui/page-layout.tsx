@@ -19,7 +19,7 @@ export function PageHeader({
   return (
     <section
       className={cn(
-        "flex flex-col gap-4 rounded-xl border border-border-subtle bg-card p-5 md:flex-row md:items-center md:justify-between md:p-6",
+        "m3-surface flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between md:p-8",
         className,
       )}
     >
@@ -27,11 +27,11 @@ export function PageHeader({
         {eyebrow ? (
           <p className="text-xs font-semibold text-primary">{eyebrow}</p>
         ) : null}
-        <h1 className="text-2xl font-bold leading-tight text-text-main md:text-3xl">
+        <h1 className="font-heading text-3xl font-semibold leading-tight text-text-main md:text-4xl">
           {title}
         </h1>
         {description ? (
-          <p className="max-w-2xl text-sm leading-relaxed text-text-muted">
+          <p className="max-w-2xl text-sm leading-relaxed text-text-muted md:text-base">
             {description}
           </p>
         ) : null}
@@ -57,7 +57,7 @@ export function SurfacePanel({
   return (
     <Component
       className={cn(
-        "rounded-xl border border-border-subtle bg-card p-5 md:p-6",
+        "m3-surface p-5 md:p-6",
         className,
       )}
     >
@@ -84,17 +84,17 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-4 p-10 text-center",
+        "flex flex-col items-center justify-center gap-4 rounded-[var(--md-sys-shape-corner-extra-large)] bg-muted p-10 text-center",
         className,
       )}
     >
       {icon ? (
-        <div className="flex size-12 items-center justify-center rounded-full bg-surface text-primary">
+        <div className="flex size-12 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
           {icon}
         </div>
       ) : null}
       <div className="space-y-1">
-        <h2 className="text-lg font-bold text-text-main">{title}</h2>
+        <h2 className="font-heading text-xl font-semibold text-text-main">{title}</h2>
         {description ? (
           <p className="mx-auto max-w-md text-sm leading-relaxed text-text-muted">
             {description}

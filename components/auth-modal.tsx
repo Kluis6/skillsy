@@ -346,7 +346,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     />
                     <p
                       id="signup-name-help"
-                      className="text-[11px] text-text-muted ml-1"
+                      className="text-xs text-text-muted ml-1"
                     >
                       Use entre 2 e 50 caracteres.
                     </p>
@@ -381,7 +381,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     />
                     <p
                       id="signup-email-help"
-                      className="text-[11px] text-text-muted ml-1"
+                      className="text-xs text-text-muted ml-1"
                     >
                       Use um e-mail válido com até 30 caracteres.
                     </p>
@@ -418,7 +418,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     </div>
                     <p
                       id="signup-password-help"
-                      className="text-[11px] text-text-muted ml-1"
+                      className="text-xs text-text-muted ml-1"
                     >
                       A senha deve ter o mínimo de 6 caracteres.
                     </p>

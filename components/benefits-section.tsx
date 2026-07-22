@@ -121,7 +121,7 @@ export function BenefitsSection() {
                     />
                   </Button>
                 </AuthModal>
-                <p className="text-xs font-bold text-text-muted uppercase tracking-widest text-center">
+                <p className="text-xs font-bold text-text-muted uppercase tracking-normal text-center">
                   Cadastre sua skill para ser encontrado com mais confiança
                 </p>
               </motion.div>
@@ -140,7 +140,7 @@ export function BenefitsSection() {
               <motion.div
                 key={idx}
                 variants={cardVariants}
-                className={`lg:p-8 md:p-6 p-4 flex flex-col space-y-4 md:space-y-6 rounded-xl border border-border-subtle bg-card transition-all hover:shadow-xl hover:shadow-primary/5 group ${idx % 3 === 0 ? "md:col-span-1" : ""}`}
+                className={`lg:p-8 md:p-6 p-4 flex flex-col space-y-4 md:space-y-6 rounded-xl border border-border-subtle bg-card transition-all hover:shadow-sm hover:shadow-primary/5 group ${idx % 3 === 0 ? "md:col-span-1" : ""}`}
               >
                 <div
                   className={`size-12 md:size-14 xl:size-14  ${benefit.bg} ${benefit.color} rounded-md flex items-center justify-center  group-hover:scale-110 transition-transform duration-300`}

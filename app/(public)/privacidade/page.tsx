@@ -374,7 +374,7 @@ export default function PrivacidadePage() {
       </div>
 
       <section className="container mx-auto mb-24 px-4">
-        <div className="rounded-2xl border border-border-subtle bg-surface p-4 md:p-6 lg::p-10">
+        <div className="rounded-md border border-border-subtle bg-surface p-4 md:p-6 lg:p-10">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-4">
               <h2 className="text-xl lg:text-2xl font-bold text-text-main">

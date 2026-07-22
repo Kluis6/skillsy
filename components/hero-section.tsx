@@ -2,19 +2,13 @@
 
 import Link from "next/link";
 import Form from "next/form";
-import { HiOutlineMegaphone } from "react-icons/hi2";
 import { motion } from "motion/react";
-import {
-  ArrowRight,
-  HeartHandshake,
-  Search,
-  ShieldCheck,
-  UsersRound,
-} from "lucide-react";
+import { ArrowRight, Search, X } from "lucide-react";
 import { AuthModal } from "@/components/auth-modal";
 import { Button } from "@/components/ui/button";
 import { CepFilter } from "@/components/cep-filter";
 import { Input } from "@/components/ui/input";
+
 
 interface HeroSectionProps {
   searchTerm: string;
@@ -60,51 +54,43 @@ export function HeroSection({
   };
 
   return (
-    <section className="w-full min-h-[calc(100svh-5rem)] md:min-h-[86vh] bg-[radial-gradient(circle_at_top_left,rgba(0,102,255,0.12),transparent_34%),linear-gradient(180deg,rgba(240,247,255,0.65),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.2),transparent_34%),linear-gradient(180deg,rgba(30,41,59,0.65),rgba(15,23,42,0))]">
+    <section className="relative isolate w-full min-h-[calc(100svh-5rem)] overflow-hidden bg-surface bg-[url(/imagebanner.png)] bg-cover bg-center md:min-h-[86vh]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--md-sys-color-scrim)_74%,transparent)_0%,color-mix(in_oklab,var(--md-sys-color-scrim)_52%,transparent)_42%,color-mix(in_oklab,var(--md-sys-color-scrim)_12%,transparent)_68%)]"
+      />
       <motion.div
         initial="hidden"
         animate="show"
         variants={heroVariants}
-        className="container mx-auto grid min-h-[calc(100svh-5rem)] md:min-h-[86vh] grid-cols-1 items-center gap-10 px-4 py-12 lg:grid-cols-12 "
+        className="container relative z-10 mx-auto grid min-h-[calc(100svh-5rem)] grid-cols-1 items-center gap-10 px-4 py-12 md:min-h-[89vh] lg:grid-cols-12"
       >
         <motion.div
           variants={itemVariants}
           className="w-full space-y-6 text-center will-change-transform lg:col-span-7 lg:text-left"
         >
           <div className="space-y-4">
-            <h1 className="text-balance font-heading text-5xl font-black leading-[0.95] tracking-[-0.035em] text-text-main md:text-7xl lg:text-8xl">
+            <h2 className="text-balance font-heading text-5xl font-black leading-[0.95] tracking-[-0.035em] text-primary-foreground dark:text-white drop-shadow-[0_2px_18px_color-mix(in_oklab,var(--md-sys-color-scrim)_55%,transparent)] md:text-7xl lg:text-8xl">
               A ajuda certa pode estar mais perto do que você imagina.
-            </h1>
-            <p className="mx-auto max-w-2xl text-pretty text-base font-medium leading-relaxed text-text-muted md:text-xl lg:mx-0">
-              O Skillsy conecta membros, profissionais e pequenos negócios em
-              uma rede onde indicação, confiança e propósito caminham juntos.
+            </h2>
+            <p className="mx-auto max-w-2xl text-pretty text-base font-semibold leading-relaxed text-primary-foreground/90 dark:text-gray-50 md:text-xl lg:mx-0">
+              O Skillsy conecta membros, profissionais e pequenos negócios em uma rede onde indicação, confiança e propósito caminham juntos.
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-3 text-sm font-medium text-text-main lg:justify-start">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-sm ring-1 ring-border-subtle dark:bg-white/5">
-              <ShieldCheck className="size-4 text-primary" />
-              Contrate com confiança
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-sm ring-1 ring-border-subtle dark:bg-white/5">
-              
-              <HiOutlineMegaphone className="size-4 stroke-2 text-primary"  />
-              Divulgue seu talento
-            </span>
-          </div>
         </motion.div>
 
         <motion.div
           variants={itemVariants}
           className="w-full will-change-transform lg:col-span-5"
         >
-          <div className="rounded-2xl border border-border-subtle bg-card p-4 shadow-lg shadow-blue-500/10 md:p-6">
+          <div className="rounded-[var(--md-sys-shape-corner-extra-large)] border border-border bg-card/95 p-4 shadow-[var(--md-sys-elevation-level2)] backdrop-blur-sm md:p-6">
             <div className="mb-5 space-y-1">
               <p className="text-sm font-bold text-text-main">
                 Encontre alguém da rede
               </p>
-              <p className="text-sm text-text-muted">
-                Busque por serviço, talento ou necessidade.
+              <p className="text-sm text-text-muted ">
+                Busque por serviço, talento ou que precisar.
               </p>
             </div>
 
@@ -121,10 +107,20 @@ export function HeroSection({
                   name="q"
                   aria-label="Buscar talentos, profissionais e serviços"
                   placeholder="Ex: pintura, aulas, bolos, advocacia..."
-                  className="pl-12 h-12 w-full bg-background border-border-subtle text-text-main placeholder:text-text-muted shadow-sm rounded-full"
+                  className="h-12 w-full rounded-full border-gray-300 bg-background pl-12 pr-12 text-text-main placeholder:text-gray-500"
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                 />
+                {searchTerm ? (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm("")}
+                    className="absolute right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface hover:text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label="Limpar busca"
+                  >
+                    <X className="size-4" />
+                  </button>
+                ) : null}
               </div>
 
               {locationFilter && (

@@ -30,7 +30,7 @@ export default function AdminError({
       <div className="flex flex-col sm:flex-row gap-4">
         <Button 
           onClick={() => reset()}
-          className="bg-primary text-white hover:bg-primary/90 rounded-2xl px-8 h-12 font-bold shadow-lg shadow-primary/20"
+          className="bg-primary text-white hover:bg-primary/90 rounded-md px-8 h-12 font-bold "
         >
           <RotateCcw size={18} className="mr-2" /> Tentar Novamente
         </Button>
@@ -39,7 +39,7 @@ export default function AdminError({
           render={<Link href="/admin" />}
           nativeButton={false}
           variant="outline"
-          className="rounded-2xl px-8 h-12 font-bold border-border-subtle hover:bg-surface"
+          className="rounded-md px-8 h-12 font-bold border-border-subtle hover:bg-surface"
         >
           <ArrowLeft size={18} className="mr-2" /> Voltar ao Dashboard
         </Button>

@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, MapPin, ShieldCheck, Star } from "lucide-react";
+import { ArrowRight, MapPin, Star } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { TrustBadge } from "@/components/ui/trust-signals";
 import { UserProfile } from "@/models/types";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 import { cn } from "@/lib/utils";
@@ -75,13 +75,10 @@ export function ProviderProfileCard({
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="font-heading text-lg font-bold leading-tight text-text-main md:text-2xl">
-                  {provider.name} 
+                  {provider.name}
                 </h3>
                 {isVerified ? (
-                  <Badge className="rounded-full border-primary/10 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-                    <ShieldCheck className="mr-1 size-3.5" />
-                    Verificado
-                  </Badge>
+                  <TrustBadge>Verificado</TrustBadge>
                 ) : null}
               </div>
 
@@ -165,10 +162,7 @@ export function ProviderProfileCard({
               </AvatarFallback>
             </Avatar>
             {isVerified ? (
-              <Badge className="mb-1 rounded-full border-primary/10 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-                <ShieldCheck className="mr-1 size-3.5" />
-                Verificado
-              </Badge>
+              <TrustBadge className="mb-1">Verificado</TrustBadge>
             ) : null}
           </div>
 

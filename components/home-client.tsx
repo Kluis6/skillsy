@@ -15,6 +15,7 @@ import { AuthModal } from "@/components/auth-modal";
 import { UserProfile } from "@/models/types";
 import { Categorywall } from "./categorywall";
 import { ProviderProfileCard } from "@/components/profile/provider-profile-card";
+import { TrustPath } from "@/components/ui/trust-signals";
 
 export function HomeClient({
   initialProviders = [],
@@ -43,8 +44,11 @@ export function HomeClient({
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
+ 
 
-      <HeroSection
+
+           <div className="flex flex-col w-full space-y-12">
+                  <HeroSection
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         searching={searching}
@@ -79,6 +83,8 @@ export function HomeClient({
               </p>
             </div>
 
+            <TrustPath className="mx-auto max-w-3xl" />
+
             {providers.length > 0 ? (
               <div className="grid grid-cols-12 gap-y-6 md:gap-6">
                 {providers.map((p, idx) => (
@@ -94,13 +100,14 @@ export function HomeClient({
                 ))}
               </div>
             ) : (
-              <div className="text-center py-24 bg-surface/30 rounded-3xl border-2 border-dashed border-border-subtle">
-                <Briefcase className="mx-auto h-12 w-12 text-text-muted/20 mb-4" />
+              <div className="mx-auto max-w-2xl rounded-xl border border-dashed border-border-subtle bg-surface/40 px-6 py-20 text-center">
+                <Briefcase className="mx-auto mb-4 h-12 w-12 text-primary/40" />
                 <h4 className="text-xl font-bold text-text-main">
-                  Nenhum resultado
+                  Ainda não encontramos alguém com esses filtros
                 </h4>
                 <p className="text-sm text-text-muted">
-                  Tente ajustar seus filtros de busca.
+                  Tente buscar por uma categoria mais ampla ou remova a
+                  localização para ver mais membros disponíveis.
                 </p>
               </div>
             )}
@@ -127,6 +134,9 @@ export function HomeClient({
           </div>
         )}
       </main>
+
+      </div>
+
 
       <Footer />
     </div>

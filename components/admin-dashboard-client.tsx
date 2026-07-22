@@ -76,21 +76,21 @@ export function AdminDashboardClient() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <Card className="bg-card border-none shadow-sm rounded-3xl overflow-hidden">
+          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden">
             <CardHeader className="pb-2">
               <CardDescription className="text-xs font-bold text-text-muted">Total de Usuários</CardDescription>
               <CardTitle className="text-4xl font-bold font-heading">{loading ? '...' : users.length}</CardTitle>
             </CardHeader>
             <div className="h-1 bg-primary w-full opacity-20" />
           </Card>
-          <Card className="bg-card border-none shadow-sm rounded-3xl overflow-hidden">
+          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden">
             <CardHeader className="pb-2">
               <CardDescription className="text-xs font-bold text-text-muted">Prestadores de Serviço</CardDescription>
               <CardTitle className="text-4xl font-bold font-heading">{loading ? '...' : users.filter(u => u.isProvider).length}</CardTitle>
             </CardHeader>
             <div className="h-1 bg-green-500 w-full opacity-20" />
           </Card>
-          <Card className="bg-card border-none shadow-sm rounded-3xl overflow-hidden">
+          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden">
             <CardHeader className="pb-2">
               <CardDescription className="text-xs font-bold text-text-muted">Membros Verificados</CardDescription>
               <CardTitle className="text-4xl font-bold font-heading">{loading ? '...' : users.filter(shouldShowVerifiedBadge).length}</CardTitle>

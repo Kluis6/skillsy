@@ -30,6 +30,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
 import { ProfilePublicPageLoading } from "@/components/loading/route-loaders";
+import { TrustBadge } from "@/components/ui/trust-signals";
 import {
   Dialog,
   DialogContent,
@@ -822,10 +823,7 @@ export function ProfileDetailClient({
                         {targetProfile.name}
                       </h2>
                       {shouldShowVerifiedBadge(targetProfile) && (
-                        <Badge className="bg-primary/10 text-primary border-none font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
-                          <ShieldCheck size={13} />
-                          Membro Verificado
-                        </Badge>
+                        <TrustBadge>Membro verificado</TrustBadge>
                       )}
                     </div>
 
@@ -1018,7 +1016,7 @@ export function ProfileDetailClient({
                     <div className="space-y-3">
                       <div className=" flex items-center gap-1 ">
                         <CalendarDays size={16} className="text-text-muted" />
-                        <p className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                        <p className="text-xs font-bold text-text-muted">
                           Dias de atendimento
                         </p>
                       </div>
@@ -1038,7 +1036,7 @@ export function ProfileDetailClient({
                     <div className="space-y-3 ">
                       <div className="flex items-center gap-1 ">
                         <Clock size={16} className="text-text-muted" />{" "}
-                        <p className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                        <p className="text-xs font-bold text-text-muted">
                           Horário de atendimento
                         </p>
                       </div>
@@ -1347,7 +1345,7 @@ export function ProfileDetailClient({
                             referrerPolicy="no-referrer"
                           />
                         </DialogTrigger>
-                        <DialogContent className="gap-0 overflow-hidden border-none bg-black/95 p-0 sm:rounded-2xl ">
+                        <DialogContent className="gap-0 overflow-hidden border-none bg-black/95 p-0 sm:rounded-xl ">
                           <DialogTitle className="sr-only">
                             Visualização de Foto
                           </DialogTitle>
@@ -1381,7 +1379,7 @@ export function ProfileDetailClient({
                     ))}
                   </div>
                 ) : (
-                  <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-border-subtle rounded-2xl bg-surface/50">
+                  <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-border-subtle rounded-xl bg-surface/50">
                     <Camera className="w-12 h-12 text-text-muted/30 mb-4" />
                     <p className="text-sm text-text-muted font-medium mb-4">
                       Sua galeria ainda não possui fotos profissionais.
