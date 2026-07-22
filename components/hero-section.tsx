@@ -8,6 +8,7 @@ import { AuthModal } from "@/components/auth-modal";
 import { Button } from "@/components/ui/button";
 import { CepFilter } from "@/components/cep-filter";
 import { Input } from "@/components/ui/input";
+import { Card } from "./ui/card";
 
 
 interface HeroSectionProps {
@@ -54,10 +55,10 @@ export function HeroSection({
   };
 
   return (
-    <section className="relative isolate w-full min-h-[calc(100svh-5rem)] overflow-hidden bg-surface bg-[url(/imagebanner.png)] bg-cover bg-center md:min-h-[86vh]">
+    <section className="relative isolate w-full min-h-[calc(100svh-5rem)] overflow-hidden bg-surface bg-[url(/bannerhero.png)] bg-cover bg-center md:min-h-[86vh]">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--md-sys-color-scrim)_74%,transparent)_0%,color-mix(in_oklab,var(--md-sys-color-scrim)_52%,transparent)_42%,color-mix(in_oklab,var(--md-sys-color-scrim)_12%,transparent)_68%)]"
+        className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--md-sys-color-scrim)_64%,transparent)_0%,color-mix(in_oklab,var(--md-sys-color-scrim)_52%,transparent)_42%,color-mix(in_oklab,var(--md-sys-color-scrim)_12%,transparent)_68%)]"
       />
       <motion.div
         initial="hidden"
@@ -74,7 +75,7 @@ export function HeroSection({
               A ajuda certa pode estar mais perto do que você imagina.
             </h2>
             <p className="mx-auto max-w-2xl text-pretty text-base font-semibold leading-relaxed text-primary-foreground/90 dark:text-gray-50 md:text-xl lg:mx-0">
-              O Skillsy conecta membros, profissionais e pequenos negócios em uma rede onde indicação, confiança e propósito caminham juntos.
+              O Skillsy conecta membros, profissionais e negócios em uma rede onde indicação, confiança e propósito caminham juntos.
             </p>
           </div>
 
@@ -84,13 +85,13 @@ export function HeroSection({
           variants={itemVariants}
           className="w-full will-change-transform lg:col-span-5"
         >
-          <div className="rounded-[var(--md-sys-shape-corner-extra-large)] border border-border bg-card/95 p-4 shadow-[var(--md-sys-elevation-level2)] backdrop-blur-sm md:p-6">
+          <Card className=" p-4 shadow-[var(--md-sys-elevation-level2)]  md:p-6">
             <div className="mb-5 space-y-1">
               <p className="text-sm font-bold text-text-main">
                 Encontre alguém da rede
               </p>
               <p className="text-sm text-text-muted ">
-                Busque por serviço, talento ou que precisar.
+                Busque por profissional, serviço ou que precisar.
               </p>
             </div>
 
@@ -100,14 +101,14 @@ export function HeroSection({
             >
               <div className="relative w-full flex justify-center items-center">
                 <Search
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"
                   size={20}
                 />
                 <Input
                   name="q"
                   aria-label="Buscar talentos, profissionais e serviços"
-                  placeholder="Ex: pintura, aulas, bolos, advocacia..."
-                  className="h-12 w-full rounded-full border-gray-300 bg-background pl-12 pr-12 text-text-main placeholder:text-gray-500"
+                  placeholder="O que você precisa?"
+                  className="h-12 w-full rounded-full border-gray-300 bg-background pl-10 pr-12 text-text-main placeholder:text-gray-400 dark:border-gray-600 dark:focus:bg-gray-900 dark:bg-gray-800"
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                 />
@@ -115,7 +116,7 @@ export function HeroSection({
                   <button
                     type="button"
                     onClick={() => setSearchTerm("")}
-                    className="absolute right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface hover:text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="absolute right-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface hover:text-text-main "
                     aria-label="Limpar busca"
                   >
                     <X className="size-4" />
@@ -148,7 +149,7 @@ export function HeroSection({
                 <Button
                   type="submit"
                   variant="default"
-                  className="h-12 w-full font-semibold text-base bg-primary hover:bg-primary/90 dark:text-white active:bg-primary/80"
+                  className="h-12 w-full font-semibold text-base bg-primary hover:bg-primary/90 dark:text-black active:bg-primary/80"
                 >
                   {searching ? "Pesquisando..." : "Buscar talento"}
                 </Button>
@@ -193,7 +194,7 @@ export function HeroSection({
                 </Button>
               )}
             </div>
-          </div>
+          </Card>
         </motion.div>
       </motion.div>
     </section>

@@ -47,7 +47,7 @@ export function HomeClient({
  
 
 
-           <div className="flex flex-col w-full space-y-12">
+           <div className="flex flex-col w-full space-y-14">
                   <HeroSection
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
