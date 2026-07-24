@@ -78,7 +78,7 @@ export function BenefitsSection() {
   };
 
   return (
-    <section className="w-full h-full bg-surface py-8 my-16">
+    <section className="w-full h-full bg-surface py-8">
       <section className="px-4 container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Side: Content */}

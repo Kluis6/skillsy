@@ -3,12 +3,21 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPin, Star } from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { TrustBadge } from "@/components/ui/trust-signals";
 import { UserProfile } from "@/models/types";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardAction,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Button } from "@base-ui/react";
 
 type ProviderProfileCardProps = {
   provider: UserProfile;
@@ -77,9 +86,7 @@ export function ProviderProfileCard({
                 <h3 className="font-heading text-lg font-bold leading-tight text-text-main md:text-2xl">
                   {provider.name}
                 </h3>
-                {isVerified ? (
-                  <TrustBadge>Verificado</TrustBadge>
-                ) : null}
+                {isVerified ? <TrustBadge>Verificado</TrustBadge> : null}
               </div>
 
               <p className="text-sm font-medium text-text-main">
@@ -109,7 +116,7 @@ export function ProviderProfileCard({
             </div>
           </div>
 
-          <div className="flex items-center justify-between border-t border-border-subtle pt-4 md:flex-col md:items-end md:justify-center md:border-t-0 md:pt-0">
+          <div className="flex items-center  justify-between border-t border-border-subtle pt-4 md:flex-col md:items-end md:justify-center md:border-t-0 md:pt-0">
             <span className="text-sm font-semibold text-primary">
               Ver perfil
             </span>
@@ -124,38 +131,36 @@ export function ProviderProfileCard({
     <Link
       href={`/profile/${provider.uid}`}
       className={cn(
-        "group block h-full rounded-xl overflow-hidden border border-border-subtle bg-card transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "group block h-full rounded-xl overflow-hidden shadow-sm hover:shadow-2xl shadow-black/40 transition-shadow dark:bg-black hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         className,
       )}
     >
-      <article className="flex h-full flex-col overflow-hidden">
-        <div className="relative h-32 bg-surface md:h-40">
+      <Card className="relative mx-auto w-full pt-0 border-none">
+        <div className="relative w-full">
           {provider.bannerURL ? (
-            <Image
+            <img
               src={provider.bannerURL}
               alt={`Capa do perfil de ${provider.name}`}
-              fill
-              sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-              className="object-cover"
+              className="relative z-20 h-30 w-full object-cover brightness-70 dark:brightness-50"
             />
           ) : (
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,102,255,0.16),transparent_34%),linear-gradient(135deg,rgba(0,102,255,0.08),rgba(0,163,255,0.08))]" />
+            <div className=" inset-0 h-30 bg-[radial-gradient(circle_at_20%_20%,rgba(0,102,255,0.16),transparent_44%),linear-gradient(135deg,rgba(0,102,255,0.08),rgba(1,163,255,1.08))]" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
-          <div className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-sm font-bold text-highlight shadow-sm dark:bg-slate-950">
-            <Star className="size-3.5" fill="currentColor" />
-            {rating}
-          </div>
           {provider.companyName ? (
-            <p className="absolute bottom-3 left-4 max-w-[70%] truncate text-sm font-semibold text-white drop-shadow">
+            <p className="absolute bottom-3 right-4 z-30 max-w-[70%] truncate text-sm font-semibold text-white drop-shadow">
               {provider.companyName}
             </p>
           ) : null}
         </div>
 
-        <div className="flex flex-1 flex-col p-5">
-          <div className="-mt-12 mb-4 flex items-end justify-between gap-3">
-            <Avatar className="size-20 border-4 border-card bg-card shadow-sm">
+        <div className="absolute right-4 top-4 z-30 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-sm font-bold text-highlight dark:bg-slate-950">
+          <Star className="size-3.5 text-yellow-500" fill="currentColor" />
+          <span className="text-yellow-500">{rating}</span>
+        </div>
+
+        <CardHeader className="rounded-t-none w-full">
+          <div className="-mt-18 z-30 flex items-end justify-between gap-3">
+            <Avatar className="size-26 border-4 border-card bg-card shadow-sm">
               <AvatarImage src={provider.photoURL} />
               <AvatarFallback className="bg-primary text-3xl font-bold text-white">
                 {initial}
@@ -165,45 +170,31 @@ export function ProviderProfileCard({
               <TrustBadge className="mb-1">Verificado</TrustBadge>
             ) : null}
           </div>
+          <CardAction className="h-fit">
+            <Badge>
+              <MapPin className=" size-3.5 " />
+              {location}
+            </Badge>
+          </CardAction>
+          <CardTitle className=" w-full flex flex-col col-span-4">
+            {provider.name}
+            <p className="text-sm font-medium text-text-main">{roleLabel}</p>
+          </CardTitle>
+          <CardDescription className="line-clamp-2 col-span-4">
+            {getBioPreview(provider)}
+          </CardDescription>
+        </CardHeader>
+        <CardFooter className="flex items-center justify-between gap-2 ">
+          <span className="text-xs font-medium text-text-muted">
+            {reviewCount} avaliacao{reviewCount === 1 ? "" : "es"}
+          </span>
+          <span className="inline-flex items-center text-sm font-semibold text-primary">
+            Ver perfil
+            <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" />
+          </span>
+        </CardFooter>
+      </Card>
 
-          <div className="space-y-3">
-            <div className="space-y-1">
-              <h3 className="font-heading text-xl font-bold leading-tight text-text-main">
-                {provider.name}
-              </h3>
-              <p className="text-sm font-medium text-text-main">
-                {roleLabel}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-main">
-                <MapPin className="mr-1 size-3.5 text-primary" />
-                {location}
-              </span>
-              {provider.category ? (
-                <span className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-primary">
-                  {provider.category}
-                </span>
-              ) : null}
-            </div>
-
-            <p className="line-clamp-3 text-sm leading-relaxed text-text-muted">
-              {getBioPreview(provider)}
-            </p>
-          </div>
-
-          <div className="mt-auto flex items-center justify-between border-t border-border-subtle pt-4">
-            <span className="text-xs font-medium text-text-muted">
-              {reviewCount} avaliacao{reviewCount === 1 ? "" : "es"}
-            </span>
-            <span className="inline-flex items-center text-sm font-semibold text-primary">
-              Ver perfil
-              <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" />
-            </span>
-          </div>
-        </div>
-      </article>
     </Link>
   );
 }

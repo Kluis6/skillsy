@@ -10,7 +10,6 @@ import { CepFilter } from "@/components/cep-filter";
 import { Input } from "@/components/ui/input";
 import { Card } from "./ui/card";
 
-
 interface HeroSectionProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
@@ -71,21 +70,22 @@ export function HeroSection({
           className="w-full space-y-6 text-center will-change-transform lg:col-span-7 lg:text-left"
         >
           <div className="space-y-4">
+            <p className="text-2xl font-bold text-white">Skillsy</p>
             <h2 className="text-balance font-heading text-5xl font-black leading-[0.95] tracking-[-0.035em] text-primary-foreground dark:text-white drop-shadow-[0_2px_18px_color-mix(in_oklab,var(--md-sys-color-scrim)_55%,transparent)] md:text-7xl lg:text-8xl">
-              A ajuda certa pode estar mais perto do que você imagina.
+              Onde Talentos encontram oportunidades
             </h2>
-            <p className="mx-auto max-w-2xl text-pretty text-base font-semibold leading-relaxed text-primary-foreground/90 dark:text-gray-50 md:text-xl lg:mx-0">
-              O Skillsy conecta membros, profissionais e negócios em uma rede onde indicação, confiança e propósito caminham juntos.
+            <p className="mx-auto hidden md:block max-w-2xl text-pretty text-base font-semibold leading-relaxed text-primary-foreground/90 dark:text-gray-50 md:text-xl lg:mx-0">
+              O Skillsy conecta membros, profissionais e negócios em uma rede
+              onde indicação, confiança e propósito caminham juntos.
             </p>
           </div>
-
         </motion.div>
 
         <motion.div
           variants={itemVariants}
           className="w-full will-change-transform lg:col-span-5"
         >
-          <Card className=" p-4 shadow-[var(--md-sys-elevation-level2)]  md:p-6">
+          <Card className=" border-none p-4 shadow-[var(--md-sys-elevation-level2)]  md:p-6">
             <div className="mb-5 space-y-1">
               <p className="text-sm font-bold text-text-main">
                 Encontre alguém da rede
@@ -108,7 +108,7 @@ export function HeroSection({
                   name="q"
                   aria-label="Buscar talentos, profissionais e serviços"
                   placeholder="O que você precisa?"
-                  className="h-12 w-full rounded-full border-gray-300 bg-background pl-10 pr-12 text-text-main placeholder:text-gray-400 dark:border-gray-600 dark:focus:bg-gray-900 dark:bg-gray-800"
+                  className="h-12 w-full rounded-full  border-input bg-background pl-10 pr-12 text-text-main placeholder:text-gray-400 dark:border-gray-600 dark:focus:bg-background/70 dark:bg-background dark:placeholder:text-gray-500"
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                 />
@@ -126,7 +126,11 @@ export function HeroSection({
 
               {locationFilter && (
                 <>
-                  <input type="hidden" name="city" value={locationFilter.city} />
+                  <input
+                    type="hidden"
+                    name="city"
+                    value={locationFilter.city}
+                  />
                   <input
                     type="hidden"
                     name="state"
@@ -195,6 +199,10 @@ export function HeroSection({
               )}
             </div>
           </Card>
+          <p className="mx-auto md:hidden text-center mt-6 text-pretty text-base font-semibold leading-relaxed text-primary-foreground/90 dark:text-gray-50 md:text-xl lg:mx-0">
+            O Skillsy conecta membros, profissionais e negócios em uma rede onde
+            indicação, confiança e propósito caminham juntos.
+          </p>
         </motion.div>
       </motion.div>
     </section>

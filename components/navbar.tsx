@@ -80,7 +80,7 @@ export function Navbar({
               <DrawerContent>
                 <DrawerHeader className="flex flex-row justify-between">
                   <div className="flex flex-col">
-                    <DrawerTitle className="text-primary text-base">
+                    <DrawerTitle className="text-cyan-800 text-base">
                       Skillsy
                     </DrawerTitle>
                     <DrawerDescription>
@@ -224,7 +224,7 @@ export function Navbar({
           ) : (
             <div className="md:flex hidden items-center gap-2">
               <Link href="/" className="flex items-center gap-2">
-                  <h1 className="font-heading text-2xl font-semibold tracking-normal text-primary">Skillsy</h1>
+                  <h1 className="font-heading text-2xl font-semibold tracking-normal text-cyan-800">Skillsy</h1>
               </Link>
             </div>
           )}
@@ -262,7 +262,7 @@ export function Navbar({
             <DrawerContent>
               <DrawerHeader className="flex flex-row justify-between">
                 <div className="flex flex-col">
-                  <DrawerTitle className="text-primary">Skillsy</DrawerTitle>
+                  <DrawerTitle className="text-cyan-800">Skillsy</DrawerTitle>
                   <DrawerDescription>
                     Onde talentos encontram oportunidades
                   </DrawerDescription>

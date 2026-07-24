@@ -2,16 +2,17 @@
 name: Skillsy
 description: Rede de confiança para encontrar talentos, serviços e oportunidades na comunidade.
 colors:
-  trust-blue: "#0066FF"
-  connection-blue: "#00A3FF"
-  proof-gold: "#FFB800"
+  trust-blue: "#005175"
+  growth-green: "#52645F"
+  proof-gold: "#B88932"
   clean-white: "#FFFFFF"
-  community-surface: "#F0F7FF"
-  deep-ink: "#001A41"
-  steady-muted: "#4B5563"
-  soft-border: "#E5E7EB"
-  night-bg: "#0F172A"
-  night-surface: "#1E293B"
+  community-surface: "#FDFBF7"
+  warm-surface: "#F1EDE5"
+  deep-ink: "#1D1B16"
+  steady-muted: "#4A463F"
+  soft-border: "#CEC7BA"
+  night-bg: "#121410"
+  night-surface: "#1F211D"
 typography:
   display:
     fontFamily: "Outfit, Inter, Arial, sans-serif"
@@ -93,27 +94,29 @@ O produto usa familiaridade como virtude. Telas autenticadas devem ser quietas, 
 
 **Key Characteristics:**
 - Humano, direto e comunitário.
-- Azul como sinal de ação e confiança, não decoração.
-- Superfícies claras, bordas discretas e sombras raras.
+- Azul-petróleo como sinal de ação, confiança e direção.
+- Verde acinzentado para apoio visual, calma e crescimento.
+- Superfícies quentes, bordas discretas e sombras raras.
 - Copy curta que explica consequência, visibilidade e próximos passos.
 - Componentes consistentes antes de efeitos visuais.
 
 ## 2. Colors
 
-A paleta é restrita: azul para confiança e ação, dourado para prova/avaliação, branco e azul muito claro para superfície.
+A paleta é restrita: azul-petróleo para confiança e ação, verde acinzentado para apoio, dourado para prova/avaliação e neutros quentes para superfícies. A direção foi inspirada por comunicações institucionais sóbrias, acolhedoras e com bom contraste.
 
 ### Primary
-- **Trust Blue**: cor principal de ação, foco e seleção. Use em botões primários, filtros selecionados, links importantes e sinais de perfil pronto.
+- **Trust Blue**: azul-petróleo institucional usado em botões primários, filtros selecionados, links importantes e sinais de perfil pronto.
 
 ### Secondary
-- **Connection Blue**: apoio visual para momentos públicos ou brand, usado com moderação em ilustrações, fundos sutis e estados informativos.
+- **Growth Green**: apoio visual para momentos públicos, áreas informativas e superfícies tonais. Deve parecer calmo, humano e maduro.
 
 ### Tertiary
-- **Proof Gold**: sinal de reputação e avaliação. Use apenas para estrelas, pontuação e destaques realmente ligados a prova social.
+- **Proof Gold**: sinal de reputação e avaliação. Use apenas para estrelas, pontuação, doação e destaques realmente ligados a prova social.
 
 ### Neutral
-- **Clean White**: superfície principal de cards, painéis, dialogs e áreas de conteúdo.
-- **Community Surface**: fundo de página e áreas de apoio; não deve competir com conteúdo.
+- **Clean White**: superfície de maior contraste em cards, painéis e áreas de conteúdo.
+- **Community Surface**: fundo quente de página e áreas de apoio; não deve competir com conteúdo.
+- **Warm Surface**: containers e painéis discretos.
 - **Deep Ink**: texto principal, títulos, dados importantes e labels críticos.
 - **Steady Muted**: textos auxiliares, descrições e metadados.
 - **Soft Border**: divisores, contornos de painel e limites de input.

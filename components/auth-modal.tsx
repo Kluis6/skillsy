@@ -194,9 +194,9 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={children} nativeButton />
-      <DialogContent className="">
+      <DialogContent className=" bg-white">
         <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-6 bg-linear-to-l from-white to-blue-400 rounded-l-md p-4 hidden md:flex">
+          <div className="col-span-12 md:col-span-6 bg-linear-to-l from-white to-blue-400 rounded-l-xl p-4 hidden md:flex">
             <div className="grid grid-cols-12 gap-4 w-full h-full">
               {authGalleryImages.map((image) => (
                 <motion.div
@@ -223,7 +223,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
           </div>
           <div className="col-span-12 md:col-span-6 flex flex-col items-start justify-between gap-2">
             <div>
-              <h1 className="hidden 2xl:block text-3xl md:text-4xl font-bold text-primary mb-2">
+              <h1 className="hidden 2xl:block text-3xl md:text-4xl font-bold text-cyan-800 mb-2">
                 Skillsy
               </h1>
               <h2 className="text-base md:text-xl font-medium text-text-main mb-1">
@@ -239,7 +239,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
               defaultValue="login"
               className="w-full sm:h-full space-y-5 2xl:space-y-6 transition-all"
             >
-              <TabsList className="w-full">
+              <TabsList className="w-full space-x-2">
                 <TabsTrigger value="login">Entrar</TabsTrigger>
                 <TabsTrigger value="signup">Cadastrar</TabsTrigger>
               </TabsList>
@@ -293,7 +293,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                           ? "login-password-error"
                           : undefined
                       }
-                      className={`h-10 border-border-subtle focus-visible:ring-accent ${loginErrors.password ? "ring-2 ring-red-500" : ""}`}
+                      className={`h-10 rounded border-border-subtle focus-visible:ring-accent ${loginErrors.password ? "ring-2 ring-red-500" : ""}`}
                       {...registerLogin("password")}
                     />
                     {loginErrors.password && (
@@ -325,7 +325,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                   className="space-y-4"
                   noValidate
                 >
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label
                       htmlFor="signup-name"
                       className="text-xs md:text-sm font-medium text-text-muted"
@@ -358,7 +358,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                         {signUpErrors.name.message}
                       </p>
                     )}
-                  </div>
+                  </div> */}
                   <div className="space-y-2">
                     <Label
                       htmlFor="signup-email"

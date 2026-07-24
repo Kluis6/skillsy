@@ -205,14 +205,12 @@ export function CategoryCarousel() {
     <div className="w-full h-[65vh] sm:h-[70vh] lg:h-[78vh] relative hidden md:block">
       <div className="relative group container mx-auto px-4">
         <div className="flex justify-center items-center rounded-xl z-10 shadow-sm object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)]">
-          <div className="absolute  top-[calc(100%-6rem)] space-y-2 md:space-y-4 w-[calc(100%-4rem)] md:w-[calc(100%-6rem)] lg:w-[calc(100%-8rem)] rounded-xl z-40 bg-card p-4 sm:p-6 md:p-8 shadow-sm border border-border-subtle">
+          <div className="absolute  top-[calc(100%-6rem)] space-y-2 md:space-y-4 w-[calc(100%-4rem)] md:w-[calc(100%-6rem)] lg:w-[calc(100%-8rem)] rounded-xl z-40 bg-white dark:bg-black p-4 sm:p-6 md:p-8 shadow-md">
             <div className="w-full">
               <h3 className="text-xl lg:text-2xl font-bold text-text-main font-heading tracking-tight text-center">
-                Comece por uma necessidade
+                As categorias mais populares
               </h3>
-              <p className="mt-2 text-center text-sm text-text-muted">
-                Escolha uma área e encontre talentos da comunidade prontos para ajudar.
-              </p>
+     
             </div>
 
             <div
@@ -227,7 +225,7 @@ export function CategoryCarousel() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => handleCategoryClick(cat.name)}
-                  className="flex flex-col items-center justify-between space-y-6 min-w-[100px] md:min-w-[140px] p-4 bg-card rounded-xl border border-border-subtle hover:shadow-md transition-all duration-300 group/card shrink-0"
+                  className="flex flex-col items-center justify-between space-y-6 min-w-[100px] md:min-w-[140px] p-4 bg-white dark:bg-[color-mix(in_oklab,var(--md-sys-color-surface)_16%,transparent)] rounded-xl border border-border-subtle hover:shadow-md transition-all duration-300 group/card shrink-0"
                 >
                   <div
                     className={`size-12 md:size-14 lg:size-16 ${cat.bg} rounded-md flex items-center justify-center  group-hover/card:scale-110 transition-transform duration-300`}
