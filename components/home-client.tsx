@@ -123,7 +123,7 @@ export function HomeClient({
               <AuthModal>
                 <button
                   type="button"
-                  className="bg-transparent font-bold text-blue-500 hover:underline"
+                  className="bg-transparent font-bold text-primary hover:underline"
                 >
                   Crie seu perfil na comunidade
                 </button>

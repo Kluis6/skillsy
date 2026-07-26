@@ -108,7 +108,7 @@ export function HeroSection({
                   name="q"
                   aria-label="Buscar talentos, profissionais e serviços"
                   placeholder="O que você precisa?"
-                  className="h-12 w-full rounded-full  border-input bg-background pl-10 pr-12 text-text-main placeholder:text-gray-400 dark:border-gray-600 dark:focus:bg-background/70 dark:bg-background dark:placeholder:text-gray-500"
+                  className="h-12 w-full rounded-full border-border bg-background pl-10 pr-12 text-text-main placeholder:text-gray-400 hover:border-border focus-visible:border-border dark:border-border dark:bg-background dark:placeholder:text-gray-500 dark:focus:bg-background/70"
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                 />
@@ -166,7 +166,7 @@ export function HeroSection({
                   <Button
                     type="button"
                     variant="ghost"
-                    className="h-auto w-full justify-between rounded-xl px-0 sm:px-4 py-3 text-left text-primary hover:bg-blue-50 hover:text-blue-700 dark:hover:bg-blue-950/40"
+                    className="h-auto w-full justify-between rounded-xl px-0 sm:px-4 py-3 text-left text-primary hover:bg-blue-50 hover:text-cyan-700 dark:hover:bg-blue-950/40"
                   >
                     <span>
                       <span className="block text-sm font-bold">

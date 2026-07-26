@@ -51,7 +51,7 @@ export function ContactCTA() {
   };
 
   return (
-    <section className="my-24 bg-primary p-4 lg:p-6 xl:p-8 rounded-xl">
+    <section className="my-24 bg-[linear-gradient(175deg,color-mix(in_oklab,var(--md-sys-color-primary)_76%,var(--md-sys-color-primary-container))_40%,color-mix(in_oklab,var(--md-sys-color-primary)_70%,var(--md-sys-color-surface))_58%,var(--md-sys-color-surface)_100%)] dark:bg-[linear-gradient(135deg,color-mix(in_oklab,var(--md-sys-color-primary)_52%,var(--md-sys-color-primary-container))_10%,color-mix(in_oklab,var(--md-sys-color-primary)_36%,var(--md-sys-color-surface))_52%,var(--md-sys-color-surface)_90%)] p-4 lg:p-6 xl:p-8 rounded-xl">
       <div className="grid grid-cols-12 gap-y-12 md:gap-8">
         <div className="col-span-12 lg:col-span-6 xl:col-span-7 w-full h-full">
           <div className="space-y-4 justify-center pt-4 lg:pt-0 items-center md:items-start flex flex-col w-full h-full">
@@ -72,17 +72,15 @@ export function ContactCTA() {
                 <CardTitle className="text-text-main text-xl font-medium mb-6 text-center">
                   Fale Conosco
                 </CardTitle>
-               
               </CardHeader>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-           
                 <div className="space-y-1">
                   <div className="relative">
                     <Input
                       placeholder="Nome *"
                       maxLength={CONTACT_LIMITS.name}
                       {...register("name")}
-                      className={` border-1 h-10 md:h-12  text-text-main placeholder:text-text-muted/50 transition-all ${
+                      className={` border-1 h-10 md:h-12  text-text-main rounded-full placeholder:text-text-muted/50 transition-all ${
                         errors.name
                           ? "border-red-500/50 focus:border-red-500"
                           : touchedFields.name && !errors.name
@@ -115,7 +113,7 @@ export function ContactCTA() {
                       type="email"
                       maxLength={CONTACT_LIMITS.email}
                       {...register("email")}
-                      className={`border-1 h-10 md:h-12 border-border-subtle text-text-main placeholder:text-text-muted/50 transition-all ${
+                      className={`border-1 h-10 md:h-12 rounded-full border-border-subtle text-text-main placeholder:text-text-muted/50 transition-all ${
                         errors.email
                           ? "border-red-500/50 focus:border-red-500"
                           : touchedFields.email && !errors.email
@@ -185,7 +183,7 @@ export function ContactCTA() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full rounded-md bg-primary hover:bg-primary/90 active:bg-primary/80 transition-colors text-white h-10 md:h-12 font-bold"
+                  className="w-full rounded-full bg-primary dark:text-gray-950 hover:bg-primary/90 active:bg-primary/80 transition-colors text-white h-10 md:h-12 font-bold"
                 >
                   {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
                 </Button>

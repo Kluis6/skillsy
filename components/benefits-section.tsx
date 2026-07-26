@@ -11,7 +11,7 @@ import { FaUserTie } from "react-icons/fa";
 export function BenefitsSection() {
   const benefits = [
     {
-      title: "Confiança antes do contato",
+      title: "Relações de confiação",
       description:
         "Encontre pessoas com valores, história e vínculos reais com a comunidade.",
       icon: FaUserTie,
@@ -75,7 +75,7 @@ export function BenefitsSection() {
   return (
     <section className="h-full w-full bg-[linear-gradient(175deg,color-mix(in_oklab,var(--md-sys-color-primary)_76%,var(--md-sys-color-primary-container))_40%,color-mix(in_oklab,var(--md-sys-color-primary)_70%,var(--md-sys-color-surface))_58%,var(--md-sys-color-surface)_100%)] py-12 dark:bg-[linear-gradient(135deg,color-mix(in_oklab,var(--md-sys-color-primary)_52%,var(--md-sys-color-primary-container))_10%,color-mix(in_oklab,var(--md-sys-color-primary)_36%,var(--md-sys-color-surface))_52%,var(--md-sys-color-surface)_90%)]">
       <section className="px-4 container mx-auto">
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-12 gap-y-10">
           {/* Left Side: Content */}
           <div className="col-span-12">
             <motion.div
@@ -106,7 +106,7 @@ export function BenefitsSection() {
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
             variants={contentVariants}
-            className="col-span-12 grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 lg:gap-6 md:gap-5 w-full will-change-transform"
+            className="col-span-12 grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 lg:gap-6 md:gap-5 w-full will-change-transform gap-y-10"
           >
             {benefits.map((benefit, idx) => (
               <motion.div
