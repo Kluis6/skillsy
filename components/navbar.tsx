@@ -12,6 +12,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { AuthModal } from "@/components/auth-modal";
 import { UserProfile } from "@/models/types";
 import { User } from "firebase/auth";
+import { MdLogin } from "react-icons/md";
 import {
   Drawer,
   DrawerContent,
@@ -224,7 +225,9 @@ export function Navbar({
           ) : (
             <div className="md:flex hidden items-center gap-2">
               <Link href="/" className="flex items-center gap-2">
-                  <h1 className="font-heading text-2xl font-semibold tracking-normal dark:text-white text-cyan-800">Skillsy</h1>
+                <h1 className="font-heading text-2xl font-semibold tracking-normal dark:text-white text-cyan-800">
+                  Skillsy
+                </h1>
               </Link>
             </div>
           )}
@@ -262,7 +265,9 @@ export function Navbar({
             <DrawerContent>
               <DrawerHeader className="flex flex-row justify-between">
                 <div className="flex flex-col">
-                  <DrawerTitle className="text-cyan-800 dark:text-white">Skillsy</DrawerTitle>
+                  <DrawerTitle className="text-cyan-800 dark:text-white">
+                    Skillsy
+                  </DrawerTitle>
                   <DrawerDescription>
                     Onde talentos encontram oportunidades
                   </DrawerDescription>
@@ -407,12 +412,12 @@ export function Navbar({
           ) : (
             <AuthModal>
               <Button
-              variant="default"
+                variant="default"
                 title="Faça login ou cria sua conta"
                 aria-label="Entrar ou criar conta"
                 // className="bg-primary hover:bg-primary/90 active:bg-primary/80 w-10 md:w-auto md:px-4 h-10 dark:text-white font-normal"
               >
-                <LuLogIn className="flex md:hidden size-4" />
+                <MdLogin className="flex md:hidden size-4" />
                 <p className="hidden font-medium md:block"> Entrar</p>
               </Button>
             </AuthModal>

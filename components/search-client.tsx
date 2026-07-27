@@ -47,38 +47,39 @@ import {
 
 import { LuLogIn } from "react-icons/lu";
 import { Footer } from "./footer";
+import { MdLogin, MdSearch } from "react-icons/md";
 
 const SEARCH_CATEGORIES = [
-  "Tecnologia",
-  "Design",
-  "Marketing",
-  "Consultoria",
-  "Vendas",
-  "Aulas",
-  "Cozinha",
-  "Doméstico",
-  "Limpeza",
-  "Marcenaria",
-  "Manutenção",
-  "Construção Civil",
-  "Beleza",
-  "Educação",
-  "Saúde",
-  "Eventos",
-  "Jurídico",
-  "Financeiro",
   "Assistência",
-  "Reformas",
+  "Aulas",
   "Automotivo",
-  "Moda",
+  "Beleza",
   "Bem Estar",
-  "Pet Care",
-  "Fotografia",
-  "Música",
-  "Idiomas",
+  "Consultoria",
+  "Construção Civil",
+  "Cozinha",
+  "Design",
+  "Doméstico",
+  "Educação",
   "Esportes",
+  "Eventos",
   "Festas",
+  "Financeiro",
+  "Fotografia",
+  "Idiomas",
+  "Jurídico",
+  "Limpeza",
+  "Manutenção",
+  "Marcenaria",
+  "Marketing",
+  "Moda",
+  "Música",
+  "Pet Care",
+  "Reformas",
+  "Saúde",
+  "Tecnologia",
   "Transporte",
+  "Vendas",
 ] as const;
 
 interface SearchClientProps {
@@ -156,12 +157,6 @@ export function SearchClient({
   );
 
   const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
-
-  const shouldShowBackButton =
-    pathname === "/profile" ||
-    pathname === "/contacts" ||
-    pathname.startsWith("/profile/") ||
-    pathname.startsWith("/contacts/");
 
   const createRouteParams = (overrides?: {
     q?: string | null;
@@ -251,8 +246,8 @@ export function SearchClient({
 
   return (
     <div className="min-h-screen bg-surface/30 w-full space-y-2">
-      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle">
-        <div className="container px-4 mx-auto flex items-center justify-between gap-4 py-2">
+      <nav className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_oklab,var(--md-sys-color-surface)_86%,transparent)] backdrop-blur-md">
+        <div className="container px-4 mx-auto flex min-h-16 items-center justify-between gap-4 py-2">
           <Drawer
             key={`search-drawer-${pathname}`}
             direction="left"
@@ -272,7 +267,7 @@ export function SearchClient({
             <DrawerContent>
               <DrawerHeader className="flex flex-row justify-between">
                 <div className="flex flex-col">
-                  <DrawerTitle className="text-primary text-base">
+                  <DrawerTitle className="text-cyan-800 dark:text-white">
                     Skillsy
                   </DrawerTitle>
                   <DrawerDescription>
@@ -283,7 +278,7 @@ export function SearchClient({
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="bg-card hover:bg-surface"
+                    className="bg-transparent hover:bg-primary/10"
                     aria-label="Fechar menu principal"
                   >
                     <BsXLg className="text-foreground" />
@@ -291,55 +286,65 @@ export function SearchClient({
                 </DrawerTrigger>
               </DrawerHeader>
               <div className="px-4 space-y-4">
-                <h3 className="font-medium text-sm text-text-main">
+                <h3 className="font-medium text-sm text-foreground">
                   Navegação
                 </h3>
                 <ul className="w-full space-y-1">
-                  <li className="p-2 hover:bg-surface">
+                  <li className="rounded-full p-2 hover:bg-primary/10">
+                    <DrawerClose asChild>
+                      <Link
+                        href="/"
+                        className="flex text-sm font-normal text-text-muted"
+                      >
+                        Inicial
+                      </Link>
+                    </DrawerClose>
+                  </li>
+                  <li className="rounded-full p-2 hover:bg-primary/10">
                     <DrawerClose asChild>
                       <Link
                         href="/weareskillsy"
-                        className="flex text-sm font-normal text-text-main"
+                        className="flex text-sm font-normal text-text-muted"
                       >
                         O que é Skillsy?
                       </Link>
                     </DrawerClose>
                   </li>
-                  <li className="p-2 hover:bg-surface">
+                  <li className="rounded-full p-2 hover:bg-primary/10">
                     <DrawerClose asChild>
                       <Link
                         href="/artigosevagas"
-                        className="flex text-sm font-normal text-text-main"
+                        className="flex text-sm font-normal text-text-muted"
                       >
                         Novidades e vagas
                       </Link>
                     </DrawerClose>
                   </li>
-                  <li className="p-2 hover:bg-surface">
+                  <li className="rounded-full p-2 hover:bg-primary/10">
                     <DrawerClose asChild>
                       <Link
                         href="/join"
-                        className="flex text-sm font-normal text-text-main"
+                        className="flex text-sm font-normal text-text-muted"
                       >
                         Por que participar?
                       </Link>
                     </DrawerClose>
                   </li>
-                  <li className="p-2 hover:bg-surface">
+                  <li className="rounded-full p-2 hover:bg-primary/10">
                     <DrawerClose asChild>
                       <Link
                         href="/privacidade"
-                        className="flex text-sm font-normal text-text-main"
+                        className="flex text-sm font-normal text-text-muted"
                       >
                         Privacidade
                       </Link>
                     </DrawerClose>
                   </li>
-                  <li className="p-2 hover:bg-surface">
+                  <li className="rounded-full p-2 hover:bg-primary/10">
                     <DrawerClose asChild>
                       <Link
                         href="/termos"
-                        className="flex text-sm font-normal text-text-main"
+                        className="flex text-sm font-normal text-text-muted"
                       >
                         Termos de uso
                       </Link>
@@ -349,25 +354,25 @@ export function SearchClient({
 
                 {user && (
                   <>
-                    <h3 className="font-medium text-sm text-text-main">
+                    <h3 className="font-medium text-sm text-foreground">
                       Minha conta
                     </h3>
 
                     <ul className="space-y-1">
-                      <li className="hover:bg-surface p-2">
+                      <li className="rounded-full p-2 hover:bg-primary/10">
                         <DrawerClose asChild>
                           <Link
-                            className="flex text-sm font-normal text-text-main"
+                            className="flex text-sm font-normal text-text-muted"
                             href="/contacts"
                           >
                             Meus Contatos
                           </Link>
                         </DrawerClose>
                       </li>
-                      <li className="hover:bg-surface p-2">
+                      <li className="rounded-full p-2 hover:bg-primary/10">
                         <DrawerClose asChild>
                           <Link
-                            className="flex text-sm font-normal text-text-main"
+                            className="flex text-sm font-normal text-text-muted"
                             href="/profile"
                           >
                             Configurações do Perfil
@@ -377,7 +382,7 @@ export function SearchClient({
                       <li>
                         <Button
                           variant="ghost"
-                          className="w-full justify-start text-sm px-2 h-9 hover:bg-surface font-normal text-text-main rounded-none"
+                          className="w-full justify-start px-3 text-sm font-normal text-text-muted"
                           onClick={logout}
                         >
                           Sair da Conta
@@ -391,7 +396,7 @@ export function SearchClient({
               <DrawerFooter>
                 <DrawerClose asChild>
                   <Link
-                    className="text-center bg-primary p-2 h-10 font-medium text-sm text-white rounded-sm"
+                    className="flex h-10 items-center justify-center rounded-full bg-primary px-5 text-center text-sm font-medium text-primary-foreground shadow-[var(--md-sys-elevation-level1)] hover:bg-primary/90 active:bg-primary/80"
                     href="/donation"
                   >
                     Ajude o projeto
@@ -429,10 +434,7 @@ export function SearchClient({
                 aria-label="Buscar profissionais"
                 className="rounded-r-full absolute right-1 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-white px-6 h-8 font-bold hidden sm:flex justify-center items-center transition-colors"
               >
-                <Search
-                  className=" text-white"
-                  size={20}
-                />
+                <Search className=" text-white" size={20} />
               </Button>
             </div>
           </form>
@@ -447,12 +449,13 @@ export function SearchClient({
           ) : (
             <AuthModal>
               <Button
+                variant="default"
                 title="Faça login ou cria sua conta"
                 aria-label="Entrar ou criar conta"
-                className="bg-primary hover:bg-primary/90 active:bg-primary/80 w-10 md:w-auto md:px-4 h-10"
+                // className="bg-primary hover:bg-primary/90 active:bg-primary/80 w-10 md:w-auto md:px-4 h-10 dark:text-white font-normal"
               >
-                <LuLogIn className="block md:hidden" />
-                <p className="hidden md:block"> Entrar</p>
+                <MdLogin className="flex md:hidden size-4" />
+                <p className="hidden font-medium md:block"> Entrar</p>
               </Button>
             </AuthModal>
           )}
@@ -463,27 +466,28 @@ export function SearchClient({
             className="md:hidden items-center gap-4 w-full max-w-2xl flex"
           >
             <div className="relative w-full">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300"
+              <MdSearch
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"
                 size={20}
               />
+
               <Input
                 name="q"
                 aria-label="Buscar profissionais e serviços"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="O que você procura? Pintor, Advogado, Bolo de Pote…"
+                placeholder="O que você procura?"
                 className="pl-12 h-10 w-full bg-card border-border-subtle text-text-main placeholder:text-text-muted shadow-sm rounded-full placeholder:text-xs"
               />
             </div>
 
-            <Button
+            {/* <Button
               type="submit"
               size="sm"
               className="rounded-sm bg-primary hover:bg-primary/90 text-white px-6 h-10 font-bold hidden sm:flex transition-colors"
             >
               Pesquisar
-            </Button>
+            </Button> */}
           </form>
         </div>
       </nav>
@@ -536,80 +540,75 @@ export function SearchClient({
 
           <div className="flex-grow space-y-6">
             <div className="space-y-4">
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-bold text-text-muted">
                     {`${results.length} resultado${results.length === 1 ? "" : "s"} encontrado${results.length === 1 ? "" : "s"}`}
                   </p>
-                  <h2 className="mt-1 text-xl font-bold text-text-main md:text-2xl">
-                    {query
-                      ? `Busca por "${query}"`
-                      : "Talentos disponíveis na comunidade"}
-                  </h2>
                 </div>
 
                 <Sheet>
-                <SheetTrigger
-                  render={
-                    <Button
-                      size="icon"
-                      aria-label="Abrir filtros"
-                      className="rounded-sm md:hidden size-10"
-                      variant="outline"
-                      title="Filtros"
-                    >
-                      <SlidersHorizontal
-                        size={18}
-                        className="text-foreground"
-                      />
-                    </Button>
-                  }
-                />
-                <SheetContent side="bottom">
-                  <SheetHeader>
-                    <SheetTitle>Filtros</SheetTitle>
-                  </SheetHeader>
-                  <section className="w-full">
-                    <div className="px-4 h-full">
-                      <div className="space-y-6">
-                        <div>
-                          <label
-                            htmlFor="search-mobile-state-filter"
-                            className="mb-4 block text-xs font-bold text-text-muted"
-                          >
-                            Estado
-                          </label>
-                          <div className="relative">
-                            <select
-                              id="search-mobile-state-filter"
-                              value={state || "all"}
-                              onChange={(e) =>
-                                handleStateChange(e.target.value)
-                              }
-                              className="w-full appearance-none rounded-sm border border-border-subtle bg-surface h-12 px-3 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
+                  <SheetTrigger
+                    render={
+                      <Button
+                        size="icon"
+                        aria-label="Abrir filtros"
+                        className="rounded-full md:hidden size-10"
+                        variant="ghost"
+                        title="Filtros"
+                      >
+                        <SlidersHorizontal
+                          size={18}
+                          className="text-foreground"
+                        />
+                      </Button>
+                    }
+                  />
+                  <SheetContent side="bottom">
+                    <SheetHeader>
+                      <SheetTitle>Filtros</SheetTitle>
+                    </SheetHeader>
+                    <section className="w-full">
+                      <div className="px-4 h-full">
+                        <div className="space-y-6">
+                          <div>
+                            <label
+                              htmlFor="search-mobile-state-filter"
+                              className="mb-4 block text-xs font-bold text-text-muted"
                             >
-                              <option value="all">Todos os estados</option>
-                              {BRAZIL_STATES.map((item) => (
-                                <option key={item.value} value={item.value}>
-                                  {item.label}
-                                </option>
-                              ))}
-                            </select>
-                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
+                              Estado
+                            </label>
+                            <div className="relative">
+                              <select
+                                id="search-mobile-state-filter"
+                                value={state || "all"}
+                                onChange={(e) =>
+                                  handleStateChange(e.target.value)
+                                }
+                                className="w-full appearance-none rounded-sm border border-border-subtle bg-surface h-12 px-3 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
+                              >
+                                <option value="all">Todos os estados</option>
+                                {BRAZIL_STATES.map((item) => (
+                                  <option key={item.value} value={item.value}>
+                                    {item.label}
+                                  </option>
+                                ))}
+                              </select>
+                              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
+                            </div>
+                          </div>
+
+                          <div className="no-scrollbar space-y-6 overflow-y-auto h-[60dvh]">
+                            <p className="text-xs font-bold text-text-muted">
+                              Categorias
+                            </p>
+                            {renderCategoryFilters()}
                           </div>
                         </div>
-
-                        <div className="no-scrollbar space-y-6 overflow-y-auto h-[60dvh]">
-                          <p className="text-xs font-bold text-text-muted">
-                            Categorias
-                          </p>
-                          {renderCategoryFilters()}
-                        </div>
                       </div>
-                    </div>
-                  </section>
-                </SheetContent>
-              </Sheet>
+                    </section>
+                  </SheetContent>
+                </Sheet>
               </div>
 
               {hasActiveFilters ? (
