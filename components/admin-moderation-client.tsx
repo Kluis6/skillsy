@@ -106,7 +106,7 @@ export function AdminModerationClient() {
   const [priority, setPriority] = useState<Priority>("normal");
   const [resolution, setResolution] = useState("");
   const [saving, setSaving] = useState(false);
-  const now = Date.now();
+  const [now] = useState(() => Date.now());
 
   const loadQueue = useCallback(async () => {
     if (profile?.role !== "admin") return;

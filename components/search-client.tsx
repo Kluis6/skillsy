@@ -18,7 +18,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
   UserIcon,
-  Check,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
@@ -48,39 +47,7 @@ import {
 import { LuLogIn } from "react-icons/lu";
 import { Footer } from "./footer";
 import { MdLogin, MdSearch } from "react-icons/md";
-
-const SEARCH_CATEGORIES = [
-  "Assistência",
-  "Aulas",
-  "Automotivo",
-  "Beleza",
-  "Bem Estar",
-  "Consultoria",
-  "Construção Civil",
-  "Cozinha",
-  "Design",
-  "Doméstico",
-  "Educação",
-  "Esportes",
-  "Eventos",
-  "Festas",
-  "Financeiro",
-  "Fotografia",
-  "Idiomas",
-  "Jurídico",
-  "Limpeza",
-  "Manutenção",
-  "Marcenaria",
-  "Marketing",
-  "Moda",
-  "Música",
-  "Pet Care",
-  "Reformas",
-  "Saúde",
-  "Tecnologia",
-  "Transporte",
-  "Vendas",
-] as const;
+import { PROVIDER_CATEGORIES } from "@/lib/profile-form";
 
 interface SearchClientProps {
   initialQuery: string;
@@ -218,28 +185,26 @@ export function SearchClient({
     router.push(`/search?${params.toString()}`);
   };
 
-  const renderCategoryFilters = () => (
-    <div className="flex flex-wrap gap-2 lg:block lg:space-y-2">
-      {SEARCH_CATEGORIES.map((cat) => {
-        const isSelected = selectedCategory === cat;
-
-        return (
-          <button
-            key={cat}
-            type="button"
-            aria-pressed={isSelected}
-            onClick={() => handleCategoryChange(isSelected ? null : cat)}
-            className={`rounded-full border px-3 py-2 text-sm font-medium transition-colors lg:flex lg:w-full lg:items-center lg:justify-between lg:rounded-md ${
-              isSelected
-                ? "border-primary bg-primary text-white"
-                : "border-border-subtle bg-background text-text-muted hover:border-primary/40 hover:text-primary"
-            }`}
-          >
-            <span>{cat}</span>
-            {isSelected ? <Check className="hidden size-4 lg:block" /> : null}
-          </button>
-        );
-      })}
+  const renderCategoryFilter = (id: string) => (
+    <div className="relative">
+      <select
+        id={id}
+        value={selectedCategory || "all"}
+        onChange={(event) =>
+          handleCategoryChange(
+            event.target.value === "all" ? null : event.target.value,
+          )
+        }
+        className="h-12 w-full appearance-none rounded-sm border border-border-subtle bg-surface px-3 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
+      >
+        <option value="all">Todas as categorias</option>
+        {PROVIDER_CATEGORIES.map((cat) => (
+          <option key={cat} value={cat}>
+            {cat}
+          </option>
+        ))}
+      </select>
+      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
     </div>
   );
 
@@ -316,6 +281,37 @@ export function SearchClient({
                         className="flex text-sm font-normal text-text-muted"
                       >
                         Novidades e vagas
+                      </Link>
+                    </DrawerClose>
+                  </li>
+                  <li className="rounded-full p-2 hover:bg-primary/10">
+                    <DrawerClose asChild>
+                      <Link
+                        href="/search"
+                        aria-current="page"
+                        className="flex text-sm font-semibold text-primary"
+                      >
+                        Buscar profissional
+                      </Link>
+                    </DrawerClose>
+                  </li>
+                  <li className="rounded-full p-2 hover:bg-primary/10">
+                    <DrawerClose asChild>
+                      <Link
+                        href="/encontrar-ajuda"
+                        className="flex text-sm font-normal text-text-muted"
+                      >
+                        Pedir ajuda
+                      </Link>
+                    </DrawerClose>
+                  </li>
+                  <li className="rounded-full p-2 hover:bg-primary/10">
+                    <DrawerClose asChild>
+                      <Link
+                        href="/oportunidades"
+                        className="flex text-sm font-normal text-text-muted"
+                      >
+                        Pedidos abertos
                       </Link>
                     </DrawerClose>
                   </li>
@@ -409,6 +405,28 @@ export function SearchClient({
               Skillsy
             </h1>
           </Link>
+
+          <div className="hidden items-center gap-1 lg:flex">
+            <Link
+              href="/search"
+              aria-current="page"
+              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+            >
+              Buscar profissional
+            </Link>
+            <Link
+              href="/encontrar-ajuda"
+              className="rounded-md px-3 py-2 text-sm font-medium text-text-muted hover:bg-primary/10 hover:text-primary"
+            >
+              Pedir ajuda
+            </Link>
+            <Link
+              href="/oportunidades"
+              className="rounded-md px-3 py-2 text-sm font-medium text-text-muted hover:bg-primary/10 hover:text-primary"
+            >
+              Pedidos abertos
+            </Link>
+          </div>
 
           <form
             onSubmit={handleSearch}
@@ -528,10 +546,13 @@ export function SearchClient({
                 </div>
 
                 <div>
-                  <p className="mb-4 text-xs font-bold text-text-muted">
+                  <label
+                    htmlFor="search-category-filter"
+                    className="mb-4 block text-xs font-bold text-text-muted"
+                  >
                     Categorias
-                  </p>
-                  {renderCategoryFilters()}
+                  </label>
+                  {renderCategoryFilter("search-category-filter")}
                 </div>
               </div>
             </SurfacePanel>
@@ -598,10 +619,15 @@ export function SearchClient({
                           </div>
 
                           <div className="no-scrollbar space-y-6 overflow-y-auto h-[60dvh]">
-                            <p className="text-xs font-bold text-text-muted">
+                            <label
+                              htmlFor="search-mobile-category-filter"
+                              className="block text-xs font-bold text-text-muted"
+                            >
                               Categorias
-                            </p>
-                            {renderCategoryFilters()}
+                            </label>
+                            {renderCategoryFilter(
+                              "search-mobile-category-filter",
+                            )}
                           </div>
                         </div>
                       </div>

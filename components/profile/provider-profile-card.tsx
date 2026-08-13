@@ -17,7 +17,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Button } from "@base-ui/react";
 
 type ProviderProfileCardProps = {
   provider: UserProfile;
@@ -50,9 +49,9 @@ export function ProviderProfileCard({
   className,
 }: ProviderProfileCardProps) {
   const isVerified = shouldShowVerifiedBadge(provider);
-  const location = [provider.publicCity, provider.publicState]
-    .filter(Boolean)
-    .join(", ") || "Brasil";
+  const location =
+    [provider.publicCity, provider.publicState].filter(Boolean).join(", ") ||
+    "Brasil";
   const roleLabel = getRoleLabel(provider);
   const rating = provider.rating || "0.0";
   const reviewCount = provider.reviewCount || 0;
@@ -133,20 +132,22 @@ export function ProviderProfileCard({
     <Link
       href={`/profile/${provider.uid}`}
       className={cn(
-        "group block h-full rounded-xl overflow-hidden shadow-sm hover:shadow-2xl shadow-black/40 transition-shadow dark:bg-black hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "group block h-full overflow-hidden rounded-xl border border-border-subtle bg-card transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         className,
       )}
     >
-      <Card className="relative mx-auto w-full pt-0 border-none">
+      <Card className="relative mx-auto w-full border-none pt-0 shadow-none">
         <div className="relative w-full">
           {provider.bannerURL ? (
-            <img
+            <Image
               src={provider.bannerURL}
               alt={`Capa do perfil de ${provider.name}`}
+              width={768}
+              height={180}
               className="relative z-20 h-30 w-full object-cover brightness-70 dark:brightness-50"
             />
           ) : (
-            <div className=" inset-0 h-30 bg-[radial-gradient(circle_at_20%_20%,rgba(0,102,255,0.16),transparent_44%),linear-gradient(135deg,rgba(0,102,255,0.08),rgba(1,163,255,1.08))]" />
+            <div className="h-30 bg-[linear-gradient(135deg,rgba(0,81,117,0.10),rgba(82,100,95,0.18))]" />
           )}
           {provider.companyName ? (
             <p className="absolute bottom-3 right-4 z-30 max-w-[70%] truncate text-sm font-semibold text-white drop-shadow">
@@ -155,7 +156,7 @@ export function ProviderProfileCard({
           ) : null}
         </div>
 
-        <div className="absolute right-4 top-4 z-30 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-sm font-bold text-highlight dark:bg-slate-950">
+        <div className="absolute right-4 top-4 z-30 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-sm font-bold text-highlight ring-1 ring-border-subtle dark:bg-slate-950">
           <Star className="size-3.5 text-yellow-500" fill="currentColor" />
           <span className="text-yellow-500">{rating}</span>
         </div>
@@ -196,7 +197,6 @@ export function ProviderProfileCard({
           </span>
         </CardFooter>
       </Card>
-
     </Link>
   );
 }

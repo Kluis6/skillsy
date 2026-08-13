@@ -175,7 +175,11 @@ export function ProfileDetailClient({
   }, [targetProfile?.uid, targetProfile?.isProvider]);
 
   useEffect(() => {
-    if (!user?.uid || !targetProfile?.isProvider || user.uid === targetProfile.uid) {
+    if (
+      !user?.uid ||
+      !targetProfile?.isProvider ||
+      user.uid === targetProfile.uid
+    ) {
       setIsRecommended(false);
       return;
     }
@@ -221,14 +225,22 @@ export function ProfileDetailClient({
 
     setRecommendationLoading(true);
     try {
-      const added = await UserService.toggleCommunityRecommendation(user.uid, targetProfile.uid);
+      const added = await UserService.toggleCommunityRecommendation(
+        user.uid,
+        targetProfile.uid,
+      );
       setIsRecommended(added);
-      setTargetProfile((current) => current
-        ? {
-            ...current,
-            recommendationCount: Math.max(0, (current.recommendationCount || 0) + (added ? 1 : -1)),
-          }
-        : current);
+      setTargetProfile((current) =>
+        current
+          ? {
+              ...current,
+              recommendationCount: Math.max(
+                0,
+                (current.recommendationCount || 0) + (added ? 1 : -1),
+              ),
+            }
+          : current,
+      );
       toast.success(added ? "Indicação registrada" : "Indicação removida", {
         description: added
           ? "Sua indicação fortalece a confiança da comunidade."
@@ -617,7 +629,8 @@ export function ProfileDetailClient({
   const handleRate = async () => {
     if (!user) {
       toast.error("Login necessário", {
-        description: "Você precisa estar logado para avaliar este profissional.",
+        description:
+          "Você precisa estar logado para avaliar este profissional.",
       });
       return;
     }
@@ -652,7 +665,8 @@ export function ProfileDetailClient({
         ratingComment.trim() || undefined,
       );
       toast.success("Avaliação enviada!", {
-        description: "Obrigado por compartilhar sua percepção com a comunidade.",
+        description:
+          "Obrigado por compartilhar sua percepção com a comunidade.",
       });
       // Refresh profile to show new rating
       const [updated, updatedRatings] = await Promise.all([
@@ -818,13 +832,9 @@ export function ProfileDetailClient({
                       <>
                         {canToggleContact && (
                           <Button
-                            variant={isContact ? "destructive" : "default"}
+                            variant={isContact ? "destructive" : "outline"}
                             onClick={handleToggleContact}
-                            className={`rounded-md h-10 px-6 font-bold transition-all ${
-                              isContact
-                                ? ""
-                                : "bg-primary text-white hover:bg-primary/90"
-                            }`}
+                            className="rounded-md px-5 font-semibold"
                           >
                             {isContact ? (
                               <>
@@ -843,16 +853,16 @@ export function ProfileDetailClient({
                     <Button
                       onClick={handleWhatsApp}
                       variant="default"
-                      className="h-10 px-6 bg-green-500 rounded-md hover:bg-green-600 active:bg-green-700 text-white font-bold"
+                      className="bg-green-600 px-6 font-bold text-white hover:bg-green-700 active:bg-green-800"
                     >
-                      <FaWhatsapp /> <p>WhatsApp</p>
+                      <FaWhatsapp /> <p>Falar no WhatsApp</p>
                     </Button>
                     {user?.uid !== targetProfile.uid && (
                       <Button
                         onClick={handleToggleRecommendation}
                         disabled={recommendationLoading}
-                        variant={isRecommended ? "outline" : "default"}
-                        className="h-10 px-5 rounded-md font-bold"
+                        variant="outline"
+                        className="rounded-md px-5 font-semibold"
                       >
                         <HeartHandshake className="size-4" />
                         {isRecommended ? "Você indicou" : "Eu indico"}
@@ -911,7 +921,7 @@ export function ProfileDetailClient({
                           </Badge>
                         )}
                       </div>
-                      )}
+                    )}
 
                     {publicLocation && (
                       <div className="flex items-center space-x-2">
@@ -963,13 +973,9 @@ export function ProfileDetailClient({
                           <>
                             {canToggleContact && (
                               <Button
-                                variant={isContact ? "destructive" : "default"}
+                                variant={isContact ? "destructive" : "outline"}
                                 onClick={handleToggleContact}
-                                className={`rounded-sm h-10 px-6 flex-1 font-bold transition-all ${
-                                  isContact
-                                    ? ""
-                                    : "bg-primary text-white hover:bg-primary/90"
-                                }`}
+                                className="flex-1 rounded-sm px-5 font-semibold"
                               >
                                 {isContact ? (
                                   <>
@@ -990,16 +996,16 @@ export function ProfileDetailClient({
                       <Button
                         onClick={handleWhatsApp}
                         variant="default"
-                        className="h-10 px-6 w-full bg-green-500 rounded-sm hover:bg-green-600 active:bg-green-700 text-white font-bold"
+                        className="w-full rounded-sm bg-green-600 px-6 font-bold text-white hover:bg-green-700 active:bg-green-800"
                       >
-                        <FaWhatsapp /> <p>WhatsApp</p>
+                        <FaWhatsapp /> <p>Falar no WhatsApp</p>
                       </Button>
                       {user?.uid !== targetProfile.uid && (
                         <Button
                           onClick={handleToggleRecommendation}
                           disabled={recommendationLoading}
-                          variant={isRecommended ? "outline" : "default"}
-                          className="h-10 w-full rounded-sm font-bold"
+                          variant="outline"
+                          className="w-full rounded-sm font-semibold"
                         >
                           <HeartHandshake className="size-4" />
                           {isRecommended ? "Você indicou" : "Eu indico"}
@@ -1129,7 +1135,8 @@ export function ProfileDetailClient({
                       </p>
                       <p className="text-xs text-text-muted">
                         A nota de 1 a 5 estrelas é obrigatória. O comentário é
-                        opcional e a avaliação não está ligada a um serviço específico.
+                        opcional e a avaliação não está ligada a um serviço
+                        específico.
                       </p>
                       <p className="text-xs font-medium text-text-muted">
                         Seu nome será exibido junto à avaliação.
@@ -1165,7 +1172,9 @@ export function ProfileDetailClient({
                     <>
                       <Textarea
                         value={ratingComment}
-                        onChange={(event) => setRatingComment(event.target.value)}
+                        onChange={(event) =>
+                          setRatingComment(event.target.value)
+                        }
                         placeholder="Compartilhe sua experiência ou recomendação. Opcional."
                         maxLength={500}
                         disabled={!canRateProfile || submittingRating}
@@ -1183,7 +1192,9 @@ export function ProfileDetailClient({
                           }
                           className="bg-primary text-white hover:bg-primary/90 active:bg-primary/80"
                         >
-                          {submittingRating ? "Enviando..." : "Enviar avaliação"}
+                          {submittingRating
+                            ? "Enviando..."
+                            : "Enviar avaliação"}
                         </Button>
                       </div>
                     </>
@@ -1213,7 +1224,8 @@ export function ProfileDetailClient({
                       Ainda não há avaliações públicas sobre este profissional.
                     </p>
                     <p className="mt-1 text-xs text-text-muted">
-                      As novas avaliações mostram o nome de quem avaliou; o comentário continua opcional.
+                      As novas avaliações mostram o nome de quem avaliou; o
+                      comentário continua opcional.
                     </p>
                   </div>
                 ) : (

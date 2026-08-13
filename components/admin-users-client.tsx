@@ -536,7 +536,7 @@ export function AdminUsersClient() {
                             <span className="font-bold text-text-main flex items-center gap-1">
                               {u.name}
                               {shouldShowVerifiedBadge(u) && <ShieldCheck size={14} className="text-primary" />}
-                              {u.role === 'admin' && <Badge variant="secondary" className="text-[8px] h-4 px-1 bg-red-500/10 text-red-500 border-red-500/20 dark:text-red-300">Admin</Badge>}
+                              {u.role === 'admin' && <Badge variant="secondary" className="h-5 px-1.5 text-xs bg-red-500/10 text-red-500 border-red-500/20 dark:text-red-300">Admin</Badge>}
                             </span>
                             <span className="text-xs text-text-muted flex items-center gap-1"><Mail size={10} /> {u.email}</span>
                             {(u.companyName || u.category) && (
