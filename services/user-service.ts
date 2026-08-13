@@ -1219,9 +1219,62 @@ export const UserService = {
     }
   },
 
+  async getCommunityRecommendations(
+    professionalId: string,
+    maxItems = 8,
+  ): Promise<CommunityRecommendation[]> {
+    const path = `public_profiles/${professionalId}/recommendations`;
+    try {
+      const recommendationsQuery = query(
+        collection(db, "public_profiles", professionalId, "recommendations"),
+        orderBy("createdAt", "desc"),
+        limit(maxItems),
+      );
+      const snapshot = await getDocs(recommendationsQuery);
+      const recommendations = snapshot.docs.map((item) =>
+        toPlainValue(item.data() as CommunityRecommendation),
+      );
+
+      const hydrated = await Promise.all(
+        recommendations.map(async (recommendation) => {
+          if (recommendation.recommenderName) return recommendation;
+
+          try {
+            const recommenderSnapshot = await getDoc(
+              doc(db, "public_profiles", recommendation.recommenderId),
+            );
+            const recommenderProfile = recommenderSnapshot.exists()
+              ? toPublicProfileModel(
+                  toPlainValue(recommenderSnapshot.data() as UserProfile),
+                )
+              : null;
+
+            return {
+              ...recommendation,
+              recommenderName:
+                recommenderProfile?.name || recommendation.recommenderName,
+              recommenderPhotoURL:
+                recommenderProfile?.photoURL ||
+                recommendation.recommenderPhotoURL,
+            };
+          } catch {
+            return recommendation;
+          }
+        }),
+      );
+
+      return hydrated;
+    } catch (error) {
+      if (isPermissionDeniedError(error)) return [];
+      handleFirestoreError(error, OperationType.LIST, path);
+      return [];
+    }
+  },
+
   async toggleCommunityRecommendation(
     recommenderId: string,
     professionalId: string,
+    recommender?: Pick<UserProfile, "name" | "photoURL">,
   ): Promise<boolean> {
     if (recommenderId === professionalId) {
       throw new Error("Você não pode indicar o próprio perfil.");
@@ -1270,6 +1323,8 @@ export const UserService = {
 
         transaction.set(recommendationRef, {
           recommenderId,
+          recommenderName: recommender?.name || "Membro Skillsy",
+          recommenderPhotoURL: recommender?.photoURL || "",
           createdAt: serverTimestamp(),
         });
         transaction.update(publicProfileRef, {

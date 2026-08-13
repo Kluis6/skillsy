@@ -76,6 +76,8 @@ export interface Rating {
 
 export interface CommunityRecommendation {
   recommenderId: string;
+  recommenderName?: string;
+  recommenderPhotoURL?: string;
   createdAt: any;
 }
 

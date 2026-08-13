@@ -373,9 +373,15 @@ service cloud.firestore {
     }
 
     function isValidCommunityRecommendation(data, recommenderId) {
-      return data.keys().hasAll(['recommenderId', 'createdAt']) &&
-             data.keys().hasOnly(['recommenderId', 'createdAt']) &&
+      return data.keys().hasAll(['recommenderId', 'recommenderName', 'createdAt']) &&
+             data.keys().hasOnly(['recommenderId', 'recommenderName', 'recommenderPhotoURL', 'createdAt']) &&
              data.recommenderId == recommenderId &&
+             exists(/databases/$(database)/documents/users/$(recommenderId)) &&
+             data.recommenderName == get(/databases/$(database)/documents/users/$(recommenderId)).data.name &&
+             data.recommenderName is string &&
+             data.recommenderName.size() > 0 &&
+             data.recommenderName.size() <= 100 &&
+             (!('recommenderPhotoURL' in data) || data.recommenderPhotoURL == null || (data.recommenderPhotoURL is string && data.recommenderPhotoURL.size() <= 1000000)) &&
              data.createdAt is timestamp;
     }
 
@@ -763,8 +769,7 @@ service cloud.firestore {
       allow delete: if isOwner(userId) || isAdmin();
 
       match /recommendations/{recommenderId} {
-        allow get: if isOwner(recommenderId);
-        allow list: if false;
+        allow read: if canReceiveRatings(userId);
         allow create: if isOwner(recommenderId) &&
                       recommenderId != userId &&
                       isNotBlocked() &&

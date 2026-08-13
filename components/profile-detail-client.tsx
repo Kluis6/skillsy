@@ -4,10 +4,16 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { UserService } from "@/services/user-service";
-import { Rating, UserProfile } from "@/models/types";
+import { CommunityRecommendation, Rating, UserProfile } from "@/models/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarImage,
+} from "@/components/ui/avatar";
 import {
   UserPlus,
   MapPin,
@@ -76,6 +82,10 @@ interface ProfileDetailClientProps {
   initialProfile: UserProfile | null;
 }
 
+function getRecommendationInitial(name?: string) {
+  return name?.trim().charAt(0).toUpperCase() || "S";
+}
+
 export function ProfileDetailClient({
   id,
   initialProfile,
@@ -99,6 +109,9 @@ export function ProfileDetailClient({
   const [loadingRatings, setLoadingRatings] = useState(false);
   const [submittingRating, setSubmittingRating] = useState(false);
   const [isRecommended, setIsRecommended] = useState(false);
+  const [recommendations, setRecommendations] = useState<
+    CommunityRecommendation[]
+  >([]);
   const [recommendationLoading, setRecommendationLoading] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
@@ -189,6 +202,17 @@ export function ProfileDetailClient({
       .catch(() => setIsRecommended(false));
   }, [targetProfile?.uid, targetProfile?.isProvider, user?.uid]);
 
+  useEffect(() => {
+    if (!targetProfile?.uid || !targetProfile.isProvider) {
+      setRecommendations([]);
+      return;
+    }
+
+    UserService.getCommunityRecommendations(targetProfile.uid, 8)
+      .then(setRecommendations)
+      .catch(() => setRecommendations([]));
+  }, [targetProfile?.uid, targetProfile?.isProvider]);
+
   const isContact = currentUserProfile?.contacts?.includes(id);
 
   const handleToggleContact = async () => {
@@ -228,6 +252,18 @@ export function ProfileDetailClient({
       const added = await UserService.toggleCommunityRecommendation(
         user.uid,
         targetProfile.uid,
+        {
+          name:
+            currentUserProfile?.name ||
+            profile?.name ||
+            user.displayName ||
+            "Membro Skillsy",
+          photoURL:
+            currentUserProfile?.photoURL ||
+            profile?.photoURL ||
+            user.photoURL ||
+            "",
+        },
       );
       setIsRecommended(added);
       setTargetProfile((current) =>
@@ -241,9 +277,34 @@ export function ProfileDetailClient({
             }
           : current,
       );
+      setRecommendations((current) => {
+        if (added) {
+          const nextRecommendation: CommunityRecommendation = {
+            recommenderId: user.uid,
+            recommenderName:
+              currentUserProfile?.name ||
+              profile?.name ||
+              user.displayName ||
+              "Membro Skillsy",
+            recommenderPhotoURL:
+              currentUserProfile?.photoURL ||
+              profile?.photoURL ||
+              user.photoURL ||
+              "",
+            createdAt: new Date(),
+          };
+
+          return [
+            nextRecommendation,
+            ...current.filter((item) => item.recommenderId !== user.uid),
+          ].slice(0, 8);
+        }
+
+        return current.filter((item) => item.recommenderId !== user.uid);
+      });
       toast.success(added ? "Indicação registrada" : "Indicação removida", {
         description: added
-          ? "Sua indicação fortalece a confiança da comunidade."
+          ? "Seu nome e foto públicos podem aparecer como prova social neste perfil."
           : "Você pode indicar novamente quando quiser.",
       });
     } catch (error) {
@@ -766,6 +827,12 @@ export function ProfileDetailClient({
       icon: MapPin,
     },
   ];
+  const displayedRecommendations = recommendations.slice(0, 5);
+  const hiddenRecommendationCount = Math.max(
+    0,
+    (targetProfile.recommendationCount || recommendations.length) -
+      displayedRecommendations.length,
+  );
 
   return (
     <>
@@ -1019,7 +1086,7 @@ export function ProfileDetailClient({
           </section>
 
           <section className="border-y border-border-subtle bg-surface">
-            <div className="container mx-auto grid grid-cols-1 gap-2 px-4 py-3 md:grid-cols-3">
+            <div className="container mx-auto grid grid-cols-1 gap-2 px-4 py-3 md:grid-cols-4">
               {profileTrustItems.map((item) => (
                 <div
                   key={item.label}
@@ -1043,6 +1110,86 @@ export function ProfileDetailClient({
               ))}
             </div>
           </section>
+
+          {targetProfile.isProvider ? (
+            <section className="border-b border-border-subtle bg-card">
+              <div className="container mx-auto flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
+                <div className="space-y-1">
+                  <h3 className="text-base font-semibold text-text-main">
+                    Indicado pela comunidade
+                  </h3>
+                  <p className="max-w-2xl text-sm leading-relaxed text-text-muted">
+                    {targetProfile.recommendationCount || 0} pessoa
+                    {(targetProfile.recommendationCount || 0) === 1
+                      ? ""
+                      : "s"}{" "}
+                    indicam este profissional. Cada membro pode indicar uma vez.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  {displayedRecommendations.length > 0 ? (
+                    <AvatarGroup
+                      className="pl-2"
+                      aria-label="Membros que indicam este profissional"
+                    >
+                      {displayedRecommendations.map((recommendation) => (
+                        <Tooltip key={recommendation.recommenderId}>
+                          <TooltipTrigger
+                            render={
+                              <Avatar className="size-10">
+                                <AvatarImage
+                                  src={recommendation.recommenderPhotoURL || ""}
+                                  alt={
+                                    recommendation.recommenderName
+                                      ? `Foto de ${recommendation.recommenderName}`
+                                      : "Membro que indicou"
+                                  }
+                                />
+                                <AvatarFallback className="bg-primary text-primary-foreground">
+                                  {getRecommendationInitial(
+                                    recommendation.recommenderName,
+                                  )}
+                                </AvatarFallback>
+                              </Avatar>
+                            }
+                          />
+                          <TooltipContent>
+                            <p>
+                              {recommendation.recommenderName ||
+                                "Membro Skillsy"}{" "}
+                              indicou
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ))}
+                      {hiddenRecommendationCount > 0 ? (
+                        <AvatarGroupCount className="size-10 text-xs font-semibold">
+                          +{hiddenRecommendationCount}
+                        </AvatarGroupCount>
+                      ) : null}
+                    </AvatarGroup>
+                  ) : (
+                    <p className="text-sm text-text-muted">
+                      Seja a primeira pessoa a indicar este perfil.
+                    </p>
+                  )}
+
+                  {user?.uid !== targetProfile.uid ? (
+                    <Button
+                      onClick={handleToggleRecommendation}
+                      disabled={recommendationLoading}
+                      variant={isRecommended ? "outline" : "default"}
+                      className="w-full sm:w-auto"
+                    >
+                      <HeartHandshake className="size-4" />
+                      {isRecommended ? "Você indicou" : "Eu indico"}
+                    </Button>
+                  ) : null}
+                </div>
+              </div>
+            </section>
+          ) : null}
 
           {/* About Section */}
           <section className="bg-card border-y border-border-subtle ">
