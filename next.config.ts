@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  output: 'standalone',
+  ...(process.env.VERCEL ? {} : { output: 'standalone' as const }),
   transpilePackages: ['motion'],
   turbopack: {},
   webpack: (config, { dev }) => {
