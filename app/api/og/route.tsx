@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { OG_BRAND } from "@/lib/og-image-templates";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const size = {
   width: 1200,

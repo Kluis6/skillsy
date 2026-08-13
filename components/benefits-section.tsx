@@ -73,7 +73,7 @@ export function BenefitsSection() {
   };
 
   return (
-    <section className="h-full w-full bg-[linear-gradient(175deg,color-mix(in_oklab,var(--md-sys-color-primary)_76%,var(--md-sys-color-primary-container))_40%,color-mix(in_oklab,var(--md-sys-color-primary)_70%,var(--md-sys-color-surface))_58%,var(--md-sys-color-surface)_100%)] py-12 dark:bg-[linear-gradient(135deg,color-mix(in_oklab,var(--md-sys-color-primary)_52%,var(--md-sys-color-primary-container))_10%,color-mix(in_oklab,var(--md-sys-color-primary)_36%,var(--md-sys-color-surface))_52%,var(--md-sys-color-surface)_90%)]">
+    <section className="h-full w-full bg-[linear-gradient(175deg,color-mix(in_oklab,var(--skillsy-color-primary)_76%,var(--skillsy-color-primary-container))_40%,color-mix(in_oklab,var(--skillsy-color-primary)_70%,var(--skillsy-color-surface))_58%,var(--skillsy-color-surface)_100%)] py-12 dark:bg-[linear-gradient(135deg,color-mix(in_oklab,var(--skillsy-color-primary)_52%,var(--skillsy-color-primary-container))_10%,color-mix(in_oklab,var(--skillsy-color-primary)_36%,var(--skillsy-color-surface))_52%,var(--skillsy-color-surface)_90%)]">
       <section className="px-4 container mx-auto">
         <div className="grid grid-cols-12 gap-y-10">
           {/* Left Side: Content */}
@@ -90,7 +90,7 @@ export function BenefitsSection() {
               className="flex gap-4 will-change-transform"
             >
               <div className=" flex flex-col space-y-4">
-                <h2 className="text-white text-2xl md:text-3xl xl:text-2xl font-semibold text-center lg:text-start">
+                <h2 className="text-white text-xl md:text-3xl xl:text-2xl font-semibold text-center lg:text-start">
                   Uma rede feita por pessoas
                 </h2>
                 <p className="text-base lg:text-3xl text-white font-bold leading-relaxed w-full lg:w-3xl">
@@ -117,7 +117,7 @@ export function BenefitsSection() {
                 <div className="flex flex-col space-y-1">
                   <div className="flex flex-col gap-2">
                     <benefit.icon
-                      className="size-20 drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
+                      className="md:size-16 size-10 drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
                       fill={`url(#benefit-icon-gradient-${idx})`}
                     />
                     <svg
@@ -139,7 +139,7 @@ export function BenefitsSection() {
                           <stop offset="68%" stopColor="#8ecfe6" />
                           <stop
                             offset="100%"
-                            stopColor="var(--md-sys-color-primary)"
+                            stopColor="var(--skillsy-color-primary)"
                           />
                         </linearGradient>
                       </defs>
@@ -180,3 +180,4 @@ export function BenefitsSection() {
     </section>
   );
 }
+

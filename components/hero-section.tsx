@@ -57,7 +57,7 @@ export function HeroSection({
     <section className="relative isolate w-full min-h-[calc(100svh-5rem)] overflow-hidden bg-surface bg-[url(/bannerhero.png)] bg-cover bg-center md:min-h-[86vh]">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--md-sys-color-scrim)_64%,transparent)_0%,color-mix(in_oklab,var(--md-sys-color-scrim)_52%,transparent)_42%,color-mix(in_oklab,var(--md-sys-color-scrim)_12%,transparent)_68%)]"
+        className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--skillsy-color-scrim)_64%,transparent)_0%,color-mix(in_oklab,var(--skillsy-color-scrim)_52%,transparent)_42%,color-mix(in_oklab,var(--skillsy-color-scrim)_12%,transparent)_68%)]"
       />
       <motion.div
         initial="hidden"
@@ -71,7 +71,7 @@ export function HeroSection({
         >
           <div className="space-y-4">
             <p className="text-2xl font-bold text-white">Skillsy</p>
-            <h2 className="text-balance font-heading text-5xl font-black leading-[0.95] tracking-[-0.035em] text-primary-foreground dark:text-white drop-shadow-[0_2px_18px_color-mix(in_oklab,var(--md-sys-color-scrim)_55%,transparent)] md:text-7xl lg:text-8xl">
+            <h2 className="text-balance font-heading text-5xl font-black leading-[0.95] tracking-[-0.035em] text-primary-foreground dark:text-white drop-shadow-[0_2px_18px_color-mix(in_oklab,var(--skillsy-color-scrim)_55%,transparent)] md:text-7xl lg:text-8xl">
               Onde Talentos encontram oportunidades
             </h2>
             <p className="mx-auto hidden md:block max-w-2xl text-pretty text-base font-semibold leading-relaxed text-primary-foreground/90 dark:text-gray-50 md:text-xl lg:mx-0">
@@ -85,7 +85,7 @@ export function HeroSection({
           variants={itemVariants}
           className="w-full will-change-transform lg:col-span-5"
         >
-          <Card className=" border-none p-4 shadow-[var(--md-sys-elevation-level2)]  md:p-6">
+          <Card className=" border-none p-4 shadow-[var(--skillsy-elevation-level2)]  md:p-6">
             <div className="mb-5 space-y-1">
               <p className="text-sm font-bold text-text-main">
                 Encontre alguém da rede
@@ -208,3 +208,4 @@ export function HeroSection({
     </section>
   );
 }
+

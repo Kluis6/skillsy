@@ -1,43 +1,49 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/use-auth';
-import { UserService } from '@/services/user-service';
-import { UserProfile } from '@/models/types';
-import { 
-  Users, 
-  ShieldCheck, 
+import React, { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { UserService } from "@/services/user-service";
+import { UserProfile, UserReport } from "@/models/types";
+import {
+  Users,
+  ShieldCheck,
   ArrowRight,
   Loader2,
   ShieldAlert,
-  FileText
-} from 'lucide-react';
-import { motion } from 'motion/react';
-import Link from 'next/link';
+  FileText,
+  AlertTriangle,
+} from "lucide-react";
+import { motion } from "motion/react";
+import Link from "next/link";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { shouldShowVerifiedBadge } from '@/lib/member-verification';
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 
 export function AdminDashboardClient() {
   const { profile, loading: authLoading } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [reports, setReports] = useState<UserReport[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
-      if (profile?.role === 'admin') {
+      if (profile?.role === "admin") {
         setLoading(true);
         try {
-          const allUsers = await UserService.getAllUsers();
+          const [allUsers, allReports] = await Promise.all([
+            UserService.getAllUsers(),
+            UserService.getAllReports(),
+          ]);
           setUsers(allUsers);
+          setReports(allReports);
         } catch (error) {
-          console.error('Error fetching users:', error);
+          console.error("Error fetching users:", error);
         } finally {
           setLoading(false);
         }
@@ -54,14 +60,18 @@ export function AdminDashboardClient() {
     );
   }
 
-  if (profile?.role !== 'admin') {
+  if (profile?.role !== "admin") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-surface">
         <ShieldAlert size={64} className="text-red-500 mb-6" />
         <h1 className="text-3xl font-bold mb-4">Acesso Negado</h1>
-        <p className="text-text-muted mb-8">Esta área é restrita a administradores do sistema.</p>
+        <p className="text-text-muted mb-8">
+          Esta área é restrita a administradores do sistema.
+        </p>
         <Link href="/">
-          <Button className="bg-primary text-white font-bold rounded-xl px-8">Voltar para Home</Button>
+          <Button className="bg-primary text-white font-bold rounded-xl px-8">
+            Voltar para Home
+          </Button>
         </Link>
       </div>
     );
@@ -71,35 +81,66 @@ export function AdminDashboardClient() {
     <TooltipProvider>
       <div className="pb-20 px-6 md:px-10 py-8 max-w-7xl mx-auto">
         <div className="mb-10">
-          <h2 className="text-3xl font-bold text-text-main font-heading">Dashboard Administrativo</h2>
-          <p className="text-text-muted mt-1">Visão geral do sistema e atalhos de gerenciamento.</p>
+          <h2 className="text-3xl font-bold text-text-main font-heading">
+            Dashboard Administrativo
+          </h2>
+          <p className="text-text-muted mt-1">
+            Visão geral do sistema e atalhos de gerenciamento.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden">
             <CardHeader className="pb-2">
-              <CardDescription className="text-xs font-bold text-text-muted">Total de Usuários</CardDescription>
-              <CardTitle className="text-4xl font-bold font-heading">{loading ? '...' : users.length}</CardTitle>
+              <CardDescription className="text-xs font-bold text-text-muted">
+                Total de Usuários
+              </CardDescription>
+              <CardTitle className="text-4xl font-bold font-heading">
+                {loading ? "..." : users.length}
+              </CardTitle>
             </CardHeader>
             <div className="h-1 bg-primary w-full opacity-20" />
           </Card>
           <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden">
             <CardHeader className="pb-2">
-              <CardDescription className="text-xs font-bold text-text-muted">Prestadores de Serviço</CardDescription>
-              <CardTitle className="text-4xl font-bold font-heading">{loading ? '...' : users.filter(u => u.isProvider).length}</CardTitle>
+              <CardDescription className="text-xs font-bold text-text-muted">
+                Prestadores de Serviço
+              </CardDescription>
+              <CardTitle className="text-4xl font-bold font-heading">
+                {loading ? "..." : users.filter((u) => u.isProvider).length}
+              </CardTitle>
             </CardHeader>
             <div className="h-1 bg-green-500 w-full opacity-20" />
           </Card>
           <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden">
             <CardHeader className="pb-2">
-              <CardDescription className="text-xs font-bold text-text-muted">Membros Verificados</CardDescription>
-              <CardTitle className="text-4xl font-bold font-heading">{loading ? '...' : users.filter(shouldShowVerifiedBadge).length}</CardTitle>
+              <CardDescription className="text-xs font-bold text-text-muted">
+                Membros Verificados
+              </CardDescription>
+              <CardTitle className="text-4xl font-bold font-heading">
+                {loading ? "..." : users.filter(shouldShowVerifiedBadge).length}
+              </CardTitle>
             </CardHeader>
             <div className="h-1 bg-amber-500 w-full opacity-20" />
           </Card>
+          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden">
+            <CardHeader className="pb-2">
+              <CardDescription className="text-xs font-bold text-text-muted">
+                Denúncias abertas
+              </CardDescription>
+              <CardTitle className="text-4xl font-bold font-heading">
+                {loading
+                  ? "…"
+                  : reports.filter((report) =>
+                      ["new", "in_review", "reviewed"].includes(report.status),
+                    ).length}
+              </CardTitle>
+            </CardHeader>
+            <div className="h-1 bg-red-500 w-full opacity-20" />
+          </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -111,11 +152,44 @@ export function AdminDashboardClient() {
                   <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                     <Users size={28} />
                   </div>
-                  <ArrowRight size={24} className="text-text-muted group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight
+                    size={24}
+                    className="text-text-muted group-hover:translate-x-1 transition-transform"
+                  />
                 </div>
-                <h3 className="text-xl font-bold mb-2 font-heading">Gerenciar Usuários</h3>
+                <h3 className="text-xl font-bold mb-2 font-heading">
+                  Gerenciar Usuários
+                </h3>
                 <p className="text-text-muted text-sm leading-relaxed">
-                  Visualize, edite, bloqueie ou verifique membros da plataforma. Filtre por localização, ala ou categoria.
+                  Visualize, edite, bloqueie ou verifique membros da plataforma.
+                  Filtre por localização, ala ou categoria.
+                </p>
+              </Card>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            <Link href="/admin/moderacao">
+              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-colors rounded-xl p-6 cursor-pointer h-full">
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-12 h-12 bg-red-500/10 rounded-lg flex items-center justify-center text-red-700">
+                    <AlertTriangle size={24} />
+                  </div>
+                  <ArrowRight
+                    size={20}
+                    className="text-text-muted group-hover:translate-x-1 transition-transform"
+                  />
+                </div>
+                <h3 className="text-xl font-bold mb-2 font-heading">
+                  Fila de Moderação
+                </h3>
+                <p className="text-text-muted text-sm leading-relaxed">
+                  Priorize denúncias, atribua responsáveis e registre uma
+                  decisão dentro do prazo de 48 horas.
                 </p>
               </Card>
             </Link>
@@ -132,11 +206,17 @@ export function AdminDashboardClient() {
                   <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                     <FileText size={28} />
                   </div>
-                  <ArrowRight size={24} className="text-text-muted group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight
+                    size={24}
+                    className="text-text-muted group-hover:translate-x-1 transition-transform"
+                  />
                 </div>
-                <h3 className="text-xl font-bold mb-2 font-heading">Gerenciar Artigos</h3>
+                <h3 className="text-xl font-bold mb-2 font-heading">
+                  Gerenciar Artigos
+                </h3>
                 <p className="text-text-muted text-sm leading-relaxed">
-                  Revise conteúdos enviados por usuários, publique notícias e destaque artigos na área pública.
+                  Revise conteúdos enviados por usuários, publique notícias e
+                  destaque artigos na área pública.
                 </p>
               </Card>
             </Link>

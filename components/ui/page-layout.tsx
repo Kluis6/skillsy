@@ -19,7 +19,7 @@ export function PageHeader({
   return (
     <section
       className={cn(
-        "m3-surface flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between md:p-8",
+        "skillsy-surface flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between md:p-8",
         className,
       )}
     >
@@ -57,7 +57,7 @@ export function SurfacePanel({
   return (
     <Component
       className={cn(
-        "m3-surface p-5 md:p-6",
+        "skillsy-surface p-5 md:p-6",
         className,
       )}
     >
@@ -84,7 +84,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-4 rounded-[var(--md-sys-shape-corner-extra-large)] bg-muted p-10 text-center",
+        "flex flex-col items-center justify-center gap-4 rounded-[var(--skillsy-shape-corner-extra-large)] bg-muted p-10 text-center",
         className,
       )}
     >
@@ -105,3 +105,4 @@ export function EmptyState({
     </div>
   );
 }
+

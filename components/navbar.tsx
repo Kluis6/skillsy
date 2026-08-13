@@ -24,6 +24,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { LuLogIn } from "react-icons/lu";
+import { OpportunityNotifications } from "@/components/opportunity-notifications";
 
 interface NavbarProps {
   user: User | null;
@@ -56,7 +57,7 @@ export function Navbar({
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_oklab,var(--md-sys-color-surface)_86%,transparent)] backdrop-blur-md">
+    <nav className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_oklab,var(--skillsy-color-surface)_86%,transparent)] backdrop-blur-md">
       <div className="container mx-auto flex min-h-16 items-center justify-between px-4 py-2">
         <div className="flex items-center space-x-4">
           {shouldShowBackButton ? (
@@ -130,6 +131,26 @@ export function Navbar({
                           className="flex text-sm font-normal text-text-muted"
                         >
                           Novidades e vagas
+                        </Link>
+                      </DrawerClose>
+                    </li>
+                    <li className="rounded-full p-2 hover:bg-primary/10">
+                      <DrawerClose asChild>
+                        <Link
+                          href="/encontrar-ajuda"
+                          className="flex text-sm font-normal text-text-muted"
+                        >
+                          Encontrar ajuda
+                        </Link>
+                      </DrawerClose>
+                    </li>
+                    <li className="rounded-full p-2 hover:bg-primary/10">
+                      <DrawerClose asChild>
+                        <Link
+                          href="/oportunidades"
+                          className="flex text-sm font-normal text-text-muted"
+                        >
+                          Oportunidades
                         </Link>
                       </DrawerClose>
                     </li>
@@ -209,7 +230,7 @@ export function Navbar({
                 <DrawerFooter>
                   <DrawerClose asChild>
                     <Link
-                      className="flex h-10 items-center justify-center rounded-full bg-primary px-5 text-center text-sm font-medium text-primary-foreground shadow-[var(--md-sys-elevation-level1)] hover:bg-primary/90 active:bg-primary/80"
+                      className="flex h-10 items-center justify-center rounded-full bg-primary px-5 text-center text-sm font-medium text-primary-foreground shadow-[var(--skillsy-elevation-level1)] hover:bg-primary/90 active:bg-primary/80"
                       href={"/donation"}
                     >
                       Ajude o projeto
@@ -246,6 +267,7 @@ export function Navbar({
 
         <div className="flex items-center justify-between w-auto gap-x-2">
           {shouldShowBackButton ? <></> : <ThemeToggle />}
+          {user && !shouldShowBackButton ? <OpportunityNotifications /> : null}
           <Drawer
             key={`desktop-drawer-${pathname}`}
             direction="left"
@@ -314,6 +336,26 @@ export function Navbar({
                         className="flex text-sm font-normal text-text-muted"
                       >
                         Novidades e vagas
+                      </Link>
+                    </DrawerClose>
+                  </li>
+                  <li className="rounded-full p-2 hover:bg-primary/10">
+                    <DrawerClose asChild>
+                      <Link
+                        href="/encontrar-ajuda"
+                        className="flex text-sm font-normal text-text-muted"
+                      >
+                        Encontrar ajuda
+                      </Link>
+                    </DrawerClose>
+                  </li>
+                  <li className="rounded-full p-2 hover:bg-primary/10">
+                    <DrawerClose asChild>
+                      <Link
+                        href="/oportunidades"
+                        className="flex text-sm font-normal text-text-muted"
+                      >
+                        Oportunidades
                       </Link>
                     </DrawerClose>
                   </li>
@@ -392,7 +434,7 @@ export function Navbar({
               <DrawerFooter>
                 <DrawerClose asChild>
                   <Link
-                    className="flex h-10 items-center justify-center rounded-full bg-primary px-5 text-center text-sm font-medium text-primary-foreground shadow-[var(--md-sys-elevation-level1)] hover:bg-primary/90 active:bg-primary/80"
+                    className="flex h-10 items-center justify-center rounded-full bg-primary px-5 text-center text-sm font-medium text-primary-foreground shadow-[var(--skillsy-elevation-level1)] hover:bg-primary/90 active:bg-primary/80"
                     href={"/donation"}
                   >
                     Ajude o projeto
@@ -415,9 +457,9 @@ export function Navbar({
                 variant="default"
                 title="Faça login ou cria sua conta"
                 aria-label="Entrar ou criar conta"
-                // className="bg-primary hover:bg-primary/90 active:bg-primary/80 w-10 md:w-auto md:px-4 h-10 dark:text-white font-normal"
+                className=""
               >
-                <MdLogin className="flex md:hidden size-4" />
+                <MdLogin className="flex md:hidden " />
                 <p className="hidden font-medium md:block"> Entrar</p>
               </Button>
             </AuthModal>

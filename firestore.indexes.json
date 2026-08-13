@@ -1,0 +1,150 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "opportunities",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isProvider", "order": "ASCENDING" },
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "businessState", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "opportunities",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "expiresAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "opportunities",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "opportunities",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "authorId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "opportunities",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "state", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "public_profiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isProvider", "order": "ASCENDING" },
+        { "fieldPath": "isBlocked", "order": "ASCENDING" },
+        { "fieldPath": "isDeleted", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "public_profiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isProvider", "order": "ASCENDING" },
+        { "fieldPath": "isBlocked", "order": "ASCENDING" },
+        { "fieldPath": "isDeleted", "order": "ASCENDING" },
+        { "fieldPath": "reviewCount", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "public_profiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isProvider", "order": "ASCENDING" },
+        { "fieldPath": "isBlocked", "order": "ASCENDING" },
+        { "fieldPath": "isDeleted", "order": "ASCENDING" },
+        { "fieldPath": "category", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "public_profiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isProvider", "order": "ASCENDING" },
+        { "fieldPath": "isBlocked", "order": "ASCENDING" },
+        { "fieldPath": "isDeleted", "order": "ASCENDING" },
+        { "fieldPath": "publicState", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "public_profiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isProvider", "order": "ASCENDING" },
+        { "fieldPath": "isBlocked", "order": "ASCENDING" },
+        { "fieldPath": "isDeleted", "order": "ASCENDING" },
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "publicState", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "public_profiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isProvider", "order": "ASCENDING" },
+        { "fieldPath": "isBlocked", "order": "ASCENDING" },
+        { "fieldPath": "isDeleted", "order": "ASCENDING" },
+        { "fieldPath": "searchTokens", "arrayConfig": "CONTAINS" }
+      ]
+    },
+    {
+      "collectionGroup": "public_profiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isProvider", "order": "ASCENDING" },
+        { "fieldPath": "isBlocked", "order": "ASCENDING" },
+        { "fieldPath": "isDeleted", "order": "ASCENDING" },
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "searchTokens", "arrayConfig": "CONTAINS" }
+      ]
+    },
+    {
+      "collectionGroup": "public_profiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isProvider", "order": "ASCENDING" },
+        { "fieldPath": "isBlocked", "order": "ASCENDING" },
+        { "fieldPath": "isDeleted", "order": "ASCENDING" },
+        { "fieldPath": "publicState", "order": "ASCENDING" },
+        { "fieldPath": "searchTokens", "arrayConfig": "CONTAINS" }
+      ]
+    },
+    {
+      "collectionGroup": "public_profiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isProvider", "order": "ASCENDING" },
+        { "fieldPath": "isBlocked", "order": "ASCENDING" },
+        { "fieldPath": "isDeleted", "order": "ASCENDING" },
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "publicState", "order": "ASCENDING" },
+        { "fieldPath": "searchTokens", "arrayConfig": "CONTAINS" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

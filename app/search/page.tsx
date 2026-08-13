@@ -21,6 +21,7 @@ interface SearchPageProps {
     q?: string;
     city?: string;
     state?: string;
+    category?: string;
   }>;
 }
 
@@ -29,14 +30,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const query = params.q?.trim() || "";
   const city = params.city?.trim() || "";
   const state = params.state?.trim() || "";
+  const category = params.category?.trim() || "";
   const location = city || state ? { city, state } : undefined;
 
-  const results = await UserService.searchProviders(query, location);
+  const results = await UserService.searchProviders(query, location, category || undefined);
 
   let suggestions: UserProfile[] = [];
 
   if (results.length === 0 && location) {
-    const suggestedData = await UserService.searchProviders("", location);
+    const suggestedData = await UserService.searchProviders("", location, category || undefined);
     suggestions = suggestedData.slice(0, 3);
   } else if (results.length === 0) {
     suggestions = await UserService.getProviders(3);
@@ -47,6 +49,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       initialQuery={query}
       initialCity={city}
       initialState={state}
+      initialCategory={category}
       initialResults={results}
       initialSuggestions={suggestions}
     />

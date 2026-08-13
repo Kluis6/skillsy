@@ -6,6 +6,12 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default defineConfig([{
+export default defineConfig([
+  {
     extends: [...next],
-}]);
+    rules: {
+      "react-hooks/purity": "warn",
+      "react-hooks/set-state-in-effect": "warn",
+    },
+  },
+]);

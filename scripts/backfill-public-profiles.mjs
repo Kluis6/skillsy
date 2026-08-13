@@ -15,16 +15,14 @@ const publicFieldNames = [
   "category",
   "isProvider",
   "serviceType",
-  "location",
-  "ward",
+  "publicCity",
+  "publicState",
+  "searchTokens",
   "companyName",
   "gallery",
   "rating",
   "reviewCount",
   "experienceYears",
-  "baptismYear",
-  "memberVerified",
-  "membershipYears",
   "availability",
   "serviceHours",
   "whatsapp",
@@ -114,8 +112,32 @@ function readAccessToken() {
     }
   }
 
+  try {
+    const firebaseCliToken = execFileSync(
+      "npx",
+      [
+        "-y",
+        "-p",
+        "firebase-tools@latest",
+        "node",
+        "-e",
+        "const auth=require('firebase-tools/lib/auth');const api=require('firebase-tools/lib/apiv2');const account=auth.getGlobalDefaultAccount();if(!account)throw new Error('No Firebase account');auth.setActiveAccount({},account);api.getAccessToken().then(token=>process.stdout.write(token)).catch(error=>{console.error(error.message);process.exit(1)})",
+      ],
+      {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      },
+    ).trim();
+
+    if (firebaseCliToken) {
+      return firebaseCliToken;
+    }
+  } catch {
+    // Firebase CLI session is unavailable; report the actionable alternatives below.
+  }
+
   throw new Error(
-    "Unable to obtain an access token. Set GOOGLE_OAUTH_ACCESS_TOKEN or install gcloud and login.",
+    "Unable to obtain an access token. Sign in with Firebase CLI, set GOOGLE_OAUTH_ACCESS_TOKEN, or install gcloud and login.",
   );
 }
 
@@ -170,6 +192,22 @@ function arrayValue(values) {
 
 function readStringField(field) {
   return typeof field?.stringValue === "string" ? field.stringValue : "";
+}
+
+function toSearchTokens(...values) {
+  const words = values
+    .filter((value) => typeof value === "string")
+    .flatMap((value) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(/[^a-z0-9]+/))
+    .filter((word) => word.length >= 2);
+
+  const tokens = new Set();
+  for (const word of words) {
+    tokens.add(word);
+    for (let length = 3; length < word.length; length += 1) {
+      tokens.add(word.slice(0, length));
+    }
+  }
+  return [...tokens].slice(0, 80);
 }
 
 function readNumberField(field) {
@@ -234,12 +272,6 @@ function fallbackField(fieldName, userId, userDocument) {
           timestampValue: userDocument.createTime,
         },
       );
-    case "memberVerified":
-      return booleanValue(computeMemberVerified(fields));
-    case "membershipYears": {
-      const value = computeMembershipYears(fields);
-      return value === undefined ? undefined : { integerValue: String(value) };
-    }
     case "gallery":
     case "availability":
     case "phones":
@@ -260,6 +292,27 @@ function buildPublicFields(userDocument) {
       ? cloneFieldValue(sourceValue)
       : fallbackField(fieldName, userId, userDocument);
   }
+
+  const location = readStringField(fields.location);
+  const showPublicLocation = fields.showPublicLocation?.booleanValue === true;
+  const publicCity = showPublicLocation ? location.split(",")[0]?.trim() || "" : "";
+  const explicitState = readStringField(fields.businessState).trim().toUpperCase();
+  const inferredState = location.split(",").at(-1)?.trim().toUpperCase() || "";
+  const publicState = showPublicLocation && /^[A-Z]{2}$/.test(explicitState || inferredState)
+    ? explicitState || inferredState
+    : "";
+  publicFields.publicCity = stringValue(publicCity);
+  publicFields.publicState = stringValue(publicState);
+  publicFields.searchTokens = arrayValue(
+    toSearchTokens(
+      readStringField(fields.name),
+      readStringField(fields.category),
+      readStringField(fields.serviceType),
+      readStringField(fields.companyName),
+      publicCity,
+      publicState,
+    ).map(stringValue),
+  );
 
   return publicFields;
 }

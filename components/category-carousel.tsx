@@ -225,7 +225,7 @@ export function CategoryCarousel() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => handleCategoryClick(cat.name)}
-                  className="flex flex-col items-center justify-between space-y-6 min-w-[100px] md:min-w-[140px] p-4 bg-white dark:bg-[color-mix(in_oklab,var(--md-sys-color-surface)_16%,transparent)] rounded-xl border border-border-subtle hover:shadow-md transition-all duration-300 group/card shrink-0"
+                  className="flex flex-col items-center justify-between space-y-6 min-w-[100px] md:min-w-[140px] p-4 bg-white dark:bg-[color-mix(in_oklab,var(--skillsy-color-surface)_16%,transparent)] rounded-xl border border-border-subtle hover:shadow-md transition-all duration-300 group/card shrink-0"
                 >
                   <div
                     className={`size-12 md:size-14 lg:size-16 ${cat.bg} rounded-md flex items-center justify-center  group-hover/card:scale-110 transition-transform duration-300`}
@@ -266,3 +266,4 @@ export function CategoryCarousel() {
     </div>
   );
 }
+

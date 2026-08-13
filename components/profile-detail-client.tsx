@@ -11,7 +11,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   UserPlus,
   MapPin,
-  Briefcase,
   Star,
   Info,
   Building2,
@@ -22,6 +21,7 @@ import {
   Clock,
   Flag,
   ShieldCheck,
+  HeartHandshake,
   MessageSquareText,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -69,10 +69,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { reportUserSchema, type ReportUserFormData } from "@/lib/validations";
 import { REPORT_REASON_LABELS, REPORT_REASON_OPTIONS } from "@/lib/reporting";
-import {
-  getMembershipYears,
-  shouldShowVerifiedBadge,
-} from "@/lib/member-verification";
+import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 
 interface ProfileDetailClientProps {
   id: string;
@@ -101,6 +98,8 @@ export function ProfileDetailClient({
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [loadingRatings, setLoadingRatings] = useState(false);
   const [submittingRating, setSubmittingRating] = useState(false);
+  const [isRecommended, setIsRecommended] = useState(false);
+  const [recommendationLoading, setRecommendationLoading] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   const reportForm = useForm<ReportUserFormData>({
@@ -131,9 +130,9 @@ export function ProfileDetailClient({
     targetProfile.isProvider &&
     user?.uid !== targetProfile.uid,
   );
-  const membershipYears = targetProfile
-    ? (targetProfile.membershipYears ?? getMembershipYears(targetProfile))
-    : undefined;
+  const publicLocation = [targetProfile?.publicCity, targetProfile?.publicState]
+    .filter(Boolean)
+    .join(", ");
 
   useEffect(() => {
     // We only need to fetch if we don't have the profile yet or to get fresh data
@@ -175,6 +174,17 @@ export function ProfileDetailClient({
     fetchRatings();
   }, [targetProfile?.uid, targetProfile?.isProvider]);
 
+  useEffect(() => {
+    if (!user?.uid || !targetProfile?.isProvider || user.uid === targetProfile.uid) {
+      setIsRecommended(false);
+      return;
+    }
+
+    UserService.getCommunityRecommendation(targetProfile.uid, user.uid)
+      .then((recommendation) => setIsRecommended(Boolean(recommendation)))
+      .catch(() => setIsRecommended(false));
+  }, [targetProfile?.uid, targetProfile?.isProvider, user?.uid]);
+
   const isContact = currentUserProfile?.contacts?.includes(id);
 
   const handleToggleContact = async () => {
@@ -196,6 +206,39 @@ export function ProfileDetailClient({
       );
     } catch (error) {
       toast.error("Erro ao atualizar contatos");
+    }
+  };
+
+  const handleToggleRecommendation = async () => {
+    if (!user) {
+      toast.error("Entre para indicar um profissional", {
+        description: "A indicação comunitária é registrada uma vez por membro.",
+        action: { label: "Login", onClick: () => router.push("/") },
+      });
+      return;
+    }
+    if (!targetProfile || user.uid === targetProfile.uid) return;
+
+    setRecommendationLoading(true);
+    try {
+      const added = await UserService.toggleCommunityRecommendation(user.uid, targetProfile.uid);
+      setIsRecommended(added);
+      setTargetProfile((current) => current
+        ? {
+            ...current,
+            recommendationCount: Math.max(0, (current.recommendationCount || 0) + (added ? 1 : -1)),
+          }
+        : current);
+      toast.success(added ? "Indicação registrada" : "Indicação removida", {
+        description: added
+          ? "Sua indicação fortalece a confiança da comunidade."
+          : "Você pode indicar novamente quando quiser.",
+      });
+    } catch (error) {
+      console.error("Error toggling recommendation:", error);
+      toast.error("Não foi possível atualizar sua indicação");
+    } finally {
+      setRecommendationLoading(false);
     }
   };
 
@@ -548,11 +591,6 @@ export function ProfileDetailClient({
     availabilityDays.length || targetProfile?.serviceHours?.trim(),
   );
 
-  const ratingsWithComment = ratings.filter(
-    (rating) =>
-      typeof rating.comment === "string" && rating.comment.trim().length > 0,
-  );
-
   const formatRatingDate = (createdAt: Rating["createdAt"]) => {
     if (
       !createdAt ||
@@ -579,7 +617,7 @@ export function ProfileDetailClient({
   const handleRate = async () => {
     if (!user) {
       toast.error("Login necessário", {
-        description: "Você precisa estar logado para avaliar serviços.",
+        description: "Você precisa estar logado para avaliar este profissional.",
       });
       return;
     }
@@ -614,7 +652,7 @@ export function ProfileDetailClient({
         ratingComment.trim() || undefined,
       );
       toast.success("Avaliação enviada!", {
-        description: "Obrigado por compartilhar sua experiência.",
+        description: "Obrigado por compartilhar sua percepção com a comunidade.",
       });
       // Refresh profile to show new rating
       const [updated, updatedRatings] = await Promise.all([
@@ -700,8 +738,14 @@ export function ProfileDetailClient({
       icon: Star,
     },
     {
+      label: "Indicações",
+      value: `${targetProfile.recommendationCount || 0} pessoa${(targetProfile.recommendationCount || 0) === 1 ? "" : "s"} indicam`,
+      detail: "Cada membro pode registrar uma indicação por profissional.",
+      icon: HeartHandshake,
+    },
+    {
       label: "Contexto",
-      value: targetProfile.location || "Brasil",
+      value: publicLocation || "Brasil",
       detail: hasAvailabilityInfo
         ? "Inclui disponibilidade ou horario de atendimento."
         : "Combine disponibilidade diretamente com o membro.",
@@ -803,6 +847,17 @@ export function ProfileDetailClient({
                     >
                       <FaWhatsapp /> <p>WhatsApp</p>
                     </Button>
+                    {user?.uid !== targetProfile.uid && (
+                      <Button
+                        onClick={handleToggleRecommendation}
+                        disabled={recommendationLoading}
+                        variant={isRecommended ? "outline" : "default"}
+                        className="h-10 px-5 rounded-md font-bold"
+                      >
+                        <HeartHandshake className="size-4" />
+                        {isRecommended ? "Você indicou" : "Eu indico"}
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <div className="-mt-28 sm:-mt-34 md:-mt-38 mb-4 relative z-10 size-28 sm:size-32 md:size-40">
@@ -858,32 +913,14 @@ export function ProfileDetailClient({
                       </div>
                       )}
 
-                    {targetProfile.location && (
+                    {publicLocation && (
                       <div className="flex items-center space-x-2">
                         <LuMapPin size={18} className="text-text-main" />
                         <p className="text-sm text-text-main font-normal">
-                          {targetProfile.location}
+                          {publicLocation}
                         </p>
                       </div>
                     )}
-                    {targetProfile.ward && (
-                      <div className="flex items-center space-x-2">
-                        <Briefcase size={16} className="text-text-main" />
-                        <p className="text-sm text-text-main font-normal">
-                          {targetProfile.ward}
-                        </p>
-                      </div>
-                    )}
-                    {typeof membershipYears === "number" &&
-                      membershipYears >= 0 && (
-                        <div className="flex items-center space-x-2">
-                          <CalendarDays size={16} className="text-text-main" />
-                          <p className="text-sm text-text-main font-normal">
-                            Membro há {membershipYears}{" "}
-                            {membershipYears === 1 ? "ano" : "anos"}
-                          </p>
-                        </div>
-                      )}
                   </div>
 
                   <div className="flex flex-col w-full sm:w-auto">
@@ -957,6 +994,17 @@ export function ProfileDetailClient({
                       >
                         <FaWhatsapp /> <p>WhatsApp</p>
                       </Button>
+                      {user?.uid !== targetProfile.uid && (
+                        <Button
+                          onClick={handleToggleRecommendation}
+                          disabled={recommendationLoading}
+                          variant={isRecommended ? "outline" : "default"}
+                          className="h-10 w-full rounded-sm font-bold"
+                        >
+                          <HeartHandshake className="size-4" />
+                          {isRecommended ? "Você indicou" : "Eu indico"}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1077,11 +1125,14 @@ export function ProfileDetailClient({
 
                     <div className="flex flex-col space-y-1.5">
                       <p className="text-sm text-text-main font-medium">
-                        Avalie o serviço prestado por este membro.
+                        Compartilhe sua percepção sobre este profissional.
                       </p>
                       <p className="text-xs text-text-muted">
-                        Sua avaliação é anônima e pode incluir um comentário
-                        opcional.
+                        A nota de 1 a 5 estrelas é obrigatória. O comentário é
+                        opcional e a avaliação não está ligada a um serviço específico.
+                      </p>
+                      <p className="text-xs font-medium text-text-muted">
+                        Seu nome será exibido junto à avaliação.
                       </p>
                       <div className="flex items-center gap-1.5 ">
                         {[1, 2, 3, 4, 5].map((star) => (
@@ -1115,7 +1166,7 @@ export function ProfileDetailClient({
                       <Textarea
                         value={ratingComment}
                         onChange={(event) => setRatingComment(event.target.value)}
-                        placeholder="Conte como foi sua experiência com este profissional. Opcional."
+                        placeholder="Compartilhe sua experiência ou recomendação. Opcional."
                         maxLength={500}
                         disabled={!canRateProfile || submittingRating}
                         className="min-h-24 w-full bg-background flex"
@@ -1156,18 +1207,18 @@ export function ProfileDetailClient({
                   <p className="text-sm text-text-muted">
                     Carregando comentários...
                   </p>
-                ) : ratingsWithComment.length === 0 ? (
+                ) : ratings.length === 0 ? (
                   <div className="rounded-lg border border-dashed border-border-subtle bg-surface p-4">
                     <p className="text-sm text-text-muted">
-                      Ainda não há comentários públicos sobre este profissional.
+                      Ainda não há avaliações públicas sobre este profissional.
                     </p>
                     <p className="mt-1 text-xs text-text-muted">
-                      As avaliações continuam anônimas e opcionais.
+                      As novas avaliações mostram o nome de quem avaliou; o comentário continua opcional.
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {ratingsWithComment.map((rating) => (
+                    {ratings.map((rating) => (
                       <article
                         key={rating.id}
                         className="rounded-lg border border-border-subtle bg-surface p-4 space-y-3"
@@ -1193,16 +1244,22 @@ export function ProfileDetailClient({
                               ))}
                             </div>
                             <p className="text-xs font-medium text-text-muted">
-                              Avaliação anônima
+                              {rating.authorName || "Membro Skillsy"}
                             </p>
                           </div>
                           <p className="text-xs text-text-muted">
                             {formatRatingDate(rating.createdAt)}
                           </p>
                         </div>
-                        <p className="text-sm leading-relaxed text-text-main whitespace-pre-wrap">
-                          {rating.comment}
-                        </p>
+                        {rating.comment?.trim() ? (
+                          <p className="text-sm leading-relaxed text-text-main whitespace-pre-wrap">
+                            {rating.comment}
+                          </p>
+                        ) : (
+                          <p className="text-sm text-text-muted">
+                            Classificação sem comentário.
+                          </p>
+                        )}
                       </article>
                     ))}
                   </div>

@@ -86,6 +86,7 @@ interface SearchClientProps {
   initialQuery: string;
   initialCity: string;
   initialState: string;
+  initialCategory: string;
   initialResults: UserProfile[];
   initialSuggestions: UserProfile[];
 }
@@ -94,6 +95,7 @@ export function SearchClient({
   initialQuery,
   initialCity,
   initialState,
+  initialCategory,
   initialResults,
   initialSuggestions,
 }: SearchClientProps) {
@@ -112,12 +114,12 @@ export function SearchClient({
     BRAZIL_STATES.find((item) => item.value === state)?.label || state;
 
   const [searchTerm, setSearchTerm] = useState(query);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const selectedCategory = initialCategory || null;
   const [currentPage, setCurrentPage] = useState(1);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const ITEMS_PER_PAGE = 10;
-  const hasRouteFilters = Boolean(query || city || state);
+  const hasRouteFilters = Boolean(query || city || state || selectedCategory);
   const hasActiveFilters = hasRouteFilters || Boolean(selectedCategory);
   const activeLocationLabel = city
     ? `${city}, ${selectedStateLabel || state}`
@@ -133,19 +135,7 @@ export function SearchClient({
     setCurrentPage(1);
   }, [query, city, state, selectedCategory]);
 
-  const results = useMemo(() => {
-    if (!selectedCategory) {
-      return initialResults;
-    }
-
-    return initialResults.filter(
-      (provider) =>
-        provider.category === selectedCategory ||
-        provider.serviceType
-          ?.toLowerCase()
-          .includes(selectedCategory.toLowerCase()),
-    );
-  }, [initialResults, selectedCategory]);
+  const results = initialResults;
 
   const paginatedResults = useMemo(
     () =>
@@ -162,11 +152,13 @@ export function SearchClient({
     q?: string | null;
     city?: string | null;
     state?: string | null;
+    category?: string | null;
   }) => {
     const params = new URLSearchParams();
     const nextQuery = overrides?.q ?? query;
     const nextCity = overrides?.city ?? city;
     const nextState = overrides?.state ?? state;
+    const nextCategory = overrides?.category ?? selectedCategory;
 
     if (nextQuery?.trim()) {
       params.set("q", nextQuery.trim());
@@ -178,6 +170,9 @@ export function SearchClient({
 
     if (nextCity?.trim()) {
       params.set("city", nextCity.trim());
+    }
+    if (nextCategory?.trim()) {
+      params.set("category", nextCategory.trim());
     }
 
     return params;
@@ -209,13 +204,17 @@ export function SearchClient({
 
   const clearAllFilters = () => {
     setSearchTerm("");
-    setSelectedCategory(null);
     router.push("/search");
   };
 
   const clearSearchQuery = () => {
     setSearchTerm("");
     const params = createRouteParams({ q: null });
+    router.push(`/search?${params.toString()}`);
+  };
+
+  const handleCategoryChange = (nextCategory: string | null) => {
+    const params = createRouteParams({ category: nextCategory });
     router.push(`/search?${params.toString()}`);
   };
 
@@ -229,7 +228,7 @@ export function SearchClient({
             key={cat}
             type="button"
             aria-pressed={isSelected}
-            onClick={() => setSelectedCategory(isSelected ? null : cat)}
+            onClick={() => handleCategoryChange(isSelected ? null : cat)}
             className={`rounded-full border px-3 py-2 text-sm font-medium transition-colors lg:flex lg:w-full lg:items-center lg:justify-between lg:rounded-md ${
               isSelected
                 ? "border-primary bg-primary text-white"
@@ -246,7 +245,7 @@ export function SearchClient({
 
   return (
     <div className="min-h-screen bg-surface/30 w-full space-y-2">
-      <nav className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_oklab,var(--md-sys-color-surface)_86%,transparent)] backdrop-blur-md">
+      <nav className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_oklab,var(--skillsy-color-surface)_86%,transparent)] backdrop-blur-md">
         <div className="container px-4 mx-auto flex min-h-16 items-center justify-between gap-4 py-2">
           <Drawer
             key={`search-drawer-${pathname}`}
@@ -396,7 +395,7 @@ export function SearchClient({
               <DrawerFooter>
                 <DrawerClose asChild>
                   <Link
-                    className="flex h-10 items-center justify-center rounded-full bg-primary px-5 text-center text-sm font-medium text-primary-foreground shadow-[var(--md-sys-elevation-level1)] hover:bg-primary/90 active:bg-primary/80"
+                    className="flex h-10 items-center justify-center rounded-full bg-primary px-5 text-center text-sm font-medium text-primary-foreground shadow-[var(--skillsy-elevation-level1)] hover:bg-primary/90 active:bg-primary/80"
                     href="/donation"
                   >
                     Ajude o projeto
@@ -477,7 +476,7 @@ export function SearchClient({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="O que você procura?"
-                className="pl-12 h-10 w-full bg-card border-border-subtle text-text-main placeholder:text-text-muted shadow-sm rounded-full placeholder:text-xs"
+                className="pl-12 h-10 w-full bg-white border-border hover:border-border focus:border-0  dark:bg-black  transition-shadow text-text-main placeholder:text-text-muted shadow-sm focus:shadow-[0_0_10px_rgba(0,0,0,0.2)] rounded-full placeholder:text-xs"
               />
             </div>
 
@@ -637,7 +636,7 @@ export function SearchClient({
                   {selectedCategory ? (
                     <button
                       type="button"
-                      onClick={() => setSelectedCategory(null)}
+                      onClick={() => handleCategoryChange(null)}
                       className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-main hover:text-primary"
                     >
                       Categoria: {selectedCategory} ×

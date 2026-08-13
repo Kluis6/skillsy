@@ -51,7 +51,7 @@ export function ContactCTA() {
   };
 
   return (
-    <section className="my-24 bg-[linear-gradient(175deg,color-mix(in_oklab,var(--md-sys-color-primary)_76%,var(--md-sys-color-primary-container))_40%,color-mix(in_oklab,var(--md-sys-color-primary)_70%,var(--md-sys-color-surface))_58%,var(--md-sys-color-surface)_100%)] dark:bg-[linear-gradient(135deg,color-mix(in_oklab,var(--md-sys-color-primary)_52%,var(--md-sys-color-primary-container))_10%,color-mix(in_oklab,var(--md-sys-color-primary)_36%,var(--md-sys-color-surface))_52%,var(--md-sys-color-surface)_90%)] p-4 lg:p-6 xl:p-8 rounded-xl">
+    <section className="my-24 bg-[linear-gradient(175deg,color-mix(in_oklab,var(--skillsy-color-primary)_76%,var(--skillsy-color-primary-container))_40%,color-mix(in_oklab,var(--skillsy-color-primary)_70%,var(--skillsy-color-surface))_58%,var(--skillsy-color-surface)_100%)] dark:bg-[linear-gradient(135deg,color-mix(in_oklab,var(--skillsy-color-primary)_52%,var(--skillsy-color-primary-container))_10%,color-mix(in_oklab,var(--skillsy-color-primary)_36%,var(--skillsy-color-surface))_52%,var(--skillsy-color-surface)_90%)] p-4 lg:p-6 xl:p-8 rounded-xl">
       <div className="grid grid-cols-12 gap-y-12 md:gap-8">
         <div className="col-span-12 lg:col-span-6 xl:col-span-7 w-full h-full">
           <div className="space-y-4 justify-center pt-4 lg:pt-0 items-center md:items-start flex flex-col w-full h-full">
@@ -195,3 +195,4 @@ export function ContactCTA() {
     </section>
   );
 }
+

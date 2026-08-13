@@ -34,6 +34,7 @@ export const profileSchema = z.object({
     .max(50, 'Nome deve ter no máximo 50 caracteres'),
   bio: optionalTextField(500, 'Bio deve ter no máximo 500 caracteres'),
   location: optionalTextField(100, 'Localização deve ter no máximo 100 caracteres'),
+  showPublicLocation: z.boolean(),
   ward: optionalTextField(100, 'Ala/Ramo deve ter no máximo 100 caracteres'),
   serviceType: optionalTextField(100, 'Serviço deve ter no máximo 100 caracteres'),
   category: z.union([z.literal(''), z.enum(PROVIDER_CATEGORIES)]),

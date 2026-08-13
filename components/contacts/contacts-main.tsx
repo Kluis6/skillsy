@@ -354,7 +354,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                     <div className="flex items-center space-x-2 justify-center md:justify-start ">
                       <MapPin size={14} />
                       <p className="text-text-muted text-sm font-normal">
-                        {selectedContact.location ||
+                        {[selectedContact.publicCity, selectedContact.publicState].filter(Boolean).join(", ") ||
                           "Localização não informada"}
                       </p>
                     </div>

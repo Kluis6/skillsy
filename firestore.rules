@@ -55,6 +55,19 @@ service cloud.firestore {
     //   - providerId: string (required)
     //   - votedAt: timestamp (required)
     //
+    // Collection: opportunities
+    // Document ID: auto ID
+    // Fields:
+    //   - authorId: string (required, immutable, matches auth.uid)
+    //   - authorName: string (required, 1-100 chars)
+    //   - authorWhatsApp: string (required, 8-30 chars; explicitly published by author)
+    //   - category, title, description, city, neighborhood, state: strings (required)
+    //   - urgency: string (optional, normal/soon/urgent)
+    //   - status: string (required, active/closed/expired)
+    //   - createdAt, expiresAt: timestamps (required, immutable)
+    //   - closedAt, reactivatedAt, followUpAnsweredAt: timestamps (optional)
+    //   - receivedResponse, platformSatisfied: booleans (optional)
+    //
     // ===============================================================
 
     // ===============================================================
@@ -190,7 +203,7 @@ service cloud.firestore {
         'rating', 'reviewCount', 'experienceYears', 'baptismYear',
         'memberVerified', 'membershipYears',
         'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
-        'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'businessComplement'
+        'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'showPublicLocation', 'businessComplement'
       ];
       
       return data.keys().hasAll(['uid', 'name', 'email', 'isProvider', 'role', 'createdAt']) &&
@@ -233,6 +246,7 @@ service cloud.firestore {
              (!('businessAddressNumber' in data) || data.businessAddressNumber == null || (data.businessAddressNumber is string && data.businessAddressNumber.size() <= 20)) &&
              (!('businessNeighborhood' in data) || data.businessNeighborhood == null || (data.businessNeighborhood is string && data.businessNeighborhood.size() <= 100)) &&
              (!('businessState' in data) || data.businessState == null || (data.businessState is string && data.businessState.size() <= 100)) &&
+             (!('showPublicLocation' in data) || data.showPublicLocation is bool) &&
              (!('businessComplement' in data) || data.businessComplement == null || (data.businessComplement is string && data.businessComplement.size() <= 100)) &&
              (!('isBlocked' in data) || data.isBlocked is bool) &&
              (!('isDeleted' in data) || data.isDeleted is bool) &&
@@ -243,8 +257,8 @@ service cloud.firestore {
     function isValidPublicProfile(data, userId) {
       let allowedFields = [
         'uid', 'name', 'photoURL', 'bannerURL', 'bio', 'category',
-        'isProvider', 'serviceType', 'location', 'ward', 'companyName', 'gallery',
-        'rating', 'reviewCount', 'experienceYears', 'baptismYear', 'memberVerified', 'membershipYears', 'availability',
+        'isProvider', 'serviceType', 'publicCity', 'publicState', 'searchTokens', 'companyName', 'gallery',
+        'rating', 'reviewCount', 'recommendationCount', 'experienceYears', 'availability',
         'serviceHours', 'whatsapp', 'instagram', 'facebook', 'linkedin',
         'website', 'phone', 'phones', 'isBlocked', 'isDeleted', 'createdAt'
       ];
@@ -261,18 +275,15 @@ service cloud.firestore {
              (!('bio' in data) || data.bio == null || (data.bio is string && data.bio.size() <= 2000)) &&
              (!('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100 && isValidCategory(data.category))) &&
              (!('serviceType' in data) || data.serviceType == null || (data.serviceType is string && data.serviceType.size() <= 200)) &&
-             (!('location' in data) || data.location == null || (data.location is string && data.location.size() <= 200)) &&
-             (!('ward' in data) || data.ward == null || (data.ward is string && data.ward.size() <= 200)) &&
+             (!('publicCity' in data) || data.publicCity == null || (data.publicCity is string && data.publicCity.size() <= 100)) &&
+             (!('publicState' in data) || data.publicState == null || (data.publicState is string && data.publicState.matches('^[A-Z]{2}$'))) &&
+             (!('searchTokens' in data) || (data.searchTokens is list && data.searchTokens.size() <= 80)) &&
              (!('companyName' in data) || data.companyName == null || (data.companyName is string && data.companyName.size() <= 200)) &&
              (!('gallery' in data) || data.gallery == null || isValidGallery(data.gallery)) &&
              (!('rating' in data) || data.rating is number) &&
              (!('reviewCount' in data) || data.reviewCount is number) &&
+             (!('recommendationCount' in data) || (data.recommendationCount is number && data.recommendationCount >= 0)) &&
              (!('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
-             (!('baptismYear' in data) || data.baptismYear == null || data.baptismYear is number) &&
-             (!('memberVerified' in data) || data.memberVerified is bool) &&
-             (!('membershipYears' in data) || data.membershipYears == null || data.membershipYears is number) &&
-             hasConsistentMemberVerified(data) &&
-             hasConsistentMembershipYears(data) &&
              (!('availability' in data) || data.availability == null || isValidAvailabilityList(data.availability)) &&
              (!('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200)) &&
              (!('whatsapp' in data) || data.whatsapp == null || (data.whatsapp is string && data.whatsapp.size() <= 30)) &&
@@ -342,6 +353,47 @@ service cloud.firestore {
              existsAfter(voteDocPath(request.auth.uid, targetUserId));
     }
 
+    function recommendationPath(targetUserId, recommenderId) {
+      return /databases/$(database)/documents/public_profiles/$(targetUserId)/recommendations/$(recommenderId);
+    }
+
+    function isAllowedRecommendationAggregateUpdate(targetUserId) {
+      let previousCount = ('recommendationCount' in resource.data) ? resource.data.recommendationCount : 0;
+      let nextCount = request.resource.data.recommendationCount;
+      let recommendationExistsAfter = existsAfter(recommendationPath(targetUserId, request.auth.uid));
+
+      return isAuthenticated() &&
+             isNotBlocked() &&
+             request.auth.uid != targetUserId &&
+             canReceiveRatings(targetUserId) &&
+             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['recommendationCount']) &&
+             nextCount is number && nextCount >= 0 &&
+             ((recommendationExistsAfter && nextCount == previousCount + 1) ||
+              (!recommendationExistsAfter && exists(recommendationPath(targetUserId, request.auth.uid)) && nextCount == previousCount - 1));
+    }
+
+    function isValidCommunityRecommendation(data, recommenderId) {
+      return data.keys().hasAll(['recommenderId', 'createdAt']) &&
+             data.keys().hasOnly(['recommenderId', 'createdAt']) &&
+             data.recommenderId == recommenderId &&
+             data.createdAt is timestamp;
+    }
+
+    function recommendationCreationUpdatesCount(targetUserId) {
+      let previousCount = ('recommendationCount' in get(publicProfilePath(targetUserId)).data)
+        ? get(publicProfilePath(targetUserId)).data.recommendationCount : 0;
+      return existsAfter(publicProfilePath(targetUserId)) &&
+             getAfter(publicProfilePath(targetUserId)).data.recommendationCount == previousCount + 1;
+    }
+
+    function recommendationDeletionUpdatesCount(targetUserId) {
+      let previousCount = ('recommendationCount' in get(publicProfilePath(targetUserId)).data)
+        ? get(publicProfilePath(targetUserId)).data.recommendationCount : 0;
+      return existsAfter(publicProfilePath(targetUserId)) &&
+             previousCount > 0 &&
+             getAfter(publicProfilePath(targetUserId)).data.recommendationCount == previousCount - 1;
+    }
+
     function isValidService(data) {
       return data.keys().hasAll(['providerId', 'title', 'description', 'category']) &&
              data.providerId is string &&
@@ -351,15 +403,18 @@ service cloud.firestore {
     }
 
     function isValidRating(data) {
-      let allowed = ['toId', 'score', 'createdAt', 'comment'];
-      return data.keys().hasAll(['toId', 'score', 'createdAt']) &&
+      let allowed = ['toId', 'fromId', 'authorName', 'score', 'createdAt', 'comment'];
+      return data.keys().hasAll(['toId', 'fromId', 'authorName', 'score', 'createdAt']) &&
              data.keys().hasOnly(allowed) &&
              data.toId is string && data.toId != request.auth.uid &&
+             data.fromId == request.auth.uid &&
+             data.authorName is string && data.authorName.size() > 0 && data.authorName.size() <= 100 &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             data.authorName == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.name &&
              canReceiveRatings(data.toId) &&
              data.score is number && data.score >= 1 && data.score <= 5 &&
              data.createdAt is timestamp &&
-             (!('comment' in data) || (data.comment is string && data.comment.size() <= 500)) &&
-             !('fromId' in data); // Enforce anonymity
+             (!('comment' in data) || (data.comment is string && data.comment.size() <= 500));
     }
 
     function isValidVoteRecord(data, providerId) {
@@ -410,6 +465,17 @@ service cloud.firestore {
              (!('details' in data) || data.details == null || (data.details is string && data.details.size() <= 1000)) &&
              data.status in ['new', 'reviewed', 'resolved'] &&
              (!('createdAt' in data) || data.createdAt is timestamp);
+    }
+
+    function isValidReportModerationFields(data) {
+      return (!('status' in data) || data.status in ['new', 'in_review', 'resolved', 'dismissed', 'reviewed']) &&
+             (!('priority' in data) || data.priority in ['low', 'normal', 'high']) &&
+             (!('assignedAdminId' in data) || (data.assignedAdminId is string && data.assignedAdminId == request.auth.uid)) &&
+             (!('assignedAdminName' in data) || (data.assignedAdminName is string && data.assignedAdminName.size() > 0 && data.assignedAdminName.size() <= 100 && data.assignedAdminName == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.name)) &&
+             (!('resolution' in data) || data.resolution == null || (data.resolution is string && data.resolution.size() <= 1000)) &&
+             (!('reviewedAt' in data) || data.reviewedAt is timestamp) &&
+             (!('resolvedAt' in data) || data.resolvedAt is timestamp) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
     }
 
     function isValidPostStatus(status) {
@@ -506,6 +572,55 @@ service cloud.firestore {
              (!('createdAt' in data) || data.createdAt is timestamp);
     }
 
+    function isValidOpportunity(data) {
+      let allowed = [
+        'authorId', 'authorName', 'authorWhatsApp', 'category', 'title',
+        'description', 'city', 'neighborhood', 'state', 'urgency', 'status',
+        'createdAt', 'expiresAt', 'closedAt', 'reactivatedAt',
+        'receivedResponse', 'platformSatisfied', 'followUpAnsweredAt', 'followUpNotifiedAt'
+      ];
+
+      return data.keys().hasAll([
+               'authorId', 'authorName', 'authorWhatsApp', 'category', 'title',
+               'description', 'city', 'neighborhood', 'state', 'status',
+               'createdAt', 'expiresAt'
+             ]) &&
+             data.keys().hasOnly(allowed) &&
+             data.authorId is string &&
+             data.authorName is string && data.authorName.size() > 0 && data.authorName.size() <= 100 &&
+             data.authorWhatsApp is string && data.authorWhatsApp.size() >= 8 && data.authorWhatsApp.size() <= 30 &&
+             data.category is string && isValidCategory(data.category) &&
+             data.title is string && data.title.size() >= 5 && data.title.size() <= 120 &&
+             data.description is string && data.description.size() >= 20 && data.description.size() <= 2000 &&
+             data.city is string && data.city.size() >= 2 && data.city.size() <= 100 &&
+             data.neighborhood is string && data.neighborhood.size() >= 2 && data.neighborhood.size() <= 100 &&
+             data.state is string && data.state.matches('^[A-Z]{2}$') &&
+             (!('urgency' in data) || data.urgency in ['normal', 'soon', 'urgent']) &&
+             data.status in ['active', 'closed', 'expired'] &&
+             data.createdAt is timestamp &&
+             data.expiresAt is timestamp &&
+             (!('closedAt' in data) || data.closedAt is timestamp) &&
+             (!('reactivatedAt' in data) || data.reactivatedAt is timestamp) &&
+             (!('receivedResponse' in data) || data.receivedResponse is bool) &&
+             (!('platformSatisfied' in data) || data.platformSatisfied is bool) &&
+             (!('followUpAnsweredAt' in data) || data.followUpAnsweredAt is timestamp) &&
+             (!('followUpNotifiedAt' in data) || data.followUpNotifiedAt is timestamp);
+    }
+
+    function keepsOpportunityIdentity(data) {
+      return data.authorId == resource.data.authorId &&
+             data.authorName == resource.data.authorName &&
+             data.authorWhatsApp == resource.data.authorWhatsApp &&
+             data.createdAt == resource.data.createdAt;
+    }
+
+    function ownerCanManageOpportunity(data) {
+      return isAuthenticated() &&
+             resource.data.authorId == request.auth.uid &&
+             isValidOpportunity(data) &&
+             keepsOpportunityIdentity(data);
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
@@ -526,7 +641,13 @@ service cloud.firestore {
                       isNotBlocked() &&
                       isValidReport(request.resource.data) &&
                       request.resource.data.status == 'new';
-      allow read, update, delete: if isAdmin();
+      allow read, delete: if isAdmin();
+      allow update: if isAdmin() &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                        'status', 'priority', 'assignedAdminId', 'assignedAdminName',
+                        'resolution', 'reviewedAt', 'resolvedAt', 'updatedAt'
+                      ]) &&
+                      isValidReportModerationFields(request.resource.data);
     }
 
     match /posts/{postId} {
@@ -567,6 +688,25 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    match /opportunities/{opportunityId} {
+      // A professional can only list active requests. The author can always
+      // read their own request, including a closed or expired one.
+      allow read: if resource.data.status == 'active' ||
+                     (isAuthenticated() && resource.data.authorId == request.auth.uid) ||
+                     isAdmin();
+
+      allow create: if isAuthenticated() &&
+                      isNotBlocked() &&
+                      isValidOpportunity(request.resource.data) &&
+                      request.resource.data.authorId == request.auth.uid &&
+                      request.resource.data.status == 'active' &&
+                      !('closedAt' in request.resource.data) &&
+                      !('reactivatedAt' in request.resource.data);
+
+      allow update: if (isNotBlocked() && ownerCanManageOpportunity(request.resource.data)) || isAdmin();
+      allow delete: if (isAuthenticated() && resource.data.authorId == request.auth.uid) || isAdmin();
+    }
+
     match /users/{userId} {
       allow read: if isOwner(userId) ||
                    isAdmin() ||
@@ -599,6 +739,15 @@ service cloud.firestore {
                         !exists(voteDocPath(userId, providerId)) &&
                         isValidVoteRecord(request.resource.data, providerId);
       }
+
+      match /notifications/{notificationId} {
+        allow read: if isOwner(userId);
+        // Notifications are created only by trusted server-side Functions.
+        allow create, delete: if false;
+        allow update: if isOwner(userId) &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']) &&
+                      request.resource.data.read is bool;
+      }
     }
 
     match /public_profiles/{userId} {
@@ -608,9 +757,23 @@ service cloud.firestore {
 
       allow update: if (isOwner(userId) && isValidPublicProfile(request.resource.data, userId)) ||
                     isAllowedRatingAggregateUpdate(userId) ||
+                    isAllowedRecommendationAggregateUpdate(userId) ||
                     isAdmin();
 
       allow delete: if isOwner(userId) || isAdmin();
+
+      match /recommendations/{recommenderId} {
+        allow get: if isOwner(recommenderId);
+        allow list: if false;
+        allow create: if isOwner(recommenderId) &&
+                      recommenderId != userId &&
+                      isNotBlocked() &&
+                      isValidCommunityRecommendation(request.resource.data, recommenderId) &&
+                      recommendationCreationUpdatesCount(userId);
+        allow update: if false;
+        allow delete: if isOwner(recommenderId) &&
+                      recommendationDeletionUpdatesCount(userId);
+      }
     }
 
     match /services/{serviceId} {

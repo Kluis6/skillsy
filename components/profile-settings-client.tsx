@@ -21,6 +21,10 @@ import {
   Navigation,
   Eye,
   ListChecks,
+  BriefcaseBusiness,
+  MapPin,
+  MessageCircle,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -107,10 +111,17 @@ export function ProfileSettingsClient() {
   const [loading, setLoading] = useState(false);
   const [cancelingAccount, setCancelingAccount] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [onboardingIntent, setOnboardingIntent] = useState<
+    "find" | "offer" | "both" | null
+  >(null);
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const locationSectionRef = useRef<HTMLDivElement>(null);
+  const serviceSectionRef = useRef<HTMLDivElement>(null);
+  const contactSectionRef = useRef<HTMLDivElement>(null);
 
   const {
     register,
@@ -159,9 +170,51 @@ export function ProfileSettingsClient() {
   const readinessPercent = Math.round(
     (readinessDoneCount / readinessItems.length) * 100,
   );
+
+  const onboardingItems = [
+    {
+      id: "location",
+      label: "Defina sua cidade e UF",
+      description:
+        "Isso ajuda a mostrar resultados e oportunidades perto de você.",
+      done: Boolean(formData.location?.trim()),
+      action: "Adicionar localização",
+      icon: MapPin,
+    },
+    ...(onboardingIntent === "offer" ||
+    onboardingIntent === "both" ||
+    formData.isProvider
+      ? [
+          {
+            id: "service",
+            label: "Publique seu serviço",
+            description: "Escolha a categoria e descreva sua especialidade.",
+            done: Boolean(
+              formData.isProvider &&
+              formData.category?.trim() &&
+              formData.serviceType?.trim(),
+            ),
+            action: "Configurar serviço",
+            icon: BriefcaseBusiness,
+          },
+          {
+            id: "contact",
+            label: "Adicione um WhatsApp",
+            description: "Permita que interessados façam contato direto.",
+            done: Boolean(formData.whatsapp?.trim()),
+            action: "Adicionar WhatsApp",
+            icon: MessageCircle,
+          },
+        ]
+      : []),
+  ];
+  const onboardingDoneCount = onboardingItems.filter(
+    (item) => item.done,
+  ).length;
+  const nextOnboardingItem = onboardingItems.find((item) => !item.done);
   const publicFieldsSummary = [
     "Nome, foto, capa e bio",
-    "Cidade, ala/ramo e selo verificado quando aplicável",
+    "Cidade e UF somente se você autorizar",
     "Serviço, categoria, disponibilidade e galeria",
     "Contatos e redes preenchidos",
   ];
@@ -171,6 +224,24 @@ export function ProfileSettingsClient() {
       reset(profileToFormValues(profile));
     }
   }, [profile, reset]);
+
+  useEffect(() => {
+    const savedIntent = window.localStorage.getItem(
+      "skillsy:onboarding-intent",
+    );
+    const dismissed = window.localStorage.getItem(
+      "skillsy:onboarding-dismissed",
+    );
+
+    if (
+      savedIntent === "find" ||
+      savedIntent === "offer" ||
+      savedIntent === "both"
+    ) {
+      setOnboardingIntent(savedIntent);
+    }
+    setOnboardingDismissed(dismissed === "true");
+  }, []);
 
   const [detectingLocation, setDetectingLocation] = useState(false);
 
@@ -216,6 +287,41 @@ export function ProfileSettingsClient() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const chooseOnboardingIntent = (intent: "find" | "offer" | "both") => {
+    setOnboardingIntent(intent);
+    window.localStorage.setItem("skillsy:onboarding-intent", intent);
+
+    if (intent === "offer" || intent === "both") {
+      setValue("isProvider", true, { shouldDirty: true, shouldValidate: true });
+    }
+  };
+
+  const dismissOnboarding = () => {
+    setOnboardingDismissed(true);
+    window.localStorage.setItem("skillsy:onboarding-dismissed", "true");
+  };
+
+  const focusOnboardingStep = (stepId: string) => {
+    if (stepId === "service" && !formData.isProvider) {
+      setValue("isProvider", true, { shouldDirty: true, shouldValidate: true });
+    }
+
+    const target =
+      stepId === "location"
+        ? locationSectionRef.current
+        : stepId === "service"
+          ? serviceSectionRef.current
+          : contactSectionRef.current;
+
+    window.setTimeout(() => {
+      target?.scrollIntoView({ behavior: "smooth", block: "center" });
+      const firstInput = target?.querySelector<HTMLElement>(
+        "input, select, textarea, button",
+      );
+      firstInput?.focus({ preventScroll: true });
+    }, 50);
   };
 
   const compressAndGetBase64 = async (file: File) => {
@@ -416,6 +522,147 @@ export function ProfileSettingsClient() {
 
       <main className="md:container md:mx-auto md:px-4 mb-6">
         <form id="profile-settings-form" onSubmit={handleSubmit(onFormSubmit)}>
+          {!onboardingDismissed &&
+            (onboardingIntent === null || nextOnboardingItem) && (
+              <SurfacePanel className="mb-3 space-y-4 p-4 md:p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <p className="text-base font-semibold text-text-main">
+                      Comece pelo que importa
+                    </p>
+                    <p className="text-sm text-text-muted">
+                      Complete pequenas ações quando fizer sentido. Você pode
+                      usar o Skillsy desde já.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={dismissOnboarding}
+                    aria-label="Dispensar orientações de início"
+                    className="shrink-0 text-text-muted"
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
+
+                {onboardingIntent === null ? (
+                  <div className="space-y-3">
+                    <p className="text-sm font-medium text-text-main">
+                      O que você quer fazer primeiro?
+                    </p>
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => chooseOnboardingIntent("find")}
+                        className="h-auto justify-start whitespace-normal px-4 py-3 text-left"
+                      >
+                        <span>
+                          <span className="block font-semibold">
+                            Encontrar ajuda
+                          </span>
+                          <span className="mt-1 block text-xs font-normal text-text-muted">
+                            Veja profissionais e oportunidades locais.
+                          </span>
+                        </span>
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => chooseOnboardingIntent("offer")}
+                        className="h-auto justify-start whitespace-normal px-4 py-3 text-left"
+                      >
+                        <span>
+                          <span className="block font-semibold">
+                            Anunciar meu serviço
+                          </span>
+                          <span className="mt-1 block text-xs font-normal text-text-muted">
+                            Publique o essencial e apareça nas buscas.
+                          </span>
+                        </span>
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => chooseOnboardingIntent("both")}
+                        className="h-auto justify-start whitespace-normal px-4 py-3 text-left"
+                      >
+                        <span>
+                          <span className="block font-semibold">Os dois</span>
+                          <span className="mt-1 block text-xs font-normal text-text-muted">
+                            Encontre ajuda e também divulgue seu trabalho.
+                          </span>
+                        </span>
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-3 text-sm">
+                      <span className="font-medium text-text-main">
+                        {onboardingDoneCount} de {onboardingItems.length} ações
+                        essenciais concluídas
+                      </span>
+                      <span className="text-text-muted">
+                        Leva cerca de 2 minutos
+                      </span>
+                    </div>
+                    <div
+                      className="h-2 overflow-hidden rounded-full bg-surface"
+                      aria-hidden="true"
+                    >
+                      <div
+                        className="h-full rounded-full bg-primary transition-[width] duration-200"
+                        style={{
+                          width: `${(onboardingDoneCount / onboardingItems.length) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <div className="divide-y divide-border-subtle rounded-md border border-border-subtle">
+                      {onboardingItems.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <div
+                            key={item.id}
+                            className="flex items-center gap-3 p-3"
+                          >
+                            <Icon
+                              className={`size-4 shrink-0 ${item.done ? "text-green-600" : "text-primary"}`}
+                            />
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium text-text-main">
+                                {item.label}
+                              </p>
+                              <p className="text-xs text-text-muted">
+                                {item.description}
+                              </p>
+                            </div>
+                            {item.done ? (
+                              <CheckCircle2
+                                className="size-5 shrink-0 text-green-600"
+                                aria-label="Concluído"
+                              />
+                            ) : (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => focusOnboardingStep(item.id)}
+                                className="shrink-0"
+                              >
+                                {item.action}
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </SurfacePanel>
+            )}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
             {/* Left Column: Avatar & Basic Info */}
             <div className="space-y-2 lg:sticky lg:top-20 lg:self-start">
@@ -527,8 +774,7 @@ export function ProfileSettingsClient() {
               </SurfacePanel>
               <SurfacePanel className="space-y-3 p-4 md:p-4">
                 <p className="text-sm font-bold text-text-main flex items-center gap-2">
-                  <Eye className="size-4 text-primary" />
-                  O que fica público
+                  <Eye className="size-4 text-primary" />O que fica público
                 </p>
                 <ul className="space-y-2 text-xs text-text-muted">
                   {publicFieldsSummary.map((item) => (
@@ -608,7 +854,7 @@ export function ProfileSettingsClient() {
                         </p>
                       )}
                     </div>
-                    <div className="space-y-2">
+                    <div ref={locationSectionRef} className="space-y-2">
                       <Label className="text-xs md:text-sm font-medium text-text-muted flex items-center gap-1">
                         Localização (Cidade/Estado)
                       </Label>
@@ -643,6 +889,29 @@ export function ProfileSettingsClient() {
                       <p className="text-xs text-text-muted ml-1">
                         Até {PROFILE_LIMITS.location} caracteres.
                       </p>
+                      <div className="flex items-start justify-between gap-4 rounded-md border border-border-subtle bg-card p-3">
+                        <div className="space-y-1">
+                          <Label
+                            htmlFor="show-public-location"
+                            className="text-sm font-medium text-text-main"
+                          >
+                            Exibir cidade e estado no perfil público
+                          </Label>
+                          <p className="text-xs text-text-muted">
+                            Endereço, número, complemento e bairro permanecem
+                            privados.
+                          </p>
+                        </div>
+                        <Switch
+                          id="show-public-location"
+                          checked={formData.showPublicLocation}
+                          onCheckedChange={(checked) =>
+                            setValue("showPublicLocation", checked, {
+                              shouldDirty: true,
+                            })
+                          }
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2 ">
                       <Label className="text-xs md:text-sm font-medium text-text-muted">
@@ -714,7 +983,10 @@ export function ProfileSettingsClient() {
                 </section>
               </div>
               {/* aqui */}
-              <div className="md:border border-y bg-card p-4 md:p-8 space-y-6">
+              <div
+                ref={serviceSectionRef}
+                className="md:border border-y bg-card p-4 md:p-8 space-y-6"
+              >
                 <div className="flex flex-col md:flex-row gap-4 justify-between items-start">
                   <div className="space-y-1">
                     <h3 className="md:text-xl text-base font-semibold text-text-main">
@@ -757,9 +1029,12 @@ export function ProfileSettingsClient() {
                 <div className="space-y-6">
                   {!formData.isProvider ? (
                     <div className="rounded-md border border-border-subtle bg-surface p-4 text-sm text-text-muted">
-                      Ative <span className="font-semibold text-text-main">Quero Anunciar</span>{" "}
-                      quando quiser que seu serviço apareça na busca. Seu
-                      perfil pessoal continua editável mesmo sem anunciar.
+                      Ative{" "}
+                      <span className="font-semibold text-text-main">
+                        Quero Anunciar
+                      </span>{" "}
+                      quando quiser que seu serviço apareça na busca. Seu perfil
+                      pessoal continua editável mesmo sem anunciar.
                     </div>
                   ) : (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
@@ -958,7 +1233,10 @@ export function ProfileSettingsClient() {
                 </div>
               </div>
 
-              <div className="bg-card md:p-8 p-4 md:border border-y space-y-6">
+              <div
+                ref={contactSectionRef}
+                className="bg-card md:p-8 p-4 md:border border-y space-y-6"
+              >
                 <div className="space-y-1">
                   <h3 className="md:text-xl text-base font-semibold text-text-main">
                     Contatos públicos

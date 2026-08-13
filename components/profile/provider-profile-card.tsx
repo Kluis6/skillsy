@@ -50,7 +50,9 @@ export function ProviderProfileCard({
   className,
 }: ProviderProfileCardProps) {
   const isVerified = shouldShowVerifiedBadge(provider);
-  const location = provider.location || "Brasil";
+  const location = [provider.publicCity, provider.publicState]
+    .filter(Boolean)
+    .join(", ") || "Brasil";
   const roleLabel = getRoleLabel(provider);
   const rating = provider.rating || "0.0";
   const reviewCount = provider.reviewCount || 0;

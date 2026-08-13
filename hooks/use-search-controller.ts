@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { UserService } from '@/services/user-service';
 import { UserProfile } from '@/models/types';
 
@@ -7,6 +7,7 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
   const [locationFilter, setLocationFilter] = useState<{ city: string; state: string } | null>(null);
   const [providers, setProviders] = useState<UserProfile[]>(initialProviders);
   const [searching, setSearching] = useState(false);
+  const searchRequestId = useRef(0);
 
   const fetchInitialProviders = useCallback(async () => {
     try {
@@ -33,6 +34,7 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
 
   useEffect(() => {
     let isMounted = true;
+    const requestId = ++searchRequestId.current;
 
     const performSearch = async () => {
       // If we have initialProviders and no filters are active, skip search
@@ -44,13 +46,13 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
         setSearching(true);
         try {
           const featuredProviders = await UserService.getProviders(6);
-          if (isMounted) {
+          if (isMounted && requestId === searchRequestId.current) {
             setProviders(featuredProviders);
           }
         } catch (error) {
           console.error('Error fetching featured providers:', error);
         } finally {
-          if (isMounted) {
+          if (isMounted && requestId === searchRequestId.current) {
             setSearching(false);
           }
         }
@@ -61,18 +63,25 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
         setSearching(true);
         try {
           const filtered = await UserService.searchProviders(searchTerm, locationFilter || undefined);
-          if (isMounted) setProviders(filtered);
+          if (isMounted && requestId === searchRequestId.current) {
+            setProviders(filtered);
+          }
         } catch (error) {
           console.error('Error searching:', error);
         } finally {
-          if (isMounted) setSearching(false);
+          if (isMounted && requestId === searchRequestId.current) {
+            setSearching(false);
+          }
         }
       }
     };
 
-    performSearch();
+    const debounceTimer = window.setTimeout(performSearch, 300);
 
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+      window.clearTimeout(debounceTimer);
+    };
   }, [locationFilter, searchTerm, initialProviders.length]);
 
   return {
