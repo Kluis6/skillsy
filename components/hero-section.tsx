@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { CepFilter } from "@/components/cep-filter";
 import { Input } from "@/components/ui/input";
 import { Card } from "./ui/card";
+import { BsSearch } from "react-icons/bs";
 
 interface HeroSectionProps {
   searchTerm: string;
@@ -85,13 +86,13 @@ export function HeroSection({
           variants={itemVariants}
           className="w-full will-change-transform lg:col-span-5"
         >
-          <Card className=" border-none p-4 shadow-[var(--skillsy-elevation-level2)]  md:p-6">
-            <div className="mb-5 space-y-1">
+          <Card className=" border-none p-4 shadow-sm md:p-6">
+            <div className=" space-y-1">
               <p className="text-sm font-bold text-text-main">
                 Encontre alguém da rede
               </p>
-              <p className="text-sm text-text-muted ">
-                Busque por profissional, serviço ou que precisar.
+              <p className="text-sm text-gray-500 dark:text-gray-100">
+                busque por profissionais e oportunidades
               </p>
             </div>
 
@@ -100,8 +101,8 @@ export function HeroSection({
               className="flex flex-col w-full space-y-5 justify-center items-center"
             >
               <div className="relative w-full flex justify-center items-center">
-                <Search
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"
+                <BsSearch
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500"
                   size={20}
                 />
                 <Input
@@ -208,4 +209,3 @@ export function HeroSection({
     </section>
   );
 }
-

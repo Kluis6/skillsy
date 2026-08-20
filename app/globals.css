@@ -1,325 +1,130 @@
 @import "tailwindcss";
-
-@theme {
-  --color-primary: var(--skillsy-color-primary);
-  --color-accent: var(--skillsy-color-secondary);
-  --color-highlight: var(--skillsy-color-tertiary);
-  --color-background: var(--skillsy-color-surface);
-  --color-surface: var(--skillsy-color-surface-container);
-  --color-text-main: var(--skillsy-color-on-surface);
-  --color-text-muted: var(--skillsy-color-on-surface-variant);
-  --color-card-bg: var(--skillsy-color-surface-container-low);
-  --color-border-subtle: var(--skillsy-color-outline-variant);
-  --color-outline: var(--skillsy-color-outline);
-  --color-outline-variant: var(--skillsy-color-outline-variant);
-}
-
-@layer base {
-  body {
-    background-color: var(--color-background);
-    color: var(--color-text-main);
-    @apply bg-background text-foreground;
-  }
-  * {
-    @apply border-border outline-ring/50;
-  }
-  html {
-    @apply font-sans;
-  }
-}
-
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
-    --color-card: var(--card);
-    --color-foreground: var(--foreground);
-    --color-background: var(--background);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
-    /* Variáveis Nativas de Marca (Skillsy Brand System - Light) */
-    --skillsy-color-primary: #1c6096;               /* Azul Forte da Paleta */
-    --skillsy-color-on-primary: #ffffff;
-    --skillsy-color-primary-container: #bdcde0;
-    --skillsy-color-on-primary-container: #0b2b47;
-
-    --skillsy-color-secondary: #6aa0aa;             /* Teal da Paleta */
-    --skillsy-color-on-secondary: #ffffff;
-    --skillsy-color-secondary-container: #e8f0f2;
-    --skillsy-color-on-secondary-container: #1b3236;
-
-    --skillsy-color-tertiary: #bdcde0;              /* Azul Claro da Paleta */
-    --skillsy-color-on-tertiary: #222222;
-    --skillsy-color-tertiary-container: #f0f4f8;
-    --skillsy-color-on-tertiary-container: #1c6096;
-
-    --skillsy-color-error: #ba1a1a;
-    --skillsy-color-on-error: #ffffff;
-    --skillsy-color-error-container: #ffdad6;
-    --skillsy-color-on-error-container: #410002;
-
-    --skillsy-color-surface: #ffffff;               /* Fundo Claro Puro (Branco da paleta) */
-    --skillsy-color-on-surface: #222222;            /* Texto Principal (Dark da paleta) */
-    --skillsy-color-surface-variant: #f0f4f8;
-    --skillsy-color-on-surface-variant: #6aa0aa;    
-
-    --skillsy-color-surface-container-lowest: #ffffff;
-    --skillsy-color-surface-container-low: #ffffff; 
-    --skillsy-color-surface-container: #f8fafc;
-    --skillsy-color-surface-container-high: #e2e8f0;
-    --skillsy-color-surface-container-highest: #bdcde0;
-
-    --skillsy-color-outline: #6aa0aa;
-    --skillsy-color-outline-variant: #bdcde0;
-    --skillsy-color-inverse-surface: #222222;
-    --skillsy-color-inverse-on-surface: #ffffff;
-    --skillsy-color-shadow: #000000;
-    --skillsy-color-scrim: #000000;
-
-    --skillsy-shape-corner-extra-small: 4px;
-    --skillsy-shape-corner-small: 8px;
-    --skillsy-shape-corner-medium: 12px;
-    --skillsy-shape-corner-large: 16px;
-    --skillsy-shape-corner-extra-large: 28px;
-    --skillsy-shape-corner-full: 999px;
-
-    --skillsy-elevation-level0: none;
-    --skillsy-elevation-level1: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-    --skillsy-elevation-level2: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-    --skillsy-elevation-level3: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
-
-    /* Variáveis Shadcn UI - Light Mode */
-    --background: #ffffff;
-    --foreground: #222222;
-    
-    --card: #ffffff;
-    --card-foreground: #222222;
-    
-    --popover: #ffffff;
-    --popover-foreground: #222222;
-    
-    --primary: #1c6096;
-    --primary-foreground: #ffffff;
-    
-    --secondary: #bdcde0;
-    --secondary-foreground: #1c6096;
-    
-    --muted: #f0f4f8;
-    --muted-foreground: #6aa0aa;
-    
-    --accent: #6aa0aa;
-    --accent-foreground: #ffffff;
-    
-    --destructive: #ba1a1a;
-    --destructive-foreground: #ffffff;
-    
-    --border: #bdcde0;
-    --input: #bdcde0;
-    --ring: #1c6096;
-    
-    --chart-1: #1c6096;
-    --chart-2: #6aa0aa;
-    --chart-3: #bdcde0;
-    --chart-4: #4a8ec2;
-    --chart-5: #222222;
-    
-    --radius: 0.625rem;
-    
-    --sidebar: #ffffff;
-    --sidebar-foreground: #222222;
-    --sidebar-primary: #1c6096;
-    --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #f0f4f8;
-    --sidebar-accent-foreground: #1c6096;
-    --sidebar-border: #bdcde0;
-    --sidebar-ring: #1c6096;
-
-    /* Referências Customizadas */
-    --primary-custom: var(--skillsy-color-primary);
-    --accent-custom: var(--skillsy-color-secondary);
-    --highlight-custom: var(--skillsy-color-tertiary);
-    --background-custom: var(--skillsy-color-surface);
-    --surface-custom: var(--skillsy-color-surface-container);
-    --text-main-custom: var(--skillsy-color-on-surface);
-    --text-muted-custom: var(--skillsy-color-on-surface-variant);
-    --card-bg-custom: var(--skillsy-color-surface-container-lowest);
-    --border-subtle-custom: var(--skillsy-color-outline-variant);
+  --radius: 0.625rem;
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.52 0.105 223.128);
+  --primary-foreground: oklch(0.984 0.019 200.873);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.609 0.126 221.723);
+  --sidebar-primary-foreground: oklch(0.984 0.019 200.873);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
 }
 
 .dark {
-    /* Variáveis Nativas de Marca (Skillsy Brand System - Dark) */
-    --skillsy-color-primary: #4a8ec2;               /* Azul Forte mais claro para contraste */
-    --skillsy-color-on-primary: #ffffff;
-    --skillsy-color-primary-container: #1c6096;
-    --skillsy-color-on-primary-container: #bdcde0;
-
-    --skillsy-color-secondary: #6aa0aa;             /* Teal se mantém */
-    --skillsy-color-on-secondary: #ffffff;
-    --skillsy-color-secondary-container: #1b3236;
-    --skillsy-color-on-secondary-container: #e8f0f2;
-
-    --skillsy-color-tertiary: #bdcde0;              /* Azul Claro */
-    --skillsy-color-on-tertiary: #222222;
-    --skillsy-color-tertiary-container: #2c3e50;
-    --skillsy-color-on-tertiary-container: #bdcde0;
-
-    --skillsy-color-error: #ffb4ab;
-    --skillsy-color-on-error: #690005;
-    --skillsy-color-error-container: #93000a;
-    --skillsy-color-on-error-container: #ffdad6;
-
-    --skillsy-color-surface: #222222;               /* Fundo Escuro da Paleta */
-    --skillsy-color-on-surface: #ffffff;            /* Texto Claro */
-    --skillsy-color-surface-variant: #2a2a2a;
-    --skillsy-color-on-surface-variant: #bdcde0;    
-
-    --skillsy-color-surface-container-lowest: #1a1a1a;
-    --skillsy-color-surface-container-low: #2a2a2a; 
-    --skillsy-color-surface-container: #333333;
-    --skillsy-color-surface-container-high: #444444;
-    --skillsy-color-surface-container-highest: #555555;
-
-    --skillsy-color-outline: #6aa0aa;
-    --skillsy-color-outline-variant: #333333;
-    --skillsy-color-inverse-surface: #ffffff;
-    --skillsy-color-inverse-on-surface: #222222;
-
-    /* Variáveis Shadcn UI - Dark Mode */
-    --background: #222222;
-    --foreground: #ffffff;
-    
-    --card: #2a2a2a;
-    --card-foreground: #ffffff;
-    
-    --popover: #2a2a2a;
-    --popover-foreground: #ffffff;
-    
-    --primary: #4a8ec2;
-    --primary-foreground: #ffffff;
-    
-    --secondary: #333333;
-    --secondary-foreground: #bdcde0;
-    
-    --muted: #333333;
-    --muted-foreground: #bdcde0;
-    
-    --accent: #6aa0aa;
-    --accent-foreground: #ffffff;
-    
-    --destructive: #7f1d1d;
-    --destructive-foreground: #ffffff;
-    
-    --border: #333333;
-    --input: #333333;
-    --ring: #4a8ec2;
-    
-    --chart-1: #4a8ec2;
-    --chart-2: #6aa0aa;
-    --chart-3: #bdcde0;
-    --chart-4: #1c6096;
-    --chart-5: #ffffff;
-    
-    --sidebar: #222222;
-    --sidebar-foreground: #ffffff;
-    --sidebar-primary: #4a8ec2;
-    --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #333333;
-    --sidebar-accent-foreground: #ffffff;
-    --sidebar-border: #333333;
-    --sidebar-ring: #4a8ec2;
-
-    /* Referências Customizadas */
-    --primary-custom: var(--skillsy-color-primary);
-    --accent-custom: var(--skillsy-color-secondary);
-    --highlight-custom: var(--skillsy-color-tertiary);
-    --background-custom: var(--skillsy-color-surface);
-    --surface-custom: var(--skillsy-color-surface-container);
-    --text-main-custom: var(--skillsy-color-on-surface);
-    --text-muted-custom: var(--skillsy-color-on-surface-variant);
-    --card-bg-custom: var(--skillsy-color-surface-container-low);
-    --border-subtle-custom: var(--skillsy-color-outline-variant);
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.45 0.085 224.283);
+  --primary-foreground: oklch(0.984 0.019 200.873);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.715 0.143 215.221);
+  --sidebar-primary-foreground: oklch(0.302 0.056 229.695);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 }
 
-@layer components {
-  .skillsy-container {
-    width: min(100% - 2rem, 72rem);
-    margin-inline: auto;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
 
-  .skillsy-page {
-    background: var(--skillsy-color-surface);
-    color: var(--skillsy-color-on-surface);
+  body {
+    @apply bg-background text-foreground;
   }
-
-  .skillsy-surface {
-    border: 1px solid var(--skillsy-color-outline-variant);
-    border-radius: var(--skillsy-shape-corner-extra-large);
-    background: var(--skillsy-color-surface-container-low);
-    color: var(--skillsy-color-on-surface);
-  }
-
-  .skillsy-surface-high {
-    border: 1px solid var(--skillsy-color-outline-variant);
-    border-radius: var(--skillsy-shape-corner-extra-large);
-    background: var(--skillsy-color-surface-container-high);
-    box-shadow: var(--skillsy-elevation-level1);
-    color: var(--skillsy-color-on-surface);
-  }
-
-  .skillsy-card {
-    border: 1px solid var(--skillsy-color-outline-variant);
-    border-radius: var(--skillsy-shape-corner-medium);
-    background: var(--skillsy-color-surface-container-low);
-    color: var(--skillsy-color-on-surface);
-  }
-
-  .m3-tonal {
-    background: var(--skillsy-color-secondary-container);
-    color: var(--skillsy-color-on-secondary-container);
-  }
-
-  .m3-focus-ring {
-    outline: 3px solid color-mix(in srgb, var(--skillsy-color-primary) 34%, transparent);
-    outline-offset: 2px;
+  html {
+    @apply font-sans;
   }
 }

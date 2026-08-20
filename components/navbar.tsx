@@ -184,7 +184,7 @@ function DrawerNavigation({
       <DrawerFooter>
         <DrawerClose>
           <Link
-            className="flex min-h-10 items-center justify-center  bg-primary px-5 text-center text-sm font-medium text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
+            className="flex h-10 items-center justify-center  bg-primary  text-center text-sm font-medium text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
             href="/donation"
           >
             Ajude o projeto
@@ -248,7 +248,7 @@ export function Navbar({
                 }
               />
 
-              <DrawerContent className="w-full">
+              <DrawerContent className="w-[94vw]">
                 <DrawerNavigation
                   pathname={pathname}
                   user={user}
