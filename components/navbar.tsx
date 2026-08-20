@@ -12,7 +12,6 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { AuthModal } from "@/components/auth-modal";
 import { UserProfile } from "@/models/types";
 import { User } from "firebase/auth";
-import { MdLogin } from "react-icons/md";
 import {
   Drawer,
   DrawerContent,
@@ -73,8 +72,8 @@ function DrawerLink({
           className={cn(
             "flex min-h-10 w-full items-center px-3 text-sm font-medium transition-colors",
             active
-              ? " text-white bg-primary/80 dark:bg-primary/80 "
-              : "text-gray-700 hover:bg-secondary/40  dark:hover:bg-surface",
+              ? " text-white dark:text-white bg-primary/80 dark:bg-primary/80 "
+              : "text-gray-700 dark:text-gray-50 hover:bg-neutral-500/10 dark:hover:bg-surface",
           )}
         >
           {label}
@@ -108,11 +107,11 @@ function DrawerNavigation({
         <DrawerClose
           render={
             <Button
-              size="icon"
+              size="icon-lg"
               variant="ghost"
               aria-label="Fechar menu principal"
             >
-              <BsXLg className="size-5 text-foreground" />
+              <BsXLg className="size-4 text-foreground" />
             </Button>
           }
         ></DrawerClose>
@@ -170,7 +169,7 @@ function DrawerNavigation({
               <li className="mb-4">
                 <Button
                   variant="ghost"
-                  className="w-full justify-start font-medium px-3 text-sm text-gray-700 normal-case"
+                  className="w-full justify-start dark:text-white font-medium px-3 h-10 text-sm text-gray-700 normal-case"
                   onClick={handleLogout}
                 >
                   Sair da conta
@@ -184,7 +183,7 @@ function DrawerNavigation({
       <DrawerFooter>
         <DrawerClose>
           <Link
-            className="flex h-10 items-center justify-center  bg-primary  text-center text-sm font-medium text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
+            className="flex h-10 items-center justify-center bg-primary text-center text-sm font-medium text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
             href="/donation"
           >
             Ajude o projeto
@@ -215,7 +214,7 @@ export function Navbar({
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-white/85 backdrop-blur-md">
+    <nav className="sticky w-full top-0 z-50 border-b border-border dark:bg-background/90 bg-white/85 backdrop-blur-md">
       <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2">
         <div className="flex min-w-0 items-center gap-3">
           {shouldShowBackButton ? (
@@ -238,12 +237,12 @@ export function Navbar({
                 aria-label="Abrir menu principal"
                 render={
                   <Button
-                    size="icon"
+                    size="icon-lg"
                     variant="ghost"
                     className="md:hidden"
                     aria-label="Abrir menu principal"
                   >
-                    <BsList className="size-5 text-foreground " />
+                    <BsList className="size-4 text-gray-700 dark:text-white" />
                   </Button>
                 }
               />
@@ -300,12 +299,12 @@ export function Navbar({
               <DrawerTrigger
                 render={
                   <Button
-                    size="icon"
+                    size="icon-lg"
                     variant="ghost"
                     className="hidden md:flex"
                     aria-label="Abrir menu principal"
                   >
-                    <BsList className="size-5 text-foreground" />
+                    <BsList className="size-5 text-gray-800 dark:text-white" />
                   </Button>
                 }
               ></DrawerTrigger>

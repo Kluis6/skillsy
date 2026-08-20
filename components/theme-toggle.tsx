@@ -24,11 +24,11 @@ export function ThemeToggle() {
   return (
     <Button
       variant="ghost"
-      size="icon"
-      className="size-10 transition-discrete"
+      size="icon-lg"
+      className="transition-discrete text-gray-700 dark:text-white"
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
-      {isDark ? <BsMoon className="size-5" /> : <BsSun className=" size-5" />}
+      {isDark ? <BsMoon className="size-4" /> : <BsSun className=" size-4" />}
 
       <span className="sr-only">Alternar tema</span>
     </Button>
