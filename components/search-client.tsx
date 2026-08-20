@@ -309,7 +309,7 @@ export function SearchClient({
                         href="/oportunidades"
                         className="flex text-sm font-normal text-text-muted"
                       >
-                        Pedidos abertos
+                        Oportunidades
                       </Link>
                     </DrawerClose>
                   </li>
@@ -422,7 +422,7 @@ export function SearchClient({
               href="/oportunidades"
               className="rounded-md px-3 py-2 text-sm font-medium text-text-muted hover:bg-primary/10 hover:text-primary"
             >
-              Pedidos abertos
+              Oportunidades
             </Link>
           </div>
 

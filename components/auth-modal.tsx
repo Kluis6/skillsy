@@ -194,10 +194,10 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={children} nativeButton />
-      <DialogContent className=" bg-white">
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-6 bg-linear-to-l from-white to-blue-400 rounded-l-xl p-4 hidden md:flex">
-            <div className="grid grid-cols-12 gap-4 w-full h-full">
+      <DialogContent className="max-h-[min(90dvh,48rem)] w-[calc(100vw-2rem)] max-w-[60rem] overflow-y-auto bg-background p-0 text-foreground sm:w-[calc(100vw-3rem)] sm:max-w-[60rem]">
+        <div className="grid min-w-0 grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(24rem,0.9fr)]">
+          <div className="hidden min-h-[34rem] min-w-0 bg-linear-to-l from-background to-blue-400 p-4 lg:flex">
+            <div className="grid h-full w-full grid-cols-12 gap-4">
               {authGalleryImages.map((image) => (
                 <motion.div
                   key={image.src}
@@ -208,7 +208,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                     delay: image.delay,
                     ease: "easeOut",
                   }}
-                  className={`${image.className} group relative w-full h-full overflow-hidden rounded-xl`}
+                  className={`${image.className} group relative w-full h-full overflow-hidden `}
                 >
                   <Image
                     src={image.src}
@@ -221,114 +221,119 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
               ))}
             </div>
           </div>
-          <div className="col-span-12 md:col-span-6 flex flex-col items-start justify-between gap-2">
-            <div>
-              <h1 className="hidden 2xl:block text-3xl md:text-4xl font-bold text-cyan-800 mb-2">
-                Skillsy
-              </h1>
-              <h2 className="text-base md:text-xl font-medium text-text-main mb-1">
-                Bem-vindo de volta!
-              </h2>
-              <p className="text-xs font-normal md:text-sm text-text-muted mb-2 xxl:mb-6">
-                Faça login ou crie uma conta para continuar compartilhado suas
-                habilidades.
-              </p>
-            </div>
+          <div className="min-w-0">
+            <div className="flex min-h-[34rem] flex-col gap-6 p-5 sm:p-7 md:p-8">
+              <div>
+                <h1 className="hidden 2xl:block text-3xl md:text-4xl font-bold text-cyan-800 mb-2">
+                  Skillsy
+                </h1>
+                <h2 className="text-base md:text-xl font-medium text-foreground mb-1">
+                  Bem-vindo de volta!
+                </h2>
+                <p className="text-xs font-normal md:text-sm text-muted-foreground mb-2 xxl:mb-6">
+                  Faça login ou crie uma conta para continuar compartilhado suas
+                  habilidades.
+                </p>
+              </div>
 
-            <Tabs
-              defaultValue="login"
-              className="w-full sm:h-full space-y-5 2xl:space-y-6 transition-all"
-            >
-              <TabsList className="w-full space-x-2">
-                <TabsTrigger value="login">Entrar</TabsTrigger>
-                <TabsTrigger value="signup">Cadastrar</TabsTrigger>
-              </TabsList>
+              <Tabs
+                defaultValue="login"
+                className="w-full space-y-5 transition-all 2xl:space-y-6"
+              >
+                <TabsList className="w-full space-x-2 bg-muted">
+                  <TabsTrigger className="" value="login">
+                    Entrar
+                  </TabsTrigger>
+                  <TabsTrigger className="" value="signup">
+                    Cadastrar
+                  </TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="login">
-                <form
-                  onSubmit={handleSubmitLogin(handleEmailLogin)}
-                  className="space-y-3 2xl:space-y-4"
-                  noValidate
-                >
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="email"
-                      className="text-xs md:text-sm font-medium text-text-muted"
-                    >
-                      E-mail
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="seu@email.com"
-                      aria-invalid={Boolean(loginErrors.email)}
-                      aria-describedby={
-                        loginErrors.email ? "login-email-error" : undefined
-                      }
-                      className={`h-10 border-border-subtle focus-visible:ring-accent ${loginErrors.email ? "ring-2 ring-red-500" : ""}`}
-                      {...registerLogin("email")}
-                    />
-                    {loginErrors.email && (
-                      <p
-                        id="login-email-error"
-                        className="text-xs text-red-500 font-bold ml-1"
-                      >
-                        {loginErrors.email.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="password"
-                      className="text-xs md:text-sm font-medium text-text-muted"
-                    >
-                      Senha
-                    </Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      aria-invalid={Boolean(loginErrors.password)}
-                      aria-describedby={
-                        loginErrors.password
-                          ? "login-password-error"
-                          : undefined
-                      }
-                      className={`h-10 rounded border-border-subtle focus-visible:ring-accent ${loginErrors.password ? "ring-2 ring-red-500" : ""}`}
-                      {...registerLogin("password")}
-                    />
-                    {loginErrors.password && (
-                      <p
-                        id="login-password-error"
-                        className="text-xs text-red-500 font-bold ml-1"
-                      >
-                        {loginErrors.password.message}
-                      </p>
-                    )}
-                  </div>
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white h-10 font-semibold transition-colors"
+                <TabsContent value="login">
+                  <form
+                    onSubmit={handleSubmitLogin(handleEmailLogin)}
+                    className="space-y-3 2xl:space-y-4"
+                    noValidate
                   >
-                    {loading ? (
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                    ) : (
-                      "Entrar"
-                    )}
-                  </Button>
-                </form>
-              </TabsContent>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="email"
+                        className="text-xs md:text-sm font-medium text-muted-foreground"
+                      >
+                        E-mail
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="seu@email.com"
+                        aria-invalid={Boolean(loginErrors.email)}
+                        aria-describedby={
+                          loginErrors.email ? "login-email-error" : undefined
+                        }
+                        className={`h-10 border-input focus-visible:ring-accent ${loginErrors.email ? "ring-2 ring-red-500" : ""}`}
+                        {...registerLogin("email")}
+                      />
+                      {loginErrors.email && (
+                        <p
+                          id="login-email-error"
+                          className="text-xs text-red-500 font-bold ml-1"
+                        >
+                          {loginErrors.email.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="password"
+                        className="text-xs md:text-sm font-medium text-muted-foreground"
+                      >
+                        Senha
+                      </Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        aria-invalid={Boolean(loginErrors.password)}
+                        aria-describedby={
+                          loginErrors.password
+                            ? "login-password-error"
+                            : undefined
+                        }
+                        className={`h-10 rounded border-input focus-visible:ring-accent ${loginErrors.password ? "ring-2 ring-red-500" : ""}`}
+                        {...registerLogin("password")}
+                      />
+                      {loginErrors.password && (
+                        <p
+                          id="login-password-error"
+                          className="text-xs text-red-500 font-bold ml-1"
+                        >
+                          {loginErrors.password.message}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white h-10 font-semibold transition-colors"
+                    >
+                      {loading ? (
+                        <Loader2 className="mr-2 size-4 animate-spin" />
+                      ) : (
+                        "Entrar"
+                      )}
+                    </Button>
+                  </form>
+                </TabsContent>
 
-              <TabsContent value="signup">
-                <form
-                  onSubmit={handleSubmitSignUp(handleEmailSignUp)}
-                  className="space-y-4"
-                  noValidate
-                >
-                  {/* <div className="space-y-2">
+                <TabsContent value="signup">
+                  <form
+                    onSubmit={handleSubmitSignUp(handleEmailSignUp)}
+                    className="space-y-4"
+                    noValidate
+                  >
+                    {/* <div className="space-y-2">
                     <Label
                       htmlFor="signup-name"
-                      className="text-xs md:text-sm font-medium text-text-muted"
+                      className="text-xs md:text-sm font-medium text-muted-foreground"
                     >
                       Nome<span className="text-red-500">*</span>
                     </Label>
@@ -341,12 +346,12 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                           ? "signup-name-error"
                           : "signup-name-help"
                       }
-                      className={`h-10 border-border-subtle focus-visible:ring-accent ${signUpErrors.name ? "ring-2 ring-red-500" : ""}`}
+                      className={`h-10 border-input focus-visible:ring-accent ${signUpErrors.name ? "ring-2 ring-red-500" : ""}`}
                       {...registerSignUp("name")}
                     />
                     <p
                       id="signup-name-help"
-                      className="text-xs text-text-muted ml-1"
+                      className="text-xs text-muted-foreground ml-1"
                     >
                       Use entre 2 e 50 caracteres.
                     </p>
@@ -359,131 +364,132 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
                       </p>
                     )}
                   </div> */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="signup-email"
-                      className="text-xs md:text-sm font-medium text-text-muted"
-                    >
-                      E-mail <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="seu@email.com"
-                      aria-invalid={Boolean(signUpErrors.email)}
-                      aria-describedby={
-                        signUpErrors.email
-                          ? "signup-email-error"
-                          : "signup-email-help"
-                      }
-                      className={`h-10 border-border-subtle focus-visible:ring-accent ${signUpErrors.email ? "ring-2 ring-red-500" : ""}`}
-                      {...registerSignUp("email")}
-                    />
-                    <p
-                      id="signup-email-help"
-                      className="text-xs text-text-muted ml-1"
-                    >
-                      Use um e-mail válido com até 30 caracteres.
-                    </p>
-                    {signUpErrors.email && (
-                      <p
-                        id="signup-email-error"
-                        className="text-xs text-red-500 font-bold ml-1"
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="signup-email"
+                        className="text-xs md:text-sm font-medium text-muted-foreground"
                       >
-                        {signUpErrors.email.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="signup-password"
-                      className="text-xs md:text-sm font-medium text-text-muted"
-                    >
-                      Senha <span className="text-red-500">*</span>
-                    </Label>
-                    <div className="relative">
+                        E-mail <span className="text-red-500">*</span>
+                      </Label>
                       <Input
-                        id="signup-password"
-                        type="password"
-                        placeholder="Crie uma senha segura"
-                        aria-invalid={Boolean(signUpErrors.password)}
+                        id="signup-email"
+                        type="email"
+                        placeholder="seu@email.com"
+                        aria-invalid={Boolean(signUpErrors.email)}
                         aria-describedby={
-                          signUpErrors.password
-                            ? "signup-password-error"
-                            : "signup-password-help"
+                          signUpErrors.email
+                            ? "signup-email-error"
+                            : "signup-email-help"
                         }
-                        className={`h-10 border-border-subtle focus-visible:ring-accent ${signUpErrors.password ? "ring-2 ring-red-500" : ""}`}
-                        {...registerSignUp("password")}
+                        className={`h-10 border-input focus-visible:ring-accent ${signUpErrors.email ? "ring-2 ring-red-500" : ""}`}
+                        {...registerSignUp("email")}
                       />
-                    </div>
-                    <p
-                      id="signup-password-help"
-                      className="text-xs text-text-muted ml-1"
-                    >
-                      A senha deve ter o mínimo de 6 caracteres.
-                    </p>
-                    {signUpErrors.password && (
                       <p
-                        id="signup-password-error"
-                        className="text-xs text-red-500 font-bold ml-1"
+                        id="signup-email-help"
+                        className="text-xs text-muted-foreground ml-1"
                       >
-                        {signUpErrors.password.message}
+                        Use um e-mail válido com até 30 caracteres.
                       </p>
-                    )}
-                  </div>
+                      {signUpErrors.email && (
+                        <p
+                          id="signup-email-error"
+                          className="text-xs text-red-500 font-bold ml-1"
+                        >
+                          {signUpErrors.email.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="signup-password"
+                        className="text-xs md:text-sm font-medium text-muted-foreground"
+                      >
+                        Senha <span className="text-red-500">*</span>
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="signup-password"
+                          type="password"
+                          placeholder="Crie uma senha segura"
+                          aria-invalid={Boolean(signUpErrors.password)}
+                          aria-describedby={
+                            signUpErrors.password
+                              ? "signup-password-error"
+                              : "signup-password-help"
+                          }
+                          className={`h-10 border-input focus-visible:ring-accent ${signUpErrors.password ? "ring-2 ring-red-500" : ""}`}
+                          {...registerSignUp("password")}
+                        />
+                      </div>
+                      <p
+                        id="signup-password-help"
+                        className="text-xs text-muted-foreground ml-1"
+                      >
+                        A senha deve ter o mínimo de 6 caracteres.
+                      </p>
+                      {signUpErrors.password && (
+                        <p
+                          id="signup-password-error"
+                          className="text-xs text-red-500 font-bold ml-1"
+                        >
+                          {signUpErrors.password.message}
+                        </p>
+                      )}
+                    </div>
 
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white h-10 font-semibold transition-colors"
-                  >
-                    {loading ? (
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                    ) : (
-                      "Criar Conta"
-                    )}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
-            <div className="flex items-center gap-4 w-full">
-              <div className="h-px flex-grow bg-border-subtle" />
-              <h3 className="md:text-base text-base font-bold text-text-muted shrink-0">
-                ou
-              </h3>
-              <div className="h-px flex-grow bg-border-subtle" />
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white h-10 font-semibold transition-colors"
+                    >
+                      {loading ? (
+                        <Loader2 className="mr-2 size-4 animate-spin" />
+                      ) : (
+                        "Criar Conta"
+                      )}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+              <div className="flex items-center gap-4 w-full">
+                <div className="h-px flex-grow bg-border" />
+                <h3 className="md:text-base text-base font-bold text-muted-foreground shrink-0">
+                  ou
+                </h3>
+                <div className="h-px flex-grow bg-border" />
+              </div>
+
+              <Button
+                variant="outline"
+                onClick={handleGoogleLogin}
+                disabled={loading}
+                className="w-full h-10 font-semibold "
+              >
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                    <path
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      fill="#4285F4"
+                    />
+                    <path
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      fill="#34A853"
+                    />
+                    <path
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                      fill="#FBBC05"
+                    />
+                    <path
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      fill="#EA4335"
+                    />
+                  </svg>
+                )}
+                Continuar com Google
+              </Button>
             </div>
-
-            <Button
-              variant="outline"
-              onClick={handleGoogleLogin}
-              disabled={loading}
-              className="w-full h-10 font-semibold "
-            >
-              {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                  <path
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    fill="#4285F4"
-                  />
-                  <path
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    fill="#34A853"
-                  />
-                  <path
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-                    fill="#FBBC05"
-                  />
-                  <path
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    fill="#EA4335"
-                  />
-                </svg>
-              )}
-              Continuar com Google
-            </Button>
           </div>
         </div>
       </DialogContent>

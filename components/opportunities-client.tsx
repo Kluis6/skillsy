@@ -55,7 +55,7 @@ const urgencyMeta = {
   },
   soon: {
     label: "Nos próximos dias",
-    help: "Bom para pedidos que precisam de retorno ainda esta semana.",
+    help: "Bom para oportunidades que precisam de retorno ainda esta semana.",
     className: "border-primary/20 bg-primary/10 text-primary",
     rank: 2,
   },
@@ -81,7 +81,7 @@ function whatsappUrl(opportunity: Opportunity, professional: UserProfile) {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 130);
-  const message = `Olá, eu sou membro ${professional.name}. Vi seu pedido de “${brief}” no Skillsy e acredito que posso ajudar.`;
+  const message = `Olá, eu sou membro ${professional.name}. Vi sua oportunidade de “${brief}” no Skillsy e acredito que posso ajudar.`;
   return `https://wa.me/${phone.startsWith("55") ? phone : `55${phone}`}?text=${encodeURIComponent(message)}`;
 }
 
@@ -160,7 +160,7 @@ function OpportunityCard({
         ) : null}
         {!profile && (
           <p className="text-sm text-text-muted">
-            Entre para falar diretamente com quem publicou o pedido.
+            Entre para falar diretamente com quem publicou a oportunidade.
           </p>
         )}
         {profile && !profile.isProvider && !isOwner ? (
@@ -173,7 +173,7 @@ function OpportunityCard({
             variant="outline"
             onClick={() => onStatus(opportunity.id!, "closed")}
           >
-            Encerrar pedido
+            Encerrar oportunidade
           </Button>
         ) : null}
         {isOwner && status !== "active" ? (
@@ -181,7 +181,7 @@ function OpportunityCard({
             variant="outline"
             onClick={() => onStatus(opportunity.id!, "active")}
           >
-            Reativar pedido
+            Reativar oportunidade
           </Button>
         ) : null}
       </div>
@@ -195,10 +195,10 @@ function getModeCopy(mode: OpportunitiesMode) {
   if (mode === "for-you") {
     return {
       eyebrow: "Oportunidades compatíveis",
-      title: "Pedidos para o seu serviço",
+      title: "Oportunidades para o seu serviço",
       description:
-        "Estes pedidos combinam com a categoria e o estado informados no seu perfil profissional.",
-      createLabel: "Criar pedido",
+        "Estas oportunidades combinam com a categoria e o estado informados no seu perfil profissional.",
+      createLabel: "Criar oportunidade",
     };
   }
 
@@ -207,8 +207,8 @@ function getModeCopy(mode: OpportunitiesMode) {
       eyebrow: "Encontrar ajuda",
       title: "O que você precisa resolver?",
       description:
-        "Busque um profissional agora ou publique um pedido para profissionais da categoria e localização receberem alerta.",
-      createLabel: "Publicar pedido",
+        "Busque um profissional agora ou publique uma oportunidade para profissionais da categoria e localização receberem alerta.",
+      createLabel: "Publicar oportunidade",
     };
   }
 
@@ -216,8 +216,8 @@ function getModeCopy(mode: OpportunitiesMode) {
     eyebrow: "Oportunidades da comunidade",
     title: "Encontre ajuda ou ofereça seu talento",
     description:
-      "Pedidos ativos são mostrados a profissionais do mesmo tipo de serviço e estado. Você decide quando encerrar a exibição.",
-    createLabel: "Criar pedido",
+      "Oportunidades ativas são mostradas a profissionais do mesmo tipo de serviço e estado. Você decide quando encerrar a exibição.",
+    createLabel: "Criar oportunidade",
   };
 }
 
@@ -341,14 +341,14 @@ export function OpportunitiesClient({
       );
       toast.success(
         status === "closed"
-          ? "Pedido encerrado. Profissionais não o verão mais."
-          : "Pedido reativado.",
+          ? "Oportunidade encerrada. Profissionais não a verão mais."
+          : "Oportunidade reativada.",
       );
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Não foi possível atualizar o pedido.",
+          : "Não foi possível atualizar a oportunidade.",
       );
     }
   };
@@ -356,7 +356,7 @@ export function OpportunitiesClient({
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (!profile) {
-      toast.error("Faça login para criar um pedido.");
+      toast.error("Faça login para criar uma oportunidade.");
       return;
     }
     setCreating(true);
@@ -365,7 +365,7 @@ export function OpportunitiesClient({
         name: profile.name,
         whatsapp: profile.whatsapp,
       });
-      toast.success("Pedido publicado para profissionais compatíveis.");
+      toast.success("Oportunidade publicada para profissionais compatíveis.");
       setShowForm(false);
       setForm(emptyForm);
       router.refresh();
@@ -373,7 +373,7 @@ export function OpportunitiesClient({
       toast.error(
         error instanceof Error
           ? error.message
-          : "Não foi possível publicar o pedido.",
+          : "Não foi possível publicar a oportunidade.",
       );
     } finally {
       setCreating(false);
@@ -415,8 +415,8 @@ export function OpportunitiesClient({
       });
       toast.success(
         closeRequest
-          ? "Obrigado. O pedido foi encerrado."
-          : "Obrigado pelo retorno. O pedido continuará ativo.",
+          ? "Obrigado. A oportunidade foi encerrada."
+          : "Obrigado pelo retorno. A oportunidade continuará ativa.",
       );
     } catch {
       toast.error("Não foi possível registrar sua resposta.");
@@ -434,7 +434,7 @@ export function OpportunitiesClient({
             onClick={() =>
               user
                 ? setShowForm((open) => !open)
-                : toast.error("Faça login para criar um pedido.")
+                : toast.error("Faça login para criar uma oportunidade.")
             }
           >
             <Plus className="size-4" /> {modeCopy.createLabel}
@@ -466,27 +466,27 @@ export function OpportunitiesClient({
             <ClipboardPlus className="size-5 text-primary" />
             <div className="space-y-1">
               <h2 className="font-heading text-lg font-semibold text-text-main">
-                Publicar pedido
+                Publicar oportunidade
               </h2>
               <p className="text-sm leading-relaxed text-text-muted">
-                Seu pedido entra no mural e alerta profissionais compatíveis.
+                Sua oportunidade entra no mural e alerta profissionais compatíveis.
               </p>
             </div>
             <Button
               onClick={() =>
                 user
                   ? setShowForm(true)
-                  : toast.error("Faça login para criar um pedido.")
+                  : toast.error("Faça login para criar uma oportunidade.")
               }
             >
-              Publicar pedido
+              Publicar oportunidade
             </Button>
           </SurfacePanel>
           <SurfacePanel className="flex flex-col gap-4">
             <ListChecks className="size-5 text-primary" />
             <div className="space-y-1">
               <h2 className="font-heading text-lg font-semibold text-text-main">
-                Ver pedidos abertos
+                Ver oportunidades
               </h2>
               <p className="text-sm leading-relaxed text-text-muted">
                 Veja o mural da comunidade por serviço e estado.
@@ -511,7 +511,7 @@ export function OpportunitiesClient({
                 htmlFor="opportunity-title"
                 className="text-sm font-medium"
               >
-                Título do pedido
+                Título da oportunidade
               </label>
               <Input
                 id="opportunity-title"
@@ -648,15 +648,15 @@ export function OpportunitiesClient({
               />
             </div>
             <p className="text-xs leading-relaxed text-text-muted md:col-span-2">
-              Seu WhatsApp será exibido apenas como ação de contato deste
-              pedido. Ele ficará ativo por até 30 dias e você pode encerrar
-              antes. Pedidos urgentes ajudam a priorizar o contato, mas não
+              Seu WhatsApp será exibido apenas como ação de contato desta
+              oportunidade. Ela ficará ativa por até 30 dias e você pode encerrar
+              antes. Oportunidades urgentes ajudam a priorizar o contato, mas não
               substituem canais de emergência.
             </p>
             <div className="flex gap-2 md:col-span-2">
               <Button type="submit" disabled={creating}>
                 <Send className="size-4" />{" "}
-                {creating ? "Publicando…" : "Publicar pedido"}
+                {creating ? "Publicando…" : "Publicar oportunidade"}
               </Button>
               <Button
                 type="button"
@@ -690,11 +690,11 @@ export function OpportunitiesClient({
               <div className="space-y-4">
                 <div>
                   <p className="font-semibold text-text-main">
-                    Seu pedido “{opportunity.title}” ainda está ativo.
+                    Sua oportunidade “{opportunity.title}” ainda está ativa.
                   </p>
                   <p className="text-sm text-text-muted">
                     Já se passaram 20 dias. Conte como foi e escolha se quer
-                    manter o pedido visível.
+                    manter a oportunidade visível.
                   </p>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -825,8 +825,8 @@ export function OpportunitiesClient({
       ) : (
         <EmptyState
           icon={<BriefcaseBusiness className="size-6" />}
-          title="Nenhum pedido encontrado"
-          description="Ajuste os filtros ou crie o primeiro pedido desta necessidade na comunidade."
+          title="Nenhuma oportunidade encontrada"
+          description="Ajuste os filtros ou crie a primeira oportunidade desta necessidade na comunidade."
         />
       )}
     </main>

@@ -7,10 +7,10 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Oportunidades",
-  description: "Publique um pedido de ajuda e encontre oportunidades para oferecer seu talento na comunidade Skillsy.",
+  description: "Publique uma oportunidade e encontre formas de oferecer seu talento na comunidade Skillsy.",
   path: "/oportunidades",
   imageTitle: "Oportunidades da comunidade",
-  imageDescription: "Pedidos de ajuda conectados a profissionais por serviço e localização.",
+  imageDescription: "Oportunidades conectadas a profissionais por serviço e localização.",
   imageLabel: "Oportunidades",
 });
 

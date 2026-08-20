@@ -4,10 +4,10 @@ import { createPublicMetadata } from "@/lib/public-metadata";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Oportunidades para você",
-  description: "Pedidos compatíveis com seu perfil profissional no Skillsy.",
+  description: "Oportunidades compatíveis com seu perfil profissional no Skillsy.",
   path: "/oportunidades/para-voce",
   imageTitle: "Oportunidades para profissionais",
-  imageDescription: "Veja pedidos compatíveis com seu serviço e área de atuação.",
+  imageDescription: "Veja oportunidades compatíveis com seu serviço e área de atuação.",
   imageLabel: "Oportunidades",
 });
 

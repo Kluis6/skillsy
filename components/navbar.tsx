@@ -36,7 +36,7 @@ interface NavbarProps {
 const primaryNavItems = [
   { href: "/search", label: "Buscar profissional" },
   { href: "/encontrar-ajuda", label: "Pedir ajuda" },
-  { href: "/oportunidades", label: "Pedidos abertos" },
+  { href: "/oportunidades", label: "Oportunidades" },
 ] as const;
 
 const secondaryNavItems = [
@@ -332,10 +332,10 @@ export function Navbar({
                 size="sm"
                 title="Faça login ou crie sua conta"
                 aria-label="Entrar ou criar conta"
-                className="w-10 md:w-auto h-10 normal-case"
+                className="w-9 md:w-auto h-9 normal-case lg:px-6"
               >
-                <BsBoxArrowInRight className="block size-5 md:hidden" />
-                <span className="hidden  font-medium md:block">Entrar</span>
+                <BsBoxArrowInRight className="block size-4 md:hidden" />
+                <span className="hidden font-medium md:block">Entrar</span>
               </Button>
             </AuthModal>
           )}

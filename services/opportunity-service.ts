@@ -50,7 +50,7 @@ function ensureInput(data: OpportunityFormInput) {
   }
 
   if (!OPPORTUNITY_URGENCIES.includes(data.urgency)) {
-    throw new Error('Escolha a urgência do pedido.');
+    throw new Error('Escolha a urgência da oportunidade.');
   }
 }
 
@@ -83,10 +83,10 @@ export function needsOpportunityFollowUp(opportunity: Opportunity) {
 export const OpportunityService = {
   async createForProfile(data: OpportunityFormInput, author: { name: string; whatsapp?: string }) {
     const user = auth.currentUser;
-    if (!user) throw new Error('Faça login para criar um pedido.');
+    if (!user) throw new Error('Faça login para criar uma oportunidade.');
     ensureInput(data);
     const phone = author.whatsapp?.replace(/\D/g, '');
-    if (!phone) throw new Error('Cadastre um WhatsApp no seu perfil antes de publicar o pedido.');
+    if (!phone) throw new Error('Cadastre um WhatsApp no seu perfil antes de publicar a oportunidade.');
 
     const expiresAt = Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000);
     await addDoc(collection(db, OPPORTUNITIES), {
@@ -123,7 +123,7 @@ export const OpportunityService = {
 
   async setStatus(id: string, status: 'active' | 'closed') {
     const user = auth.currentUser;
-    if (!user) throw new Error('Faça login para atualizar seu pedido.');
+    if (!user) throw new Error('Faça login para atualizar sua oportunidade.');
     await updateDoc(doc(db, OPPORTUNITIES, id), {
       status,
       ...(status === 'closed'

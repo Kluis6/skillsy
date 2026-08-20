@@ -8,11 +8,11 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = createPublicMetadata({
   title: "Encontrar ajuda",
   description:
-    "Busque profissionais ou publique um pedido de ajuda para a comunidade Skillsy por serviço, localização e urgência.",
+    "Busque profissionais ou publique uma oportunidade para a comunidade Skillsy por serviço, localização e urgência.",
   path: "/encontrar-ajuda",
   imageTitle: "Encontrar ajuda no Skillsy",
   imageDescription:
-    "Escolha entre buscar um profissional, publicar um pedido ou ver oportunidades abertas.",
+    "Escolha entre buscar um profissional, publicar uma oportunidade ou ver oportunidades abertas.",
   imageLabel: "Encontrar ajuda",
 });
 
