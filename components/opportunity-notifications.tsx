@@ -10,6 +10,7 @@ import { UserNotification } from "@/models/types";
 import { UserNotificationService } from "@/services/user-notification-service";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { BsBell } from "react-icons/bs";
 
 function timeAgo(value: unknown) {
   if (!value || typeof value !== "object" || !("seconds" in value))
@@ -56,7 +57,7 @@ export function OpportunityNotifications() {
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <Bell className="size-5" />
+        <BsBell  className="size-4 text-foreground" />
         {unread > 0 ? (
           <span className="absolute right-0 top-0 flex size-5 items-center justify-center rounded-full bg-destructive text-xs font-bold text-white">
             {unread > 9 ? "9+" : unread}

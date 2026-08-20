@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/hooks/use-auth";
 import { getPublicBaseUrl } from "@/lib/public-metadata";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading" });
 const baseUrl = getPublicBaseUrl();
 const defaultDescription =

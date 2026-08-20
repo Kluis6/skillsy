@@ -214,11 +214,11 @@ export function SearchClient({
         <div className="container px-4 mx-auto flex min-h-16 items-center justify-between gap-4 py-2">
           <Drawer
             key={`search-drawer-${pathname}`}
-            direction="left"
+            swipeDirection="left"
             open={mobileDrawerOpen}
             onOpenChange={setMobileDrawerOpen}
           >
-            <DrawerTrigger asChild className="flex md:hidden">
+            <DrawerTrigger className="flex md:hidden">
               <Button
                 size="icon"
                 className="size-10"
@@ -228,17 +228,15 @@ export function SearchClient({
                 <BsList className="size-5 text-foreground" />
               </Button>
             </DrawerTrigger>
-            <DrawerContent>
+            <DrawerContent className="w-full">
               <DrawerHeader className="flex flex-row justify-between">
                 <div className="flex flex-col">
                   <DrawerTitle className="text-cyan-800 dark:text-white">
                     Skillsy
                   </DrawerTitle>
-                  <DrawerDescription>
-                    Onde talentos encontram oportunidades
-                  </DrawerDescription>
+     
                 </div>
-                <DrawerTrigger asChild>
+                <DrawerTrigger>
                   <Button
                     size="icon"
                     variant="ghost"
@@ -255,7 +253,7 @@ export function SearchClient({
                 </h3>
                 <ul className="w-full space-y-1">
                   <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose asChild>
+                    <DrawerClose>
                       <Link
                         href="/"
                         className="flex text-sm font-normal text-text-muted"
@@ -265,7 +263,7 @@ export function SearchClient({
                     </DrawerClose>
                   </li>
                   <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose asChild>
+                    <DrawerClose>
                       <Link
                         href="/weareskillsy"
                         className="flex text-sm font-normal text-text-muted"
@@ -275,7 +273,7 @@ export function SearchClient({
                     </DrawerClose>
                   </li>
                   <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose asChild>
+                    <DrawerClose>
                       <Link
                         href="/artigosevagas"
                         className="flex text-sm font-normal text-text-muted"
@@ -285,7 +283,7 @@ export function SearchClient({
                     </DrawerClose>
                   </li>
                   <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose asChild>
+                    <DrawerClose>
                       <Link
                         href="/search"
                         aria-current="page"
@@ -296,7 +294,7 @@ export function SearchClient({
                     </DrawerClose>
                   </li>
                   <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose asChild>
+                    <DrawerClose>
                       <Link
                         href="/encontrar-ajuda"
                         className="flex text-sm font-normal text-text-muted"
@@ -306,7 +304,7 @@ export function SearchClient({
                     </DrawerClose>
                   </li>
                   <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose asChild>
+                    <DrawerClose>
                       <Link
                         href="/oportunidades"
                         className="flex text-sm font-normal text-text-muted"
@@ -316,7 +314,7 @@ export function SearchClient({
                     </DrawerClose>
                   </li>
                   <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose asChild>
+                    <DrawerClose >
                       <Link
                         href="/join"
                         className="flex text-sm font-normal text-text-muted"
@@ -326,7 +324,7 @@ export function SearchClient({
                     </DrawerClose>
                   </li>
                   <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose asChild>
+                    <DrawerClose>
                       <Link
                         href="/privacidade"
                         className="flex text-sm font-normal text-text-muted"
@@ -336,7 +334,7 @@ export function SearchClient({
                     </DrawerClose>
                   </li>
                   <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose asChild>
+                    <DrawerClose>
                       <Link
                         href="/termos"
                         className="flex text-sm font-normal text-text-muted"
@@ -355,7 +353,7 @@ export function SearchClient({
 
                     <ul className="space-y-1">
                       <li className="rounded-full p-2 hover:bg-primary/10">
-                        <DrawerClose asChild>
+                        <DrawerClose>
                           <Link
                             className="flex text-sm font-normal text-text-muted"
                             href="/contacts"
@@ -365,7 +363,7 @@ export function SearchClient({
                         </DrawerClose>
                       </li>
                       <li className="rounded-full p-2 hover:bg-primary/10">
-                        <DrawerClose asChild>
+                        <DrawerClose>
                           <Link
                             className="flex text-sm font-normal text-text-muted"
                             href="/profile"
@@ -389,7 +387,7 @@ export function SearchClient({
               </div>
 
               <DrawerFooter>
-                <DrawerClose asChild>
+                <DrawerClose>
                   <Link
                     className="flex h-10 items-center justify-center rounded-full bg-primary px-5 text-center text-sm font-medium text-primary-foreground shadow-[var(--skillsy-elevation-level1)] hover:bg-primary/90 active:bg-primary/80"
                     href="/donation"

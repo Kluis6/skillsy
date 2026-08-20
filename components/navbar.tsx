@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BsList, BsXLg } from "react-icons/bs";
+import { BsBoxArrowInRight, BsList, BsXLg } from "react-icons/bs";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { ArrowLeft, User as UserIcon } from "lucide-react";
@@ -66,15 +66,15 @@ function DrawerLink({
 }) {
   return (
     <li>
-      <DrawerClose asChild>
+      <DrawerClose className="w-full">
         <Link
           href={href}
           aria-current={active ? "page" : undefined}
           className={cn(
-            "flex min-h-10 items-center rounded-md px-3 text-sm font-medium transition-colors",
+            "flex min-h-10 w-full items-center px-3 text-sm font-medium transition-colors",
             active
-              ? "bg-primary text-primary-foreground"
-              : "text-text-muted hover:bg-primary/10 hover:text-primary",
+              ? " text-white bg-primary/80 dark:bg-primary/80 "
+              : "text-gray-700 hover:bg-secondary/40  dark:hover:bg-surface",
           )}
         >
           {label}
@@ -96,29 +96,32 @@ function DrawerNavigation({
   return (
     <>
       <DrawerHeader className="flex flex-row justify-between">
-        <div className="flex flex-col">
-          <DrawerTitle className="font-heading text-base text-primary dark:text-white">
+        <div className=" mb-4">
+          <DrawerTitle className="dark:text-white text-base normal-case font-semibold">
             Skillsy
           </DrawerTitle>
-          <DrawerDescription>
-            Encontre pessoas, pedidos e oportunidades da comunidade.
+          <DrawerDescription className="text-sm text-gray-500 dark:text-gray-50">
+            Onde talentos encontram oportunidades
           </DrawerDescription>
         </div>
-        <DrawerClose asChild>
-          <Button
-            size="icon"
-            variant="ghost"
-            aria-label="Fechar menu principal"
-          >
-            <BsXLg className="size-4 text-foreground" />
-          </Button>
-        </DrawerClose>
+
+        <DrawerClose
+          render={
+            <Button
+              size="icon"
+              variant="ghost"
+              aria-label="Fechar menu principal"
+            >
+              <BsXLg className="size-5 text-foreground" />
+            </Button>
+          }
+        ></DrawerClose>
       </DrawerHeader>
 
-      <div className="space-y-5 px-4">
+      <div className="space-y-4 px-4 overflow-y-auto">
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-foreground">
-            Caminhos principais
+          <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-50">
+            Encontre o que você precisa
           </h3>
           <ul className="space-y-1">
             {primaryNavItems.map((item) => (
@@ -133,7 +136,9 @@ function DrawerNavigation({
         </div>
 
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-foreground">Mais</h3>
+          <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-50">
+            Quem somos
+          </h3>
           <ul className="space-y-1">
             {secondaryNavItems.map((item) => (
               <DrawerLink
@@ -148,7 +153,7 @@ function DrawerNavigation({
 
         {user ? (
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-foreground">
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-50">
               Minha conta
             </h3>
             <ul className="space-y-1">
@@ -162,10 +167,10 @@ function DrawerNavigation({
                 label="Configurações do perfil"
                 active={isActivePath(pathname, "/profile")}
               />
-              <li>
+              <li className="mb-4">
                 <Button
                   variant="ghost"
-                  className="w-full justify-start px-3 text-sm font-medium text-text-muted"
+                  className="w-full justify-start font-medium px-3 text-sm text-gray-700 normal-case"
                   onClick={handleLogout}
                 >
                   Sair da conta
@@ -177,9 +182,9 @@ function DrawerNavigation({
       </div>
 
       <DrawerFooter>
-        <DrawerClose asChild>
+        <DrawerClose>
           <Link
-            className="flex min-h-10 items-center justify-center rounded-md bg-primary px-5 text-center text-sm font-medium text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
+            className="flex min-h-10 items-center justify-center  bg-primary px-5 text-center text-sm font-medium text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
             href="/donation"
           >
             Ajude o projeto
@@ -211,7 +216,7 @@ export function Navbar({
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_oklab,var(--skillsy-color-surface)_86%,transparent)] backdrop-blur-md">
-      <div className="container mx-auto flex min-h-16 items-center justify-between gap-4 px-4 py-2">
+      <div className="container mx-auto flex  items-center justify-between gap-4 px-4 py-2">
         <div className="flex min-w-0 items-center gap-3">
           {shouldShowBackButton ? (
             <Button
@@ -220,22 +225,30 @@ export function Navbar({
               onClick={() => router.back()}
               aria-label="Voltar para a página anterior"
             >
-              <ArrowLeft className="size-4" />
+              <ArrowLeft className="size-5 text-foreground" />
               <span className="hidden md:inline">Voltar</span>
             </Button>
           ) : (
-            <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-              <DrawerTrigger asChild>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="md:hidden"
-                  aria-label="Abrir menu principal"
-                >
-                  <BsList className="size-5 text-foreground" />
-                </Button>
-              </DrawerTrigger>
-              <DrawerContent>
+            <Drawer
+              swipeDirection="left"
+              open={drawerOpen}
+              onOpenChange={setDrawerOpen}
+            >
+              <DrawerTrigger
+                aria-label="Abrir menu principal"
+                render={
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="md:hidden"
+                    aria-label="Abrir menu principal"
+                  >
+                    <BsList className="size-5 text-foreground " />
+                  </Button>
+                }
+              />
+
+              <DrawerContent className="w-full">
                 <DrawerNavigation
                   pathname={pathname}
                   user={user}
@@ -253,7 +266,7 @@ export function Navbar({
             </Link>
           ) : null}
 
-          {!shouldShowBackButton ? (
+          {/* {!shouldShowBackButton ? (
             <div className="hidden items-center gap-1 lg:flex">
               {primaryNavItems.map((item) => {
                 const active = isActivePath(pathname, item.href);
@@ -275,7 +288,7 @@ export function Navbar({
                 );
               })}
             </div>
-          ) : null}
+          ) : null} */}
         </div>
 
         <div className="flex items-center justify-between gap-2">
@@ -283,17 +296,19 @@ export function Navbar({
           {user && !shouldShowBackButton ? <OpportunityNotifications /> : null}
 
           {!shouldShowBackButton ? (
-            <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-              <DrawerTrigger asChild>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="hidden md:flex lg:hidden"
-                  aria-label="Abrir menu principal"
-                >
-                  <BsList className="size-5 text-foreground" />
-                </Button>
-              </DrawerTrigger>
+            <Drawer swipeDirection="left">
+              <DrawerTrigger
+                render={
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="hidden md:flex"
+                    aria-label="Abrir menu principal"
+                  >
+                    <BsList className="size-5 text-foreground" />
+                  </Button>
+                }
+              ></DrawerTrigger>
               <DrawerContent>
                 <DrawerNavigation
                   pathname={pathname}
@@ -305,7 +320,7 @@ export function Navbar({
           ) : null}
 
           {user ? (
-            <Avatar className="size-8 ring-2 ring-offset-2 ring-offset-background ring-border-subtle md:ml-1.5">
+            <Avatar className="size-9">
               <AvatarImage src={user.photoURL || undefined} />
               <AvatarFallback>
                 <UserIcon className="size-5" />
@@ -315,11 +330,13 @@ export function Navbar({
             <AuthModal>
               <Button
                 variant="default"
+                size="sm"
                 title="Faça login ou crie sua conta"
                 aria-label="Entrar ou criar conta"
+                className="w-10 md:w-auto h-10 normal-case"
               >
-                <MdLogin className="flex size-4 md:hidden" />
-                <span className="hidden font-medium md:block">Entrar</span>
+                <BsBoxArrowInRight className="block size-5 md:hidden" />
+                <span className="hidden  font-medium md:block">Entrar</span>
               </Button>
             </AuthModal>
           )}
