@@ -215,8 +215,8 @@ export function Navbar({
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_oklab,var(--skillsy-color-surface)_86%,transparent)] backdrop-blur-md">
-      <div className="container mx-auto flex  items-center justify-between gap-4 px-4 py-2">
+    <nav className="sticky top-0 z-50 border-b border-border bg-white/85 backdrop-blur-md">
+      <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2">
         <div className="flex min-w-0 items-center gap-3">
           {shouldShowBackButton ? (
             <Button
@@ -248,7 +248,7 @@ export function Navbar({
                 }
               />
 
-              <DrawerContent className="w-[94vw]">
+              <DrawerContent className="w-screen">
                 <DrawerNavigation
                   pathname={pathname}
                   user={user}
