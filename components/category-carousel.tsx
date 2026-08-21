@@ -38,144 +38,144 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
-import { LuArrowUpRight } from "react-icons/lu";
+
 
 const categories = [
   {
     name: "Idiomas",
     icon: Languages,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Tecnologia",
     icon: Laptop,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
-  { name: "Design", icon: Palette, color: "text-blue-500", bg: "bg-surface" },
+  { name: "Design", icon: Palette, color: "text-primary", bg: "bg-cyan-700/10" },
   {
     name: "Marketing",
     icon: Megaphone,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Consultoria",
     icon: Briefcase,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Vendas",
     icon: ShoppingBag,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Aulas",
     icon: BookOpen,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Cozinha",
     icon: Utensils,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
-  { name: "Doméstico", icon: Home, color: "text-blue-500", bg: "bg-surface" },
-  { name: "Limpeza", icon: Sparkles, color: "text-blue-500", bg: "bg-surface" },
+  { name: "Doméstico", icon: Home, color: "text-primary", bg: "bg-cyan-700/10" },
+  { name: "Limpeza", icon: Sparkles, color: "text-primary", bg: "bg-cyan-700/10" },
   {
     name: "Marcenaria",
     icon: Sofa,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Manutenção",
     icon: Wrench,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Construção Civil",
     icon: HardHat,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
-  { name: "Beleza", icon: Scissors, color: "text-blue-500", bg: "bg-surface" },
+  { name: "Beleza", icon: Scissors, color: "text-primary", bg: "bg-cyan-700/10" },
   {
     name: "Educação",
     icon: GraduationCap,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Saúde",
     icon: Stethoscope,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Eventos",
     icon: PartyPopper,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
-  { name: "Jurídico", icon: Scale, color: "text-blue-500", bg: "bg-surface" },
+  { name: "Jurídico", icon: Scale, color: "text-primary", bg: "bg-cyan-700/10" },
   {
     name: "Financeiro",
     icon: Coins,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Assistência",
     icon: Settings,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Reformas",
     icon: Hammer,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
-  { name: "Automotivo", icon: Car, color: "text-blue-500", bg: "bg-surface" },
-  { name: "Moda", icon: Shirt, color: "text-blue-500", bg: "bg-surface" },
-  { name: "Bem Estar", icon: Heart, color: "text-blue-500", bg: "bg-surface" },
-  { name: "Pet Care", icon: Dog, color: "text-blue-500", bg: "bg-surface" },
+  { name: "Automotivo", icon: Car, color: "text-primary", bg: "bg-cyan-700/10" },
+  { name: "Moda", icon: Shirt, color: "text-primary", bg: "bg-cyan-700/10" },
+  { name: "Bem Estar", icon: Heart, color: "text-primary", bg: "bg-cyan-700/10" },
+  { name: "Pet Care", icon: Dog, color: "text-primary", bg: "bg-cyan-700/10" },
   {
     name: "Fotografia",
     icon: Camera,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Música",
     icon: Music,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
 
   {
     name: "Esportes",
     icon: Dumbbell,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Festas",
     icon: Cake,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Transporte",
     icon: Truck,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
 ];
 
@@ -204,10 +204,10 @@ export function CategoryCarousel() {
   return (
     <div className="w-full h-[65vh] sm:h-[70vh] lg:h-[78vh] relative hidden md:block">
       <div className="relative group container mx-auto px-4">
-        <div className="flex justify-center items-center rounded-xl z-10 shadow-sm object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)]">
-          <div className="absolute  top-[calc(100%-6rem)] space-y-2 md:space-y-4 w-[calc(100%-4rem)] md:w-[calc(100%-6rem)] lg:w-[calc(100%-8rem)] rounded-xl z-40 bg-white dark:bg-black p-4 sm:p-6 md:p-8 shadow-md">
+        <div className="flex justify-center items-center  z-10 shadow-sm object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)]">
+          <div className="absolute top-[calc(100%-6rem)] z-40 w-[calc(100%-4rem)] space-y-2 border border-border bg-card p-4 text-card-foreground shadow-xl md:w-[calc(100%-6rem)] md:space-y-4 md:p-8 lg:w-[calc(100%-8rem)]">
             <div className="w-full">
-              <h3 className="text-xl lg:text-2xl font-bold text-text-main font-heading tracking-tight text-center">
+              <h3 className="text-center font-heading text-xl font-bold tracking-tight text-foreground lg:text-2xl">
                 As categorias mais populares
               </h3>
      
@@ -225,15 +225,15 @@ export function CategoryCarousel() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => handleCategoryClick(cat.name)}
-                  className="flex flex-col items-center justify-between space-y-6 min-w-[100px] md:min-w-[140px] p-4 bg-white dark:bg-[color-mix(in_oklab,var(--skillsy-color-surface)_16%,transparent)] rounded-xl border border-border-subtle hover:shadow-md transition-all duration-300 group/card shrink-0"
+                  className="group/card flex min-w-[100px] shrink-0 flex-col items-center justify-between space-y-6 border border-border bg-card p-4 text-card-foreground transition-all duration-300 hover:bg-muted hover:shadow-md md:min-w-[140px]"
                 >
                   <div
-                    className={`size-12 md:size-14 lg:size-16 ${cat.bg} rounded-md flex items-center justify-center  group-hover/card:scale-110 transition-transform duration-300`}
+                    className={`size-12 md:size-14 lg:size-16 ${cat.bg} dark:bg-cyan-400/10 flex items-center justify-center transition-transform duration-300 group-hover/card:scale-110`}
                   >
                     <cat.icon className={`${cat.color}`} size={22} />
                   </div>
 
-                  <span className="text-xs md:text-sm font-medium text-text-main group-hover/card:text-primary transition-colors">
+                  <span className="text-xs md:text-sm font-medium group-hover/card:text-primary transition-colors">
                     {cat.name}
                   </span>
                 </motion.button>
@@ -245,7 +245,7 @@ export function CategoryCarousel() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-full size-8 border-border-subtle hover:bg-primary/5 hover:text-primary transition-all"
+                  className=" size-8  hover:bg-primary/5 hover:text-primary transition-all"
                   onClick={() => scroll("left")}
                 >
                   <ChevronLeft size={16} />
@@ -253,7 +253,7 @@ export function CategoryCarousel() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-full size-8 border-border-subtle hover:bg-primary/5 hover:text-primary transition-all"
+                  className=" size-8  hover:bg-primary/5 hover:text-primary transition-all"
                   onClick={() => scroll("right")}
                 >
                   <ChevronRight size={16} />

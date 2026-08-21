@@ -72,7 +72,7 @@ function DrawerLink({
           className={cn(
             "flex min-h-10 w-full items-center px-3 text-sm font-medium transition-colors",
             active
-              ? " text-white dark:text-white bg-primary/80 dark:bg-primary/80 "
+              ? " text-white dark:text-white bg-neutral-500 dark:bg-primary/80 "
               : "text-gray-700 dark:text-gray-50 hover:bg-neutral-500/10 dark:hover:bg-surface",
           )}
         >

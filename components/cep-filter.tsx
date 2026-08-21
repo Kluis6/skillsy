@@ -126,7 +126,7 @@ export function CepFilter({
               <MapPin
                 className={`transition-colors ${error ? "text-red-500" : "text-text-muted"}`}
               />
-              <p>Sua localização</p>
+              <p className="text-sm">Sua localização</p>
             </>
           )}
         </Button>

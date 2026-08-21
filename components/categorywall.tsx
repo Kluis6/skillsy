@@ -41,138 +41,138 @@ const categories = [
   {
     name: "Idiomas",
     icon: Languages,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Tecnologia",
     icon: Laptop,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
-  { name: "Design", icon: Palette, color: "text-blue-500", bg: "bg-surface" },
+  { name: "Design", icon: Palette, color: "text-primary", bg: "bg-cyan-700/10" },
   {
     name: "Marketing",
     icon: Megaphone,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Consultoria",
     icon: Briefcase,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Vendas",
     icon: ShoppingBag,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Aulas",
     icon: BookOpen,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Cozinha",
     icon: Utensils,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
-  { name: "Doméstico", icon: Home, color: "text-blue-500", bg: "bg-surface" },
-  { name: "Limpeza", icon: Sparkles, color: "text-blue-500", bg: "bg-surface" },
+  { name: "Doméstico", icon: Home, color: "text-primary", bg: "bg-cyan-700/10" },
+  { name: "Limpeza", icon: Sparkles, color: "text-primary", bg: "bg-cyan-700/10" },
   {
     name: "Marcenaria",
     icon: Sofa,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Manutenção",
     icon: Wrench,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Construção",
     icon: HardHat,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
-  { name: "Beleza", icon: Scissors, color: "text-blue-500", bg: "bg-surface" },
+  { name: "Beleza", icon: Scissors, color: "text-primary", bg: "bg-cyan-700/10" },
   {
     name: "Educação",
     icon: GraduationCap,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Saúde",
     icon: Stethoscope,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Eventos",
     icon: PartyPopper,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
-  { name: "Jurídico", icon: Scale, color: "text-blue-500", bg: "bg-surface" },
+  { name: "Jurídico", icon: Scale, color: "text-primary", bg: "bg-cyan-700/10" },
   {
     name: "Financeiro",
     icon: Coins,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Assistência",
     icon: Settings,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Reformas",
     icon: Hammer,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
-  { name: "Automotivo", icon: Car, color: "text-blue-500", bg: "bg-surface" },
-  { name: "Moda", icon: Shirt, color: "text-blue-500", bg: "bg-surface" },
-  { name: "Bem Estar", icon: Heart, color: "text-blue-500", bg: "bg-surface" },
-  { name: "Pet Care", icon: Dog, color: "text-blue-500", bg: "bg-surface" },
+  { name: "Automotivo", icon: Car, color: "text-primary", bg: "bg-cyan-700/10" },
+  { name: "Moda", icon: Shirt, color: "text-primary", bg: "bg-cyan-700/10" },
+  { name: "Bem Estar", icon: Heart, color: "text-primary", bg: "bg-cyan-700/10" },
+  { name: "Pet Care", icon: Dog, color: "text-primary", bg: "bg-cyan-700/10" },
   {
     name: "Fotografia",
     icon: Camera,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Música",
     icon: Music,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
 
   {
     name: "Esportes",
     icon: Dumbbell,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Festas",
     icon: Cake,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
   {
     name: "Transporte",
     icon: Truck,
-    color: "text-blue-500",
-    bg: "bg-surface",
+    color: "text-primary",
+    bg: "bg-cyan-700/10",
   },
 ];
 
@@ -192,9 +192,9 @@ export function Categorywall() {
   return (
     <section className="relative z-10 md:hidden">
       <div className="container mx-auto px-4">
-        <div className="flex justify-center items-center rounded-xl z-10 shadow-sm object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)]" />
+        <div className="flex justify-center items-center z-10 shadow-sm object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)]" />
 
-        <div className="-mt-24 md:-mt-20 lg:-mt-16 mx-4 md:mx-8 lg:mx-12 rounded-xl z-40 bg-card p-4 sm:p-6 md:p-8 shadow-sm  space-y-8 transition-all">
+        <div className="-mt-24 md:-mt-20 lg:-mt-16 mx-4 md:mx-8 lg:mx-12 z-40 bg-card p-4 sm:p-6 md:p-8 shadow-sm  space-y-8 transition-all">
           <div className="w-full">
             <h3 className="text-xl lg:text-2xl font-bold text-text-main font-heading tracking-tight text-center">
                As categorias <br  /> mais populares
@@ -210,10 +210,10 @@ export function Categorywall() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.05 }}
                 onClick={() => handleCategoryClick(cat.name)}
-                className={`${idx >= mobileVisibleCount && !showAllCategories ? "hidden lg:flex" : "flex"} flex-col items-center justify-center space-y-2 size-22 md:size-26 lg:size-32 p-2 md:p-4 bg-card rounded-xl border border-border-subtle hover:shadow-md transition-all duration-300 group/card`}
+                className={`${idx >= mobileVisibleCount && !showAllCategories ? "hidden lg:flex" : "flex"} flex-col items-center justify-center space-y-2 size-22 md:size-26 lg:size-32 p-2 md:p-4 bg-card border  hover:shadow-md transition-all duration-300 group/card`}
               >
                 <div
-                  className={`size-10 md:size-12 lg:size-16 ${cat.bg} rounded-md flex items-center justify-center group-hover/card:scale-110 transition-transform duration-300`}
+                  className={`size-10 md:size-12 lg:size-16 ${cat.bg} flex items-center justify-center group-hover/card:scale-110 transition-transform duration-300`}
                 >
                   <cat.icon className={`${cat.color} size-5 `} />
                 </div>
@@ -230,7 +230,7 @@ export function Categorywall() {
               type="button"
               variant="ghost"
               onClick={() => setShowAllCategories((current) => !current)}
-              className="text-blue-500 hover:text-blue-600 active:text-blue-700 transition-colors"
+              className="text-primary hover:text-blue-600 active:text-blue-700 transition-colors dark:text-white"
             >
               {showAllCategories ? "Ver menos" : "Ver todas"}
             </Button>

@@ -218,34 +218,38 @@ export function SearchClient({
             open={mobileDrawerOpen}
             onOpenChange={setMobileDrawerOpen}
           >
-            <DrawerTrigger className="flex md:hidden">
-              <Button
-                size="icon"
-                className="size-10"
-                variant="ghost"
-                aria-label="Abrir menu principal"
-              >
-                <BsList className="size-5 text-foreground" />
-              </Button>
-            </DrawerTrigger>
+            <DrawerTrigger
+              className="flex md:hidden"
+              render={
+                <Button
+                  size="icon"
+                  className="size-10"
+                  variant="ghost"
+                  aria-label="Abrir menu principal"
+                >
+                  <BsList className="size-5 text-foreground" />
+                </Button>
+              }
+            />
             <DrawerContent className="w-full">
               <DrawerHeader className="flex flex-row justify-between">
                 <div className="flex flex-col">
                   <DrawerTitle className="text-cyan-800 dark:text-white">
                     Skillsy
                   </DrawerTitle>
-     
                 </div>
-                <DrawerTrigger>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="bg-transparent hover:bg-primary/10"
-                    aria-label="Fechar menu principal"
-                  >
-                    <BsXLg className="text-foreground" />
-                  </Button>
-                </DrawerTrigger>
+                <DrawerTrigger
+                  render={
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="bg-transparent hover:bg-primary/10"
+                      aria-label="Fechar menu principal"
+                    >
+                      <BsXLg className="text-foreground" />
+                    </Button>
+                  }
+                />
               </DrawerHeader>
               <div className="px-4 space-y-4">
                 <h3 className="font-medium text-sm text-foreground">
@@ -314,7 +318,7 @@ export function SearchClient({
                     </DrawerClose>
                   </li>
                   <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose >
+                    <DrawerClose>
                       <Link
                         href="/join"
                         className="flex text-sm font-normal text-text-muted"
