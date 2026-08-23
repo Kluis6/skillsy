@@ -62,20 +62,20 @@ export function ProviderProfileCard({
       <Link
         href={`/profile/${provider.uid}`}
         className={cn(
-          "group block rounded-xl border  border-border-subtle bg-card transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          "group block border  bg-card transition-colors",
           className,
         )}
       >
         <article className="grid gap-4 p-4 md:grid-cols-[auto_1fr_auto] md:gap-6 md:p-6">
           <div className="flex items-center gap-4 md:block md:space-y-3">
-            <Avatar className="size-14 border border-border-subtle bg-card md:size-24">
+            <Avatar className="size-14 border bg-card md:size-24">
               <AvatarImage src={provider.photoURL} />
               <AvatarFallback className="bg-primary text-xl font-bold text-white md:text-4xl">
                 {initial}
               </AvatarFallback>
             </Avatar>
 
-            <div className="flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-sm font-bold text-highlight md:justify-center">
+            <div className="flex items-center gap-1  px-2.5 py-1 text-sm font-bold text-highlight md:justify-center">
               <Star className="size-3.5" fill="currentColor" />
               <span>{rating}</span>
             </div>
@@ -84,13 +84,13 @@ export function ProviderProfileCard({
           <div className="min-w-0 space-y-3">
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="font-heading text-lg font-bold leading-tight text-text-main md:text-2xl">
+                <h3 className="font-heading text-lg font-bold leading-tight  md:text-2xl">
                   {provider.name}
                 </h3>
-                {isVerified ? <TrustBadge>Verificado</TrustBadge> : null}
+                {isVerified ? <TrustBadge>V</TrustBadge> : null}
               </div>
 
-              <p className="text-sm font-medium text-text-main">
+              <p className="text-sm font-medium ">
                 {provider.companyName
                   ? `${roleLabel} na ${provider.companyName}`
                   : roleLabel}
@@ -102,16 +102,16 @@ export function ProviderProfileCard({
             </p>
 
             <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-main">
+              <span className="inline-flex items-center px-3 py-1 text-xs font-medium text-text-main">
                 <MapPin className="mr-1 size-3.5 text-primary" />
                 {location}
               </span>
               {provider.category ? (
-                <span className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-primary">
+                <span className=" px-3 py-1 text-xs font-medium text-primary">
                   {provider.category}
                 </span>
               ) : null}
-              <span className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-muted">
+              <span className=" px-3 py-1 text-xs font-medium text-text-muted">
                 {reviewCount} avaliacao{reviewCount === 1 ? "" : "es"}
               </span>
             </div>
@@ -132,7 +132,7 @@ export function ProviderProfileCard({
     <Link
       href={`/profile/${provider.uid}`}
       className={cn(
-        "group block h-full overflow-hidden rounded-xl border border-border-subtle bg-card transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "group block h-full overflow-hidden border bg-card transition-all hover:shadow-2xl active:scale-95 active:transition-transform active:shadow-lg",
         className,
       )}
     >
@@ -147,7 +147,7 @@ export function ProviderProfileCard({
               className="relative z-20 h-30 w-full object-cover brightness-70 dark:brightness-50"
             />
           ) : (
-            <div className="h-30 bg-[linear-gradient(135deg,rgba(0,81,117,0.10),rgba(82,100,95,0.18))]" />
+            <div className="h-30 bg-radial-[at_25%_25%] from-cyan-600 to-blue-500" />
           )}
           {provider.companyName ? (
             <p className="absolute bottom-3 right-4 z-30 max-w-[70%] truncate text-sm font-semibold text-white drop-shadow">
@@ -156,10 +156,10 @@ export function ProviderProfileCard({
           ) : null}
         </div>
 
-        <div className="absolute right-4 top-4 z-30 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-sm font-bold text-highlight ring-1 ring-border-subtle dark:bg-slate-950">
-          <Star className="size-3.5 text-yellow-500" fill="currentColor" />
+        <Badge className="absolute right-4 top-4 z-30 bg-black/90  text-sm rounded-full shadow">
+          <Star className=" text-yellow-500" fill="currentColor" />
           <span className="text-yellow-500">{rating}</span>
-        </div>
+        </Badge>
 
         <CardHeader className="rounded-t-none w-full">
           <div className="-mt-18 z-30 flex items-end justify-between gap-3">
@@ -170,12 +170,12 @@ export function ProviderProfileCard({
               </AvatarFallback>
             </Avatar>
             {isVerified ? (
-              <TrustBadge className="mb-1">Verificado</TrustBadge>
+              <TrustBadge className="mb-1">V</TrustBadge>
             ) : null}
           </div>
-          <CardAction className="h-fit">
-            <Badge>
-              <MapPin className=" size-3.5 " />
+          <CardAction className="">
+            <Badge  className="bg-cyan-900  text-white dark:bg-background rounded-full">
+              <MapPin className="" />
               {location}
             </Badge>
           </CardAction>
@@ -191,7 +191,7 @@ export function ProviderProfileCard({
           <span className="text-xs font-medium text-text-muted">
             {reviewCount} avaliacao{reviewCount === 1 ? "" : "es"}
           </span>
-          <span className="inline-flex items-center text-sm font-semibold text-primary">
+          <span className="inline-flex items-center text-sm font-semibold text-primary dark:text-white">
             Ver perfil
             <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" />
           </span>

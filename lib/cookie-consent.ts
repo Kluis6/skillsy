@@ -8,17 +8,26 @@ export type CookieConsentState = {
   updatedAt: string;
 };
 
-function canUseBrowserStorage() {
-  return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
-}
-
-export function readCookieConsent(): CookieConsentState | null {
-  if (!canUseBrowserStorage()) {
+function getBrowserStorage(): Storage | null {
+  if (typeof window === "undefined") {
     return null;
   }
 
   try {
-    const rawValue = window.localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY);
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+export function readCookieConsent(): CookieConsentState | null {
+  const storage = getBrowserStorage();
+  if (!storage) {
+    return null;
+  }
+
+  try {
+    const rawValue = storage.getItem(COOKIE_CONSENT_STORAGE_KEY);
     if (!rawValue) {
       return null;
     }
@@ -41,7 +50,8 @@ export function readCookieConsent(): CookieConsentState | null {
 }
 
 export function writeCookieConsent(choice: CookieConsentChoice) {
-  if (!canUseBrowserStorage()) {
+  const storage = getBrowserStorage();
+  if (!storage) {
     return;
   }
 
@@ -50,7 +60,9 @@ export function writeCookieConsent(choice: CookieConsentChoice) {
     updatedAt: new Date().toISOString(),
   };
 
-  window.localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, JSON.stringify(payload));
+  try {
+    storage.setItem(COOKIE_CONSENT_STORAGE_KEY, JSON.stringify(payload));
+  } catch {}
 }
 
 export function hasPreferenceCookieConsent() {

@@ -4,9 +4,8 @@ import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthModal } from "@/components/auth-modal";
-import { FaStar } from "react-icons/fa6";
 import { FaAward } from "react-icons/fa6";
-import { FaUserTie } from "react-icons/fa";
+import { FaUsers, FaUserTie } from "react-icons/fa";
 
 export function BenefitsSection() {
   const benefits = [
@@ -15,7 +14,7 @@ export function BenefitsSection() {
       description:
         "Encontre pessoas com valores, história e vínculos reais com a comunidade.",
       icon: FaUserTie,
-      color: "text-primary",
+      color: "text-primary dark:text-cyan-500",
       bg: "bg-primary/10",
     },
     {
@@ -23,15 +22,15 @@ export function BenefitsSection() {
       description:
         "Mostre o que você sabe fazer de forma simples, clara e pronta para ser indicada.",
       icon: FaAward,
-      color: "text-primary",
+      color: "text-primary dark:text-cyan-500",
       bg: "bg-primary/10",
     },
     {
       title: "Indicações que ajudam",
       description:
         "Avaliações e perfis públicos ajudam a transformar uma recomendação em decisão.",
-      icon: FaStar,
-      color: "text-primary",
+      icon: FaUsers,
+      color: "text-primary dark:text-cyan-500",
       bg: "bg-primary/10",
     },
   ];
@@ -88,12 +87,12 @@ export function BenefitsSection() {
               className="flex gap-4 will-change-transform"
             >
               <div className="flex max-w-3xl flex-col space-y-4">
-                <h2 className="font-heading text-xl font-semibold text-gray-900 md:text-3xl dark:text-white">
+                <h3 className="text-xl font-heading font-bold text-gray-900 md:text-2xl lg:text-3xl dark:text-white">
                   Uma rede feita por pessoas
-                </h2>
-                <p className="text-lg font-semibold leading-relaxed text-gray-600 dark:text-gray-50 md:text-2xl">
-                  O Skillsy aproxima necessidades reais de talentos. Transforme
-                  seu trabalho em novas oportunidades.
+                </h3>
+                <p className="text-base md:text-lg font-normal leading-relaxed text-gray-700 dark:text-gray-50 lg:text-2xl">
+                  O Skillsy aproxima necessidades reais de talentos, <br />
+                  transforme seu trabalho em novas oportunidades.
                 </p>
               </div>
             </motion.div>
@@ -121,10 +120,10 @@ export function BenefitsSection() {
                   />
                 </div>
                 <div className="space-y-2 p-4 md:p-6 lg:p-8">
-                  <h4 className="font-heading text-xl font-bold text-text-main">
+                  <h4 className="font-heading text-lg md:text-xl font-bold text-gray-800 dark:text-white">
                     {benefit.title}
                   </h4>
-                  <p className="text-sm leading-relaxed text-text-muted">
+                  <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-50">
                     {benefit.description}
                   </p>
                 </div>

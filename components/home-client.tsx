@@ -68,13 +68,13 @@ export function HomeClient({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="lg:space-y-12 space-y-8"
+              className="lg:space-y-12 space-y-8 "
             >
-              <div className="text-center space-y-2">
-                <h3 className="text-2xl font-bold text-text-main font-heading tracking-tight text-center">
+              <div className="text-center space-y-2 ">
+                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold font-heading tracking-tight text-center text-gray-900 dark:text-white">
                   Pessoas da comunidade colocando talento em movimento
                 </h3>
-                <p className="mx-auto max-w-2xl text-base font-normal text-text-muted">
+                <p className="mx-auto max-w-2xl ext-base md:text-lg font-normal leading-relaxed text-gray-700 dark:text-gray-50 lg:text-2xl">
                   Conheça membros que oferecem serviços, e ajudam outras famílias a encontrar soluções
                   confiáveis.
                 </p>
@@ -97,7 +97,7 @@ export function HomeClient({
                   ))}
                 </div>
               ) : (
-                <div className="mx-auto max-w-2xl rounded-xl border border-dashed border-border-subtle bg-surface/40 px-6 py-20 text-center">
+                <div className="mx-auto max-w-2xl  bg-surface/40 px-6 py-20 text-center">
                   <Briefcase className="mx-auto mb-4 h-12 w-12 text-primary/40" />
                   <h4 className="text-xl font-bold text-text-main">
                     Ainda não encontramos alguém com esses filtros
