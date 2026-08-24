@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { ShieldCheck, Star, CheckCircle2, AlertCircle } from "lucide-react";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -23,7 +22,7 @@ export function ContactCTA() {
     handleSubmit,
     reset,
     watch,
-    formState: { errors, isSubmitting, touchedFields, dirtyFields },
+    formState: { errors, isSubmitting, touchedFields },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     mode: "onChange",
@@ -51,14 +50,14 @@ export function ContactCTA() {
   };
 
   return (
-    <section className="my-24 bg-[linear-gradient(175deg,color-mix(in_oklab,var(--skillsy-color-primary)_76%,var(--skillsy-color-primary-container))_40%,color-mix(in_oklab,var(--skillsy-color-primary)_70%,var(--skillsy-color-surface))_58%,var(--skillsy-color-surface)_100%)] dark:bg-[linear-gradient(135deg,color-mix(in_oklab,var(--skillsy-color-primary)_52%,var(--skillsy-color-primary-container))_10%,color-mix(in_oklab,var(--skillsy-color-primary)_36%,var(--skillsy-color-surface))_52%,var(--skillsy-color-surface)_90%)] p-4 lg:p-6 xl:p-8 rounded-xl">
+    <section className="my-16 bg-accent border p-4 lg:p-6 xl:p-8 ">
       <div className="grid grid-cols-12 gap-y-12 md:gap-8">
         <div className="col-span-12 lg:col-span-6 xl:col-span-7 w-full h-full">
           <div className="space-y-4 justify-center pt-4 lg:pt-0 items-center md:items-start flex flex-col w-full h-full">
-            <h3 className="text-2xl lg:text-3xl xl:text-4xl font-bold text-white font-heading tracking-tight text-center">
+            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold font-heading tracking-tight text-center text-gray-900 dark:text-white">
               Dúvidas ou Sugestões?
             </h3>
-            <p className="text-white text-center md:text-start font-normal text-sm md:text-base lg:text-lg">
+            <p className="max-w-2xl text-base md:text-lg font-normal leading-relaxed text-gray-700 dark:text-gray-50 lg:text-2xl">
               Estamos aqui para ajudar você a encontrar o melhor serviço ou a
               divulgar o seu talento. Faça parte da nossa rede de excelência.
             </p>
@@ -182,8 +181,9 @@ export function ContactCTA() {
                 </div>
                 <Button
                   type="submit"
+                  size="icon-lg"
                   disabled={isSubmitting}
-                  className="w-full rounded-full bg-primary dark:text-gray-950 hover:bg-primary/90 active:bg-primary/80 transition-colors text-white h-10 md:h-12 font-bold"
+                  className="w-full rounded-none bg-primary dark:text-white hover:bg-primary/90 active:bg-primary/80 transition-colors text-white font-bold"
                 >
                   {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
                 </Button>
@@ -195,4 +195,3 @@ export function ContactCTA() {
     </section>
   );
 }
-
