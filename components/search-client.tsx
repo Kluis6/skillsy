@@ -579,6 +579,7 @@ export function SearchClient({
                         aria-label="Abrir filtros"
                         variant="ghost"
                         title="Filtros"
+                        className="lg:hidden"
                       >
                         <BsSliders2 className="text-gray-700  size-4" />
                       </Button>

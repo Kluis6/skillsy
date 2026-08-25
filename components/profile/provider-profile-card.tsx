@@ -61,56 +61,61 @@ export function ProviderProfileCard({
         href={`/profile/${provider.uid}`}
         className={cn("group block border  transition-colors", className)}
       >
-        <article className="grid gap-4 p-4 md:grid-cols-[auto_1fr_auto] md:gap-6 md:p-6">
-          <div className="flex items-center gap-4 md:block md:space-y-3">
-            <Avatar className="size-14 border  md:size-24">
-              <AvatarImage src={provider.photoURL} />
-              <AvatarFallback className="bg-primary text-xl font-bold text-white md:text-4xl">
-                {initial}
-              </AvatarFallback>
-            </Avatar>
+        <article className="grid gap-4 p-4 md:grid-cols-[auto_1fr_auto] md:gap-6 md:p-6 hover:shadow-xl transition-shadow">
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center">
+                <Avatar className="size-12">
+                  <AvatarImage src={provider.photoURL} />
+                  <AvatarFallback className="bg-primary font-bold text-white text-base">
+                    {initial}
+                  </AvatarFallback>
+                </Avatar>
 
-            {/* <div className="flex items-center gap-1  px-2.5 py-1 text-sm font-bold text-highlight md:justify-center">
+                {/* <div className="flex items-center gap-1  px-2.5 py-1 text-sm font-bold text-highlight md:justify-center">
               <Star className="size-3.5" fill="currentColor" />
               <span>{rating}</span>
             </div> */}
-          </div>
-
-          <div className="min-w-0 space-y-3">
-            <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="font-heading text-lg font-bold leading-tight  md:text-2xl">
-                  {provider.name}
-                </h3>
-                {isVerified ? <TrustBadge>V</TrustBadge> : null}
               </div>
 
-              <p className="text-sm font-medium ">
-                {provider.companyName
-                  ? `${roleLabel} na ${provider.companyName}`
-                  : roleLabel}
-              </p>
+              <div className="space-y-2">
+                <div className=" flex flex-col">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-heading text-lg font-bold leading-tight ">
+                      {provider.name}
+                    </h3>
+                    {isVerified ? <TrustBadge>V</TrustBadge> : null}
+                  </div>
+
+                  <p className="text-sm font-normal text-gray-600">
+                    {provider.companyName
+                      ? `${roleLabel} na ${provider.companyName}`
+                      : roleLabel}
+                  </p>
+                </div>
+              </div>
             </div>
+            <div className="">
+              <p className="line-clamp-2 max-w-3xl text-sm leading-relaxed text-gray-500">
+                {getBioPreview(provider)}
+              </p>
 
-            <p className="line-clamp-2 max-w-3xl text-sm leading-relaxed text-text-muted">
-              {getBioPreview(provider)}
-            </p>
-
-            <div className="flex flex-wrap gap-2">
-              {location ? (
-                <span className="inline-flex items-center px-3 py-1 text-xs font-medium ">
-                  <MapPin className="mr-1 size-3.5 " />
-                  {location}
+              <div className="flex flex-wrap gap-2">
+                {location ? (
+                  <span className="inline-flex items-center px-3 py-1 text-xs font-medium ">
+                    <MapPin className="mr-1 size-3.5 " />
+                    {location}
+                  </span>
+                ) : null}
+                {provider.category ? (
+                  <span className="px-3 py-1 text-xs font-medium ">
+                    {provider.category}
+                  </span>
+                ) : null}
+                <span className="px-3 py-1 text-xs font-medium">
+                  {reviewCount} avaliacao{reviewCount === 1 ? "" : "es"}
                 </span>
-              ) : null}
-              {provider.category ? (
-                <span className="px-3 py-1 text-xs font-medium ">
-                  {provider.category}
-                </span>
-              ) : null}
-              <span className="px-3 py-1 text-xs font-medium">
-                {reviewCount} avaliacao{reviewCount === 1 ? "" : "es"}
-              </span>
+              </div>
             </div>
           </div>
 
