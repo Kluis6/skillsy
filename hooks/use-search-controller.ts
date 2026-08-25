@@ -1,36 +1,51 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { UserService } from '@/services/user-service';
-import { UserProfile } from '@/models/types';
+import { useState, useCallback, useEffect, useRef } from "react";
+import { UserService } from "@/services/user-service";
+import { UserProfile } from "@/models/types";
+import { useRealtimeProfiles } from "./use-realtime-profiles";
 
 export function useSearchController(initialProviders: UserProfile[] = []) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [locationFilter, setLocationFilter] = useState<{ city: string; state: string } | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [locationFilter, setLocationFilter] = useState<{
+    city: string;
+    state: string;
+  } | null>(null);
   const [providers, setProviders] = useState<UserProfile[]>(initialProviders);
   const [searching, setSearching] = useState(false);
   const searchRequestId = useRef(0);
+
+  // Enable real-time synchronization for profile updates
+  useRealtimeProfiles(providers, (updatedProviders) => {
+    setProviders(updatedProviders);
+  });
 
   const fetchInitialProviders = useCallback(async () => {
     try {
       const data = await UserService.getProviders(6);
       setProviders(data);
     } catch (error) {
-      console.error('Error fetching initial providers:', error);
+      console.error("Error fetching initial providers:", error);
     }
   }, []);
 
-  const handleSearch = useCallback(async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    
-    setSearching(true);
-    try {
-      const filtered = await UserService.searchProviders(searchTerm, locationFilter || undefined);
-      setProviders(filtered);
-    } catch (error) {
-      console.error('Error searching:', error);
-    } finally {
-      setSearching(false);
-    }
-  }, [searchTerm, locationFilter]);
+  const handleSearch = useCallback(
+    async (e?: React.FormEvent) => {
+      if (e) e.preventDefault();
+
+      setSearching(true);
+      try {
+        const filtered = await UserService.searchProviders(
+          searchTerm,
+          locationFilter || undefined,
+        );
+        setProviders(filtered);
+      } catch (error) {
+        console.error("Error searching:", error);
+      } finally {
+        setSearching(false);
+      }
+    },
+    [searchTerm, locationFilter],
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -50,7 +65,7 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
             setProviders(featuredProviders);
           }
         } catch (error) {
-          console.error('Error fetching featured providers:', error);
+          console.error("Error fetching featured providers:", error);
         } finally {
           if (isMounted && requestId === searchRequestId.current) {
             setSearching(false);
@@ -62,12 +77,15 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
       if (locationFilter || searchTerm) {
         setSearching(true);
         try {
-          const filtered = await UserService.searchProviders(searchTerm, locationFilter || undefined);
+          const filtered = await UserService.searchProviders(
+            searchTerm,
+            locationFilter || undefined,
+          );
           if (isMounted && requestId === searchRequestId.current) {
             setProviders(filtered);
           }
         } catch (error) {
-          console.error('Error searching:', error);
+          console.error("Error searching:", error);
         } finally {
           if (isMounted && requestId === searchRequestId.current) {
             setSearching(false);
@@ -92,6 +110,6 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
     providers,
     searching,
     handleSearch,
-    fetchInitialProviders
+    fetchInitialProviders,
   };
 }
