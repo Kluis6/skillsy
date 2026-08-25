@@ -228,9 +228,10 @@ export function Categorywall() {
           <div className="flex justify-center lg:hidden">
             <Button
               type="button"
-              variant="ghost"
+              variant="default"
+              size="lg"
               onClick={() => setShowAllCategories((current) => !current)}
-              className="text-primary hover:text-blue-600 active:text-blue-700 transition-colors dark:text-white"
+              className="text-white"
             >
               {showAllCategories ? "Ver menos" : "Ver todas"}
             </Button>

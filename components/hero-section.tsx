@@ -170,7 +170,7 @@ export function HeroSection({
                     className="h-auto w-full justify-between px-0 sm:px-4 py-3 text-left text-primary hover:bg-cyan-50  dark:hover:bg-cyan-950/40"
                   >
                     <span>
-                      <span className="block text-sm font-bold dark:text-white text-cyan-800">
+                      <span className="block text-xs font-bold dark:text-white text-cyan-800">
                         Seu talento também pode ajudar alguém.
                       </span>
                       <span className="block text-xs  dark:text-gray-100 text-cyan-700">
@@ -185,10 +185,10 @@ export function HeroSection({
                   render={<Link href="/profile" />}
                   nativeButton={false}
                   variant="ghost"
-                  className="h-auto w-full justify-between px-4 py-3 text-left text-primary hover:bg-blue-50 hover:text-blue-700 dark:hover:bg-blue-950/40"
+                  className="h-auto w-full justify-between px-4 py-3 text-left text-primary  dark:hover:bg-cyan-950/40"
                 >
                   <span>
-                    <span className="block text-sm font-bold dark:text-white text-cyan-800">
+                    <span className="block text-xs font-bold dark:text-white text-cyan-800">
                       Mantenha seu perfil pronto para ser encontrado.
                     </span>
                     <span className="block text-xs dark:text-gray-100 text-cyan-700">

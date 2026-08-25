@@ -50,14 +50,14 @@ export function ContactCTA() {
   };
 
   return (
-    <section className="my-16 bg-accent border p-4 lg:p-6 xl:p-8 ">
+    <section className="my-16 bg-cyan-700 border p-4 lg:p-6 xl:p-8 ">
       <div className="grid grid-cols-12 gap-y-12 md:gap-8">
         <div className="col-span-12 lg:col-span-6 xl:col-span-7 w-full h-full">
           <div className="space-y-4 justify-center pt-4 lg:pt-0 items-center md:items-start flex flex-col w-full h-full">
-            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold font-heading tracking-tight text-center text-gray-900 dark:text-white">
+            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold font-heading tracking-tight text-center text-gray-100 dark:text-white">
               Dúvidas ou Sugestões?
             </h3>
-            <p className="max-w-2xl text-base md:text-lg font-normal leading-relaxed text-gray-700 dark:text-gray-50 lg:text-2xl">
+            <p className="max-w-2xl text-base md:text-lg font-normal leading-relaxed text-gray-100 dark:text-gray-50 lg:text-2xl">
               Estamos aqui para ajudar você a encontrar o melhor serviço ou a
               divulgar o seu talento. Faça parte da nossa rede de excelência.
             </p>
@@ -153,7 +153,7 @@ export function ContactCTA() {
                     <textarea
                       placeholder="Conte-nos como podemos ajudar..."
                       {...register("message")}
-                      className={`w-full border rounded-md p-4 text-text-main placeholder:text-text-muted/50 h-32 outline-none transition-all ${
+                      className={`w-full border rounded-none p-4 text-text-main placeholder:text-text-muted/50 h-32 outline-none transition-all ${
                         errors.message
                           ? "border-red-500/50 focus:border-red-500"
                           : touchedFields.message && !errors.message

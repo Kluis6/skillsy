@@ -65,7 +65,7 @@ export function OpportunityNotifications() {
         ) : null}
       </Button>
       {open ? (
-        <div className="absolute transition-discrete duration-500 md:right-0 -right-14 top-12 z-50 w-xs md:w-[min(22rem,calc(100vw-2rem))] overflow-hidden  border border-border-subtle bg-popover shadow-lg">
+        <div className="absolute transition-discrete duration-500 md:right-0 -right-14 top-12 z-50 w-sm md:w-[min(22rem,calc(100vw-2rem))] overflow-hidden  border border-border-subtle bg-popover shadow-lg">
           <div className="flex items-center justify-between border-b border-border-subtle bg-surface px-4 py-3">
             <p className="text-sm font-semibold text-gray-700 dark:text-white">Oportunidades</p>
             <Link

@@ -70,10 +70,10 @@ function DrawerLink({
           href={href}
           aria-current={active ? "page" : undefined}
           className={cn(
-            "flex min-h-10 w-full items-center px-3 text-sm font-medium transition-colors",
+            "flex min-h-10 w-full items-center px-3 text-sm font-medium transition-colors border-s-4 border-transparent",
             active
-              ? " text-white dark:text-white bg-neutral-500 dark:bg-primary/80 "
-              : "text-gray-700 dark:text-gray-50 hover:bg-neutral-500/10 dark:hover:bg-surface",
+              ? " text-primary dark:text-white dark:border-cyan-500 border-primary hover:bg-cyan-700/10 "
+              : "text-gray-700 dark:text-gray-50 hover:border-transparent hover:bg-neutral-500/10 ",
           )}
         >
           {label}
@@ -94,8 +94,9 @@ function DrawerNavigation({
 }) {
   return (
     <>
+   
       <DrawerHeader className="flex flex-row justify-between">
-        <div className=" mb-4">
+        <div className="mb-4">
           <DrawerTitle className="dark:text-white text-base normal-case font-semibold">
             Skillsy
           </DrawerTitle>
@@ -242,7 +243,7 @@ export function Navbar({
                     className="md:hidden"
                     aria-label="Abrir menu principal"
                   >
-                    <BsList className="size-4 text-gray-700 dark:text-white" />
+                    <BsList className="size-4 text-gray-800 dark:text-white" />
                   </Button>
                 }
               />
@@ -304,7 +305,7 @@ export function Navbar({
                     className="hidden md:flex"
                     aria-label="Abrir menu principal"
                   >
-                    <BsList className="size-5 text-gray-800 dark:text-white" />
+                    <BsList className="size-4 text-gray-800 dark:text-white" />
                   </Button>
                 }
               ></DrawerTrigger>
@@ -322,7 +323,7 @@ export function Navbar({
             <Avatar className="size-9">
               <AvatarImage src={user.photoURL || undefined} />
               <AvatarFallback>
-                <UserIcon className="size-5" />
+                <UserIcon className="size-4" />
               </AvatarFallback>
             </Avatar>
           ) : (
