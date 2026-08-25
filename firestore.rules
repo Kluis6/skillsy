@@ -254,6 +254,66 @@ service cloud.firestore {
              (!('deletedAt' in data) || data.deletedAt is timestamp);
     }
 
+    function isValidUserUpdate(data) {
+      let allowedFields = [
+        'id', 'uid', 'name', 'email', 'photoURL', 'bannerURL', 'bio', 
+        'category', 'isProvider', 'hasPublicProfile', 'role', 'contacts', 'whatsapp', 
+        'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 'phone', 
+        'phones', 'location', 'ward', 'companyName', 'gallery', 
+        'rating', 'reviewCount', 'experienceYears', 'baptismYear',
+        'memberVerified', 'membershipYears',
+        'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
+        'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'showPublicLocation', 'businessComplement'
+      ];
+      
+      // For updates, only validate fields that are being updated
+      // Combined data (existing + update) will be validated by Firestore rules context
+      return data.keys().hasOnly(allowedFields) &&
+             // Validate individual fields only if they are present in the update
+             (!('uid' in data) || (data.uid is string)) &&
+             (!('name' in data) || (data.name is string && data.name.size() > 0 && data.name.size() <= 100)) &&
+             (!('email' in data) || (isValidEmail(data.email))) &&
+             (!('isProvider' in data) || (data.isProvider is bool)) &&
+             (!('role' in data) || (data.role in ['admin', 'user'])) &&
+             (!('createdAt' in data) || (data.createdAt is timestamp)) &&
+             (!('hasPublicProfile' in data) || data.hasPublicProfile is bool) &&
+             (!('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 1000000)) &&
+             (!('bannerURL' in data) || data.bannerURL == null || (data.bannerURL is string && data.bannerURL.size() <= 1000000)) &&
+             (!('bio' in data) || data.bio == null || (data.bio is string && data.bio.size() <= 2000)) &&
+             (!('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100 && isValidCategory(data.category))) &&
+             (!('contacts' in data) || data.contacts == null || data.contacts is list) &&
+             (!('whatsapp' in data) || data.whatsapp == null || (data.whatsapp is string && data.whatsapp.size() <= 30)) &&
+             (!('phone' in data) || data.phone == null || (data.phone is string && data.phone.size() <= 30)) &&
+             (!('instagram' in data) || data.instagram == null || (data.instagram is string && data.instagram.size() <= 100)) &&
+             (!('facebook' in data) || data.facebook == null || (data.facebook is string && data.facebook.size() <= 100)) &&
+             (!('linkedin' in data) || data.linkedin == null || (data.linkedin is string && data.linkedin.size() <= 100)) &&
+             (!('website' in data) || data.website == null || (data.website is string && data.website.size() <= 200)) &&
+             (!('serviceType' in data) || data.serviceType == null || (data.serviceType is string && data.serviceType.size() <= 200)) &&
+             (!('phones' in data) || data.phones == null || data.phones is list) &&
+             (!('location' in data) || data.location == null || (data.location is string && data.location.size() <= 200)) &&
+             (!('ward' in data) || data.ward == null || (data.ward is string && data.ward.size() <= 200)) &&
+             (!('companyName' in data) || data.companyName == null || (data.companyName is string && data.companyName.size() <= 200)) &&
+             (!('gallery' in data) || data.gallery == null || isValidGallery(data.gallery)) &&
+             (!('rating' in data) || data.rating is number) &&
+             (!('reviewCount' in data) || data.reviewCount is number) &&
+             (!('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
+             (!('baptismYear' in data) || data.baptismYear == null || data.baptismYear is number) &&
+             (!('memberVerified' in data) || data.memberVerified is bool) &&
+             (!('membershipYears' in data) || data.membershipYears == null || data.membershipYears is number) &&
+             (!('availability' in data) || data.availability == null || isValidAvailabilityList(data.availability)) &&
+             (!('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200)) &&
+             (!('businessAddress' in data) || data.businessAddress == null || (data.businessAddress is string && data.businessAddress.size() <= 200)) &&
+             (!('businessAddressNumber' in data) || data.businessAddressNumber == null || (data.businessAddressNumber is string && data.businessAddressNumber.size() <= 20)) &&
+             (!('businessNeighborhood' in data) || data.businessNeighborhood == null || (data.businessNeighborhood is string && data.businessNeighborhood.size() <= 100)) &&
+             (!('businessState' in data) || data.businessState == null || (data.businessState is string && data.businessState.size() <= 100)) &&
+             (!('showPublicLocation' in data) || data.showPublicLocation is bool) &&
+             (!('businessComplement' in data) || data.businessComplement == null || (data.businessComplement is string && data.businessComplement.size() <= 100)) &&
+             (!('isBlocked' in data) || data.isBlocked is bool) &&
+             (!('isDeleted' in data) || data.isDeleted is bool) &&
+             (!('deletedByUser' in data) || data.deletedByUser is bool) &&
+             (!('deletedAt' in data) || data.deletedAt is timestamp);
+    }
+
     function isValidPublicProfile(data, userId) {
       let allowedFields = [
         'uid', 'name', 'photoURL', 'bannerURL', 'bio', 'category',
@@ -726,11 +786,11 @@ service cloud.firestore {
       
       // Update: Owner can update their info, Admin anything, 
       // OR a non-owner can perform a rating update if paired with a vote record
-      allow update: if (isOwner(userId) && isValidUser(request.resource.data) && 
-                        keepsSameUserRole(request.resource.data) &&
-                        keepsSameBlockedStatus(request.resource.data) &&
-                        keepsSameUid(userId, request.resource.data) &&
-                        keepsSafeCreatedAt(request.resource.data)) 
+      allow update: if (isOwner(userId) && isValidUserUpdate(request.resource.data) && 
+                        (!('role' in request.resource.data) || keepsSameUserRole(request.resource.data)) &&
+                        (!('isBlocked' in request.resource.data) || keepsSameBlockedStatus(request.resource.data)) &&
+                        (!('uid' in request.resource.data) || keepsSameUid(userId, request.resource.data)) &&
+                        (!('createdAt' in request.resource.data) || keepsSafeCreatedAt(request.resource.data))) 
                     || 
                     isAllowedRatingAggregateUpdate(userId)
                     || isAdmin();

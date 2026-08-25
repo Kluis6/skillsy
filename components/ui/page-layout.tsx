@@ -19,7 +19,7 @@ export function PageHeader({
   return (
     <section
       className={cn(
-        "skillsy-surface flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between md:p-8",
+        " flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between md:p-8",
         className,
       )}
     >
@@ -27,11 +27,11 @@ export function PageHeader({
         {eyebrow ? (
           <p className="text-xs font-semibold text-primary">{eyebrow}</p>
         ) : null}
-        <h1 className="font-heading text-3xl font-semibold leading-tight text-text-main md:text-4xl">
+        <h1 className="font-heading text-3xl font-semibold leading-tight  md:text-4xl">
           {title}
         </h1>
         {description ? (
-          <p className="max-w-2xl text-sm leading-relaxed text-text-muted md:text-base">
+          <p className="max-w-2xl text-sm leading-relaxed  md:text-base">
             {description}
           </p>
         ) : null}
@@ -57,7 +57,7 @@ export function SurfacePanel({
   return (
     <Component
       className={cn(
-        "skillsy-surface p-5 md:p-6",
+        " p-5 md:p-6",
         className,
       )}
     >

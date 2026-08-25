@@ -291,7 +291,7 @@ export function Navbar({
           ) : null} */}
         </div>
 
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between space-x-2">
           {!shouldShowBackButton ? <ThemeToggle /> : null}
           {user && !shouldShowBackButton ? <OpportunityNotifications /> : null}
 

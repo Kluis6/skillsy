@@ -49,9 +49,7 @@ export function ProviderProfileCard({
   className,
 }: ProviderProfileCardProps) {
   const isVerified = shouldShowVerifiedBadge(provider);
-  const location =
-    [provider.publicCity, provider.publicState].filter(Boolean).join(", ") ||
-    "Brasil";
+  const location = provider.publicState;
   const roleLabel = getRoleLabel(provider);
   const rating = provider.rating || "0.0";
   const reviewCount = provider.reviewCount || 0;
@@ -61,24 +59,21 @@ export function ProviderProfileCard({
     return (
       <Link
         href={`/profile/${provider.uid}`}
-        className={cn(
-          "group block border  bg-card transition-colors",
-          className,
-        )}
+        className={cn("group block border  transition-colors", className)}
       >
         <article className="grid gap-4 p-4 md:grid-cols-[auto_1fr_auto] md:gap-6 md:p-6">
           <div className="flex items-center gap-4 md:block md:space-y-3">
-            <Avatar className="size-14 border bg-card md:size-24">
+            <Avatar className="size-14 border  md:size-24">
               <AvatarImage src={provider.photoURL} />
               <AvatarFallback className="bg-primary text-xl font-bold text-white md:text-4xl">
                 {initial}
               </AvatarFallback>
             </Avatar>
 
-            <div className="flex items-center gap-1  px-2.5 py-1 text-sm font-bold text-highlight md:justify-center">
+            {/* <div className="flex items-center gap-1  px-2.5 py-1 text-sm font-bold text-highlight md:justify-center">
               <Star className="size-3.5" fill="currentColor" />
               <span>{rating}</span>
-            </div>
+            </div> */}
           </div>
 
           <div className="min-w-0 space-y-3">
@@ -102,27 +97,29 @@ export function ProviderProfileCard({
             </p>
 
             <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center px-3 py-1 text-xs font-medium text-text-main">
-                <MapPin className="mr-1 size-3.5 text-primary" />
-                {location}
-              </span>
+              {location ? (
+                <span className="inline-flex items-center px-3 py-1 text-xs font-medium ">
+                  <MapPin className="mr-1 size-3.5 " />
+                  {location}
+                </span>
+              ) : null}
               {provider.category ? (
-                <span className=" px-3 py-1 text-xs font-medium text-primary">
+                <span className="px-3 py-1 text-xs font-medium ">
                   {provider.category}
                 </span>
               ) : null}
-              <span className=" px-3 py-1 text-xs font-medium text-text-muted">
+              <span className="px-3 py-1 text-xs font-medium">
                 {reviewCount} avaliacao{reviewCount === 1 ? "" : "es"}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center  justify-between border-t border-border-subtle pt-4 md:flex-col md:items-end md:justify-center md:border-t-0 md:pt-0">
+          {/* <div className="flex items-center  justify-between border-t border-border-subtle pt-4 md:flex-col md:items-end md:justify-center md:border-t-0 md:pt-0">
             <span className="text-sm font-semibold text-primary">
               Ver perfil
             </span>
             <ArrowRight className="size-4 text-primary transition-transform group-hover:translate-x-1" />
-          </div>
+          </div> */}
         </article>
       </Link>
     );
@@ -169,15 +166,15 @@ export function ProviderProfileCard({
                 {initial}
               </AvatarFallback>
             </Avatar>
-            {isVerified ? (
-              <TrustBadge className="mb-1">V</TrustBadge>
-            ) : null}
+            {isVerified ? <TrustBadge className="mb-1">V</TrustBadge> : null}
           </div>
           <CardAction className="">
-            <Badge  className="bg-cyan-900  text-white dark:bg-background rounded-full">
-              <MapPin className="" />
-              {location}
-            </Badge>
+            {location ? (
+              <Badge className="bg-cyan-900  text-white dark:bg-background rounded-full">
+                <MapPin className="" />
+                {location}
+              </Badge>
+            ) : null}
           </CardAction>
           <CardTitle className=" w-full flex flex-col col-span-4">
             {provider.name}

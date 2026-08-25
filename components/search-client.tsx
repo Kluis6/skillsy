@@ -6,6 +6,13 @@ import { useAuth } from "@/hooks/use-auth";
 import { UserProfile } from "@/models/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SurfacePanel } from "@/components/ui/page-layout";
 import { ProviderProfileCard } from "@/components/profile/provider-profile-card";
@@ -24,7 +31,14 @@ import Link from "next/link";
 
 import { AuthModal } from "./auth-modal";
 import { BRAZIL_STATES } from "@/lib/brazil-states";
-import { BsList, BsXLg } from "react-icons/bs";
+import {
+  BsBoxArrowInRight,
+  BsList,
+  BsSearch,
+  BsSliders2,
+  BsXLg,
+} from "react-icons/bs";
+import { cn } from "@/lib/utils";
 
 import {
   Drawer,
@@ -48,6 +62,9 @@ import { LuLogIn } from "react-icons/lu";
 import { Footer } from "./footer";
 import { MdLogin, MdSearch } from "react-icons/md";
 import { PROVIDER_CATEGORIES } from "@/lib/profile-form";
+import { User } from "firebase/auth";
+import { ThemeToggle } from "./theme-toggle";
+import { OpportunityNotifications } from "./opportunity-notifications";
 
 interface SearchClientProps {
   initialQuery: string;
@@ -56,6 +73,167 @@ interface SearchClientProps {
   initialCategory: string;
   initialResults: UserProfile[];
   initialSuggestions: UserProfile[];
+}
+
+const primaryNavItems = [
+  { href: "/search", label: "Buscar profissional" },
+  { href: "/encontrar-ajuda", label: "Pedir ajuda" },
+  { href: "/oportunidades", label: "Oportunidades" },
+] as const;
+
+const secondaryNavItems = [
+  { href: "/", label: "Inicial" },
+  { href: "/weareskillsy", label: "O que é Skillsy?" },
+  { href: "/artigosevagas", label: "Novidades e vagas" },
+  { href: "/join", label: "Por que participar?" },
+  { href: "/privacidade", label: "Privacidade" },
+  { href: "/termos", label: "Termos de uso" },
+] as const;
+
+function isActivePath(pathname: string | null, href: string) {
+  if (!pathname) return false;
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function SearchDrawerLink({
+  href,
+  label,
+  active,
+}: {
+  href: string;
+  label: string;
+  active: boolean;
+}) {
+  return (
+    <li>
+      <DrawerClose className="w-full">
+        <Link
+          href={href}
+          aria-current={active ? "page" : undefined}
+          className={cn(
+            "flex min-h-10 w-full items-center px-3 text-sm font-medium transition-colors border-s-4 border-transparent",
+            active
+              ? " text-primary dark:text-white dark:border-cyan-500 border-primary hover:bg-cyan-700/10 "
+              : "text-gray-700 dark:text-gray-50 hover:border-transparent hover:bg-neutral-500/10 ",
+          )}
+        >
+          {label}
+        </Link>
+      </DrawerClose>
+    </li>
+  );
+}
+
+function SearchDrawerNavigation({
+  pathname,
+  user,
+  handleLogout,
+}: {
+  pathname: string | null;
+  user: User | null;
+  handleLogout: () => Promise<void>;
+}) {
+  return (
+    <>
+      <DrawerHeader className="flex flex-row justify-between">
+        <div className="mb-4">
+          <DrawerTitle className="dark:text-white text-base normal-case font-semibold">
+            Skillsy
+          </DrawerTitle>
+          <DrawerDescription className="text-sm text-gray-500 dark:text-gray-50">
+            Onde talentos encontram oportunidades
+          </DrawerDescription>
+        </div>
+
+        <DrawerClose
+          render={
+            <Button
+              size="icon-lg"
+              variant="ghost"
+              aria-label="Fechar menu principal"
+            >
+              <BsXLg className="size-4 text-foreground" />
+            </Button>
+          }
+        />
+      </DrawerHeader>
+
+      <div className="space-y-4 px-4 overflow-y-auto">
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-50">
+            Encontre o que você precisa
+          </h3>
+          <ul className="space-y-1">
+            {primaryNavItems.map((item) => (
+              <SearchDrawerLink
+                key={item.href}
+                href={item.href}
+                label={item.label}
+                active={isActivePath(pathname, item.href)}
+              />
+            ))}
+          </ul>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-50">
+            Quem somos
+          </h3>
+          <ul className="space-y-1">
+            {secondaryNavItems.map((item) => (
+              <SearchDrawerLink
+                key={item.href}
+                href={item.href}
+                label={item.label}
+                active={isActivePath(pathname, item.href)}
+              />
+            ))}
+          </ul>
+        </div>
+
+        {user ? (
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-50">
+              Minha conta
+            </h3>
+            <ul className="space-y-1">
+              <SearchDrawerLink
+                href="/contacts"
+                label="Meus contatos"
+                active={isActivePath(pathname, "/contacts")}
+              />
+              <SearchDrawerLink
+                href="/profile"
+                label="Configurações do perfil"
+                active={isActivePath(pathname, "/profile")}
+              />
+              <li className="mb-4">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start dark:text-white font-medium px-3 h-10 text-sm text-gray-700 normal-case"
+                  onClick={handleLogout}
+                >
+                  Sair da conta
+                </Button>
+              </li>
+            </ul>
+          </div>
+        ) : null}
+      </div>
+
+      <DrawerFooter>
+        <DrawerClose>
+          <Link
+            className="flex h-10 items-center justify-center bg-primary text-center text-sm font-medium text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
+            href="/donation"
+          >
+            Ajude o projeto
+          </Link>
+        </DrawerClose>
+      </DrawerFooter>
+    </>
+  );
 }
 
 export function SearchClient({
@@ -75,7 +253,7 @@ export function SearchClient({
   const city = initialCity;
   const state = initialState;
   const logout = auth.logout;
-  const user = profile;
+  const user = auth.user;
 
   const selectedStateLabel =
     BRAZIL_STATES.find((item) => item.value === state)?.label || state;
@@ -185,248 +363,67 @@ export function SearchClient({
     router.push(`/search?${params.toString()}`);
   };
 
+  const handleLogout = async () => {
+    setMobileDrawerOpen(false);
+    await logout?.();
+  };
+
   const renderCategoryFilter = (id: string) => (
-    <div className="relative">
-      <select
-        id={id}
-        value={selectedCategory || "all"}
-        onChange={(event) =>
-          handleCategoryChange(
-            event.target.value === "all" ? null : event.target.value,
-          )
-        }
-        className="h-12 w-full appearance-none rounded-sm border border-border-subtle bg-surface px-3 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
-      >
-        <option value="all">Todas as categorias</option>
+    <Select
+      value={selectedCategory || "all"}
+      onValueChange={(value) =>
+        handleCategoryChange(value === "all" ? null : value)
+      }
+    >
+      <SelectTrigger id={id} className="h-12 w-full  px-3 text-sm">
+        <SelectValue>{selectedCategory || "Todas as categorias"}</SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">Todas as categorias</SelectItem>
         {PROVIDER_CATEGORIES.map((cat) => (
-          <option key={cat} value={cat}>
+          <SelectItem key={cat} value={cat}>
             {cat}
-          </option>
+          </SelectItem>
         ))}
-      </select>
-      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
-    </div>
+      </SelectContent>
+    </Select>
   );
 
   return (
     <div className="min-h-screen bg-surface/30 w-full space-y-2">
-      <nav className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_oklab,var(--skillsy-color-surface)_86%,transparent)] backdrop-blur-md">
-        <div className="container px-4 mx-auto flex min-h-16 items-center justify-between gap-4 py-2">
-          <Drawer
-            key={`search-drawer-${pathname}`}
-            swipeDirection="left"
-            open={mobileDrawerOpen}
-            onOpenChange={setMobileDrawerOpen}
-          >
-            <DrawerTrigger
-              className="flex md:hidden"
-              render={
-                <Button
-                  size="icon"
-                  className="size-10"
-                  variant="ghost"
-                  aria-label="Abrir menu principal"
-                >
-                  <BsList className="size-5 text-foreground" />
-                </Button>
-              }
-            />
-            <DrawerContent className="w-full">
-              <DrawerHeader className="flex flex-row justify-between">
-                <div className="flex flex-col">
-                  <DrawerTitle className="text-cyan-800 dark:text-white">
-                    Skillsy
-                  </DrawerTitle>
-                </div>
-                <DrawerTrigger
-                  render={
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="bg-transparent hover:bg-primary/10"
-                      aria-label="Fechar menu principal"
-                    >
-                      <BsXLg className="text-foreground" />
-                    </Button>
-                  }
-                />
-              </DrawerHeader>
-              <div className="px-4 space-y-4">
-                <h3 className="font-medium text-sm text-foreground">
-                  Navegação
-                </h3>
-                <ul className="w-full space-y-1">
-                  <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose>
-                      <Link
-                        href="/"
-                        className="flex text-sm font-normal text-text-muted"
-                      >
-                        Inicial
-                      </Link>
-                    </DrawerClose>
-                  </li>
-                  <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose>
-                      <Link
-                        href="/weareskillsy"
-                        className="flex text-sm font-normal text-text-muted"
-                      >
-                        O que é Skillsy?
-                      </Link>
-                    </DrawerClose>
-                  </li>
-                  <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose>
-                      <Link
-                        href="/artigosevagas"
-                        className="flex text-sm font-normal text-text-muted"
-                      >
-                        Novidades e vagas
-                      </Link>
-                    </DrawerClose>
-                  </li>
-                  <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose>
-                      <Link
-                        href="/search"
-                        aria-current="page"
-                        className="flex text-sm font-semibold text-primary"
-                      >
-                        Buscar profissional
-                      </Link>
-                    </DrawerClose>
-                  </li>
-                  <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose>
-                      <Link
-                        href="/encontrar-ajuda"
-                        className="flex text-sm font-normal text-text-muted"
-                      >
-                        Pedir ajuda
-                      </Link>
-                    </DrawerClose>
-                  </li>
-                  <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose>
-                      <Link
-                        href="/oportunidades"
-                        className="flex text-sm font-normal text-text-muted"
-                      >
-                        Oportunidades
-                      </Link>
-                    </DrawerClose>
-                  </li>
-                  <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose>
-                      <Link
-                        href="/join"
-                        className="flex text-sm font-normal text-text-muted"
-                      >
-                        Por que participar?
-                      </Link>
-                    </DrawerClose>
-                  </li>
-                  <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose>
-                      <Link
-                        href="/privacidade"
-                        className="flex text-sm font-normal text-text-muted"
-                      >
-                        Privacidade
-                      </Link>
-                    </DrawerClose>
-                  </li>
-                  <li className="rounded-full p-2 hover:bg-primary/10">
-                    <DrawerClose>
-                      <Link
-                        href="/termos"
-                        className="flex text-sm font-normal text-text-muted"
-                      >
-                        Termos de uso
-                      </Link>
-                    </DrawerClose>
-                  </li>
-                </ul>
-
-                {user && (
-                  <>
-                    <h3 className="font-medium text-sm text-foreground">
-                      Minha conta
-                    </h3>
-
-                    <ul className="space-y-1">
-                      <li className="rounded-full p-2 hover:bg-primary/10">
-                        <DrawerClose>
-                          <Link
-                            className="flex text-sm font-normal text-text-muted"
-                            href="/contacts"
-                          >
-                            Meus Contatos
-                          </Link>
-                        </DrawerClose>
-                      </li>
-                      <li className="rounded-full p-2 hover:bg-primary/10">
-                        <DrawerClose>
-                          <Link
-                            className="flex text-sm font-normal text-text-muted"
-                            href="/profile"
-                          >
-                            Configurações do Perfil
-                          </Link>
-                        </DrawerClose>
-                      </li>
-                      <li>
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start px-3 text-sm font-normal text-text-muted"
-                          onClick={logout}
-                        >
-                          Sair da Conta
-                        </Button>
-                      </li>
-                    </ul>
-                  </>
-                )}
-              </div>
-
-              <DrawerFooter>
-                <DrawerClose>
-                  <Link
-                    className="flex h-10 items-center justify-center rounded-full bg-primary px-5 text-center text-sm font-medium text-primary-foreground shadow-[var(--skillsy-elevation-level1)] hover:bg-primary/90 active:bg-primary/80"
-                    href="/donation"
+      <nav className="sticky w-full top-0 z-50 border-b border-border dark:bg-background/90 bg-white/85 backdrop-blur-md">
+        <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2">
+          <div className="flex items-center space-x-2">
+            <Drawer
+              key={`search-drawer-${pathname}`}
+              swipeDirection="left"
+              open={mobileDrawerOpen}
+              onOpenChange={setMobileDrawerOpen}
+            >
+              <DrawerTrigger
+                render={
+                  <Button
+                    size="icon-lg"
+                    variant="ghost"
+                    className="md:hidden"
+                    aria-label="Abrir menu principal"
                   >
-                    Ajude o projeto
-                  </Link>
-                </DrawerClose>
-              </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
-          <Link href="/">
-            <h1 className="text-xl font-bold text-primary tracking-tighter">
-              Skillsy
-            </h1>
-          </Link>
-
-          <div className="hidden items-center gap-1 lg:flex">
-            <Link
-              href="/search"
-              aria-current="page"
-              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
-            >
-              Buscar profissional
-            </Link>
-            <Link
-              href="/encontrar-ajuda"
-              className="rounded-md px-3 py-2 text-sm font-medium text-text-muted hover:bg-primary/10 hover:text-primary"
-            >
-              Pedir ajuda
-            </Link>
-            <Link
-              href="/oportunidades"
-              className="rounded-md px-3 py-2 text-sm font-medium text-text-muted hover:bg-primary/10 hover:text-primary"
-            >
-              Oportunidades
+                    <BsList className="size-4 text-gray-800 dark:text-white" />
+                  </Button>
+                }
+              />
+              <DrawerContent className="w-screen">
+                <SearchDrawerNavigation
+                  pathname={pathname}
+                  user={user}
+                  handleLogout={handleLogout}
+                />
+              </DrawerContent>
+            </Drawer>
+            <Link href="/">
+              <h1 className="font-heading text-2xl font-semibold tracking-normal text-primary dark:text-white">
+                Skillsy
+              </h1>
             </Link>
           </div>
 
@@ -435,8 +432,8 @@ export function SearchClient({
             className="md:flex items-center gap-4 w-full max-w-2xl hidden"
           >
             <div className="relative w-full">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300"
+              <BsSearch
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500"
                 size={20}
               />
               <Input
@@ -445,39 +442,43 @@ export function SearchClient({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="O que você procura? Pintor, Advogado, Bolo de Pote…"
-                className="pl-12 h-10 w-full bg-card border-border-subtle text-text-main placeholder:text-text-muted shadow-sm rounded-full placeholder:sm:text-sm"
+                className="pl-12 h-10 w-full  placeholder:text-gray-400  rounded-full placeholder:sm:text-sm"
               />
               <Button
                 type="submit"
                 size="icon"
                 aria-label="Buscar profissionais"
-                className="rounded-r-full absolute right-1 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-white px-6 h-8 font-bold hidden sm:flex justify-center items-center transition-colors"
+                className="rounded-r-full absolute right-1 top-1/2 -translate-y-1/2 bg-primary  text-white px-6 h-8  hidden sm:flex justify-center items-center transition-colors"
               >
-                <Search className=" text-white" size={20} />
+                <BsSearch className=" text-white" size={20} />
               </Button>
             </div>
           </form>
-
-          {user ? (
-            <Avatar className="size-7 ring-2 ring-offset-2 ring-border-subtle md:ml-1.5 mr-1">
-              <AvatarImage src={user.photoURL || undefined} />
-              <AvatarFallback>
-                <UserIcon className="size-7" />
-              </AvatarFallback>
-            </Avatar>
-          ) : (
-            <AuthModal>
-              <Button
-                variant="default"
-                title="Faça login ou cria sua conta"
-                aria-label="Entrar ou criar conta"
-                // className="bg-primary hover:bg-primary/90 active:bg-primary/80 w-10 md:w-auto md:px-4 h-10 dark:text-white font-normal"
-              >
-                <MdLogin className="flex md:hidden size-4" />
-                <p className="hidden font-medium md:block"> Entrar</p>
-              </Button>
-            </AuthModal>
-          )}
+          <div className="flex items-center space-x-2">
+            <ThemeToggle />
+            {user && <OpportunityNotifications />}
+            {user ? (
+              <Avatar className="size-9">
+                <AvatarImage src={user.photoURL || undefined} />
+                <AvatarFallback>
+                  <UserIcon className="size-4" />
+                </AvatarFallback>
+              </Avatar>
+            ) : (
+              <AuthModal>
+                <Button
+                  variant="default"
+                  size="sm"
+                  title="Faça login ou crie sua conta"
+                  aria-label="Entrar ou criar conta"
+                  className="w-9 md:w-auto h-9 normal-case lg:px-6"
+                >
+                  <BsBoxArrowInRight className="block size-4 md:hidden" />
+                  <span className="hidden font-medium md:block">Entrar</span>
+                </Button>
+              </AuthModal>
+            )}
+          </div>
         </div>
         <div className="container px-4 mx-auto flex items-center justify-between gap-4 py-2 md:hidden">
           <form
@@ -485,8 +486,8 @@ export function SearchClient({
             className="md:hidden items-center gap-4 w-full max-w-2xl flex"
           >
             <div className="relative w-full">
-              <MdSearch
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"
+              <BsSearch
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500"
                 size={20}
               />
 
@@ -496,17 +497,9 @@ export function SearchClient({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="O que você procura?"
-                className="pl-12 h-10 w-full bg-white border-border hover:border-border focus:border-0  dark:bg-black  transition-shadow text-text-main placeholder:text-text-muted shadow-sm focus:shadow-[0_0_10px_rgba(0,0,0,0.2)] rounded-full placeholder:text-xs"
+                className="pl-12 h-10 w-full bg-white dark:bg-black placeholder:text-gray-400 rounded-full placeholder:text-xs"
               />
             </div>
-
-            {/* <Button
-              type="submit"
-              size="sm"
-              className="rounded-sm bg-primary hover:bg-primary/90 text-white px-6 h-10 font-bold hidden sm:flex transition-colors"
-            >
-              Pesquisar
-            </Button> */}
           </form>
         </div>
       </nav>
@@ -514,10 +507,10 @@ export function SearchClient({
       <main className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-6">
           <aside className="w-full lg:w-72 shrink-0 space-y-8 hidden lg:block">
-            <SurfacePanel className="p-4 md:p-4">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="font-bold text-text-main flex items-center gap-2 font-heading">
-                  <SlidersHorizontal size={18} className="text-primary" />{" "}
+            <div className="p-4 md:p-4">
+              <div className="flex items-center space-x-2 mb-6">
+                <BsSliders2 className="text-gray-700 size-4" />
+                <h3 className="font-bold text-gray-700 flex items-center gap-2 font-heading">
                   Filtros
                 </h3>
               </div>
@@ -525,46 +518,55 @@ export function SearchClient({
                 <div>
                   <label
                     htmlFor="search-state-filter"
-                    className="mb-4 block text-xs font-bold text-text-muted"
+                    className="mb-4 block text-xs font-bold text-gray-600"
                   >
                     Estado
                   </label>
                   <div className="relative">
-                    <select
+                    <Select
                       id="search-state-filter"
                       value={state || "all"}
-                      onChange={(e) => handleStateChange(e.target.value)}
-                      className="w-full appearance-none rounded-sm border border-border-subtle bg-surface h-12 px-3 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
+                      onValueChange={(value) =>
+                        handleStateChange(value ?? "all")
+                      }
                     >
-                      <option value="all">Todos os estados</option>
-                      {BRAZIL_STATES.map((item) => (
-                        <option key={item.value} value={item.value}>
-                          {item.label}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
+                      <SelectTrigger className="h-12 w-full px-3 text-sm">
+                        <SelectValue>
+                          {state && state !== "all"
+                            ? selectedStateLabel
+                            : "Todos os estados"}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos os estados</SelectItem>
+                        {BRAZIL_STATES.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
                 <div>
                   <label
                     htmlFor="search-category-filter"
-                    className="mb-4 block text-xs font-bold text-text-muted"
+                    className="mb-4 block text-xs font-bold text-gray-600"
                   >
                     Categorias
                   </label>
                   {renderCategoryFilter("search-category-filter")}
                 </div>
               </div>
-            </SurfacePanel>
+            </div>
           </aside>
 
           <div className="flex-grow space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-xs font-bold text-text-muted">
+                  <p className="text-xs font-bold text-gray-600">
                     {`${results.length} resultado${results.length === 1 ? "" : "s"} encontrado${results.length === 1 ? "" : "s"}`}
                   </p>
                 </div>
@@ -573,16 +575,12 @@ export function SearchClient({
                   <SheetTrigger
                     render={
                       <Button
-                        size="icon"
+                        size="icon-lg"
                         aria-label="Abrir filtros"
-                        className="rounded-full md:hidden size-10"
                         variant="ghost"
                         title="Filtros"
                       >
-                        <SlidersHorizontal
-                          size={18}
-                          className="text-foreground"
-                        />
+                        <BsSliders2 className="text-gray-700  size-4" />
                       </Button>
                     }
                   />
@@ -601,22 +599,34 @@ export function SearchClient({
                               Estado
                             </label>
                             <div className="relative">
-                              <select
+                              <Select
                                 id="search-mobile-state-filter"
                                 value={state || "all"}
-                                onChange={(e) =>
-                                  handleStateChange(e.target.value)
+                                onValueChange={(value) =>
+                                  handleStateChange(value ?? "all")
                                 }
-                                className="w-full appearance-none rounded-sm border border-border-subtle bg-surface h-12 px-3 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
                               >
-                                <option value="all">Todos os estados</option>
-                                {BRAZIL_STATES.map((item) => (
-                                  <option key={item.value} value={item.value}>
-                                    {item.label}
-                                  </option>
-                                ))}
-                              </select>
-                              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
+                                <SelectTrigger className="h-10 w-full px-3 text-sm">
+                                  <SelectValue>
+                                    {state && state !== "all"
+                                      ? selectedStateLabel
+                                      : "Todos os estados"}
+                                  </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="all">
+                                    Todos os estados
+                                  </SelectItem>
+                                  {BRAZIL_STATES.map((item) => (
+                                    <SelectItem
+                                      key={item.value}
+                                      value={item.value}
+                                    >
+                                      {item.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </div>
                           </div>
 
@@ -647,7 +657,7 @@ export function SearchClient({
                     <button
                       type="button"
                       onClick={clearSearchQuery}
-                      className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-main hover:text-primary"
+                      className=" px-3 py-1 text-xs font-medium  hover:text-primary"
                     >
                       Busca: {query} ×
                     </button>
@@ -656,7 +666,7 @@ export function SearchClient({
                     <button
                       type="button"
                       onClick={() => handleStateChange("all")}
-                      className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-main hover:text-primary"
+                      className="rounded-full px-3 py-1 text-xs font-medium hover:text-primary"
                     >
                       Local: {activeLocationLabel} ×
                     </button>
@@ -665,7 +675,7 @@ export function SearchClient({
                     <button
                       type="button"
                       onClick={() => handleCategoryChange(null)}
-                      className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-main hover:text-primary"
+                      className=" px-3 py-1 text-xs font-medium  hover:text-primary"
                     >
                       Categoria: {selectedCategory} ×
                     </button>
@@ -673,7 +683,7 @@ export function SearchClient({
                   <Button
                     type="button"
                     variant="ghost"
-                    size="sm"
+                    size="lg"
                     onClick={clearAllFilters}
                     className="ml-auto h-8 text-xs"
                   >
@@ -708,23 +718,23 @@ export function SearchClient({
                       <div className="flex items-center gap-2">
                         <Button
                           variant="outline"
-                          size="icon"
+                          size="icon-lg"
                           aria-label="Ir para a primeira página"
                           onClick={() => setCurrentPage(1)}
                           disabled={currentPage === 1}
-                          className="h-10 w-10 rounded-sm border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                          className="h-10 w-10  hover:bg-primary hover:text-white transition-all disabled:opacity-30"
                         >
                           <ChevronsLeft size={18} />
                         </Button>
                         <Button
                           variant="outline"
-                          size="icon"
+                          size="icon-lg"
                           aria-label="Ir para a página anterior"
                           onClick={() =>
                             setCurrentPage((prev) => Math.max(1, prev - 1))
                           }
                           disabled={currentPage === 1}
-                          className="size-10 rounded-sm border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                          className=" hover:text-white transition-all disabled:opacity-30"
                         >
                           <ChevronLeft size={18} />
                         </Button>
@@ -755,7 +765,7 @@ export function SearchClient({
                                         : undefined
                                     }
                                     onClick={() => setCurrentPage(pageNum)}
-                                    className={`h-10 w-10 rounded-md transition-all font-bold ${
+                                    className={`h-10 w-10  transition-all font-bold ${
                                       currentPage === pageNum
                                         ? "bg-primary text-white scale-105"
                                         : "border-border-subtle hover:border-primary/50"
@@ -786,7 +796,7 @@ export function SearchClient({
                           )}
                         </div>
 
-                        <div className="sm:hidden font-bold text-primary bg-primary/5 px-4 h-10 flex items-center rounded-xl">
+                        <div className="sm:hidden font-bold text-primary bg-primary/5 px-4 h-10 flex items-center ">
                           {currentPage}
                         </div>
 
@@ -800,17 +810,17 @@ export function SearchClient({
                             )
                           }
                           disabled={currentPage === totalPages}
-                          className="size-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                          className="size-10 hover:bg-primary hover:text-white transition-all disabled:opacity-30"
                         >
                           <ChevronRight size={18} />
                         </Button>
                         <Button
                           variant="outline"
-                          size="icon"
+                          size="icon-lg"
                           aria-label="Ir para a última página"
                           onClick={() => setCurrentPage(totalPages)}
                           disabled={currentPage === totalPages}
-                          className="h-10 w-10 rounded-xl border-border-subtle hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                          className=" hover:bg-primary hover:text-white transition-all disabled:opacity-30"
                         >
                           <ChevronsRight size={18} />
                         </Button>

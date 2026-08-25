@@ -1001,32 +1001,12 @@ export const UserService = {
           "public",
         );
       }
-      console.error(
-        "UpdateProfile private payload:",
-        JSON.stringify(
-          summarizeProfileForDebug(
-            sanitizedPrivateProfile as Partial<UserProfile>,
-          ),
-        ),
-      );
-      console.error(
-        "UpdateProfile public payload:",
-        JSON.stringify(
-          summarizeProfileForDebug(publicProfileData as Partial<UserProfile>),
-        ),
-      );
       const privatePatch = buildUserProfileUpdatePatch(
         currentData,
         rawCurrentData,
         sanitizedPrivateProfile as Record<string, unknown>,
         immutableKeys,
         allowedUserFields,
-      );
-      console.error(
-        "UpdateProfile private patch:",
-        JSON.stringify(
-          summarizeProfileForDebug(privatePatch as Partial<UserProfile>),
-        ),
       );
       await updateDoc(docRef, privatePatch);
 
