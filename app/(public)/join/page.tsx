@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { AuthModal } from "@/components/auth-modal";
 import HeaderSection, {
-  type HeaderImageItem,
   type HeaderTextSegment,
 } from "@/components/headersection";
 import { Button } from "@/components/ui/button";
@@ -94,37 +93,6 @@ const headerHeadlineSegments: HeaderTextSegment[] = [
   { text: " dentro da comunidade." },
 ];
 
-const headerImageItems: HeaderImageItem[] = [
-  {
-    src: "/Gemini_Generated_Image_xfqkexfqkexfqkex.png",
-    alt: "Profissional em atividade",
-    wrapperClassName:
-      "absolute bottom-0 left-24 sm:left-4 xl:left-[48rem] z-50 h-36 w-48",
-    delay: 0.1,
-  },
-  {
-    src: "/Gemini_Generated_Image_sh3dqosh3dqosh3d.png",
-    alt: "Pessoa sorrindo durante atendimento",
-    wrapperClassName:
-      "absolute bottom-0 right-4 sm:right-18 md:right-6 z-20 h-56 w-48",
-    delay: 0.18,
-  },
-  {
-    src: "/Gemini_Generated_Image_oc5c5poc5c5poc5c.png",
-    alt: "Criadora mostrando seu trabalho",
-    wrapperClassName:
-      "absolute bottom-0 left-4 sm:left-26 lg:left-28 xl:left-[55rem] z-40 h-74 w-48",
-    delay: 0.26,
-  },
-  {
-    src: "/Gemini_Generated_Image_ndy0l8ndy0l8ndy0.png",
-    alt: "Prestador de serviço em ambiente profissional",
-    wrapperClassName:
-      "absolute bottom-0 right-12 sm:right-6 md:right-30 lg:right-32 xl:right-24 z-10 h-92 w-48",
-    delay: 0.34,
-  },
-];
-
 export default function JoinPage() {
   return (
     <main className="min-h-screen w-full">
@@ -132,7 +100,6 @@ export default function JoinPage() {
         backgroundImageSrc="/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png"
         backgroundImageAlt="Pessoas e serviços em contexto comunitário"
         headlineSegments={headerHeadlineSegments}
-        imageItems={headerImageItems}
         overlayClassName="bg-blue-700/70"
       />
 

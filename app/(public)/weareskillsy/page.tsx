@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import HeaderSection, {
-  type HeaderImageItem,
   type HeaderTextSegment,
 } from "@/components/headersection";
 import { createPublicMetadata } from "@/lib/public-metadata";
@@ -83,37 +82,6 @@ const headerHeadlineSegments: HeaderTextSegment[] = [
   { text: " em conexões reais." },
 ];
 
-const headerImageItems: HeaderImageItem[] = [
-  {
-    src: "/Gemini_Generated_Image_m9c1ibm9c1ibm9c1.png",
-    alt: "Profissional em destaque",
-    wrapperClassName:
-      "absolute bottom-0 left-24 sm:left-4 xl:left-[48rem] z-50 h-36 w-48",
-    delay: 0.1,
-  },
-  {
-    src: "/Gemini_Generated_Image_1ugrvy1ugrvy1ugr.png",
-    alt: "Pessoa atendendo com simpatia",
-    wrapperClassName:
-      "absolute bottom-0 right-4 sm:right-18 md:right-6 z-20 h-56 w-48",
-    delay: 0.18,
-  },
-  {
-    src: "/Gemini_Generated_Image_2guq8v2guq8v2guq.png",
-    alt: "Criadora apresentando seu trabalho",
-    wrapperClassName:
-      "absolute bottom-0 left-4 sm:left-26 lg:left-28 xl:left-[55rem] z-40 h-74 w-48",
-    delay: 0.26,
-  },
-  {
-    src: "/Gemini_Generated_Image_wte2zrwte2zrwte2.png",
-    alt: "Prestador de serviço em ambiente profissional",
-    wrapperClassName:
-      "absolute bottom-0 right-12 sm:right-6 md:right-30 lg:right-32 xl:right-24 z-10 h-92 w-48",
-    delay: 0.34,
-  },
-];
-
 export default function WeAreSkillsyPage() {
   return (
     <main className="min-h-screen w-full">
@@ -121,15 +89,14 @@ export default function WeAreSkillsyPage() {
         backgroundImageSrc="/Gemini_Generated_Image_d74ovcd74ovcd74o.png"
         backgroundImageAlt="Pessoas e serviços em contexto comunitário"
         headlineSegments={headerHeadlineSegments}
-        imageItems={headerImageItems}
       />
 
-      <div className="mx-auto px-4 container w-full z-[99999] isolate -mt-14 lg:-mt-10 mb-16">
-        <div className="w-full xl:p-8 p-4 bg-card z-50 shadow-sm rounded-xl border border-border-subtle">
+      <div className="mx-auto px-4 container w-full z-[99999] isolate -mt-28 lg:-mt-20 mb-16">
+        <div className="w-full xl:p-8 p-4 bg-card z-50 shadow-md border">
           <div className="grid grid-cols-12 gap-2 md:gap-4 md:gap-y-8 xl:gap-8 gap-y-8">
             <div className="col-span-12 space-y-4">
-              <h3 className="text-2xl font-bold text-text-main">Ser Skillsy</h3>
-              <p className="text-base font-normal text-text-muted">
+              <h3 className="text-2xl font-bold ">Ser Skillsy</h3>
+              <p className="text-base font-normal ">
                 Mais do que um diretório de profissionais, o Skillsy nasce como
                 uma iniciativa independente para aproximar pessoas, fortalecer
                 relacionamentos de confiança e facilitar o encontro entre quem
@@ -142,7 +109,7 @@ export default function WeAreSkillsyPage() {
                 className={`rounded-md col-span-12 lg:col-span-4 p-4 border space-y-4`}
               >
                 <div
-                  className={`${principle.tone} flex size-12 items-center justify-center rounded-sm`}
+                  className={`${principle.tone} flex size-12 items-center justify-center`}
                 >
                   <principle.icon size={22} />
                 </div>

@@ -14,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SurfacePanel } from "@/components/ui/page-layout";
 import { ProviderProfileCard } from "@/components/profile/provider-profile-card";
 import {
   Search,
@@ -506,11 +505,11 @@ export function SearchClient({
 
       <main className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-6">
-          <aside className="w-full lg:w-72 shrink-0 space-y-8 hidden lg:block">
+          <aside className="w-full lg:w-72 shrink-0 space-y-8 hidden lg:block border">
             <div className="p-4 md:p-4">
               <div className="flex items-center space-x-2 mb-6">
-                <BsSliders2 className="text-gray-700 size-4" />
-                <h3 className="font-bold text-gray-700 flex items-center gap-2 font-heading">
+                <BsSliders2 className="text-gray-700 size-4 dark:text-white" />
+                <h3 className="font-bold text-gray-700 dark:text-white font-heading">
                   Filtros
                 </h3>
               </div>
@@ -518,7 +517,7 @@ export function SearchClient({
                 <div>
                   <label
                     htmlFor="search-state-filter"
-                    className="mb-4 block text-xs font-bold text-gray-600"
+                    className="mb-4 block text-xs font-bold text-gray-600 dark:text-white"
                   >
                     Estado
                   </label>
@@ -552,7 +551,7 @@ export function SearchClient({
                 <div>
                   <label
                     htmlFor="search-category-filter"
-                    className="mb-4 block text-xs font-bold text-gray-600"
+                    className="mb-4 block text-xs font-bold text-gray-600 dark:text-white"
                   >
                     Categorias
                   </label>
@@ -650,7 +649,7 @@ export function SearchClient({
               </div>
 
               {hasActiveFilters ? (
-                <SurfacePanel className="flex flex-wrap items-center gap-2 p-3 md:p-3">
+                <div className="flex flex-wrap items-center gap-2 p-3 md:p-3">
                   <span className="text-xs font-semibold text-text-muted">
                     Filtros ativos:
                   </span>
@@ -690,13 +689,13 @@ export function SearchClient({
                   >
                     Limpar filtros
                   </Button>
-                </SurfacePanel>
+                </div>
               ) : null}
             </div>
 
             <AnimatePresence mode="popLayout">
               {results.length > 0 ? (
-                <div className="space-y-2 md:space-y-6">
+                <div className="space-y-2 ">
                   {paginatedResults.map((provider, idx) => (
                     <motion.div
                       key={provider.uid}

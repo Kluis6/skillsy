@@ -5,14 +5,17 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Allow access to remote image placeholder.
   images: {
     remotePatterns: [
       {
+        // Google account profile photos (Firebase Auth).
         protocol: 'https',
-        hostname: '**',
-        port: '',
-        pathname: '/**', // This allows any path under the hostname
+        hostname: '*.googleusercontent.com',
+      },
+      {
+        // Placeholder images used by seed/demo data.
+        protocol: 'https',
+        hostname: 'picsum.photos',
       },
     ],
   },

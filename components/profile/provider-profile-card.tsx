@@ -61,7 +61,7 @@ export function ProviderProfileCard({
         href={`/profile/${provider.uid}`}
         className={cn("group block border  transition-colors", className)}
       >
-        <article className="grid gap-4 p-4 md:grid-cols-[auto_1fr_auto] md:gap-6 md:p-6 hover:shadow-xl transition-shadow">
+        <article className="grid p-4 md:grid-cols-[auto_1fr_auto]  md:p-6 hover:shadow-xl transition-shadow">
           <div className="flex flex-col space-y-2">
             <div className="flex items-center space-x-2">
               <div className="flex items-center">
@@ -81,13 +81,13 @@ export function ProviderProfileCard({
               <div className="space-y-2">
                 <div className=" flex flex-col">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-heading text-lg font-bold leading-tight ">
+                    <h3 className="font-heading text-lg font-bold leading-tight text-gray-800 dark:text-white">
                       {provider.name}
                     </h3>
                     {isVerified ? <TrustBadge>V</TrustBadge> : null}
                   </div>
 
-                  <p className="text-sm font-normal text-gray-600">
+                  <p className="text-sm font-normal text-gray-600 line-clamp-1 dark:text-gray-50">
                     {provider.companyName
                       ? `${roleLabel} na ${provider.companyName}`
                       : roleLabel}
@@ -96,7 +96,7 @@ export function ProviderProfileCard({
               </div>
             </div>
             <div className="">
-              <p className="line-clamp-2 max-w-3xl text-sm leading-relaxed text-gray-500">
+              <p className="line-clamp-2 max-w-3xl text-sm leading-relaxed text-gray-500 dark:text-white">
                 {getBioPreview(provider)}
               </p>
 
