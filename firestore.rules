@@ -317,7 +317,7 @@ service cloud.firestore {
     function isValidPublicProfile(data, userId) {
       let allowedFields = [
         'uid', 'name', 'photoURL', 'bannerURL', 'bio', 'category',
-        'isProvider', 'serviceType', 'publicCity', 'publicState', 'searchTokens', 'companyName', 'gallery',
+        'isProvider', 'serviceType', 'publicCity', 'publicState', 'ward', 'searchTokens', 'companyName', 'gallery',
         'rating', 'reviewCount', 'recommendationCount', 'experienceYears', 'availability',
         'serviceHours', 'whatsapp', 'instagram', 'facebook', 'linkedin',
         'website', 'phone', 'phones', 'isBlocked', 'isDeleted', 'createdAt'
@@ -337,6 +337,7 @@ service cloud.firestore {
              (!('serviceType' in data) || data.serviceType == null || (data.serviceType is string && data.serviceType.size() <= 200)) &&
              (!('publicCity' in data) || data.publicCity == null || (data.publicCity is string && data.publicCity.size() <= 100)) &&
              (!('publicState' in data) || data.publicState == null || (data.publicState is string && data.publicState.matches('^[A-Z]{2}$'))) &&
+             (!('ward' in data) || data.ward == null || (data.ward is string && data.ward.size() <= 200)) &&
              (!('searchTokens' in data) || (data.searchTokens is list && data.searchTokens.size() <= 80)) &&
              (!('companyName' in data) || data.companyName == null || (data.companyName is string && data.companyName.size() <= 200)) &&
              (!('gallery' in data) || data.gallery == null || isValidGallery(data.gallery)) &&

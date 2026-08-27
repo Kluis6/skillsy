@@ -69,6 +69,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { RecommendationStars } from '@/components/profile/recommendation-summary';
 import {
   Dialog,
   DialogContent,
@@ -514,7 +515,7 @@ export function AdminUsersClient() {
                   <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Localização / Ala</TableHead>
                   <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Status</TableHead>
                   <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Denúncias</TableHead>
-                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Avaliação</TableHead>
+                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Avaliação / Indicações</TableHead>
                   <TableHead className="text-right pr-8 font-bold text-text-muted uppercase text-xs tracking-normal">Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -587,9 +588,15 @@ export function AdminUsersClient() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1 font-bold text-highlight text-sm">
-                          <Star size={14} fill="currentColor" /> {u.rating || '0.0'}
-                          <span className="text-text-muted font-normal text-xs ml-1">({u.reviewCount || 0})</span>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1 font-bold text-highlight text-sm">
+                            <Star size={14} fill="currentColor" /> {u.rating || '0.0'}
+                            <span className="text-text-muted font-normal text-xs ml-1">({u.reviewCount || 0})</span>
+                          </div>
+                          <RecommendationStars
+                            recommendationCount={u.recommendationCount || 0}
+                            size={12}
+                          />
                         </div>
                       </TableCell>
                       <TableCell className="text-right pr-8">

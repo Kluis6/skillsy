@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPin, Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { RecommendationStars } from "@/components/profile/recommendation-summary";
 import { TrustBadge } from "@/components/ui/trust-signals";
 import { UserProfile } from "@/models/types";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
@@ -53,6 +54,7 @@ export function ProviderProfileCard({
   const roleLabel = getRoleLabel(provider);
   const rating = provider.rating || "0.0";
   const reviewCount = provider.reviewCount || 0;
+  const recommendationCount = provider.recommendationCount || 0;
   const initial = getInitial(provider.name);
 
   if (variant === "list") {
@@ -114,6 +116,9 @@ export function ProviderProfileCard({
                 ) : null}
                 <span className="px-3 py-1 text-xs font-medium">
                   {reviewCount} avaliacao{reviewCount === 1 ? "" : "es"}
+                </span>
+                <span className="inline-flex items-center px-3 py-1">
+                  <RecommendationStars recommendationCount={recommendationCount} />
                 </span>
               </div>
             </div>
@@ -190,9 +195,12 @@ export function ProviderProfileCard({
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex items-center justify-between gap-2 ">
-          <span className="text-xs font-medium text-text-muted">
-            {reviewCount} avaliacao{reviewCount === 1 ? "" : "es"}
-          </span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-medium text-text-muted">
+              {reviewCount} avaliacao{reviewCount === 1 ? "" : "es"}
+            </span>
+            <RecommendationStars recommendationCount={recommendationCount} size={12} />
+          </div>
           <span className="inline-flex items-center text-sm font-semibold text-primary dark:text-white">
             Ver perfil
             <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" />

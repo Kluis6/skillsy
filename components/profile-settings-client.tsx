@@ -887,31 +887,10 @@ export function ProfileSettingsClient() {
                         </p>
                       )}
                       <p className="text-xs text-text-muted ml-1">
-                        Até {PROFILE_LIMITS.location} caracteres.
+                        Até {PROFILE_LIMITS.location} caracteres. Cidade e
+                        estado aparecem no seu perfil público; endereço,
+                        número, complemento e bairro permanecem privados.
                       </p>
-                      <div className="flex items-start justify-between gap-4 rounded-md border border-border-subtle bg-card p-3">
-                        <div className="space-y-1">
-                          <Label
-                            htmlFor="show-public-location"
-                            className="text-sm font-medium text-text-main"
-                          >
-                            Exibir cidade e estado no perfil público
-                          </Label>
-                          <p className="text-xs text-text-muted">
-                            Endereço, número, complemento e bairro permanecem
-                            privados.
-                          </p>
-                        </div>
-                        <Switch
-                          id="show-public-location"
-                          checked={formData.showPublicLocation}
-                          onCheckedChange={(checked) =>
-                            setValue("showPublicLocation", checked, {
-                              shouldDirty: true,
-                            })
-                          }
-                        />
-                      </div>
                     </div>
                     <div className="space-y-2 ">
                       <Label className="text-xs md:text-sm font-medium text-text-muted">

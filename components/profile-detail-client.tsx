@@ -7,13 +7,8 @@ import { UserService } from "@/services/user-service";
 import { CommunityRecommendation, Rating, UserProfile } from "@/models/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarGroup,
-  AvatarGroupCount,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { RecommendationSummary } from "@/components/profile/recommendation-summary";
 import {
   UserPlus,
   MapPin,
@@ -29,6 +24,7 @@ import {
   ShieldCheck,
   HeartHandshake,
   MessageSquareText,
+  Users,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
@@ -80,10 +76,6 @@ import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 interface ProfileDetailClientProps {
   id: string;
   initialProfile: UserProfile | null;
-}
-
-function getRecommendationInitial(name?: string) {
-  return name?.trim().charAt(0).toUpperCase() || "S";
 }
 
 export function ProfileDetailClient({
@@ -827,13 +819,6 @@ export function ProfileDetailClient({
       icon: MapPin,
     },
   ];
-  const displayedRecommendations = recommendations.slice(0, 5);
-  const hiddenRecommendationCount = Math.max(
-    0,
-    (targetProfile.recommendationCount || recommendations.length) -
-      displayedRecommendations.length,
-  );
-
   return (
     <>
       <Navbar user={user} profile={profile} logout={logout} />
@@ -998,6 +983,15 @@ export function ProfileDetailClient({
                         </p>
                       </div>
                     )}
+
+                    {!targetProfile.isProvider && targetProfile.ward && (
+                      <div className="flex items-center space-x-2">
+                        <Users size={18} className="text-text-main" />
+                        <p className="text-sm text-text-main font-normal">
+                          {targetProfile.ward}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex flex-col w-full sm:w-auto">
@@ -1128,52 +1122,15 @@ export function ProfileDetailClient({
                 </div>
 
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  {displayedRecommendations.length > 0 ? (
-                    <AvatarGroup
-                      className="pl-2"
-                      aria-label="Membros que indicam este profissional"
-                    >
-                      {displayedRecommendations.map((recommendation) => (
-                        <Tooltip key={recommendation.recommenderId}>
-                          <TooltipTrigger
-                            render={
-                              <Avatar className="size-10">
-                                <AvatarImage
-                                  src={recommendation.recommenderPhotoURL || ""}
-                                  alt={
-                                    recommendation.recommenderName
-                                      ? `Foto de ${recommendation.recommenderName}`
-                                      : "Membro que indicou"
-                                  }
-                                />
-                                <AvatarFallback className="bg-primary text-primary-foreground">
-                                  {getRecommendationInitial(
-                                    recommendation.recommenderName,
-                                  )}
-                                </AvatarFallback>
-                              </Avatar>
-                            }
-                          />
-                          <TooltipContent>
-                            <p>
-                              {recommendation.recommenderName ||
-                                "Membro Skillsy"}{" "}
-                              indicou
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      ))}
-                      {hiddenRecommendationCount > 0 ? (
-                        <AvatarGroupCount className="size-10 text-xs font-semibold">
-                          +{hiddenRecommendationCount}
-                        </AvatarGroupCount>
-                      ) : null}
-                    </AvatarGroup>
-                  ) : (
-                    <p className="text-sm text-text-muted">
-                      Seja a primeira pessoa a indicar este perfil.
-                    </p>
-                  )}
+                  <RecommendationSummary
+                    recommendationCount={targetProfile.recommendationCount || 0}
+                    recommenders={recommendations.map((recommendation) => ({
+                      id: recommendation.recommenderId,
+                      name: recommendation.recommenderName,
+                      photoURL: recommendation.recommenderPhotoURL,
+                    }))}
+                    avatarSize="lg"
+                  />
 
                   {user?.uid !== targetProfile.uid ? (
                     <Button

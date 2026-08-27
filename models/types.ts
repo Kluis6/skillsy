@@ -30,9 +30,7 @@ export interface UserProfile {
   businessAddressNumber?: string;
   businessNeighborhood?: string;
   businessState?: string;
-  /** Private preference controlling whether city and UF are visible publicly. */
-  showPublicLocation?: boolean;
-  /** Coarse location intentionally copied to a public profile only with consent. */
+  /** Coarse location (city/UF) shown on every public profile. */
   publicCity?: string;
   publicState?: string;
   searchTokens?: string[];

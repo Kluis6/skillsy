@@ -160,7 +160,7 @@ function getPublicCity(location: unknown) {
   return location.split(",")[0]?.trim().slice(0, 100) || "";
 }
 
-function getPublicState(source: Partial<UserProfile>) {
+function getPublicState(source: Partial<UserProfile>): string | undefined {
   const explicitState = source.businessState?.trim().toUpperCase();
   if (/^[A-Z]{2}$/.test(explicitState || "")) return explicitState;
 
@@ -168,7 +168,10 @@ function getPublicState(source: Partial<UserProfile>) {
     typeof source.location === "string"
       ? source.location.split(",").at(-1)?.trim().toUpperCase()
       : "";
-  return /^[A-Z]{2}$/.test(locationState || "") ? locationState : "";
+  // Must stay `undefined` (never ""): the public profile schema validates
+  // publicState against /^[A-Z]{2}$/ when the field is present at all, so an
+  // empty string would fail that check and the whole write would be denied.
+  return /^[A-Z]{2}$/.test(locationState || "") ? locationState : undefined;
 }
 
 function normalizeBoundedString(value: unknown, maxLength: number) {
@@ -547,9 +550,6 @@ function normalizeUserDocumentForRules(source: Record<string, unknown>) {
   );
   normalized.gallery = normalizeGalleryForRules(normalized.gallery);
   normalized.hasPublicProfile = normalizeBoolean(normalized.hasPublicProfile);
-  normalized.showPublicLocation = normalizeBoolean(
-    normalized.showPublicLocation,
-  );
 
   normalized.rating = normalizeFiniteNumber(normalized.rating);
   normalized.reviewCount = normalizeFiniteNumber(normalized.reviewCount);
@@ -606,6 +606,7 @@ function toPublicProfileModel(
     serviceType: raw.serviceType || "",
     publicCity: raw.publicCity || "",
     publicState: raw.publicState || "",
+    ward: raw.ward || "",
     searchTokens: raw.searchTokens || [],
     companyName: raw.companyName || "",
     gallery: raw.gallery || [],
@@ -628,9 +629,8 @@ function toPublicProfileModel(
 }
 
 function buildPublicProfileData(source: Partial<UserProfile>) {
-  const showPublicLocation = source.showPublicLocation === true;
-  const publicCity = showPublicLocation ? getPublicCity(source.location) : "";
-  const publicState = showPublicLocation ? getPublicState(source) : "";
+  const publicCity = getPublicCity(source.location);
+  const publicState = getPublicState(source);
 
   return removeUndefinedDeep({
     uid: source.uid,
@@ -643,6 +643,7 @@ function buildPublicProfileData(source: Partial<UserProfile>) {
     serviceType: source.serviceType || "",
     publicCity,
     publicState,
+    ward: source.ward || "",
     searchTokens: toSearchTokens(
       source.name,
       source.category,

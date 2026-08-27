@@ -49,7 +49,6 @@ export interface ProfileFormValues {
   name: string;
   bio: string;
   location: string;
-  showPublicLocation: boolean;
   ward: string;
   serviceType: string;
   category: ProviderCategory;
@@ -142,7 +141,6 @@ export const getProfileFormDefaults = (): ProfileFormValues => ({
   name: '',
   bio: '',
   location: '',
-  showPublicLocation: false,
   ward: '',
   serviceType: '',
   category: '',
@@ -176,7 +174,6 @@ export const profileToFormValues = (profile: UserProfile | null): ProfileFormVal
     name: profile.name || '',
     bio: profile.bio || '',
     location: profile.location || '',
-    showPublicLocation: profile.showPublicLocation ?? false,
     ward: profile.ward || '',
     serviceType: profile.serviceType || '',
     category: normalizeCategory(profile.category),
@@ -218,7 +215,6 @@ export const toProfileUpdatePayload = (values: ProfileFormValues): Partial<UserP
     name: values.name.trim(),
     bio: normalizeOptionalText(values.bio),
     location: normalizeOptionalText(values.location),
-    showPublicLocation: values.showPublicLocation,
     ward: normalizeOptionalText(values.ward),
     isProvider,
     whatsapp: normalizeDigits(values.whatsapp),
