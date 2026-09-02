@@ -541,8 +541,8 @@ export function ProfileDetailClient({
             render={
               <Button
                 variant="destructive"
-                size="icon"
-                className={` ${className && "rounded-sm size-10"}`}
+                size="icon-lg"
+                className={` ${className && ""}`}
                 onClick={() => setReportDialogOpen(true)}
               />
             }
@@ -565,7 +565,7 @@ export function ProfileDetailClient({
             onSubmit={reportForm.handleSubmit(handleSubmitReport)}
             className="space-y-4"
           >
-            <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100/85">
+            <div className=" border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100/85">
               Use a denúncia apenas para casos reais de conteúdo inadequado,
               fraude, spam ou informações enganosas.
             </div>
@@ -575,7 +575,7 @@ export function ProfileDetailClient({
               </label>
               <select
                 {...reportForm.register("reason")}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                className="w-full border border-input bg-background px-3 py-2 text-sm"
               >
                 {REPORT_REASON_OPTIONS.map((reason) => (
                   <option key={reason} value={reason}>
@@ -619,8 +619,9 @@ export function ProfileDetailClient({
               </Button> */}
               <Button
                 type="submit"
+                size="lg"
                 variant="default"
-                className="rounded-sm h-10 w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white font-medium"
+                className=" w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white font-medium"
                 disabled={reportForm.formState.isSubmitting}
               >
                 {reportForm.formState.isSubmitting
@@ -775,7 +776,7 @@ export function ProfileDetailClient({
           informado está incorreto.
         </p>
         <Link href="/">
-          <Button className="bg-primary text-white font-bold rounded-xl px-8">
+          <Button className="bg-primary text-white font-bold  px-8">
             Voltar para Home
           </Button>
         </Link>
@@ -789,19 +790,19 @@ export function ProfileDetailClient({
     "Membro da Comunidade Skillsy";
   const profileTrustItems = [
     {
-      label: "Verificacao",
+      label: "Verificação",
       value: shouldShowVerifiedBadge(targetProfile)
         ? "Membro verificado"
-        : "Perfil publico",
+        : "Perfil público",
       detail: shouldShowVerifiedBadge(targetProfile)
-        ? "Sinal de identidade e participacao revisado pela plataforma."
-        : "Veja as informacoes publicas antes de entrar em contato.",
+        ? "Sinal de identidade e participação revisado pela plataforma."
+        : "Veja as informações públicas antes de entrar em contato.",
       icon: ShieldCheck,
     },
     {
-      label: "Reputacao",
+      label: "Reputação",
       value: `${targetProfile.rating || "0.0"} de 5`,
-      detail: `${targetProfile.reviewCount || 0} avaliacao${(targetProfile.reviewCount || 0) === 1 ? "" : "es"} registradas na comunidade.`,
+      detail: `${targetProfile.reviewCount || 0} avaliação${(targetProfile.reviewCount || 0) === 1 ? "" : "es"} registradas na comunidade.`,
       icon: Star,
     },
     {
@@ -814,7 +815,7 @@ export function ProfileDetailClient({
       label: "Contexto",
       value: publicLocation || "Brasil",
       detail: hasAvailabilityInfo
-        ? "Inclui disponibilidade ou horario de atendimento."
+        ? "Inclui disponibilidade ou horário de atendimento."
         : "Combine disponibilidade diretamente com o membro.",
       icon: MapPin,
     },
@@ -831,7 +832,7 @@ export function ProfileDetailClient({
         >
           {/* Top Profile Card */}
           <section className="border-border-subtle border-b bg-card">
-            <div className="relative h-26 md:h-52 bg-gradient-to-r from-blue-400/20 to-indigo-400/20">
+            <div className="relative h-26 md:h-52 bg-gradient-to-r from-cyan-400/20 to-indigo-400/20">
               {targetProfile.bannerURL ? (
                 <Image
                   src={targetProfile.bannerURL}
@@ -849,14 +850,14 @@ export function ProfileDetailClient({
               <div className="relative flex flex-col">
                 {/* Avatar Overlap */}
                 <div className="flex items-center md:py-4 py-2 justify-end">
-                  <div className="text-center bg-surface rounded-sm border px-2 py-1 space-y-2 flex sm:hidden">
+                  <div className="text-center  border px-2 py-1 space-y-2 flex sm:hidden">
                     <div className="flex items-baseline justify-center space-x-2">
                       <Star
                         size={14}
                         fill="currentColor"
-                        className="text-highlight"
+                        className="text-yellow-500"
                       />
-                      <p className="text-base font-medium text-primary ">
+                      <p className="text-base font-medium text-primary">
                         {targetProfile.rating || "0.0"}
                       </p>
                     </div>
@@ -869,7 +870,7 @@ export function ProfileDetailClient({
                         <TooltipTrigger
                           render={
                             <Link
-                              className="rounded-md size-10 flex border justify-center items-center hover:bg-neutral-100 transition-colors"
+                              className=" size-9 flex border justify-center items-center hover:bg-neutral-100 transition-colors"
                               href="/profile"
                             >
                               <LuPencil className="text-text-muted" />
@@ -884,9 +885,10 @@ export function ProfileDetailClient({
                       <>
                         {canToggleContact && (
                           <Button
+                            size="lg"
                             variant={isContact ? "destructive" : "outline"}
                             onClick={handleToggleContact}
-                            className="rounded-md px-5 font-semibold"
+                            className="px-5 font-semibold"
                           >
                             {isContact ? (
                               <>
@@ -904,17 +906,19 @@ export function ProfileDetailClient({
 
                     <Button
                       onClick={handleWhatsApp}
+                      size="lg"
                       variant="default"
-                      className="bg-green-600 px-6 font-bold text-white hover:bg-green-700 active:bg-green-800"
+                      className="rounded-none bg-green-600 px-6 font-bold text-white hover:bg-green-700 active:bg-green-800"
                     >
                       <FaWhatsapp /> <p>Falar no WhatsApp</p>
                     </Button>
                     {user?.uid !== targetProfile.uid && (
                       <Button
+                        size="lg"
                         onClick={handleToggleRecommendation}
                         disabled={recommendationLoading}
                         variant="outline"
-                        className="rounded-md px-5 font-semibold"
+                        className=" px-5 font-semibold rounded-none"
                       >
                         <HeartHandshake className="size-4" />
                         {isRecommended ? "Você indicou" : "Eu indico"}
@@ -1003,7 +1007,7 @@ export function ProfileDetailClient({
                         <Star
                           size={18}
                           fill="currentColor"
-                          className="text-highlight"
+                          className="text-yellow-500"
                         />
                         <p className="text-3xl font-bold text-primary ">
                           {targetProfile.rating || "0.0"}
@@ -1012,14 +1016,14 @@ export function ProfileDetailClient({
                     </div>
                     <div className="flex flex-col gap-2 sm:hidden ">
                       <div className="flex gap-2 justify-end">
-                        {renderShareButton("size-10 rounded-sm")}
-                        {renderReportButton("size-10 rounded-sm")}
+                        {renderShareButton("size-9")}
+                        {renderReportButton("size-9")}
                         {user?.uid === targetProfile.uid ? (
                           <Tooltip>
                             <TooltipTrigger
                               render={
                                 <Link
-                                  className="rounded-md size-10 flex border justify-center items-center hover:bg-neutral-100 transition-colors"
+                                  className=" size-9 flex border justify-center items-center hover:bg-neutral-100 transition-colors"
                                   href="/profile"
                                 >
                                   <LuPencil className="text-text-muted" />
@@ -1034,9 +1038,10 @@ export function ProfileDetailClient({
                           <>
                             {canToggleContact && (
                               <Button
+                                size="lg"
                                 variant={isContact ? "destructive" : "outline"}
                                 onClick={handleToggleContact}
-                                className="flex-1 rounded-sm px-5 font-semibold"
+                                className="flex-1 px-5 font-semibold"
                               >
                                 {isContact ? (
                                   <>
@@ -1057,7 +1062,8 @@ export function ProfileDetailClient({
                       <Button
                         onClick={handleWhatsApp}
                         variant="default"
-                        className="w-full rounded-sm bg-green-600 px-6 font-bold text-white hover:bg-green-700 active:bg-green-800"
+                        size="lg"
+                        className="w-full bg-green-600 px-6 font-bold text-white hover:bg-green-700 active:bg-green-800"
                       >
                         <FaWhatsapp /> <p>Falar no WhatsApp</p>
                       </Button>
@@ -1066,7 +1072,8 @@ export function ProfileDetailClient({
                           onClick={handleToggleRecommendation}
                           disabled={recommendationLoading}
                           variant="outline"
-                          className="w-full rounded-sm font-semibold"
+                          size="lg"
+                          className="w-full font-semibold"
                         >
                           <HeartHandshake className="size-4" />
                           {isRecommended ? "Você indicou" : "Eu indico"}

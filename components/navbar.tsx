@@ -197,6 +197,7 @@ function DrawerNavigation({
 
 export function Navbar({
   user: propUser,
+  profile: propProfile,
   logout: propLogout,
 }: Partial<NavbarProps>) {
   const auth = useAuth();
@@ -205,6 +206,7 @@ export function Navbar({
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const user = propUser !== undefined ? propUser : auth.user;
+  const profile = propProfile !== undefined ? propProfile : auth.profile;
   const logout = propLogout !== undefined ? propLogout : auth.logout;
   const shouldShowBackButton =
     pathname === "/profile" || pathname?.startsWith("/profile/");
@@ -321,7 +323,7 @@ export function Navbar({
 
           {user ? (
             <Avatar className="size-9">
-              <AvatarImage src={user.photoURL || undefined} />
+              <AvatarImage src={profile?.photoURL || user.photoURL || undefined} />
               <AvatarFallback>
                 <UserIcon className="size-4" />
               </AvatarFallback>

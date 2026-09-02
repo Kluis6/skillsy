@@ -48,26 +48,63 @@ export function PublicIntroCardLoading({ cards = 3 }: { cards?: number }) {
   );
 }
 
+/** Mirrors the default ("grid") variant of ProviderProfileCard: banner with a
+ * floating rating badge, an avatar that overlaps the banner, then title/bio
+ * and a footer split between reviews+recommendation stars and "Ver perfil". */
 function ProviderCardSkeleton() {
   return (
-    <div className="h-full overflow-hidden rounded-xl border border-border-subtle bg-card">
-      <Skeleton className="h-25 w-full rounded-none md:h-40" />
-      <div className="space-y-5 p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Skeleton className="size-10 rounded-full md:size-14" />
-            <div className="space-y-2">
-              <Skeleton className="h-5 w-36" />
-              <Skeleton className="h-4 w-28" />
-            </div>
-          </div>
-          <Skeleton className="h-7 w-20 rounded-full" />
+    <div className="relative h-full overflow-hidden rounded-xl border border-border-subtle bg-card">
+      <div className="relative w-full">
+        <Skeleton className="h-30 w-full rounded-none" />
+        <Skeleton className="absolute right-4 top-4 h-7 w-16 rounded-full" />
+      </div>
+      <div className="space-y-4 p-6 pt-0">
+        <div className="-mt-13 flex items-end justify-between">
+          <Skeleton className="size-26 rounded-full border-4 border-card" />
+        </div>
+        <Skeleton className="h-6 w-20 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-5 w-36" />
+          <Skeleton className="h-4 w-28" />
         </div>
         <div className="space-y-2">
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-10/12" />
         </div>
-        <Skeleton className="h-10 w-full rounded-sm" />
+        <div className="flex items-center justify-between gap-2 pt-2">
+          <div className="space-y-1.5">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-3 w-24" />
+          </div>
+          <Skeleton className="h-4 w-16" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Mirrors the "list" variant of ProviderProfileCard used by search results:
+ * a horizontal row (avatar + name/role, bio, then location/category/review
+ * pills and the recommendation stars), not a boxed grid card. */
+function ProviderListRowSkeleton() {
+  return (
+    <div className="space-y-3 border border-border-subtle p-4 md:p-6">
+      <div className="flex items-center gap-2">
+        <Skeleton className="size-12 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-10/12" />
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Skeleton className="h-6 w-20 rounded-full" />
+        <Skeleton className="h-6 w-24 rounded-full" />
+        <Skeleton className="h-6 w-28 rounded-full" />
+        <Skeleton className="h-4 w-16" />
       </div>
     </div>
   );
@@ -90,16 +127,11 @@ export function HomePageLoading() {
 
       <section className="min-h-[calc(100svh-5rem)] bg-[radial-gradient(circle_at_top_left,rgba(0,102,255,0.12),transparent_34%),linear-gradient(180deg,rgba(240,247,255,0.65),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.2),transparent_34%),linear-gradient(180deg,rgba(30,41,59,0.65),rgba(15,23,42,0))] md:min-h-[86vh]">
         <div className="container mx-auto grid min-h-[calc(100svh-5rem)] grid-cols-1 items-center gap-10 px-4 py-12 lg:grid-cols-12 lg:py-16 md:min-h-[86vh]">
-          <div className="space-y-6 text-center lg:col-span-7 lg:text-left">
-            <div className="space-y-4">
-              <Skeleton className="mx-auto h-14 w-full max-w-xl lg:mx-0 md:h-24 lg:h-28" />
-              <Skeleton className="mx-auto h-5 w-full max-w-2xl lg:mx-0 md:h-6" />
-              <Skeleton className="mx-auto h-5 w-10/12 max-w-xl lg:mx-0 md:h-6" />
-            </div>
-            <div className="flex flex-wrap justify-center gap-3 lg:justify-start">
-              <Skeleton className="h-10 w-44 rounded-full" />
-              <Skeleton className="h-10 w-44 rounded-full" />
-            </div>
+          <div className="space-y-4 text-center lg:col-span-7 lg:text-left">
+            <Skeleton className="mx-auto h-6 w-24 bg-white/30 lg:mx-0" />
+            <Skeleton className="mx-auto h-14 w-full max-w-xl lg:mx-0 md:h-24 lg:h-28" />
+            <Skeleton className="mx-auto h-5 w-full max-w-2xl lg:mx-0 md:h-6" />
+            <Skeleton className="mx-auto h-5 w-10/12 max-w-xl lg:mx-0 md:h-6" />
           </div>
 
           <div className="w-full lg:col-span-5">
@@ -198,14 +230,9 @@ export function SearchPageLoading() {
               <Skeleton className="size-10 rounded-sm md:hidden" />
             </div>
 
-            <div className="grid grid-cols-12 gap-y-6 md:gap-6">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="col-span-12 md:col-span-6 xl:col-span-4"
-                >
-                  <ProviderCardSkeleton />
-                </div>
+            <div className="space-y-2">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <ProviderListRowSkeleton key={index} />
               ))}
             </div>
           </section>
@@ -276,56 +303,83 @@ export function PostDetailLoading() {
 
 export function DonationPageLoading() {
   return (
-    <div className="min-h-screen w-full bg-surface pb-8">
-      <PublicHeroLoading heightClass="h-[45vh] md:h-[50vh]" />
-      <div className="container mx-auto isolate -mt-8 px-4">
-        <section className="mb-8 rounded-xl border border-border-subtle bg-card p-4 shadow-sm md:p-6 lg:p-10">
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-56" />
-            <Skeleton className="h-5 w-full max-w-3xl" />
-            <Skeleton className="h-5 w-full max-w-2xl" />
+    <div className="min-h-screen w-full bg-surface pb-10">
+      <PublicHeroLoading heightClass="h-[58vh]" />
+      <div className="container mx-auto isolate -mt-8 space-y-10 px-4">
+        <section className="rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:p-8">
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+            <div className="space-y-3">
+              <Skeleton className="h-7 w-full max-w-md" />
+              <Skeleton className="h-4 w-full max-w-lg" />
+              <Skeleton className="h-4 w-full max-w-md" />
+            </div>
+            <div className="space-y-3 rounded-xl border border-border-subtle bg-surface p-4">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <Skeleton key={index} className="h-4 w-full" />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="grid grid-cols-12 gap-4 lg:gap-6">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="col-span-12 space-y-4 rounded-xl border border-border-subtle bg-card p-5 md:col-span-4 lg:p-6"
+            >
+              <Skeleton className="h-12 w-12 rounded-sm" />
+              <Skeleton className="h-6 w-44" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-11/12" />
+            </div>
+          ))}
+        </section>
+
+        <section className="grid grid-cols-12 gap-4 gap-y-8 lg:gap-6">
+          <div className="col-span-12 space-y-8 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8">
+            <div className="flex items-center gap-3">
+              <Skeleton className="hidden size-12 rounded-sm md:block" />
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-44" />
+                <Skeleton className="h-4 w-56" />
+              </div>
+            </div>
+            <Skeleton className="mx-auto h-70 w-70 rounded-md lg:h-80 lg:w-80" />
+            <Skeleton className="h-4 w-full max-w-md" />
           </div>
 
-          <section className="my-8 grid grid-cols-12 gap-4 lg:gap-8">
+          <div className="col-span-12 space-y-8 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8">
+            <div className="flex items-center gap-3">
+              <Skeleton className="hidden size-12 rounded-md md:block" />
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-52" />
+                <Skeleton className="h-4 w-48" />
+              </div>
+            </div>
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
-                className="col-span-12 space-y-4 rounded-md border border-border-subtle p-4 lg:col-span-4 lg:p-6"
+                className="rounded-xl border border-border-subtle bg-surface p-4"
               >
-                <Skeleton className="h-12 w-12 rounded-sm" />
-                <Skeleton className="h-6 w-44" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-11/12" />
+                <Skeleton className="mb-2 h-3 w-24" />
+                <Skeleton className="h-5 w-full max-w-xs" />
               </div>
             ))}
-          </section>
+          </div>
+        </section>
 
-          <section className="my-16 grid grid-cols-12 gap-4 gap-y-8 lg:gap-8">
-            <div className="col-span-12 space-y-8 lg:col-span-6">
-              <div className="space-y-2">
-                <Skeleton className="h-7 w-56" />
-                <Skeleton className="h-4 w-52" />
-              </div>
-              <Skeleton className="mx-auto h-72 w-72 rounded-xl lg:h-80 lg:w-80" />
-              <Skeleton className="h-4 w-full max-w-md" />
-            </div>
-
-            <div className="col-span-12 space-y-8 lg:col-span-6">
-              <div className="space-y-2">
-                <Skeleton className="h-7 w-64" />
-                <Skeleton className="h-4 w-56" />
-              </div>
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="rounded-xl border border-border-subtle bg-surface p-4"
-                >
-                  <Skeleton className="mb-2 h-3 w-24" />
-                  <Skeleton className="h-12 w-full rounded-xl" />
-                </div>
-              ))}
-            </div>
-          </section>
+        <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="space-y-3 rounded-xl border border-border-subtle bg-card p-5">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-10/12" />
+          </div>
+          <div className="space-y-3 rounded-xl border border-border-subtle bg-card p-5">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-10/12" />
+          </div>
         </section>
       </div>
     </div>
@@ -335,7 +389,7 @@ export function DonationPageLoading() {
 export function LegalPageLoading() {
   return (
     <main className="min-h-screen w-full">
-      <PublicHeroLoading heightClass="h-[78vh] md:h-[82vh]" />
+      <PublicHeroLoading heightClass="h-[78vh] md:h-[91dvh]" />
       <PublicIntroCardLoading />
 
       <section className="container mx-auto my-24 px-4">
@@ -441,10 +495,14 @@ export function PostEditorPageLoading() {
           <Skeleton className="h-8 w-56" />
           <Skeleton className="h-4 w-72" />
         </div>
-        <Skeleton className="h-12 w-full rounded-xl" />
+        <div className="grid gap-4 md:grid-cols-2">
+          <Skeleton className="h-12 w-full rounded-xl" />
+          <Skeleton className="h-12 w-full rounded-xl" />
+        </div>
         <Skeleton className="h-12 w-full rounded-xl" />
         <Skeleton className="h-28 w-full rounded-xl" />
         <Skeleton className="h-56 w-full rounded-md" />
+        <Skeleton className="h-12 w-full rounded-xl" />
         <div className="flex gap-3">
           <Skeleton className="h-10 w-32" />
           <Skeleton className="h-10 w-40" />
@@ -516,6 +574,47 @@ export function ProfilePublicPageLoading() {
           </div>
         </section>
 
+        {/* Trust items: Verificação / Reputação / Indicações / Contexto */}
+        <section className="border-y border-border-subtle bg-surface">
+          <div className="container mx-auto grid grid-cols-1 gap-2 px-4 py-3 md:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="flex gap-3 rounded-md border border-border-subtle bg-card p-4"
+              >
+                <Skeleton className="size-10 shrink-0 rounded-sm" />
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Indicado pela comunidade */}
+        <section className="border-b border-border-subtle bg-card">
+          <div className="container mx-auto flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-48" />
+              <Skeleton className="h-4 w-full max-w-md" />
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <Skeleton
+                    key={index}
+                    className="size-10 rounded-full ring-2 ring-card"
+                  />
+                ))}
+              </div>
+              <Skeleton className="h-10 w-32 rounded-md" />
+            </div>
+          </div>
+        </section>
+
+        {/* Sobre este perfil */}
         <section className="border-y border-border-subtle bg-card">
           <div className="container mx-auto space-y-4 p-4">
             <Skeleton className="h-6 w-36" />
@@ -524,6 +623,7 @@ export function ProfilePublicPageLoading() {
           </div>
         </section>
 
+        {/* Disponibilidade | Avaliações da Comunidade */}
         <div className="flex w-full flex-col gap-2 md:flex-row">
           <section className="w-full border-y border-border-subtle bg-card md:border-r">
             <div className="container mx-auto space-y-4 p-4 md:ps-7">
@@ -538,12 +638,51 @@ export function ProfilePublicPageLoading() {
           </section>
           <section className="w-full border-y border-border-subtle bg-card">
             <div className="container mx-auto space-y-4 p-4">
-              <Skeleton className="h-6 w-36" />
+              <Skeleton className="h-6 w-52" />
+              <div className="flex gap-2 md:gap-4">
+                <Skeleton className="size-26 shrink-0 rounded-lg" />
+                <div className="flex-1 space-y-3">
+                  <Skeleton className="h-4 w-full max-w-xs" />
+                  <Skeleton className="h-3 w-full max-w-[16rem]" />
+                  <Skeleton className="h-6 w-40" />
+                </div>
+              </div>
               <Skeleton className="h-16 w-full rounded-sm" />
               <Skeleton className="h-10 w-full rounded-sm" />
             </div>
           </section>
         </div>
+
+        {/* Comentários da Comunidade */}
+        <section className="border-y border-border-subtle bg-card">
+          <div className="container mx-auto space-y-4 p-4">
+            <Skeleton className="h-6 w-56" />
+            <div className="space-y-3">
+              {Array.from({ length: 2 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="space-y-3 rounded-lg border border-border-subtle bg-surface p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Contato e Redes */}
+        <section className="border-y border-border-subtle bg-card">
+          <div className="container mx-auto space-y-3 p-4 md:ps-7">
+            <Skeleton className="h-6 w-40" />
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Skeleton key={index} className="h-12 w-full rounded-md" />
+            ))}
+          </div>
+        </section>
 
         <section className="border border-border-subtle bg-card">
           <div className="container mx-auto space-y-4 p-4">
@@ -636,8 +775,8 @@ export function AdminDashboardPageLoading() {
         <Skeleton className="h-4 w-80 rounded-lg" />
       </div>
 
-      <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-        {Array.from({ length: 3 }).map((_, index) => (
+      <div className="mb-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
           <div
             key={index}
             className="flex flex-col gap-2 overflow-hidden rounded-xl bg-card p-6 shadow-sm"
@@ -649,8 +788,8 @@ export function AdminDashboardPageLoading() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        {Array.from({ length: 2 }).map((_, index) => (
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, index) => (
           <div
             key={index}
             className="space-y-6 rounded-xl border border-border-subtle bg-card p-8"
@@ -730,7 +869,10 @@ export function AdminUsersPageLoading() {
             <Skeleton className="h-8 w-full rounded-lg" />
             <Skeleton className="h-7 w-28 rounded-full" />
             <Skeleton className="h-7 w-24 rounded-full" />
-            <Skeleton className="h-5 w-16" />
+            <div className="space-y-1.5">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-3 w-20" />
+            </div>
             <div className="flex justify-end gap-2">
               <Skeleton className="size-10 rounded-full" />
               <Skeleton className="size-10 rounded-full" />
@@ -739,6 +881,59 @@ export function AdminUsersPageLoading() {
         ))}
       </div>
     </div>
+  );
+}
+
+export function AdminModerationPageLoading() {
+  return (
+    <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 md:px-8 md:py-8">
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div className="space-y-2">
+          <Skeleton className="h-7 w-56" />
+          <Skeleton className="h-4 w-full max-w-md" />
+        </div>
+        <Skeleton className="h-10 w-32 rounded-md" />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div
+            key={index}
+            className="space-y-2 rounded-lg border border-border-subtle bg-card p-4"
+          >
+            <Skeleton className="size-5 rounded" />
+            <Skeleton className="h-7 w-12" />
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-3 w-24" />
+          </div>
+        ))}
+      </div>
+
+      <div className="overflow-hidden rounded-lg border border-border-subtle bg-card">
+        <div className="flex items-center justify-between border-b border-border-subtle p-4">
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-3 w-48" />
+          </div>
+          <Skeleton className="h-9 w-28 rounded-md" />
+        </div>
+        <div className="divide-y divide-border-subtle">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div
+              key={index}
+              className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center"
+            >
+              <div className="min-w-0 flex-1 space-y-2">
+                <Skeleton className="h-4 w-48" />
+                <Skeleton className="h-3 w-64" />
+              </div>
+              <Skeleton className="h-8 w-24 rounded-full" />
+              <Skeleton className="h-8 w-24 rounded-md" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
   );
 }
 
@@ -777,6 +972,63 @@ export function AdminPostsPageLoading() {
             </div>
           ))}
         </div>
+      </div>
+    </main>
+  );
+}
+
+export function OpportunitiesPageLoading({
+  showModeCards = false,
+}: {
+  /** Matches OpportunitiesClient's mode="help" screen, which adds a row of
+   * three shortcut cards (buscar / publicar / ver oportunidades). */
+  showModeCards?: boolean;
+}) {
+  return (
+    <main className="container mx-auto space-y-8 px-4 py-8 md:py-10">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-2">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-4 w-full max-w-lg" />
+        </div>
+        <Skeleton className="h-10 w-48 rounded-md" />
+      </div>
+
+      {showModeCards ? (
+        <div className="grid gap-4 md:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="space-y-3 rounded-md border border-border-subtle bg-card p-4"
+            >
+              <Skeleton className="size-5 rounded" />
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-10/12" />
+              <Skeleton className="h-9 w-32 rounded-md" />
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div
+            key={index}
+            className="space-y-4 rounded-md border border-border-subtle bg-card p-4"
+          >
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-6 w-24 rounded-full" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-10/12" />
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-10 w-full rounded-md" />
+          </div>
+        ))}
       </div>
     </main>
   );

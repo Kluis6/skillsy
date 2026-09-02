@@ -1,5 +1,5 @@
 import { OpportunitiesPageLoading } from "@/components/loading/route-loaders";
 
 export default function Loading() {
-  return <OpportunitiesPageLoading />;
+  return <OpportunitiesPageLoading showModeCards />;
 }

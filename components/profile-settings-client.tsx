@@ -961,7 +961,6 @@ export function ProfileSettingsClient() {
                   </div>
                 </section>
               </div>
-              {/* aqui */}
               <div
                 ref={serviceSectionRef}
                 className="md:border border-y bg-card p-4 md:p-8 space-y-6"

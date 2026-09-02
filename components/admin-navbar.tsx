@@ -293,7 +293,7 @@ export function AdminNavbar() {
               </span>
             </div>
             <Avatar className="w-9 h-9 border-2 border-primary/20">
-              <AvatarImage src={user?.photoURL || ""} />
+              <AvatarImage src={profile?.photoURL || user?.photoURL || ""} />
               <AvatarFallback className="bg-primary/10 text-primary font-bold">
                 AD
               </AvatarFallback>

@@ -1017,10 +1017,16 @@ export const UserService = {
           sanitizedPrivateProfile as Partial<UserProfile>,
         );
       } catch (error) {
-        handleFirestoreError(
+        // The private profile above is the source of truth for the signed-in
+        // user's own session and already saved successfully. Don't let a
+        // failure to mirror it into public_profiles (e.g. a transient quota
+        // error) throw here — that would stop the caller from refreshing
+        // local state, making the update (a new avatar photo, for example)
+        // look like it "didn't take" anywhere in the app even though it did.
+        // The next successful save retries this sync automatically.
+        console.error(
+          `Failed to sync public_profiles/${uid} after a profile update:`,
           error,
-          OperationType.UPDATE,
-          `public_profiles/${uid}`,
         );
       }
     } catch (error) {

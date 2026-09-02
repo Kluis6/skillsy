@@ -458,7 +458,7 @@ export function SearchClient({
             {user && <OpportunityNotifications />}
             {user ? (
               <Avatar className="size-9">
-                <AvatarImage src={user.photoURL || undefined} />
+                <AvatarImage src={profile?.photoURL || user.photoURL || undefined} />
                 <AvatarFallback>
                   <UserIcon className="size-4" />
                 </AvatarFallback>
