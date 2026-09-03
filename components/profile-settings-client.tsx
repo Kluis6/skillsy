@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SurfacePanel } from "@/components/ui/page-layout";
-import { TrustBadge } from "@/components/ui/trust-signals";
+import { VerifiedMark } from "@/components/ui/trust-signals";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Camera,
@@ -728,11 +728,11 @@ export function ProfileSettingsClient() {
                       onChange={(e) => handleFileChange(e, "avatar")}
                     />
                   </div>
-                  <h2 className="text-xl font-bold text-text-main mb-1">
+                  <h2 className="flex items-center gap-1.5 text-xl font-bold text-text-main mb-1">
                     {formData.name || "Seu Nome"}
+                    {shouldShowVerifiedBadge(formData) && <VerifiedMark size={18} />}
                   </h2>
                   <p className="text-sm text-text-muted mb-4">{user.email}</p>
-                  {shouldShowVerifiedBadge(formData) && <TrustBadge />}
                 </div>
               </div>
               <SurfacePanel className="space-y-4 p-4 md:p-4">

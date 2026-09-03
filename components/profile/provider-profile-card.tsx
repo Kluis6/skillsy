@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowRight, MapPin, Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RecommendationStars } from "@/components/profile/recommendation-summary";
-import { TrustBadge } from "@/components/ui/trust-signals";
+import { VerifiedMark } from "@/components/ui/trust-signals";
 import { UserProfile } from "@/models/types";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 import { cn } from "@/lib/utils";
@@ -86,7 +86,7 @@ export function ProviderProfileCard({
                     <h3 className="font-heading text-lg font-bold leading-tight text-gray-800 dark:text-white">
                       {provider.name}
                     </h3>
-                    {isVerified ? <TrustBadge>V</TrustBadge> : null}
+                    {isVerified ? <VerifiedMark /> : null}
                   </div>
 
                   <p className="text-sm font-normal text-gray-600 line-clamp-1 dark:text-gray-50">
@@ -176,7 +176,6 @@ export function ProviderProfileCard({
                 {initial}
               </AvatarFallback>
             </Avatar>
-            {isVerified ? <TrustBadge className="mb-1">V</TrustBadge> : null}
           </div>
           <CardAction className="">
             {location ? (
@@ -187,7 +186,10 @@ export function ProviderProfileCard({
             ) : null}
           </CardAction>
           <CardTitle className=" w-full flex flex-col col-span-4">
-            {provider.name}
+            <span className="flex items-center gap-1.5">
+              {provider.name}
+              {isVerified ? <VerifiedMark /> : null}
+            </span>
             <p className="text-sm font-medium text-text-main">{roleLabel}</p>
           </CardTitle>
           <CardDescription className="line-clamp-2 col-span-4">

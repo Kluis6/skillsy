@@ -607,6 +607,7 @@ function toPublicProfileModel(
     publicCity: raw.publicCity || "",
     publicState: raw.publicState || "",
     ward: raw.ward || "",
+    memberVerified: raw.memberVerified ?? false,
     searchTokens: raw.searchTokens || [],
     companyName: raw.companyName || "",
     gallery: raw.gallery || [],
@@ -644,6 +645,7 @@ function buildPublicProfileData(source: Partial<UserProfile>) {
     publicCity,
     publicState,
     ward: source.ward || "",
+    memberVerified: source.memberVerified ?? false,
     searchTokens: toSearchTokens(
       source.name,
       source.category,

@@ -6,7 +6,6 @@ import {
   UserMinus,
   MapPin,
   Building2,
-  ShieldCheck,
   Star,
   Copy,
 } from "lucide-react";
@@ -18,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserProfile } from "@/models/types";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
+import { VerifiedMark } from "@/components/ui/trust-signals";
 import { useContactsStore } from "@/store/use-contacts-store";
 import { toast } from "sonner";
 import { SidebarTrigger } from "../ui/sidebar";
@@ -317,10 +317,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                           {selectedContact.name}
                         </h2>
                         {shouldShowVerifiedBadge(selectedContact) && (
-                          <Badge className="bg-primary/10 text-primary border-none font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
-                            <ShieldCheck size={13} />
-                            Membro Verificado
-                          </Badge>
+                          <VerifiedMark size={18} />
                         )}
                       </div>
 

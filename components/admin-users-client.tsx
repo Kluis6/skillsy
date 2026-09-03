@@ -70,6 +70,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { RecommendationStars } from '@/components/profile/recommendation-summary';
+import { VerifiedMark } from '@/components/ui/trust-signals';
 import {
   Dialog,
   DialogContent,
@@ -536,7 +537,7 @@ export function AdminUsersClient() {
                           <div className="flex flex-col">
                             <span className="font-bold text-text-main flex items-center gap-1">
                               {u.name}
-                              {shouldShowVerifiedBadge(u) && <ShieldCheck size={14} className="text-primary" />}
+                              {shouldShowVerifiedBadge(u) && <VerifiedMark size={14} />}
                               {u.role === 'admin' && <Badge variant="secondary" className="h-5 px-1.5 text-xs bg-red-500/10 text-red-500 border-red-500/20 dark:text-red-300">Admin</Badge>}
                             </span>
                             <span className="text-xs text-text-muted flex items-center gap-1"><Mail size={10} /> {u.email}</span>

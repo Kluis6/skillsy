@@ -32,7 +32,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
 import { ProfilePublicPageLoading } from "@/components/loading/route-loaders";
-import { TrustBadge } from "@/components/ui/trust-signals";
+import { VerifiedMark } from "@/components/ui/trust-signals";
 import {
   Dialog,
   DialogContent,
@@ -944,7 +944,7 @@ export function ProfileDetailClient({
                         {targetProfile.name}
                       </h2>
                       {shouldShowVerifiedBadge(targetProfile) && (
-                        <TrustBadge>Membro verificado</TrustBadge>
+                        <VerifiedMark size={20} />
                       )}
                     </div>
 

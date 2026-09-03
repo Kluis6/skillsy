@@ -1,45 +1,40 @@
 import {
-  CheckCircle2,
   MapPin,
   MessageCircle,
   ShieldCheck,
-  Star,
   UserRoundCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-type TrustBadgeProps = {
-  children?: React.ReactNode;
+type VerifiedMarkProps = {
+  size?: number;
   className?: string;
-  variant?: "verified" | "ready" | "rating";
-  value?: string | number;
 };
 
-export function TrustBadge({
-  children,
-  className,
-  variant = "verified",
-  value,
-}: TrustBadgeProps) {
-  const Icon =
-    variant === "rating" ? Star : variant === "ready" ? CheckCircle2 : ShieldCheck;
-
+/** The one verified-member signal: a compact icon meant to sit right after
+ * a displayed name, everywhere a member's name is shown. Don't build a new
+ * verification badge elsewhere — use this. */
+export function VerifiedMark({ size = 14, className }: VerifiedMarkProps) {
   return (
-    <span
-      className={cn(
-        "inline-flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold",
-        variant === "rating"
-          ? "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300"
-          : "border-primary/10 bg-primary/10 text-primary",
-        className,
-      )}
-    >
-      <Icon
-        className="size-3.5"
-        fill={variant === "rating" ? "currentColor" : "none"}
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <span
+            className={cn(
+              "inline-flex shrink-0 items-center text-primary",
+              className,
+            )}
+          >
+            <ShieldCheck size={size} aria-hidden="true" />
+            <span className="sr-only">Membro verificado</span>
+          </span>
+        }
       />
-      {value ?? children ?? "Membro verificado"}
-    </span>
+      <TooltipContent>
+        <p>Membro verificado</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 

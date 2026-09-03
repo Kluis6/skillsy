@@ -17,6 +17,7 @@ const publicFieldNames = [
   "serviceType",
   "publicCity",
   "publicState",
+  "ward",
   "searchTokens",
   "companyName",
   "gallery",
@@ -293,16 +294,18 @@ function buildPublicFields(userDocument) {
       : fallbackField(fieldName, userId, userDocument);
   }
 
+  // Mirrors getPublicCity/getPublicState in services/user-service.ts: city
+  // and state are always public now, there's no opt-in gate any more.
   const location = readStringField(fields.location);
-  const showPublicLocation = fields.showPublicLocation?.booleanValue === true;
-  const publicCity = showPublicLocation ? location.split(",")[0]?.trim() || "" : "";
+  const publicCity = location.split(",")[0]?.trim() || "";
   const explicitState = readStringField(fields.businessState).trim().toUpperCase();
   const inferredState = location.split(",").at(-1)?.trim().toUpperCase() || "";
-  const publicState = showPublicLocation && /^[A-Z]{2}$/.test(explicitState || inferredState)
+  const publicState = /^[A-Z]{2}$/.test(explicitState || inferredState)
     ? explicitState || inferredState
     : "";
   publicFields.publicCity = stringValue(publicCity);
   publicFields.publicState = stringValue(publicState);
+  publicFields.memberVerified = booleanValue(computeMemberVerified(fields));
   publicFields.searchTokens = arrayValue(
     toSearchTokens(
       readStringField(fields.name),

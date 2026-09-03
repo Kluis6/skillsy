@@ -6,11 +6,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserProfile } from "@/models/types";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
+import { VerifiedMark } from "@/components/ui/trust-signals";
 import { useContactsStore } from "@/store/use-contacts-store";
 import { toast } from "sonner";
 import Link from "next/link";
 import { LuArrowLeft } from "react-icons/lu";
-import { ShieldCheck } from "lucide-react";
 
 interface ContactsAsideProps {
   contacts: UserProfile[];
@@ -108,9 +108,7 @@ export function ContactsAside({
                       <h4 className="font-bold text-text-main truncate text-sm">
                         {c.name}
                       </h4>
-                      {shouldShowVerifiedBadge(c) ? (
-                        <ShieldCheck size={13} className="shrink-0 text-primary" />
-                      ) : null}
+                      {shouldShowVerifiedBadge(c) ? <VerifiedMark size={13} /> : null}
                     </div>
                     {/* <div className="flex items-center gap-1 shrink-0">
                       <Button
