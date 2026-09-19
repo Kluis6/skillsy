@@ -83,8 +83,8 @@ export default function Sectionstart() {
   return (
     <section id="como-funciona" className="bg-surface my-24 scroll-mt-24 py-10">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-12 gap-4 lg:gap-8 gap-y-12 ">
-          <div className="col-span-12 lg:col-span-6 space-y-8 ">
+        <div className="grid grid-cols-12 gap-4 lg:gap-8 gap-y-12">
+          <div className="col-span-12 lg:col-span-6 space-y-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -101,7 +101,7 @@ export default function Sectionstart() {
               </p>
             </motion.div>
 
-            <div className=" space-y-4 ">
+            <div className="space-y-4">
               {steps.map((step, index) => (
                 <motion.article
                   key={step.number}
@@ -133,7 +133,7 @@ export default function Sectionstart() {
                     </p>
                     {/* <Link
                         href={step.href}
-                        className="mt-4 inline-flex items-center gap-2 rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-cyan-600"
+                        className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/90"
                       >
                         {step.cta}
                         <ArrowRight size={16} />

@@ -84,7 +84,7 @@ export function HeroSection({
           className="w-full will-change-transform lg:col-span-5"
         >
           <Card className="border-none p-4 shadow-xl md:p-6">
-            <div className=" space-y-1">
+            <div className="space-y-1">
               <p className="text-sm font-bold text-text-main">
                 Encontre alguém da rede
               </p>
@@ -114,7 +114,7 @@ export function HeroSection({
                   <button
                     type="button"
                     onClick={() => setSearchTerm("")}
-                    className="absolute right-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface hover:text-text-main "
+                    className="absolute right-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface hover:text-text-main"
                     aria-label="Limpar busca"
                   >
                     <X className="size-4" />
@@ -151,14 +151,14 @@ export function HeroSection({
                 <Button
                   type="submit"
                   variant="default"
-                  className="h-12 w-full font-medium text-base bg-primary hover:bg-primary/90 text-white active:bg-primary/80"
+                  className="h-12 w-full font-medium text-base bg-primary hover:bg-primary/90 text-primary-foreground active:bg-primary/80"
                 >
                   {searching ? "Pesquisando..." : "Buscar talento"}
                 </Button>
               </div>
             </Form>
 
-            <div className="mt-5 border-t border-border-subtle pt-5 ">
+            <div className="mt-5 border-t border-border-subtle pt-5">
               {showSignupCta ? (
                 <AuthModal>
                   <Button

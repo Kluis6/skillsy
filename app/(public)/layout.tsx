@@ -3,9 +3,9 @@ import { Navbar } from "@/components/navbar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <section>
+    <section className="flex min-h-svh flex-col">
       <Navbar />
-      {children}
+      <div className="flex-1">{children}</div>
       <Footer />
     </section>
   );

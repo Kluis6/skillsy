@@ -22,17 +22,17 @@ export default function HeaderSection({
   backgroundImageSrc,
   backgroundImageAlt,
   headlineSegments,
-
-  headlineClassName = "font-heading text-2xl drop-shadow-lg font-semibold tracking-tight text-white drop-shadow-xl md:text-3xl xl:text-4xl",
-  headlineWrapperClassName = "absolute left-4 top-28 z-40 w-xs -translate-y-1/2 md:left-6 md:w-sm xl:top-1/4",
+  overlayClassName = "bg-linear-to-r from-black/70 via-black/40 to-black/10",
+  headlineClassName = "max-w-xl text-balance font-heading text-3xl font-bold tracking-tight text-white drop-shadow-lg md:text-4xl xl:text-5xl",
+  headlineWrapperClassName = "absolute inset-0 z-40 flex items-center",
 }: HeaderSectionProps) {
   return (
-    <section className="relative h-[78vh] w-full overflow-hidden md:h-[91dvh] z-0">
+    <section className="relative z-0 h-[52vh] w-full overflow-hidden md:h-[60vh]">
       <motion.div
         initial={{ scale: 1.04, opacity: 0.88 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
-        className="absolute inset-0 "
+        className="absolute inset-0"
       >
         <Image
           src={backgroundImageSrc}
@@ -44,7 +44,7 @@ export default function HeaderSection({
         />
       </motion.div>
 
-      <div className={`absolute inset-0 bg-blue-700/30 brightness-60`} />
+      <div className={`absolute inset-0 ${overlayClassName}`} />
 
       <motion.div
         initial={{ opacity: 0, y: 22 }}
@@ -52,13 +52,15 @@ export default function HeaderSection({
         transition={{ duration: 0.7, ease: "easeOut" }}
         className={`${headlineWrapperClassName}`}
       >
-        <h1 className={headlineClassName}>
-          {headlineSegments.map((segment, index) => (
-            <span key={`${segment.text}-${index}`} className={segment.className}>
-              {segment.text}
-            </span>
-          ))}
-        </h1>
+        <div className="container mx-auto px-4 pb-12">
+          <h1 className={headlineClassName}>
+            {headlineSegments.map((segment, index) => (
+              <span key={`${segment.text}-${index}`} className={segment.className}>
+                {segment.text}
+              </span>
+            ))}
+          </h1>
+        </div>
       </motion.div>
     </section>
   );

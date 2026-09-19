@@ -2,7 +2,7 @@ import { MyPostsClient } from "@/components/posts/my-posts-client";
 import { createPrivateMetadata } from "@/lib/public-metadata";
 
 export const metadata = createPrivateMetadata({
-  title: "Minhas Publicações",
+  title: "Minhas publicações",
   description: "Área restrita para acompanhar suas publicações no Skillsy.",
 });
 

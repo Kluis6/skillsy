@@ -7,7 +7,7 @@ export function PublicHeroLoading({
 }) {
   return (
     <section
-      className={`relative w-full overflow-hidden bg-blue-200/60 ${heightClass}`}
+      className={`relative w-full overflow-hidden bg-muted ${heightClass}`}
     >
       <div className="container mx-auto flex h-full w-full items-center px-4 py-8">
         <div className="w-full max-w-2xl space-y-3 rounded bg-foreground/10 p-4 backdrop-blur-sm">
@@ -53,7 +53,7 @@ export function PublicIntroCardLoading({ cards = 3 }: { cards?: number }) {
  * title/bio and a footer split between recommendations+reviews and "Ver perfil". */
 function ProviderCardSkeleton() {
   return (
-    <div className="relative h-full overflow-hidden rounded-xl border border-border-subtle bg-card">
+    <div className="relative h-full overflow-hidden rounded-xl border border-border-subtle bg-card shadow-xs">
       <div className="relative w-full">
         <Skeleton className="h-30 w-full rounded-none" />
         <Skeleton className="absolute right-4 top-4 h-7 w-16 rounded-full" />
@@ -125,7 +125,7 @@ export function HomePageLoading() {
         </div>
       </div>
 
-      <section className="min-h-[calc(100svh-5rem)] bg-[radial-gradient(circle_at_top_left,rgba(0,102,255,0.12),transparent_34%),linear-gradient(180deg,rgba(240,247,255,0.65),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.2),transparent_34%),linear-gradient(180deg,rgba(30,41,59,0.65),rgba(15,23,42,0))] md:min-h-[86vh]">
+      <section className="min-h-[calc(100svh-5rem)] bg-muted md:min-h-[86vh]">
         <div className="container mx-auto grid min-h-[calc(100svh-5rem)] grid-cols-1 items-center gap-10 px-4 py-12 lg:grid-cols-12 lg:py-16 md:min-h-[86vh]">
           <div className="space-y-4 text-center lg:col-span-7 lg:text-left">
             <Skeleton className="mx-auto h-14 w-full max-w-xl lg:mx-0 md:h-24 lg:h-28" />
@@ -187,7 +187,7 @@ export function HomePageLoading() {
 export function SearchPageLoading() {
   return (
     <div className="min-h-screen w-full space-y-2 bg-surface/30">
-      <nav className="sticky top-0 z-50 border-b border-border-subtle bg-background/80 backdrop-blur-md">
+      <nav className="sticky top-0 z-50 border-b border-border-subtle bg-card/85 backdrop-blur-md">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2">
           <Skeleton className="size-10 rounded md:hidden" />
           <Skeleton className="h-8 w-24" />
@@ -203,7 +203,7 @@ export function SearchPageLoading() {
       <main className="container mx-auto px-4">
         <div className="flex flex-col gap-6 lg:flex-row">
           <aside className="hidden w-full shrink-0 space-y-8 lg:block lg:w-72">
-            <div className="rounded-xl border border-border-subtle bg-card p-4">
+            <div className="rounded-xl border border-border-subtle bg-card p-4 shadow-xs">
               <Skeleton className="mb-6 h-6 w-28" />
               <div className="space-y-6">
                 <div className="space-y-4">
@@ -305,7 +305,7 @@ export function DonationPageLoading() {
     <div className="min-h-screen w-full bg-surface pb-10">
       <PublicHeroLoading heightClass="h-[58vh]" />
       <div className="container mx-auto isolate -mt-8 space-y-10 px-4">
-        <section className="rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:p-8">
+        <section className="rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:p-8 shadow-xs">
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
             <div className="space-y-3">
               <Skeleton className="h-7 w-full max-w-md" />
@@ -324,7 +324,7 @@ export function DonationPageLoading() {
           {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
-              className="col-span-12 space-y-4 rounded-xl border border-border-subtle bg-card p-5 md:col-span-4 lg:p-6"
+              className="col-span-12 space-y-4 rounded-xl border border-border-subtle bg-card p-5 md:col-span-4 lg:p-6 shadow-xs"
             >
               <Skeleton className="h-12 w-12 rounded-sm" />
               <Skeleton className="h-6 w-44" />
@@ -335,7 +335,7 @@ export function DonationPageLoading() {
         </section>
 
         <section className="grid grid-cols-12 gap-4 gap-y-8 lg:gap-6">
-          <div className="col-span-12 space-y-8 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8">
+          <div className="col-span-12 space-y-8 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8 shadow-xs">
             <div className="flex items-center gap-3">
               <Skeleton className="hidden size-12 rounded-sm md:block" />
               <div className="space-y-2">
@@ -347,7 +347,7 @@ export function DonationPageLoading() {
             <Skeleton className="h-4 w-full max-w-md" />
           </div>
 
-          <div className="col-span-12 space-y-8 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8">
+          <div className="col-span-12 space-y-8 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8 shadow-xs">
             <div className="flex items-center gap-3">
               <Skeleton className="hidden size-12 rounded-md md:block" />
               <div className="space-y-2">
@@ -368,12 +368,12 @@ export function DonationPageLoading() {
         </section>
 
         <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="space-y-3 rounded-xl border border-border-subtle bg-card p-5">
+          <div className="space-y-3 rounded-xl border border-border-subtle bg-card p-5 shadow-xs">
             <Skeleton className="h-5 w-32" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-10/12" />
           </div>
-          <div className="space-y-3 rounded-xl border border-border-subtle bg-card p-5">
+          <div className="space-y-3 rounded-xl border border-border-subtle bg-card p-5 shadow-xs">
             <Skeleton className="h-6 w-40" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
@@ -452,7 +452,7 @@ export function MyPostsPageLoading() {
   return (
     <main className="container mx-auto max-w-6xl px-4 py-10">
       <div className="space-y-6">
-        <div className="rounded-xl border border-border-subtle bg-card p-6">
+        <div className="rounded-xl border border-border-subtle bg-card p-6 shadow-xs">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
               <Skeleton className="h-8 w-64" />
@@ -462,7 +462,7 @@ export function MyPostsPageLoading() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-border-subtle bg-card">
+        <div className="rounded-xl border border-border-subtle bg-card shadow-xs">
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
@@ -489,7 +489,7 @@ export function MyPostsPageLoading() {
 export function PostEditorPageLoading() {
   return (
     <main className="container mx-auto max-w-6xl px-4 py-10">
-      <div className="space-y-6 rounded-xl border border-border-subtle bg-card p-6">
+      <div className="space-y-6 rounded-xl border border-border-subtle bg-card p-6 shadow-xs">
         <div className="space-y-3">
           <Skeleton className="h-8 w-56" />
           <Skeleton className="h-4 w-72" />
@@ -694,7 +694,7 @@ export function ProfileSettingsPageLoading() {
             </div>
           </div>
 
-          <div className="space-y-4 rounded-xl border border-border-subtle bg-card p-4">
+          <div className="space-y-4 rounded-xl border border-border-subtle bg-card p-4 shadow-xs">
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-2">
                 <Skeleton className="h-5 w-40" />
@@ -708,7 +708,7 @@ export function ProfileSettingsPageLoading() {
             ))}
           </div>
 
-          <div className="space-y-3 rounded-xl border border-border-subtle bg-card p-4">
+          <div className="space-y-3 rounded-xl border border-border-subtle bg-card p-4 shadow-xs">
             <Skeleton className="h-5 w-36" />
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton key={index} className="h-4 w-full" />
@@ -717,7 +717,7 @@ export function ProfileSettingsPageLoading() {
         </aside>
 
         <section className="space-y-2 lg:col-span-2">
-          <div className="rounded-none border-y border-border-subtle bg-card px-4 py-4 md:rounded-xl md:border md:px-8">
+          <div className="rounded-none border-y border-border-subtle bg-card px-4 py-4 md:rounded-xl md:border md:px-8 shadow-xs">
             <Skeleton className="h-12 w-full max-w-lg" />
           </div>
 
@@ -772,7 +772,7 @@ export function AdminDashboardPageLoading() {
         {Array.from({ length: 3 }).map((_, index) => (
           <div
             key={index}
-            className="space-y-6 rounded-xl border border-border-subtle bg-card p-8"
+            className="space-y-6 rounded-xl border border-border-subtle bg-card p-8 shadow-xs"
           >
             <div className="flex items-start justify-between">
               <Skeleton className="size-14 rounded-xl" />
@@ -879,7 +879,7 @@ export function AdminModerationPageLoading() {
         {Array.from({ length: 4 }).map((_, index) => (
           <div
             key={index}
-            className="space-y-2 rounded-lg border border-border-subtle bg-card p-4"
+            className="space-y-2 rounded-lg border border-border-subtle bg-card p-4 shadow-xs"
           >
             <Skeleton className="size-5 rounded" />
             <Skeleton className="h-7 w-12" />
@@ -889,7 +889,7 @@ export function AdminModerationPageLoading() {
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border-subtle bg-card">
+      <div className="overflow-hidden rounded-lg border border-border-subtle bg-card shadow-xs">
         <div className="flex items-center justify-between border-b border-border-subtle p-4">
           <div className="space-y-2">
             <Skeleton className="h-5 w-40" />
@@ -921,17 +921,17 @@ export function AdminPostsPageLoading() {
   return (
     <main className="container mx-auto max-w-6xl px-4 py-10">
       <div className="space-y-6">
-        <div className="rounded-xl border border-border-subtle bg-card p-6">
+        <div className="rounded-xl border border-border-subtle bg-card p-6 shadow-xs">
           <Skeleton className="h-8 w-48" />
           <Skeleton className="mt-2 h-4 w-80" />
         </div>
 
-        <div className="grid gap-4 rounded-xl border border-border-subtle bg-card p-6 md:grid-cols-[1fr_220px]">
+        <div className="grid gap-4 rounded-xl border border-border-subtle bg-card p-6 md:grid-cols-[1fr_220px] shadow-xs">
           <Skeleton className="h-10 w-full rounded-xl" />
           <Skeleton className="h-10 w-full rounded-xl" />
         </div>
 
-        <div className="rounded-xl border border-border-subtle bg-card">
+        <div className="rounded-xl border border-border-subtle bg-card shadow-xs">
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}

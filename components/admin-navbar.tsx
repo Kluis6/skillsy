@@ -89,16 +89,16 @@ export function AdminNavbar() {
   const getIconForType = (type: string) => {
     switch (type) {
       case "new_user":
-        return <Users size={14} className="text-blue-500" />;
+        return <Users size={14} className="text-primary" />;
       case "report":
-        return <ShieldCheck size={14} className="text-red-500" />;
+        return <ShieldCheck size={14} className="text-destructive" />;
       default:
         return <Bell size={14} className="text-primary" />;
     }
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle px-6 md:px-10 py-3">
+    <nav className="sticky top-0 z-50 bg-card/85 backdrop-blur-md border-b border-border-subtle px-6 md:px-10 py-3">
       <div className="max-w-[1600px] mx-auto flex justify-between items-center">
         <div className="flex items-center gap-8">
           <Link href="/admin" className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export function AdminNavbar() {
                 Skillsy
               </h1>
               <span className="text-xs font-bold text-primary">
-                Admin Panel
+                Painel admin
               </span>
             </div>
           </Link>
@@ -180,7 +180,7 @@ export function AdminNavbar() {
               >
                 <Bell size={18} />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-background">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-destructive text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-background">
                     {unreadCount}
                   </span>
                 )}
@@ -302,7 +302,7 @@ export function AdminNavbar() {
               variant="ghost"
               size="icon"
               onClick={logout}
-              className="text-text-muted hover:text-red-500 rounded-full"
+              className="text-text-muted hover:text-destructive rounded-full"
             >
               <LogOut size={18} />
             </Button>

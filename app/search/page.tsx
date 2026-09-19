@@ -5,7 +5,7 @@ import { UserService } from "@/services/user-service";
 import { UserProfile } from "@/models/types";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Busca de Profissionais",
+  title: "Busca de profissionais",
   description:
     "Encontre os melhores profissionais e serviços na comunidade. Resultados personalizados por localização e categoria.",
   path: "/search",

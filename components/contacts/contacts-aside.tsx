@@ -48,9 +48,9 @@ export function ContactsAside({
   };
 
   return (
-    <aside className="w-full bg-card flex flex-col h-screen overflow-hidden ">
+    <aside className="w-full bg-card flex flex-col h-screen overflow-hidden">
       <div className="px-4 py-2.5 border-b border-border-s flex flex-col space-y-4">
-        <div className="w-full flex justify-between items-center ">
+        <div className="w-full flex justify-between items-center">
           <Link
             href="/"
             className="flex justify-start items-center space-x-[0.4rem] h-10"
@@ -63,12 +63,12 @@ export function ContactsAside({
         </div>
         <div className="relative">
           <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
             size={16}
           />
           <Input
             placeholder="Buscar contatos..."
-            className="pl-10 h-10 text-sm bg-card focus:bg-card placeholder:text-text-muted rounded-full border-border-subtle"
+            className="pl-10 h-10 text-sm bg-card focus:bg-card placeholder:text-text-muted rounded-full border-input"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -113,7 +113,7 @@ export function ContactsAside({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className=" h-10 rounded-full text-text-muted hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
+                        className="h-10 rounded-full text-text-muted hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleContact(c.uid).then(() => {

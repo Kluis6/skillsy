@@ -39,7 +39,7 @@ const readFileAsDataURL = (file: Blob) =>
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = () =>
-      reject(new Error("Nao foi possivel ler a imagem selecionada."));
+      reject(new Error("Não foi possível ler a imagem selecionada."));
   });
 
 const getCompressionErrorMessage = (error: unknown) => {
@@ -51,7 +51,7 @@ const getCompressionErrorMessage = (error: unknown) => {
     return error;
   }
 
-  return "Nao foi possivel processar essa imagem.";
+  return "Não foi possível processar essa imagem.";
 };
 
 type PostEditorClientProps = {
@@ -141,7 +141,7 @@ export function PostEditorClient({
     }
 
     if (!SUPPORTED_IMAGE_TYPES.has(file.type)) {
-      toast.error("Formato nao suportado", {
+      toast.error("Formato não suportado", {
         description: "Use uma imagem JPG, PNG ou WEBP.",
       });
       event.target.value = "";
@@ -150,7 +150,7 @@ export function PostEditorClient({
 
     if (file.size > MAX_IMAGE_UPLOAD_SIZE_BYTES) {
       toast.error("Imagem muito grande", {
-        description: "Escolha uma imagem de ate 10 MB.",
+        description: "Escolha uma imagem de até 10 MB.",
       });
       event.target.value = "";
       return;
@@ -257,7 +257,7 @@ export function PostEditorClient({
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-3xl rounded-xl border border-border-subtle bg-card p-10 text-center">
+      <div className="mx-auto max-w-3xl rounded-xl border border-border-subtle bg-card p-10 text-center shadow-xs">
         <h1 className="text-2xl font-bold text-text-main">Acesso restrito</h1>
         <p className="mt-2 text-text-muted">
           Faça login para escrever e gerenciar seus artigos.
@@ -271,7 +271,7 @@ export function PostEditorClient({
 
   if (!canPublish) {
     return (
-      <div className="mx-auto max-w-3xl rounded-xl border border-border-subtle bg-card p-10 text-center">
+      <div className="mx-auto max-w-3xl rounded-xl border border-border-subtle bg-card p-10 text-center shadow-xs">
         <h1 className="text-2xl font-bold text-text-main">
           Publicação disponível para membros verificados
         </h1>
@@ -295,7 +295,7 @@ export function PostEditorClient({
         texto ou imagem de capa. O resumo é opcional e as tags continuam limitadas a 5.
       </div>
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 rounded-xl border border-border-subtle bg-card p-6 md:p-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 rounded-xl border border-border-subtle bg-card p-6 md:p-8 shadow-xs">
         <div className="space-y-2">
           <Label htmlFor="category">Categoria</Label>
           <select
@@ -307,7 +307,7 @@ export function PostEditorClient({
             <option value="job">{POST_CATEGORY_LABELS.job}</option>
           </select>
           {form.formState.errors.category ? (
-            <p className="text-xs font-bold text-red-500">
+            <p className="text-xs font-bold text-destructive">
               {form.formState.errors.category.message}
             </p>
           ) : null}
@@ -321,7 +321,7 @@ export function PostEditorClient({
             {...form.register("title")}
           />
           {form.formState.errors.title ? (
-            <p className="text-xs font-bold text-red-500">
+            <p className="text-xs font-bold text-destructive">
               {form.formState.errors.title.message}
             </p>
           ) : null}
@@ -338,7 +338,7 @@ export function PostEditorClient({
               })}
             />
             {form.formState.errors.slug ? (
-              <p className="text-xs font-bold text-red-500">
+              <p className="text-xs font-bold text-destructive">
                 {form.formState.errors.slug.message}
               </p>
             ) : null}
@@ -386,7 +386,7 @@ export function PostEditorClient({
               Você pode colar uma URL ou enviar um arquivo JPG, PNG ou WEBP de até 10 MB.
             </p>
             {form.formState.errors.coverImageUrl ? (
-              <p className="text-xs font-bold text-red-500">
+              <p className="text-xs font-bold text-destructive">
                 {form.formState.errors.coverImageUrl.message}
               </p>
             ) : null}
@@ -421,7 +421,7 @@ export function PostEditorClient({
             <span>{excerptValue.length}/240</span>
           </div>
           {form.formState.errors.excerpt ? (
-            <p className="text-xs font-bold text-red-500">
+            <p className="text-xs font-bold text-destructive">
               {form.formState.errors.excerpt.message}
             </p>
           ) : null}
@@ -440,7 +440,7 @@ export function PostEditorClient({
             <span>{contentValue.length}/20000</span>
           </div>
           {form.formState.errors.content ? (
-            <p className="text-xs font-bold text-red-500">
+            <p className="text-xs font-bold text-destructive">
               {form.formState.errors.content.message}
             </p>
           ) : null}
@@ -455,7 +455,7 @@ export function PostEditorClient({
             {...form.register("tags")}
           />
           {form.formState.errors.tags ? (
-            <p className="text-xs font-bold text-red-500">
+            <p className="text-xs font-bold text-destructive">
               {form.formState.errors.tags.message}
             </p>
           ) : null}

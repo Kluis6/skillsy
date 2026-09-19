@@ -2,7 +2,7 @@ import { EditPostPageClient } from "@/components/posts/edit-post-page-client";
 import { createPrivateMetadata } from "@/lib/public-metadata";
 
 export const metadata = createPrivateMetadata({
-  title: "Editar Publicação",
+  title: "Editar publicação",
   description: "Área restrita para editar uma publicação no Skillsy.",
 });
 

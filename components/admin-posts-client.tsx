@@ -213,7 +213,7 @@ export function AdminPostsClient() {
                   </p>
                   <p className="max-w-3xl text-sm text-text-muted">{post.excerpt}</p>
                   {post.rejectionReason ? (
-                    <p className="text-xs font-medium text-red-500">
+                    <p className="text-xs font-medium text-destructive">
                       Rejeição: {post.rejectionReason}
                     </p>
                   ) : null}

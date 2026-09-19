@@ -377,11 +377,11 @@ export function AdminUsersClient() {
   if (profile?.role !== 'admin') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-surface">
-        <ShieldAlert size={64} className="text-red-500 mb-6" />
+        <ShieldAlert size={64} className="text-destructive mb-6" />
         <h1 className="text-3xl font-bold mb-4">Acesso Negado</h1>
         <p className="text-text-muted mb-8">Esta área é restrita a administradores do sistema.</p>
-        <Button render={<Link href="/" />} nativeButton={false} className="bg-primary text-white font-bold rounded-xl px-8">
-          Voltar para Home
+        <Button render={<Link href="/" />} nativeButton={false} className="bg-primary text-primary-foreground font-bold rounded-xl px-8">
+          Voltar ao início
         </Button>
       </div>
     );
@@ -403,7 +403,7 @@ export function AdminUsersClient() {
                <ArrowLeft size={20} />
              </Button>
              <div>
-               <h2 className="text-3xl font-bold text-text-main font-heading">Gerenciar Usuários</h2>
+               <h2 className="text-3xl font-bold text-text-main font-heading">Gerenciar usuários</h2>
                <p className="text-text-muted mt-1">Total de {users.length} membros cadastrados.</p>
              </div>
           </div>
@@ -418,7 +418,7 @@ export function AdminUsersClient() {
             </Button>
             <Button 
               onClick={() => setIsAddAdminDialogOpen(true)}
-              className="bg-primary text-white hover:bg-primary/90 rounded-md px-6 font-bold  h-11"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 font-bold  h-11"
             >
               <ShieldCheck size={18} className="mr-2" /> Novo Admin
             </Button>
@@ -426,7 +426,7 @@ export function AdminUsersClient() {
         </div>
 
         {/* Filters & Search */}
-        <Card className="bg-card border border-border-subtle rounded-xl p-8 mb-8">
+        <Card className="bg-card border border-border-subtle rounded-xl p-8 mb-8 shadow-xs">
           <div className="flex flex-col lg:flex-row gap-6 items-end">
             <div className="flex-grow space-y-2 w-full">
               <Label htmlFor="admin-user-search" className="text-xs font-bold text-text-muted uppercase ml-1">Buscar Usuário</Label>
@@ -435,7 +435,7 @@ export function AdminUsersClient() {
                 <Input 
                   id="admin-user-search"
                   placeholder="Ex: João ou joao@exemplo.com" 
-                  className="pl-12 bg-surface border border-border-subtle rounded-md h-12 text-sm"
+                  className="pl-12 bg-surface border border-input rounded-md h-12 text-sm"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -460,7 +460,7 @@ export function AdminUsersClient() {
                     id="admin-user-state-filter"
                     value={filterState}
                     onChange={(e) => setFilterState(e.target.value || 'all')}
-                    className="w-full appearance-none rounded-md border border-border-subtle bg-surface h-12 px-4 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
+                    className="w-full appearance-none rounded-md border border-input bg-surface h-12 px-4 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
                   >
                     <option value="all">Todos os estados</option>
                     {BRAZIL_STATES.map((state) => (
@@ -487,7 +487,7 @@ export function AdminUsersClient() {
                   onCheckedChange={setFilterReported}
                 />
                 <Label htmlFor="reported-only" className="text-sm font-medium cursor-pointer">
-                  Apenas Denunciados
+                  Apenas denunciados
                 </Label>
               </div>
             </div>
@@ -495,7 +495,7 @@ export function AdminUsersClient() {
         </Card>
 
         {/* Users Table */}
-        <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden mb-10">
+        <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden mb-10 shadow-xs">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader className="bg-surface/50">
@@ -537,7 +537,7 @@ export function AdminUsersClient() {
                             <span className="font-bold text-text-main flex items-center gap-1">
                               {u.name}
                               <MembershipMark profile={u} size={14} />
-                              {u.role === 'admin' && <Badge variant="secondary" className="h-5 px-1.5 text-xs bg-red-500/10 text-red-500 border-red-500/20 dark:text-red-300">Admin</Badge>}
+                              {u.role === 'admin' && <Badge variant="secondary" className="h-5 px-1.5 text-xs bg-destructive/10 text-destructive border-destructive/20">Admin</Badge>}
                             </span>
                             <span className="text-xs text-text-muted flex items-center gap-1"><Mail size={10} /> {u.email}</span>
                             {(u.companyName || u.category) && (
@@ -559,19 +559,19 @@ export function AdminUsersClient() {
                       <TableCell>
                         <div className="flex flex-wrap gap-2">
                           {u.isProvider ? (
-                            <Badge className="bg-green-500/10 text-green-600 border-green-500/20 text-xs dark:text-green-300">Prestador</Badge>
+                            <Badge className="bg-success/10 text-success border-success/20 text-xs">Prestador</Badge>
                           ) : (
                             <Badge variant="outline" className="text-xs text-text-muted">Membro</Badge>
                           )}
                           {u.isBlocked && (
-                            <Badge className="bg-red-500/10 text-red-600 border-red-500/20 text-xs dark:text-red-300">Bloqueado</Badge>
+                            <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-xs">Bloqueado</Badge>
                           )}
                         </div>
                       </TableCell>
                       <TableCell>
                         {reportCountsByUser[u.uid] ? (
                           <div className="space-y-1">
-                            <Badge className="bg-red-500/10 text-red-600 border-red-500/20 text-xs inline-flex items-center gap-1 dark:text-red-300">
+                            <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-xs inline-flex items-center gap-1">
                               <AlertTriangle size={12} />
                               {reportCountsByUser[u.uid]} denúncia{reportCountsByUser[u.uid] > 1 ? 's' : ''}
                             </Badge>
@@ -610,8 +610,8 @@ export function AdminUsersClient() {
                                   onClick={() => handleToggleBlock(u)}
                                   className={`w-9 h-9 rounded-md transition-all ${
                                     u.isBlocked 
-                                      ? 'text-green-600 hover:bg-green-500/10 hover:text-green-700 bg-green-500/10 dark:text-green-300 dark:hover:text-green-200' 
-                                      : 'text-red-500 hover:bg-red-500/10 hover:text-red-600 dark:text-red-300 dark:hover:text-red-200'
+                                      ? 'text-success hover:bg-success/15 hover:text-success bg-success/10' 
+                                      : 'text-destructive hover:bg-destructive/10 hover:text-destructive'
                                   }`}
                                 />
                               }
@@ -638,7 +638,7 @@ export function AdminUsersClient() {
                               <DropdownMenuSeparator className="bg-border-subtle my-1" />
                               <DropdownMenuItem 
                                 onClick={() => handleToggleBlock(u)} 
-                                className={`rounded-md cursor-pointer ${u.isBlocked ? 'text-green-600 focus:bg-green-500/10 focus:text-green-600 dark:text-green-300 dark:focus:text-green-200' : 'text-red-600 focus:bg-red-500/10 focus:text-red-600 dark:text-red-300 dark:focus:text-red-200'}`}
+                                className={`rounded-md cursor-pointer ${u.isBlocked ? 'text-success focus:bg-success/10 focus:text-success' : 'text-destructive focus:bg-destructive/10 focus:text-destructive'}`}
                               >
                                 {u.isBlocked ? (
                                   <><CheckCircle size={16} className="mr-2" /> Desbloquear</>
@@ -731,7 +731,7 @@ export function AdminUsersClient() {
           
           <form onSubmit={editForm.handleSubmit(onSaveEdit)}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
-              <div className="md:col-span-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900 space-y-1 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100/85">
+              <div className="md:col-span-2 rounded-xl border border-warning-border bg-warning-surface px-4 py-3 text-xs text-warning-foreground space-y-1">
                 <p className="font-semibold text-sm">Atenção aos limites</p>
                 <p>
                   Campos longos demais ou em formato inválido podem ser rejeitados
@@ -750,7 +750,7 @@ export function AdminUsersClient() {
                 <p className="text-xs text-text-muted ml-2">
                   Entre 2 e {ADMIN_FORM_LIMITS.name} caracteres.
                 </p>
-                {editForm.formState.errors.name && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.name.message}</p>}
+                {editForm.formState.errors.name && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.name.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-xs font-bold text-text-muted ml-1">E-mail</Label>
@@ -786,7 +786,7 @@ export function AdminUsersClient() {
                 <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.location} caracteres.
                 </p>
-                {editForm.formState.errors.location && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.location.message}</p>}
+                {editForm.formState.errors.location && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.location.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="ward" className="text-xs font-bold text-text-muted ml-1">Ala / Ramo</Label>
@@ -800,7 +800,7 @@ export function AdminUsersClient() {
                 <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.ward} caracteres.
                 </p>
-                {editForm.formState.errors.ward && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.ward.message}</p>}
+                {editForm.formState.errors.ward && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.ward.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="serviceType" className="text-xs font-bold text-text-muted ml-1">Serviço / Categoria</Label>
@@ -814,21 +814,21 @@ export function AdminUsersClient() {
                 <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.serviceType} caracteres.
                 </p>
-                {editForm.formState.errors.serviceType && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.serviceType.message}</p>}
+                {editForm.formState.errors.serviceType && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.serviceType.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role" className="text-xs font-bold text-text-muted ml-1">Papel no Sistema</Label>
                 <select 
                   id="role"
                   {...editForm.register('role')}
-                  className="w-full bg-surface border border-border-subtle rounded-md h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none"
+                  className="w-full bg-surface border border-input rounded-md h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none"
                 >
                   <option value="user">Usuário Comum</option>
                   <option value="admin">Administrador</option>
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="baptismYear" className="text-xs font-bold text-text-muted ml-1">Ano de Batismo</Label>
+                <Label htmlFor="baptismYear" className="text-xs font-bold text-text-muted ml-1">Ano de batismo</Label>
                 <Input 
                   id="baptismYear" 
                   type="number"
@@ -836,14 +836,14 @@ export function AdminUsersClient() {
                   {...editForm.register('baptismYear', { valueAsNumber: true })}
                   className="bg-surface border border-border-subtle rounded-md h-12"
                 />
-                {editForm.formState.errors.baptismYear && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.baptismYear.message}</p>}
+                {editForm.formState.errors.baptismYear && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.baptismYear.message}</p>}
                 <p className="text-xs text-primary/70 ml-2">
                   Com o ano de batismo e a ala ou ramo preenchidos, o selo é exibido automaticamente.
                 </p>
               </div>
 
               <div className="md:col-span-2 space-y-4 pt-2">
-                <h4 className="text-sm font-bold text-text-main">Endereço Comercial (Opcional)</h4>
+                <h4 className="text-sm font-bold text-text-main">Endereço comercial (Opcional)</h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2 space-y-2">
                     <Label className="text-xs font-bold text-text-muted ml-1">Endereço (Rua/Avenida)</Label>
@@ -853,7 +853,7 @@ export function AdminUsersClient() {
                       maxLength={ADMIN_FORM_LIMITS.address}
                       className="bg-surface border border-border-subtle rounded-md h-12"
                     />
-                    {editForm.formState.errors.businessAddress && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessAddress.message}</p>}
+                    {editForm.formState.errors.businessAddress && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.businessAddress.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold text-text-muted ml-1">Número</Label>
@@ -863,7 +863,7 @@ export function AdminUsersClient() {
                       maxLength={ADMIN_FORM_LIMITS.addressNumber}
                       className="bg-surface border border-border-subtle rounded-md h-12"
                     />
-                    {editForm.formState.errors.businessAddressNumber && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessAddressNumber.message}</p>}
+                    {editForm.formState.errors.businessAddressNumber && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.businessAddressNumber.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold text-text-muted ml-1">Bairro</Label>
@@ -873,7 +873,7 @@ export function AdminUsersClient() {
                       maxLength={ADMIN_FORM_LIMITS.neighborhood}
                       className="bg-surface border border-border-subtle rounded-md h-12"
                     />
-                    {editForm.formState.errors.businessNeighborhood && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessNeighborhood.message}</p>}
+                    {editForm.formState.errors.businessNeighborhood && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.businessNeighborhood.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold text-text-muted ml-1">Estado</Label>
@@ -883,7 +883,7 @@ export function AdminUsersClient() {
                       maxLength={ADMIN_FORM_LIMITS.state}
                       className="bg-surface border border-border-subtle rounded-md h-12"
                     />
-                    {editForm.formState.errors.businessState && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessState.message}</p>}
+                    {editForm.formState.errors.businessState && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.businessState.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-bold text-text-muted ml-1">Complemento</Label>
@@ -893,7 +893,7 @@ export function AdminUsersClient() {
                       maxLength={ADMIN_FORM_LIMITS.complement}
                       className="bg-surface border border-border-subtle rounded-md h-12"
                     />
-                    {editForm.formState.errors.businessComplement && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.businessComplement.message}</p>}
+                    {editForm.formState.errors.businessComplement && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.businessComplement.message}</p>}
                   </div>
                 </div>
               </div>
@@ -918,7 +918,7 @@ export function AdminUsersClient() {
                         }}
                         className={`h-10 px-4 rounded-xl text-xs font-bold transition-all border-2 ${
                           isSelected 
-                            ? 'bg-primary border-primary text-white'
+                            ? 'bg-primary border-primary text-primary-foreground'
                             : 'bg-surface border-transparent text-text-muted hover:border-primary/20'
                         }`}
                       >
@@ -941,7 +941,7 @@ export function AdminUsersClient() {
                 <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.serviceHours} caracteres.
                 </p>
-                {editForm.formState.errors.serviceHours && <p className="text-xs text-red-500 font-bold ml-2">{editForm.formState.errors.serviceHours.message}</p>}
+                {editForm.formState.errors.serviceHours && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.serviceHours.message}</p>}
               </div>
             </div>
 
@@ -960,7 +960,7 @@ export function AdminUsersClient() {
                   checked={editForm.watch('isBlocked')}
                   onCheckedChange={(checked) => editForm.setValue('isBlocked', checked)}
                 />
-                <Label htmlFor="edit-blocked" className="text-sm font-bold text-red-600 cursor-pointer">Bloquear Acesso</Label>
+                <Label htmlFor="edit-blocked" className="text-sm font-bold text-destructive cursor-pointer">Bloquear Acesso</Label>
               </div>
             </div>
 
@@ -968,7 +968,7 @@ export function AdminUsersClient() {
               <Button type="button" variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="rounded-md h-12 px-8 font-bold">
                 Cancelar
               </Button>
-              <Button type="submit" disabled={editForm.formState.isSubmitting} className="bg-primary text-white hover:bg-primary/90 rounded-md h-12 px-8 font-bold ">
+              <Button type="submit" disabled={editForm.formState.isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md h-12 px-8 font-bold">
                 {editForm.formState.isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
               </Button>
             </DialogFooter>
@@ -1006,7 +1006,7 @@ export function AdminUsersClient() {
                   maxLength={ADMIN_FORM_LIMITS.name}
                   className="bg-surface border border-border-subtle rounded-md h-12"
                 />
-                {adminForm.formState.errors.name && <p className="text-xs text-red-500 font-bold ml-2">{adminForm.formState.errors.name.message}</p>}
+                {adminForm.formState.errors.name && <p className="text-xs text-destructive font-bold ml-2">{adminForm.formState.errors.name.message}</p>}
                 <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.name} caracteres.
                 </p>
@@ -1021,7 +1021,7 @@ export function AdminUsersClient() {
                   maxLength={ADMIN_FORM_LIMITS.adminEmail}
                   className="bg-surface border border-border-subtle rounded-md h-12"
                 />
-                {adminForm.formState.errors.email && <p className="text-xs text-red-500 font-bold ml-2">{adminForm.formState.errors.email.message}</p>}
+                {adminForm.formState.errors.email && <p className="text-xs text-destructive font-bold ml-2">{adminForm.formState.errors.email.message}</p>}
                 <p className="text-xs text-text-muted ml-2">
                   Use um e-mail válido com até {ADMIN_FORM_LIMITS.adminEmail} caracteres.
                 </p>
@@ -1035,7 +1035,7 @@ export function AdminUsersClient() {
               <Button 
                 type="submit"
                 disabled={adminForm.formState.isSubmitting}
-                className="bg-primary text-white hover:bg-primary/90 rounded-md h-12 px-8 font-bold "
+                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md h-12 px-8 font-bold"
               >
                 {adminForm.formState.isSubmitting ? 'Criando...' : 'Criar Administrador'}
               </Button>

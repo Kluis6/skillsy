@@ -40,7 +40,7 @@ export function PixCopyField({ pixKey }: PixCopyFieldProps) {
     <button
       type="button"
       onClick={handleCopy}
-      className="block w-full rounded-xl border border-border-subtle bg-surface p-4 text-left transition-colors hover:bg-card focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer"
+      className="block w-full rounded-xl border border-border-subtle bg-surface p-4 text-left transition-colors hover:bg-card focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer shadow-xs"
       aria-label="Copiar chave Pix"
     >
       <span className="mb-3 flex items-center justify-between gap-3">
@@ -52,7 +52,7 @@ export function PixCopyField({ pixKey }: PixCopyFieldProps) {
             Copiar código completo
           </span>
         </span>
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-primary text-white">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-primary text-primary-foreground">
           <Copy className="size-4" />
         </span>
       </span>

@@ -58,7 +58,7 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
               className="flex items-center space-x-1 text-text-muted hover:text-primary transition-colors cursor-pointer"
             >
               <LuArrowLeft />
-              <p className=" font-medium text-sm">Voltar</p>
+              <p className="font-medium text-sm">Voltar</p>
             </Link>
           </div>
           {post.coverImageUrl ? (
@@ -68,7 +68,7 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
                 alt={post.title}
                 fill
                 sizes="100vw"
-                className="object-cover "
+                className="object-cover"
               />
             </div>
           ) : null}
@@ -85,7 +85,7 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
             <div>
               <Badge
                 variant="secondary"
-                className={` ${POST_CATEGORY_LABELS[post.category] === "Vagas" ? "bg-green-500/15 text-green-800 dark:text-green-300" : "bg-amber-500/15 text-amber-800 dark:text-amber-300"} `}
+                className={` ${POST_CATEGORY_LABELS[post.category] === "Vagas" ? "bg-success/15 text-success" : "bg-warning/15 text-warning-foreground"} `}
               >
                 {POST_CATEGORY_LABELS[post.category]}
               </Badge>

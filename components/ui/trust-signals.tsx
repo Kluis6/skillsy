@@ -59,7 +59,7 @@ export function CommunityFriendMark({ className, ...props }: NameMarkProps) {
     <NameMark
       icon={Handshake}
       label="Amigo da comunidade"
-      className={cn("text-emerald-600 dark:text-emerald-400", className)}
+      className={cn("text-success", className)}
       {...props}
     />
   );

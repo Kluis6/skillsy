@@ -249,7 +249,7 @@ export function PostPublicActions({
                   ))}
                 </select>
                 {reportForm.formState.errors.reason ? (
-                  <p className="text-xs font-medium text-red-500">
+                  <p className="text-xs font-medium text-destructive">
                     {reportForm.formState.errors.reason.message}
                   </p>
                 ) : null}
@@ -268,7 +268,7 @@ export function PostPublicActions({
                   {reportDetailsValue.length}/1000
                 </div>
                 {reportForm.formState.errors.details ? (
-                  <p className="text-xs font-medium text-red-500">
+                  <p className="text-xs font-medium text-destructive">
                     {reportForm.formState.errors.details.message}
                   </p>
                 ) : null}

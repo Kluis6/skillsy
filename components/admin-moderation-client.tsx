@@ -41,15 +41,15 @@ const statusMeta: Record<
 > = {
   new: {
     label: "Nova",
-    className: "bg-blue-500/10 text-blue-700 border-blue-500/20",
+    className: "bg-primary/10 text-primary border-primary/20",
   },
   in_review: {
     label: "Em análise",
-    className: "bg-amber-500/10 text-amber-800 border-amber-500/20",
+    className: "bg-warning/10 text-warning-foreground border-warning-border",
   },
   resolved: {
     label: "Resolvida",
-    className: "bg-green-500/10 text-green-700 border-green-500/20",
+    className: "bg-success/10 text-success border-success/20",
   },
   dismissed: {
     label: "Descartada",
@@ -60,7 +60,7 @@ const statusMeta: Record<
 const priorityMeta: Record<Priority, { label: string; className: string }> = {
   high: {
     label: "Alta",
-    className: "bg-red-500/10 text-red-700 border-red-500/20",
+    className: "bg-destructive/10 text-destructive border-destructive/20",
   },
   normal: {
     label: "Normal",
@@ -255,26 +255,26 @@ export function AdminModerationClient() {
             value: metrics.overdue,
             detail: "Passaram do SLA",
             icon: AlertTriangle,
-            tone: "text-red-600",
+            tone: "text-destructive",
           },
           {
             label: "Em análise",
             value: metrics.inReview,
             detail: "Com responsável",
             icon: Clock3,
-            tone: "text-amber-700",
+            tone: "text-warning",
           },
           {
             label: "Resolvidas",
             value: metrics.resolved,
             detail: "Decisões concluídas",
             icon: CheckCircle2,
-            tone: "text-green-700",
+            tone: "text-success",
           },
         ].map(({ label, value, detail, icon: Icon, tone }) => (
           <div
             key={label}
-            className="rounded-lg border border-border-subtle bg-card p-4"
+            className="rounded-lg border border-border-subtle bg-card p-4 shadow-xs"
           >
             <Icon className={`mb-3 size-5 ${tone}`} aria-hidden="true" />
             <p className="text-2xl font-semibold tabular-nums text-text-main">
@@ -286,7 +286,7 @@ export function AdminModerationClient() {
         ))}
       </section>
 
-      <section className="overflow-hidden rounded-lg border border-border-subtle bg-card">
+      <section className="overflow-hidden rounded-lg border border-border-subtle bg-card shadow-xs">
         <div className="flex flex-col gap-3 border-b border-border-subtle p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="font-semibold text-text-main">Casos para revisar</h2>
@@ -299,7 +299,7 @@ export function AdminModerationClient() {
             <select
               value={filter}
               onChange={(event) => setFilter(event.target.value as QueueFilter)}
-              className="h-9 rounded-md border border-border-subtle bg-card px-2 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="h-9 rounded-md border border-input bg-card px-2 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <option value="open">Abertas</option>
               <option value="overdue">Vencidas</option>
@@ -312,7 +312,7 @@ export function AdminModerationClient() {
         {visibleReports.length === 0 ? (
           <div className="p-10 text-center">
             <CheckCircle2
-              className="mx-auto mb-3 size-8 text-green-600"
+              className="mx-auto mb-3 size-8 text-success"
               aria-hidden="true"
             />
             <p className="font-medium text-text-main">
@@ -369,7 +369,7 @@ export function AdminModerationClient() {
                           : "Sem responsável"}
                       </span>
                       <span
-                        className={overdue ? "font-medium text-red-700" : ""}
+                        className={overdue ? "font-medium text-destructive" : ""}
                       >
                         {overdue ? "SLA vencido" : `SLA: ${SLA_HOURS} h`}
                       </span>
@@ -434,7 +434,7 @@ export function AdminModerationClient() {
                     onChange={(event) =>
                       setStatus(event.target.value as ModerationStatus)
                     }
-                    className="h-10 w-full rounded-md border border-border-subtle bg-card px-3 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
                     <option value="new">Nova</option>
                     <option value="in_review">Em análise</option>
@@ -450,7 +450,7 @@ export function AdminModerationClient() {
                     onChange={(event) =>
                       setPriority(event.target.value as Priority)
                     }
-                    className="h-10 w-full rounded-md border border-border-subtle bg-card px-3 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
                     <option value="high">Alta</option>
                     <option value="normal">Normal</option>

@@ -44,7 +44,7 @@ const impactItems = [
     description:
       "A doação é voluntária e não compra destaque, prioridade, selo ou qualquer vantagem dentro do Skillsy.",
     icon: LuHandshake,
-    tone: "bg-red-500/5 text-red-500",
+    tone: "bg-destructive/10 text-destructive",
   },
 ];
 
@@ -88,7 +88,7 @@ export default function DonationPage() {
       </section>
 
       <div className="container mx-auto isolate -mt-8 space-y-10 px-4">
-        <section className="rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:p-8">
+        <section className="rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:p-8 shadow-xs">
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
             <div className="space-y-3">
               <h2 className="text-xl font-bold text-text-main md:text-2xl">
@@ -119,7 +119,7 @@ export default function DonationPage() {
           {impactItems.map((item) => (
             <div
               key={item.title}
-              className="col-span-12 space-y-4 rounded-xl border border-border-subtle bg-card p-5 md:col-span-4 lg:p-6"
+              className="col-span-12 space-y-4 rounded-xl border border-border-subtle bg-card p-5 md:col-span-4 lg:p-6 shadow-xs"
             >
               <div
                 className={`flex h-12 w-12 items-center justify-center rounded-sm border ${item.tone}`}
@@ -139,7 +139,7 @@ export default function DonationPage() {
         </section>
 
         <section className="grid grid-cols-12 gap-4 gap-y-8 lg:gap-6">
-          <div className="col-span-12 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8">
+          <div className="col-span-12 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8 shadow-xs">
             <div className="space-y-8">
               <div className="flex items-center gap-3">
                 <div className="md:flex hidden h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
@@ -186,7 +186,7 @@ export default function DonationPage() {
             </div>
           </div>
 
-          <div className="col-span-12 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8">
+          <div className="col-span-12 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8 shadow-xs">
             <div className="space-y-8">
               <div className="flex items-center gap-3">
                 <div className="md:flex hidden h-12 w-12 items-center justify-center rounded-md bg-highlight/10 text-highlight">
@@ -228,14 +228,14 @@ export default function DonationPage() {
         </section>
 
         <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900/50 dark:bg-amber-950/30">
+          <div className="rounded-xl border border-warning-border bg-warning-surface p-5">
             <div className="flex gap-3">
-              <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-700 dark:text-amber-200" />
+              <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" />
               <div>
-                <h3 className="text-lg font-bold text-amber-900 dark:text-amber-100">
+                <h3 className="text-lg font-bold text-warning-foreground">
                   Importante
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-amber-900/85 dark:text-amber-100/85">
+                <p className="mt-2 text-sm leading-relaxed text-warning-foreground">
                   A doação é espontânea e não concede prioridade em resultados,
                   benefícios exclusivos, posição de destaque ou qualquer tipo de
                   favorecimento dentro da plataforma.
@@ -244,7 +244,7 @@ export default function DonationPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-border-subtle bg-card p-5">
+          <div className="rounded-xl border border-border-subtle bg-card p-5 shadow-xs">
             <h2 className="text-xl font-bold text-text-main">Antes de doar</h2>
             <div className="mt-3 space-y-2 text-sm leading-relaxed text-text-muted">
               <p>

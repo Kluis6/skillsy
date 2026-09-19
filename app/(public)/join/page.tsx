@@ -42,14 +42,14 @@ const benefits = [
     description:
       "Mostre seu trabalho para pessoas da sua cidade e arredores que buscam indicações mais confiáveis.",
     icon: Zap,
-    tone: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
+    tone: "bg-warning/10 text-warning",
   },
   {
     title: "Reputação com experiência real",
     description:
       "Receba avaliações de quem contratou você e ajude outros usuários a decidir com mais segurança.",
     icon: Star,
-    tone: "bg-red-500/10 text-red-600 dark:text-red-300",
+    tone: "bg-destructive/10 text-destructive",
   },
 ];
 
@@ -100,7 +100,6 @@ export default function JoinPage() {
         backgroundImageSrc="/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png"
         backgroundImageAlt="Pessoas e serviços em contexto comunitário"
         headlineSegments={headerHeadlineSegments}
-        overlayClassName="bg-blue-700/70"
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
@@ -141,8 +140,8 @@ export default function JoinPage() {
 
             <div className="col-span-12 flex flex-col gap-4 sm:flex-row">
               <AuthModal>
-                <Button className="h-12 w-full rounded-full bg-primary px-6 text-base font-bold text-white hover:bg-primary/90 sm:w-auto">
-                  Criar Minha Conta
+                <Button className="h-12 w-full rounded-full bg-primary px-6 text-base font-bold text-primary-foreground hover:bg-primary/90 sm:w-auto">
+                  Criar minha conta
                   <ArrowRight size={18} className="ml-2" />
                 </Button>
               </AuthModal>
@@ -238,17 +237,17 @@ export default function JoinPage() {
       </section>
 
       <div className="container mx-auto mb-24 px-4">
-        <section className="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/30 md:p-8">
+        <section className="rounded-xl border border-warning-border bg-warning-surface p-4  md:p-8">
           <div className="max-w-4xl space-y-4">
-            <h2 className="text-xl md:text-2xl font-bold text-amber-900 dark:text-amber-100">
+            <h2 className="text-xl md:text-2xl font-bold text-warning-foreground">
               Comunicado importante
             </h2>
-            <p className="text-sm leading-relaxed text-amber-950/90 dark:text-amber-100/85">
+            <p className="text-sm leading-relaxed text-warning-foreground">
               O Skillsy não intermedeia pagamentos, não certifica tecnicamente
               os profissionais cadastrados e não substitui a responsabilidade
               pessoal de avaliar um serviço antes de contratar.
             </p>
-            <p className="text-sm leading-relaxed text-amber-950/90 dark:text-amber-100/85">
+            <p className="text-sm leading-relaxed text-warning-foreground">
               A plataforma existe para facilitar conexões com mais contexto e
               confiança, mas acordos, valores, prazos e decisões finais
               continuam sendo definidos diretamente entre as partes.
@@ -257,7 +256,7 @@ export default function JoinPage() {
         </section>
       </div>
 
-      <section className="bg-primary py-20 text-white">
+      <section className="bg-primary py-20 text-white dark:bg-accent">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold md:text-4xl">
             Trabalho, confiança e serviço também fortalecem a comunidade.

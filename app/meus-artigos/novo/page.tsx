@@ -2,7 +2,7 @@ import { PostEditorClient } from "@/components/posts/post-editor-client";
 import { createPrivateMetadata } from "@/lib/public-metadata";
 
 export const metadata = createPrivateMetadata({
-  title: "Nova Publicação",
+  title: "Nova publicação",
   description: "Área restrita para criar uma nova publicação no Skillsy.",
 });
 

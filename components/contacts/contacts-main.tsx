@@ -137,7 +137,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
       description: "Envie o contato no WhatsApp.",
       icon: BsWhatsapp,
       onClick: handleWhatsAppShare,
-      className: "text-green-600 ",
+      className: "text-success ",
     },
     {
       label: "Compartilhar no Telegram",
@@ -169,7 +169,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
               />
             }
           >
-            <PiShareFat className="text-text-muted " />
+            <PiShareFat className="text-text-muted" />
           </TooltipTrigger>
           <TooltipContent>
             <p>Compartilhar</p>
@@ -249,8 +249,8 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
 
   return (
     <main className="w-full bg-surface relative custom-scrollbar overflow-y-auto">
-      <div className="right-0 flex md:hidden py-2 px-4 sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-subtle h-[60px] ">
-        <SidebarTrigger className="flex justify-start items-center h-10 px-0 " />
+      <div className="right-0 flex md:hidden py-2 px-4 sticky top-0 z-50 bg-card/85 backdrop-blur-md border-b border-border-subtle h-[60px]">
+        <SidebarTrigger className="flex justify-start items-center h-10 px-0" />
       </div>
       <AnimatePresence mode="sync" initial={false}>
         {selectedContact ? (
@@ -291,7 +291,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   <Button
                     type="button"
                     onClick={handleWhatsApp}
-                    className="h-10 px-6 hidden rounded-sm md:flex bg-green-500 text-white hover:bg-green-600 font-bold space-x-1"
+                    className="h-10 px-6 hidden rounded-sm md:flex bg-success text-success-foreground hover:bg-success/90 font-bold space-x-1"
                   >
                     <BsWhatsapp className="size-4" /> <p>WhatsApp</p>
                   </Button>
@@ -335,7 +335,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                       <p className="text-base font-medium text-text-main">
                         {selectedContact.serviceType ||
                           selectedContact.category ||
-                          "Membro da Comunidade"}
+                          "Membro da comunidade"}
                       </p>
                     </div>
                     {selectedContact.companyName && (
@@ -347,7 +347,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                       </div>
                     )}
 
-                    <div className="flex items-center space-x-2 justify-center md:justify-start ">
+                    <div className="flex items-center space-x-2 justify-center md:justify-start">
                       <MapPin size={14} />
                       <p className="text-text-muted text-sm font-normal">
                         {[selectedContact.publicCity, selectedContact.publicState].filter(Boolean).join(", ") ||
@@ -363,7 +363,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                     <Button
                       type="button"
                       onClick={handleWhatsApp}
-                      className="h-10 px-6 flex bg-green-500 text-white hover:bg-green-600 font-bold space-x-1 rounded-sm"
+                      className="h-10 px-6 flex bg-success text-success-foreground hover:bg-success/90 font-bold space-x-1 rounded-sm"
                     >
                       <BsWhatsapp className="size-4" /> <p>WhatsApp</p>
                     </Button>
@@ -378,7 +378,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
               <div className="md:col-span-2 space-y-6">
                 <section className="bg-card p-4 border-border-subtle">
                   <h3 className="text-lg font-bold font-heading text-text-main">
-                    Sobre o Profissional
+                    Sobre o profissional
                   </h3>
                   <p className="text-text-muted text-sm leading-relaxed whitespace-pre-wrap">
                     {selectedContact.bio ||
@@ -402,7 +402,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                 <UserMinus size={18} /> <p>Remover contato</p>
               </Button>
               <Link
-                className="h-10 w-full flex justify-center items-center space-x-2 text-white font-bold bg-primary hover:bg-primary/90 active:bg-primary/80 rounded-sm"
+                className="h-10 w-full flex justify-center items-center space-x-2 text-primary-foreground font-bold bg-primary hover:bg-primary/90 active:bg-primary/80 rounded-sm"
                 href={`/profile/${selectedContact.uid}`}
               >
                 <LuUserRound size={18} /> <p className="text-sm">Ver contato</p>

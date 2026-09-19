@@ -44,7 +44,7 @@ export function EditPostPageClient({ id }: { id: string }) {
 
   if (!post) {
     return (
-      <div className="rounded-xl border border-border-subtle bg-card p-10 text-center text-text-muted">
+      <div className="rounded-xl border border-border-subtle bg-card p-10 text-center text-text-muted shadow-xs">
         Publicação não encontrada ou indisponível para edição.
       </div>
     );

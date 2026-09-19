@@ -43,7 +43,7 @@ export function CookieConsentBanner() {
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 p-4">
       <div className="mx-auto max-w-4xl overflow-hidden rounded-xl border border-border-subtle bg-card shadow-lg">
-        <div className="bg-linear-to-r from-blue-600 via-sky-500 to-cyan-400 px-5 py-3 text-white">
+        <div className="bg-linear-to-r from-primary to-primary/80 px-5 py-3 text-primary-foreground">
           <div className="flex items-center gap-2 text-sm font-semibold tracking-tight">
             <ShieldCheck size={18} />
             Controle de cookies e preferencias
@@ -57,7 +57,7 @@ export function CookieConsentBanner() {
               className="font-semibold text-primary underline underline-offset-4"
               href="/privacidade"
             >
-              Politica de Privacidade
+              Política de Privacidade
             </Link>
             .
           </p>
@@ -73,7 +73,7 @@ export function CookieConsentBanner() {
             </Button>
             <Button
               type="button"
-              className="bg-primary text-white hover:bg-primary/90"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
               onClick={() => handleChoice("accepted")}
             >
               Entendi

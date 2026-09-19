@@ -81,22 +81,22 @@ export function ContactCTA() {
                       {...register("name")}
                       className={` border-1 h-10 md:h-12  text-text-main rounded-full placeholder:text-text-muted/50 transition-all ${
                         errors.name
-                          ? "border-red-500/50 focus:border-red-500"
+                          ? "border-destructive/60 focus:border-destructive"
                           : touchedFields.name && !errors.name
-                            ? "border-green-500/50 focus:border-green-500"
-                            : " focus:border-blue-500/20"
+                            ? "border-success/60 focus:border-success"
+                            : "focus:border-ring"
                       }`}
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                       {errors.name ? (
-                        <AlertCircle size={18} className="text-red-500" />
+                        <AlertCircle size={18} className="text-destructive" />
                       ) : touchedFields.name && !errors.name ? (
-                        <CheckCircle2 size={18} className="text-green-500" />
+                        <CheckCircle2 size={18} className="text-success" />
                       ) : null}
                     </div>
                   </div>
                   {errors.name && (
-                    <p className="text-xs text-red-500 font-bold ml-2">
+                    <p className="text-xs text-destructive font-bold ml-2">
                       {errors.name.message}
                     </p>
                   )}
@@ -114,22 +114,22 @@ export function ContactCTA() {
                       {...register("email")}
                       className={`border-1 h-10 md:h-12 rounded-full border-border-subtle text-text-main placeholder:text-text-muted/50 transition-all ${
                         errors.email
-                          ? "border-red-500/50 focus:border-red-500"
+                          ? "border-destructive/60 focus:border-destructive"
                           : touchedFields.email && !errors.email
-                            ? "border-green-500/50 focus:border-green-500"
+                            ? "border-success/60 focus:border-success"
                             : "focus:border-primary/20"
                       }`}
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                       {errors.email ? (
-                        <AlertCircle size={18} className="text-red-500" />
+                        <AlertCircle size={18} className="text-destructive" />
                       ) : touchedFields.email && !errors.email ? (
-                        <CheckCircle2 size={18} className="text-green-500" />
+                        <CheckCircle2 size={18} className="text-success" />
                       ) : null}
                     </div>
                   </div>
                   {errors.email && (
-                    <p className="text-xs text-red-500 font-bold ml-2">
+                    <p className="text-xs text-destructive font-bold ml-2">
                       {errors.email.message}
                     </p>
                   )}
@@ -141,10 +141,10 @@ export function ContactCTA() {
                 <div className="space-y-1">
                   <div className="flex justify-between items-center px-1 mb-1">
                     <span className="text-xs font-normal text-text-muted uppercase">
-                      Sua Mensagem *
+                      Sua mensagem *
                     </span>
                     <span
-                      className={`text-xs font-bold ${messageText?.length > 1000 ? "text-red-500" : "text-text-muted"}`}
+                      className={`text-xs font-bold ${messageText?.length > 1000 ? "text-destructive" : "text-text-muted"}`}
                     >
                       {messageText?.length || 0} / {CONTACT_LIMITS.message}
                     </span>
@@ -155,23 +155,23 @@ export function ContactCTA() {
                       {...register("message")}
                       className={`w-full border rounded-none p-4 text-text-main placeholder:text-text-muted/50 h-32 outline-none transition-all ${
                         errors.message
-                          ? "border-red-500/50 focus:border-red-500"
+                          ? "border-destructive/60 focus:border-destructive"
                           : touchedFields.message && !errors.message
-                            ? "border-green-500/50 focus:border-green-500"
+                            ? "border-success/60 focus:border-success"
                             : "focus:border-primary/20"
                       }`}
                       maxLength={CONTACT_LIMITS.message}
                     />
                     <div className="absolute right-3 top-3 pointer-events-none">
                       {errors.message ? (
-                        <AlertCircle size={18} className="text-red-500" />
+                        <AlertCircle size={18} className="text-destructive" />
                       ) : touchedFields.message && !errors.message ? (
-                        <CheckCircle2 size={18} className="text-green-500" />
+                        <CheckCircle2 size={18} className="text-success" />
                       ) : null}
                     </div>
                   </div>
                   {errors.message && (
-                    <p className="text-xs text-red-500 font-bold ml-2">
+                    <p className="text-xs text-destructive font-bold ml-2">
                       {errors.message.message}
                     </p>
                   )}

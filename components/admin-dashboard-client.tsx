@@ -63,14 +63,14 @@ export function AdminDashboardClient() {
   if (profile?.role !== "admin") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-surface">
-        <ShieldAlert size={64} className="text-red-500 mb-6" />
+        <ShieldAlert size={64} className="text-destructive mb-6" />
         <h1 className="text-3xl font-bold mb-4">Acesso Negado</h1>
         <p className="text-text-muted mb-8">
           Esta área é restrita a administradores do sistema.
         </p>
         <Link href="/">
-          <Button className="bg-primary text-white font-bold rounded-xl px-8">
-            Voltar para Home
+          <Button className="bg-primary text-primary-foreground font-bold rounded-xl px-8">
+            Voltar ao início
           </Button>
         </Link>
       </div>
@@ -82,7 +82,7 @@ export function AdminDashboardClient() {
       <div className="pb-20 px-6 md:px-10 py-8 max-w-7xl mx-auto">
         <div className="mb-10">
           <h2 className="text-3xl font-bold text-text-main font-heading">
-            Dashboard Administrativo
+            Painel administrativo
           </h2>
           <p className="text-text-muted mt-1">
             Visão geral do sistema e atalhos de gerenciamento.
@@ -90,10 +90,10 @@ export function AdminDashboardClient() {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden">
+          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden shadow-xs">
             <CardHeader className="pb-2">
               <CardDescription className="text-xs font-bold text-text-muted">
-                Total de Usuários
+                Total de usuários
               </CardDescription>
               <CardTitle className="text-4xl font-bold font-heading">
                 {loading ? "..." : users.length}
@@ -101,29 +101,29 @@ export function AdminDashboardClient() {
             </CardHeader>
             <div className="h-1 bg-primary w-full opacity-20" />
           </Card>
-          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden">
+          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden shadow-xs">
             <CardHeader className="pb-2">
               <CardDescription className="text-xs font-bold text-text-muted">
-                Prestadores de Serviço
+                Prestadores de serviço
               </CardDescription>
               <CardTitle className="text-4xl font-bold font-heading">
                 {loading ? "..." : users.filter((u) => u.isProvider).length}
               </CardTitle>
             </CardHeader>
-            <div className="h-1 bg-green-500 w-full opacity-20" />
+            <div className="h-1 bg-success w-full opacity-20" />
           </Card>
-          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden">
+          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden shadow-xs">
             <CardHeader className="pb-2">
               <CardDescription className="text-xs font-bold text-text-muted">
-                Membros Verificados
+                Membros verificados
               </CardDescription>
               <CardTitle className="text-4xl font-bold font-heading">
                 {loading ? "..." : users.filter(shouldShowVerifiedBadge).length}
               </CardTitle>
             </CardHeader>
-            <div className="h-1 bg-amber-500 w-full opacity-20" />
+            <div className="h-1 bg-warning w-full opacity-20" />
           </Card>
-          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden">
+          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden shadow-xs">
             <CardHeader className="pb-2">
               <CardDescription className="text-xs font-bold text-text-muted">
                 Denúncias abertas
@@ -136,7 +136,7 @@ export function AdminDashboardClient() {
                     ).length}
               </CardTitle>
             </CardHeader>
-            <div className="h-1 bg-red-500 w-full opacity-20" />
+            <div className="h-1 bg-destructive w-full opacity-20" />
           </Card>
         </div>
 
@@ -147,9 +147,9 @@ export function AdminDashboardClient() {
             transition={{ delay: 0.1 }}
           >
             <Link href="/admin/usuarios">
-              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all rounded-xl p-8 cursor-pointer h-full">
+              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all rounded-xl p-8 cursor-pointer h-full shadow-xs">
                 <div className="flex justify-between items-start mb-6">
-                  <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                  <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                     <Users size={28} />
                   </div>
                   <ArrowRight
@@ -158,7 +158,7 @@ export function AdminDashboardClient() {
                   />
                 </div>
                 <h3 className="text-xl font-bold mb-2 font-heading">
-                  Gerenciar Usuários
+                  Gerenciar usuários
                 </h3>
                 <p className="text-text-muted text-sm leading-relaxed">
                   Visualize, edite, bloqueie ou verifique membros da plataforma.
@@ -174,9 +174,9 @@ export function AdminDashboardClient() {
             transition={{ delay: 0.15 }}
           >
             <Link href="/admin/moderacao">
-              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-colors rounded-xl p-6 cursor-pointer h-full">
+              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-colors rounded-xl p-6 cursor-pointer h-full shadow-xs">
                 <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 bg-red-500/10 rounded-lg flex items-center justify-center text-red-700">
+                  <div className="w-12 h-12 bg-destructive/10 rounded-lg flex items-center justify-center text-destructive">
                     <AlertTriangle size={24} />
                   </div>
                   <ArrowRight
@@ -185,7 +185,7 @@ export function AdminDashboardClient() {
                   />
                 </div>
                 <h3 className="text-xl font-bold mb-2 font-heading">
-                  Fila de Moderação
+                  Fila de moderação
                 </h3>
                 <p className="text-text-muted text-sm leading-relaxed">
                   Priorize denúncias, atribua responsáveis e registre uma
@@ -201,9 +201,9 @@ export function AdminDashboardClient() {
             transition={{ delay: 0.2 }}
           >
             <Link href="/admin/artigos">
-              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all rounded-xl p-8 cursor-pointer h-full">
+              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all rounded-xl p-8 cursor-pointer h-full shadow-xs">
                 <div className="flex justify-between items-start mb-6">
-                  <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                  <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                     <FileText size={28} />
                   </div>
                   <ArrowRight
@@ -212,7 +212,7 @@ export function AdminDashboardClient() {
                   />
                 </div>
                 <h3 className="text-xl font-bold mb-2 font-heading">
-                  Gerenciar Artigos
+                  Gerenciar artigos
                 </h3>
                 <p className="text-text-muted text-sm leading-relaxed">
                   Revise conteúdos enviados por usuários, publique notícias e

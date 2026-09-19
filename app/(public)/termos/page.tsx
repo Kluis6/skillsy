@@ -42,14 +42,14 @@ const pillars = [
     description:
       "Pagamentos, contratos, valores e combinados são feitos diretamente entre as partes.",
     icon: AlertTriangle,
-    tone: "bg-amber-500/10 text-amber-700 border-amber-200 dark:border-amber-900/50 dark:text-amber-300",
+    tone: "bg-warning/10 text-warning border-warning-border",
   },
   {
     title: "Responsabilidade",
     description:
       "A plataforma não emprega, certifica, supervisiona nem garante os serviços anunciados.",
     icon: ShieldCheck,
-    tone: "bg-red-500/10 text-red-600 border-red-200 dark:border-red-900/50 dark:text-red-300",
+    tone: "bg-destructive/10 text-destructive border-destructive/30",
   },
 ];
 
@@ -87,7 +87,6 @@ export default function TermosPage() {
         backgroundImageSrc="/Gemini_Generated_Image_sneeobsneeobsnee.png"
         backgroundImageAlt="Pessoas e serviços em contexto comunitário"
         headlineSegments={headerHeadlineSegments}
-        overlayClassName="bg-blue-700/70"
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
@@ -120,7 +119,7 @@ export default function TermosPage() {
                 </div>
 
                 <div className="">
-                  <h3 className=" text-lg font-bold text-text-main">
+                  <h3 className="text-lg font-bold text-text-main">
                     {item.title}
                   </h3>
                   <p className="text-sm leading-relaxed text-text-muted">
@@ -143,7 +142,7 @@ export default function TermosPage() {
 
           <div className="col-span-12">
             <div className="rounded-xl border border-border-subtle bg-surface p-4 md:p-6 lg:p-8 space-y-4">
-              <div className="flex items-start gap-4 ">
+              <div className="flex items-start gap-4">
                 <div className="flex size-12 shrink-0 items-center justify-center rounded-sm bg-primary/10 text-primary">
                   <Scale size={22} />
                 </div>
@@ -154,8 +153,8 @@ export default function TermosPage() {
                   criada para facilitar conexões profissionais e apoio mútuo
                   entre membros da comunidade.
                 </p>
-                <div className="rounded-lg border border-amber-200 bg-amber-50 p-5 text-sm leading-relaxed text-amber-950/90 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100/85">
-                  <strong className="text-amber-900 dark:text-amber-100">Aviso importante:</strong>{" "}
+                <div className="rounded-lg border border-warning-border bg-warning-surface p-5 text-sm leading-relaxed text-warning-foreground">
+                  <strong className="text-warning-foreground">Aviso importante:</strong>{" "}
                   a Skillsy não é afiliada, administrada, patrocinada nem
                   endossada oficialmente por{" "}
                   <strong>
@@ -201,7 +200,7 @@ export default function TermosPage() {
                 {flow.map((item, index) => (
                   <div key={item} className="rounded-md border border-border-subtle bg-card p-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-primary text-sm font-bold text-white">
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-primary text-sm font-bold text-primary-foreground">
                         {index + 1}
                       </div>
                       <p className="text-sm leading-relaxed text-text-muted">
@@ -235,7 +234,7 @@ export default function TermosPage() {
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               <div className="col-span-12 lg:col-span-6">
                 <div className="h-full rounded-md border border-border-subtle bg-surface p-4 space-y-4">
-                  <div className="mb-4 flex size-12 items-center justify-center rounded-sm bg-amber-100 text-amber-700 dark:bg-amber-900/60 dark:text-amber-100">
+                  <div className="mb-4 flex size-12 items-center justify-center rounded-sm bg-warning/15 text-warning">
                     <AlertTriangle size={22} />
                   </div>
                   <h3 className="text-lg font-bold text-text-main">
@@ -260,7 +259,7 @@ export default function TermosPage() {
                     <ShieldCheck size={22} />
                   </div>
 
-                  <div className=" space-y-2">
+                  <div className="space-y-2">
                     <h3 className="text-lg font-bold text-text-main">
                       Conduta dos usuários
                     </h3>
@@ -330,14 +329,14 @@ export default function TermosPage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm leading-relaxed text-amber-950/90 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100/85">
+            <div className="rounded-xl border border-warning-border bg-warning-surface p-5 text-sm leading-relaxed text-warning-foreground">
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className=" flex size-10 shrink-0 items-center justify-center rounded-sm bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-100">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-warning/15 text-warning">
                     <RefreshCcw size={18} />
                   </div>
                   <div>
-                    <strong className="text-amber-900 dark:text-amber-100">
+                    <strong className="text-warning-foreground">
                       Última atualização:
                     </strong>{" "}
                     <br />
@@ -345,7 +344,7 @@ export default function TermosPage() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-100">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-warning/15 text-warning">
                     <Mail size={18} />
                   </div>
                   <div>

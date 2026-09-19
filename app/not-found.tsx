@@ -17,10 +17,10 @@ export default function NotFound() {
       <Button
         render={<Link href="/" />}
         nativeButton={false}
-        className="bg-primary text-white hover:bg-primary/90 rounded-md px-10 h-14 text-lg font-bold group"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-10 h-14 text-lg font-bold group"
       >
         <Home size={22} className="mr-3 group-hover:-translate-y-0.5 transition-transform" />
-        Ir para Página Inicial
+        Ir para a página inicial
       </Button>
       
       <div className="mt-16 flex gap-8">

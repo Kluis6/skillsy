@@ -35,14 +35,14 @@ function getRoleLabel(provider: UserProfile) {
   return (
     provider.serviceType ||
     provider.category ||
-    (provider.isProvider ? "Prestador de servico" : "Membro da comunidade")
+    (provider.isProvider ? "Prestador de serviço" : "Membro da comunidade")
   );
 }
 
 function getBioPreview(provider: UserProfile) {
   return (
     provider.bio ||
-    "Perfil da comunidade Skillsy com contexto para voce avaliar, conversar e decidir com mais confianca."
+    "Perfil da comunidade Skillsy com contexto para você avaliar, conversar e decidir com mais confiança."
   );
 }
 
@@ -61,22 +61,22 @@ export function ProviderProfileCard({
     return (
       <Link
         href={`/profile/${provider.uid}`}
-        className={cn("group block border  transition-colors", className)}
+        className={cn("group block border border-border-subtle bg-card shadow-xs transition-shadow hover:shadow-md", className)}
       >
-        <article className="grid p-4 md:grid-cols-[auto_1fr_auto]  md:p-6 hover:shadow-xl transition-shadow">
+        <article className="grid p-4 md:grid-cols-[auto_1fr_auto] md:p-6">
           <div className="flex flex-col space-y-2">
             <div className="flex items-center space-x-2">
               <div className="flex items-center">
                 <Avatar className="size-12">
                   <AvatarImage src={provider.photoURL} />
-                  <AvatarFallback className="bg-primary font-bold text-white text-base">
+                  <AvatarFallback className="bg-primary font-bold text-primary-foreground text-base">
                     {initial}
                   </AvatarFallback>
                 </Avatar>
               </div>
 
               <div className="space-y-2">
-                <div className=" flex flex-col">
+                <div className="flex flex-col">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-heading text-lg font-bold leading-tight text-text-main">
                       {provider.name}
@@ -103,13 +103,13 @@ export function ProviderProfileCard({
                   className="px-3 py-1 text-sm"
                 />
                 {location ? (
-                  <span className="inline-flex items-center px-3 py-1 text-xs font-medium ">
-                    <MapPin className="mr-1 size-3.5 " />
+                  <span className="inline-flex items-center px-3 py-1 text-xs font-medium">
+                    <MapPin className="mr-1 size-3.5" />
                     {location}
                   </span>
                 ) : null}
                 {provider.category ? (
-                  <span className="px-3 py-1 text-xs font-medium ">
+                  <span className="px-3 py-1 text-xs font-medium">
                     {provider.category}
                   </span>
                 ) : null}
@@ -150,7 +150,7 @@ export function ProviderProfileCard({
               className="relative z-20 h-30 w-full object-cover brightness-70 dark:brightness-50"
             />
           ) : (
-            <div className="h-30 bg-radial-[at_25%_25%] from-cyan-600 to-blue-500" />
+            <div className="h-30 bg-radial-[at_25%_25%] from-primary/70 to-primary" />
           )}
           {provider.companyName ? (
             <p className="absolute bottom-3 right-4 z-30 max-w-[70%] truncate text-sm font-semibold text-white drop-shadow">
@@ -173,20 +173,20 @@ export function ProviderProfileCard({
           <div className="-mt-18 z-30 flex items-end justify-between gap-3">
             <Avatar className="size-26 border-4 border-card bg-card shadow-sm">
               <AvatarImage src={provider.photoURL} />
-              <AvatarFallback className="bg-primary text-3xl font-bold text-white">
+              <AvatarFallback className="bg-primary text-3xl font-bold text-primary-foreground">
                 {initial}
               </AvatarFallback>
             </Avatar>
           </div>
           <CardAction className="">
             {location ? (
-              <Badge className="bg-cyan-900  text-white dark:bg-background rounded-full">
+              <Badge variant="secondary" className="rounded-full">
                 <MapPin className="" />
                 {location}
               </Badge>
             ) : null}
           </CardAction>
-          <CardTitle className=" w-full flex flex-col col-span-4">
+          <CardTitle className="w-full flex flex-col col-span-4">
             <span className="flex items-center gap-1.5">
               {provider.name}
               <MembershipMark profile={provider} />
@@ -197,7 +197,7 @@ export function ProviderProfileCard({
             {getBioPreview(provider)}
           </CardDescription>
         </CardHeader>
-        <CardFooter className="flex items-center justify-between gap-2 ">
+        <CardFooter className="flex items-center justify-between gap-2">
           <div className="flex flex-col gap-0.5">
             <RecommendationCount
               recommendationCount={recommendationCount}

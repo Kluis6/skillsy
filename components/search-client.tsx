@@ -446,9 +446,9 @@ export function SearchClient({
                 type="submit"
                 size="icon"
                 aria-label="Buscar profissionais"
-                className="rounded-r-full absolute right-1 top-1/2 -translate-y-1/2 bg-primary  text-white px-6 h-8  hidden sm:flex justify-center items-center transition-colors"
+                className="rounded-r-full absolute right-1 top-1/2 -translate-y-1/2 bg-primary  text-primary-foreground px-6 h-8  hidden sm:flex justify-center items-center transition-colors"
               >
-                <BsSearch className=" text-white" size={20} />
+                <BsSearch className="text-white" size={20} />
               </Button>
             </div>
           </form>
@@ -503,7 +503,7 @@ export function SearchClient({
 
       <main className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-6">
-          <aside className="w-full lg:w-72 shrink-0 space-y-8 hidden lg:block border">
+          <aside className="hidden w-full shrink-0 self-start border border-border-subtle bg-card shadow-xs lg:sticky lg:top-20 lg:block lg:w-72">
             <div className="p-4 md:p-4">
               <div className="flex items-center space-x-2 mb-6">
                 <BsSliders2 className="size-4 text-text-main" />
@@ -655,7 +655,7 @@ export function SearchClient({
                     <button
                       type="button"
                       onClick={clearSearchQuery}
-                      className=" px-3 py-1 text-xs font-medium  hover:text-primary"
+                      className="px-3 py-1 text-xs font-medium  hover:text-primary"
                     >
                       Busca: {query} ×
                     </button>
@@ -673,7 +673,7 @@ export function SearchClient({
                     <button
                       type="button"
                       onClick={() => handleCategoryChange(null)}
-                      className=" px-3 py-1 text-xs font-medium  hover:text-primary"
+                      className="px-3 py-1 text-xs font-medium  hover:text-primary"
                     >
                       Categoria: {selectedCategory} ×
                     </button>
@@ -693,7 +693,7 @@ export function SearchClient({
 
             <AnimatePresence mode="popLayout">
               {results.length > 0 ? (
-                <div className="space-y-2 ">
+                <div className="space-y-2">
                   {paginatedResults.map((provider, idx) => (
                     <motion.div
                       key={provider.uid}
@@ -720,7 +720,7 @@ export function SearchClient({
                           aria-label="Ir para a primeira página"
                           onClick={() => setCurrentPage(1)}
                           disabled={currentPage === 1}
-                          className="h-10 w-10  hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                          className="h-10 w-10  hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-30"
                         >
                           <ChevronsLeft size={18} />
                         </Button>
@@ -732,7 +732,7 @@ export function SearchClient({
                             setCurrentPage((prev) => Math.max(1, prev - 1))
                           }
                           disabled={currentPage === 1}
-                          className=" hover:text-white transition-all disabled:opacity-30"
+                          className="hover:text-white transition-all disabled:opacity-30"
                         >
                           <ChevronLeft size={18} />
                         </Button>
@@ -765,7 +765,7 @@ export function SearchClient({
                                     onClick={() => setCurrentPage(pageNum)}
                                     className={`h-10 w-10  transition-all font-bold ${
                                       currentPage === pageNum
-                                        ? "bg-primary text-white scale-105"
+                                        ? "bg-primary text-primary-foreground scale-105"
                                         : "border-border-subtle hover:border-primary/50"
                                     }`}
                                   >
@@ -794,7 +794,7 @@ export function SearchClient({
                           )}
                         </div>
 
-                        <div className="sm:hidden font-bold text-primary bg-primary/5 px-4 h-10 flex items-center ">
+                        <div className="sm:hidden font-bold text-primary bg-primary/5 px-4 h-10 flex items-center">
                           {currentPage}
                         </div>
 
@@ -808,7 +808,7 @@ export function SearchClient({
                             )
                           }
                           disabled={currentPage === totalPages}
-                          className="size-10 hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                          className="size-10 hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-30"
                         >
                           <ChevronRight size={18} />
                         </Button>
@@ -818,7 +818,7 @@ export function SearchClient({
                           aria-label="Ir para a última página"
                           onClick={() => setCurrentPage(totalPages)}
                           disabled={currentPage === totalPages}
-                          className=" hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                          className="hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-30"
                         >
                           <ChevronsRight size={18} />
                         </Button>
@@ -830,7 +830,7 @@ export function SearchClient({
                 <div className="space-y-12">
                   <div className="text-center py-20 space-y-6">
                     <div className="space-y-2">
-                      <Search className="mx-auto size-10 md:size-16 text-blue-300" />
+                      <Search className="mx-auto size-10 md:size-16 text-primary/40" />
                       <h4 className="text-xl md:text-2xl font-bold text-text-main">
                         Nenhum resultado exato encontrado
                       </h4>

@@ -213,7 +213,7 @@ export function AuthModal({
       {children ? <DialogTrigger render={children} nativeButton /> : null}
       <DialogContent className="max-h-[min(90dvh,48rem)] w-[calc(100vw-2rem)] max-w-[60rem] overflow-y-auto bg-background p-0 text-foreground sm:w-[calc(100vw-3rem)] sm:max-w-[60rem]">
         <div className="grid min-w-0 grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(24rem,0.9fr)]">
-          <div className="hidden min-h-[34rem] min-w-0 bg-linear-to-l from-background to-blue-400 p-4 lg:flex">
+          <div className="hidden min-h-[34rem] min-w-0 bg-linear-to-l from-background to-primary/40 p-4 lg:flex">
             <div className="grid h-full w-full grid-cols-12 gap-4">
               {authGalleryImages.map((image) => (
                 <motion.div
@@ -287,13 +287,13 @@ export function AuthModal({
                         aria-describedby={
                           loginErrors.email ? "login-email-error" : undefined
                         }
-                        className={`h-10 border-input focus-visible:ring-accent ${loginErrors.email ? "ring-2 ring-red-500" : ""}`}
+                        className={`h-10 border-input focus-visible:ring-accent ${loginErrors.email ? "ring-2 ring-destructive" : ""}`}
                         {...registerLogin("email")}
                       />
                       {loginErrors.email && (
                         <p
                           id="login-email-error"
-                          className="text-xs text-red-500 font-bold ml-1"
+                          className="text-xs text-destructive font-bold ml-1"
                         >
                           {loginErrors.email.message}
                         </p>
@@ -315,13 +315,13 @@ export function AuthModal({
                             ? "login-password-error"
                             : undefined
                         }
-                        className={`h-10 rounded border-input focus-visible:ring-accent ${loginErrors.password ? "ring-2 ring-red-500" : ""}`}
+                        className={`h-10 rounded border-input focus-visible:ring-accent ${loginErrors.password ? "ring-2 ring-destructive" : ""}`}
                         {...registerLogin("password")}
                       />
                       {loginErrors.password && (
                         <p
                           id="login-password-error"
-                          className="text-xs text-red-500 font-bold ml-1"
+                          className="text-xs text-destructive font-bold ml-1"
                         >
                           {loginErrors.password.message}
                         </p>
@@ -330,7 +330,7 @@ export function AuthModal({
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white h-10 font-semibold transition-colors"
+                      className="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-primary-foreground h-10 font-semibold transition-colors"
                     >
                       {loading ? (
                         <Loader2 className="mr-2 size-4 animate-spin" />
@@ -352,7 +352,7 @@ export function AuthModal({
                       htmlFor="signup-name"
                       className="text-xs md:text-sm font-medium text-muted-foreground"
                     >
-                      Nome<span className="text-red-500">*</span>
+                      Nome<span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="signup-name"
@@ -363,7 +363,7 @@ export function AuthModal({
                           ? "signup-name-error"
                           : "signup-name-help"
                       }
-                      className={`h-10 border-input focus-visible:ring-accent ${signUpErrors.name ? "ring-2 ring-red-500" : ""}`}
+                      className={`h-10 border-input focus-visible:ring-accent ${signUpErrors.name ? "ring-2 ring-destructive" : ""}`}
                       {...registerSignUp("name")}
                     />
                     <p
@@ -375,7 +375,7 @@ export function AuthModal({
                     {signUpErrors.name && (
                       <p
                         id="signup-name-error"
-                        className="text-xs text-red-500 font-bold ml-1"
+                        className="text-xs text-destructive font-bold ml-1"
                       >
                         {signUpErrors.name.message}
                       </p>
@@ -386,7 +386,7 @@ export function AuthModal({
                         htmlFor="signup-email"
                         className="text-xs md:text-sm font-medium text-muted-foreground"
                       >
-                        E-mail <span className="text-red-500">*</span>
+                        E-mail <span className="text-destructive">*</span>
                       </Label>
                       <Input
                         id="signup-email"
@@ -398,7 +398,7 @@ export function AuthModal({
                             ? "signup-email-error"
                             : "signup-email-help"
                         }
-                        className={`h-10 border-input focus-visible:ring-accent ${signUpErrors.email ? "ring-2 ring-red-500" : ""}`}
+                        className={`h-10 border-input focus-visible:ring-accent ${signUpErrors.email ? "ring-2 ring-destructive" : ""}`}
                         {...registerSignUp("email")}
                       />
                       <p
@@ -410,7 +410,7 @@ export function AuthModal({
                       {signUpErrors.email && (
                         <p
                           id="signup-email-error"
-                          className="text-xs text-red-500 font-bold ml-1"
+                          className="text-xs text-destructive font-bold ml-1"
                         >
                           {signUpErrors.email.message}
                         </p>
@@ -421,7 +421,7 @@ export function AuthModal({
                         htmlFor="signup-password"
                         className="text-xs md:text-sm font-medium text-muted-foreground"
                       >
-                        Senha <span className="text-red-500">*</span>
+                        Senha <span className="text-destructive">*</span>
                       </Label>
                       <div className="relative">
                         <Input
@@ -434,7 +434,7 @@ export function AuthModal({
                               ? "signup-password-error"
                               : "signup-password-help"
                           }
-                          className={`h-10 border-input focus-visible:ring-accent ${signUpErrors.password ? "ring-2 ring-red-500" : ""}`}
+                          className={`h-10 border-input focus-visible:ring-accent ${signUpErrors.password ? "ring-2 ring-destructive" : ""}`}
                           {...registerSignUp("password")}
                         />
                       </div>
@@ -447,7 +447,7 @@ export function AuthModal({
                       {signUpErrors.password && (
                         <p
                           id="signup-password-error"
-                          className="text-xs text-red-500 font-bold ml-1"
+                          className="text-xs text-destructive font-bold ml-1"
                         >
                           {signUpErrors.password.message}
                         </p>
@@ -457,12 +457,12 @@ export function AuthModal({
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white h-10 font-semibold transition-colors"
+                      className="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-primary-foreground h-10 font-semibold transition-colors"
                     >
                       {loading ? (
                         <Loader2 className="mr-2 size-4 animate-spin" />
                       ) : (
-                        "Criar Conta"
+                        "Criar conta"
                       )}
                     </Button>
                   </form>
@@ -480,7 +480,7 @@ export function AuthModal({
                 variant="outline"
                 onClick={handleGoogleLogin}
                 disabled={loading}
-                className="w-full h-10 font-semibold "
+                className="w-full h-10 font-semibold"
               >
                 {loading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

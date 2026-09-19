@@ -207,7 +207,7 @@ function getModeCopy(mode: OpportunitiesMode) {
       eyebrow: "Encontrar ajuda",
       title: "O que você precisa resolver?",
       description:
-        "Busque um profissional agora ou publique uma oportunidade para profissionais da categoria e localização receberem alerta.",
+        "Busque um profissional ou publique uma oportunidade — quem atende na sua categoria e região é avisado.",
       createLabel: "Publicar oportunidade",
     };
   }
@@ -430,15 +430,17 @@ export function OpportunitiesClient({
         title={modeCopy.title}
         description={modeCopy.description}
         action={
-          <Button
-            onClick={() =>
-              user
-                ? setShowForm((open) => !open)
-                : toast.error("Faça login para criar uma oportunidade.")
-            }
-          >
-            <Plus className="size-4" /> {modeCopy.createLabel}
-          </Button>
+          mode === "help" ? undefined : (
+            <Button
+              onClick={() =>
+                user
+                  ? setShowForm((open) => !open)
+                  : toast.error("Faça login para criar uma oportunidade.")
+              }
+            >
+              <Plus className="size-4" /> {modeCopy.createLabel}
+            </Button>
+          )
         }
       />
 
@@ -456,6 +458,7 @@ export function OpportunitiesClient({
             </div>
             <Button
               variant="outline"
+              className="mt-auto"
               render={<Link href="/search" />}
               nativeButton={false}
             >
@@ -473,6 +476,7 @@ export function OpportunitiesClient({
               </p>
             </div>
             <Button
+              className="mt-auto"
               onClick={() =>
                 user
                   ? setShowForm(true)
@@ -494,6 +498,7 @@ export function OpportunitiesClient({
             </div>
             <Button
               variant="outline"
+              className="mt-auto"
               render={<Link href="/oportunidades" />}
               nativeButton={false}
             >

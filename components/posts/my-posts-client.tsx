@@ -99,7 +99,7 @@ export function MyPostsClient() {
                   </div>
                   <p className="max-w-2xl text-sm text-text-muted">{getPostExcerpt(post)}</p>
                   {post.rejectionReason ? (
-                    <p className="text-xs font-medium text-red-500">
+                    <p className="text-xs font-medium text-destructive">
                       Motivo da rejeição: {post.rejectionReason}
                     </p>
                   ) : null}

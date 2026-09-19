@@ -23,7 +23,7 @@ export function PostCard({ post }: { post: Post }) {
             <img
               src={post.coverImageUrl}
               alt={post.title}
-              className="relative z-20 h-38 w-full object-cover "
+              className="relative z-20 h-38 w-full object-cover"
             />
           ) : null}
           <CardHeader>
@@ -35,7 +35,7 @@ export function PostCard({ post }: { post: Post }) {
             <CardAction>
               <Badge
                 variant="secondary"
-                className={` ${POST_CATEGORY_LABELS[post.category] === "Vagas" ? "bg-green-500/15 text-green-800 dark:text-green-300" : "bg-amber-500/15 text-amber-800 dark:text-amber-300"} `}
+                className={` ${POST_CATEGORY_LABELS[post.category] === "Vagas" ? "bg-success/15 text-success" : "bg-warning/15 text-warning-foreground"} `}
               >
                 {POST_CATEGORY_LABELS[post.category]}
               </Badge>
@@ -51,7 +51,7 @@ export function PostCard({ post }: { post: Post }) {
               <CardDescription>
                 <Link
                   href={`/artigosevagas/${post.slug}`}
-                  className=" text-sm font-bold text-primary hover:underline"
+                  className="text-sm font-bold text-primary hover:underline"
                 >
                   {post.category === "job" ? "Ver vaga" : "Ler publicação"}
                 </Link>

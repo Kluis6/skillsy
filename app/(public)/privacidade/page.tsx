@@ -40,14 +40,14 @@ const summaries = [
     description:
       "Os dados ajudam a exibir perfis, facilitar conexões, proteger contas e manter a experiência funcionando.",
     icon: Eye,
-    tone: "bg-amber-500/10 text-amber-700 border-amber-200 dark:border-amber-900/50 dark:text-amber-300",
+    tone: "bg-warning/10 text-warning border-warning-border",
   },
   {
     title: "Direitos do titular",
     description:
       "Você pode acessar, corrigir e solicitar exclusão de dados, observadas as hipóteses legais aplicáveis.",
     icon: UserCheck,
-    tone: "bg-red-500/10 text-red-600 border-red-200 dark:border-red-900/50 dark:text-red-300",
+    tone: "bg-destructive/10 text-destructive border-destructive/30",
   },
 ];
 
@@ -92,7 +92,6 @@ export default function PrivacidadePage() {
         backgroundImageSrc="/Gemini_Generated_Image_8gh7rv8gh7rv8gh7.png"
         backgroundImageAlt="Pessoas e serviços em contexto comunitário"
         headlineSegments={headerHeadlineSegments}
-        overlayClassName="bg-blue-700/70"
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
@@ -150,7 +149,7 @@ export default function PrivacidadePage() {
 
           {dataTypes.map((item, index) => (
             <div key={item} className="col-span-12 md:col-span-4">
-              <div className="h-full rounded-xl bg-primary p-6 text-white">
+              <div className="h-full rounded-xl bg-primary p-6 text-white dark:bg-accent">
                 <span className="text-sm font-bold text-white/80">
                   Grupo {index + 1}
                 </span>
@@ -323,13 +322,13 @@ export default function PrivacidadePage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950/90 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100/85">
+            <div className="rounded-xl border border-warning-border bg-warning-surface p-4 text-sm leading-relaxed text-warning-foreground">
               <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-100">
+                <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-warning/15 text-warning">
                   <RefreshCcw size={18} />
                 </div>
                 <div>
-                  <strong className="text-amber-900 dark:text-amber-100">
+                  <strong className="text-warning-foreground">
                     Última atualização:
                   </strong>
                   <br />
@@ -365,7 +364,7 @@ export default function PrivacidadePage() {
               {cookieCategories.map((item) => (
                 <div
                   key={item}
-                  className="rounded-xl border border-border-subtle bg-card p-4 text-sm text-text-muted"
+                  className="rounded-xl border border-border-subtle bg-card p-4 text-sm text-text-muted shadow-xs"
                 >
                   {item}
                 </div>

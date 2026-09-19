@@ -418,7 +418,7 @@ export function ProfileDetailClient({
       description: "Envie o perfil no WhatsApp.",
       icon: BsWhatsapp,
       onClick: handleWhatsAppShare,
-      className: "text-green-600",
+      className: "text-success",
     },
     {
       label: "Compartilhar no Telegram",
@@ -545,7 +545,7 @@ export function ProfileDetailClient({
               />
             }
           >
-            <Flag className="text-red-500" />
+            <Flag className="text-destructive" />
           </TooltipTrigger>
           <TooltipContent>
             <p>Denunciar perfil</p>
@@ -563,7 +563,7 @@ export function ProfileDetailClient({
             onSubmit={reportForm.handleSubmit(handleSubmitReport)}
             className="space-y-4"
           >
-            <div className=" border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100/85">
+            <div className="border border-warning-border bg-warning-surface px-4 py-3 text-xs text-warning-foreground">
               Use a denúncia apenas para casos reais de conteúdo inadequado,
               fraude, spam ou informações enganosas.
             </div>
@@ -582,7 +582,7 @@ export function ProfileDetailClient({
                 ))}
               </select>
               {reportForm.formState.errors.reason && (
-                <p className="text-xs font-bold text-red-500">
+                <p className="text-xs font-bold text-destructive">
                   {reportForm.formState.errors.reason.message}
                 </p>
               )}
@@ -602,7 +602,7 @@ export function ProfileDetailClient({
                 <span>{(reportForm.watch("details") || "").length}/1000</span>
               </div>
               {reportForm.formState.errors.details && (
-                <p className="text-xs font-bold text-red-500">
+                <p className="text-xs font-bold text-destructive">
                   {reportForm.formState.errors.details.message}
                 </p>
               )}
@@ -619,7 +619,7 @@ export function ProfileDetailClient({
                 type="submit"
                 size="lg"
                 variant="default"
-                className=" w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white font-medium"
+                className="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-primary-foreground font-medium"
                 disabled={reportForm.formState.isSubmitting}
               >
                 {reportForm.formState.isSubmitting
@@ -774,8 +774,8 @@ export function ProfileDetailClient({
           informado está incorreto.
         </p>
         <Link href="/">
-          <Button className="bg-primary text-white font-bold  px-8">
-            Voltar para Home
+          <Button className="bg-primary text-primary-foreground font-bold  px-8">
+            Voltar ao início
           </Button>
         </Link>
       </div>
@@ -785,7 +785,7 @@ export function ProfileDetailClient({
   const profileRoleLabel =
     targetProfile.serviceType ||
     targetProfile.category ||
-    "Membro da Comunidade Skillsy";
+    "Membro da comunidade Skillsy";
   return (
     <>
       <Navbar user={user} profile={profile} logout={logout} />
@@ -799,7 +799,7 @@ export function ProfileDetailClient({
         >
           {/* Top Profile Card */}
           <section className="border-border-subtle border-b bg-card">
-            <div className="relative h-26 md:h-52 bg-gradient-to-r from-cyan-400/20 to-indigo-400/20">
+            <div className="relative h-26 md:h-52 bg-muted">
               {targetProfile.bannerURL ? (
                 <Image
                   src={targetProfile.bannerURL}
@@ -823,7 +823,7 @@ export function ProfileDetailClient({
                       className="text-sm"
                     />
                   </div>
-                  <div className="sm:flex space-x-2 hidden ">
+                  <div className="sm:flex space-x-2 hidden">
                     {renderShareButton("size-10 rounded-md")}
                     {renderReportButton("size-10 rounded-md")}
                     {user?.uid === targetProfile.uid ? (
@@ -831,7 +831,7 @@ export function ProfileDetailClient({
                         <TooltipTrigger
                           render={
                             <Link
-                              className=" size-9 flex border justify-center items-center hover:bg-muted transition-colors"
+                              className="size-9 flex border justify-center items-center hover:bg-muted transition-colors"
                               href="/profile"
                             >
                               <LuPencil className="text-text-muted" />
@@ -869,7 +869,7 @@ export function ProfileDetailClient({
                       onClick={handleWhatsApp}
                       size="lg"
                       variant="default"
-                      className="rounded-none bg-green-600 px-6 font-bold text-white hover:bg-green-700 active:bg-green-800"
+                      className="rounded-none bg-success px-6 font-bold text-success-foreground hover:bg-success/90 active:bg-success/80"
                     >
                       <FaWhatsapp /> <p>Falar no WhatsApp</p>
                     </Button>
@@ -879,7 +879,7 @@ export function ProfileDetailClient({
                         onClick={handleToggleRecommendation}
                         disabled={recommendationLoading}
                         variant="outline"
-                        className=" px-5 font-semibold rounded-none"
+                        className="px-5 font-semibold rounded-none"
                       >
                         <HeartHandshake className="size-4" />
                         {isRecommended ? "Você indicou" : "Eu indico"}
@@ -969,7 +969,7 @@ export function ProfileDetailClient({
                           : "indicações"}
                       </p>
                     </div>
-                    <div className="flex flex-col gap-2 sm:hidden ">
+                    <div className="flex flex-col gap-2 sm:hidden">
                       <div className="flex gap-2 justify-end">
                         {renderShareButton("size-9")}
                         {renderReportButton("size-9")}
@@ -978,7 +978,7 @@ export function ProfileDetailClient({
                             <TooltipTrigger
                               render={
                                 <Link
-                                  className=" size-9 flex border justify-center items-center hover:bg-muted transition-colors"
+                                  className="size-9 flex border justify-center items-center hover:bg-muted transition-colors"
                                   href="/profile"
                                 >
                                   <LuPencil className="text-text-muted" />
@@ -1018,7 +1018,7 @@ export function ProfileDetailClient({
                         onClick={handleWhatsApp}
                         variant="default"
                         size="lg"
-                        className="w-full bg-green-600 px-6 font-bold text-white hover:bg-green-700 active:bg-green-800"
+                        className="w-full bg-success px-6 font-bold text-success-foreground hover:bg-success/90 active:bg-success/80"
                       >
                         <FaWhatsapp /> <p>Falar no WhatsApp</p>
                       </Button>
@@ -1081,7 +1081,7 @@ export function ProfileDetailClient({
           ) : null}
 
           {/* About Section */}
-          <section className="bg-card border-y border-border-subtle ">
+          <section className="bg-card border-y border-border-subtle">
             <div className="mx-auto container p-4 space-y-4">
               <h3 className="md:text-xl text-base font-semibold text-text-main">
                 Sobre este perfil
@@ -1096,7 +1096,7 @@ export function ProfileDetailClient({
           {/* disponibilidade e avaliações */}
           <div className="w-full flex flex-col md:flex-row gap-2">
             {hasAvailabilityInfo && (
-              <div className="bg-card w-full border-y border-border-subtle md:border-r border-r-0 ">
+              <div className="bg-card w-full border-y border-border-subtle md:border-r border-r-0">
                 <div className="h-full w-full md:ps-7 p-4 mx-auto container space-y-4">
                   <h3 className="text-base font-semibold text-text-main md:text-xl">
                     Disponibilidade
@@ -1104,7 +1104,7 @@ export function ProfileDetailClient({
 
                   {availabilityDays.length > 0 && (
                     <div className="space-y-3">
-                      <div className=" flex items-center gap-1 ">
+                      <div className="flex items-center gap-1">
                         <CalendarDays size={16} className="text-text-muted" />
                         <p className="text-xs font-bold text-text-muted">
                           Dias de atendimento
@@ -1114,7 +1114,7 @@ export function ProfileDetailClient({
                         {AVAILABILITY_OPTIONS.filter((day) =>
                           availabilityDays.includes(day),
                         ).map((day) => (
-                          <Badge key={day} variant="outline" className=" ">
+                          <Badge key={day} variant="outline" className="">
                             {day}
                           </Badge>
                         ))}
@@ -1123,8 +1123,8 @@ export function ProfileDetailClient({
                   )}
 
                   {targetProfile?.serviceHours?.trim() && (
-                    <div className="space-y-3 ">
-                      <div className="flex items-center gap-1 ">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-1">
                         <Clock size={16} className="text-text-muted" />{" "}
                         <p className="text-xs font-bold text-text-muted">
                           Horário de atendimento
@@ -1141,7 +1141,7 @@ export function ProfileDetailClient({
               </div>
             )}
             {targetProfile.isProvider && (
-              <div className="bg-card w-full border-y border-border-subtle md:border-l border-l-0 ">
+              <div className="bg-card w-full border-y border-border-subtle md:border-l border-l-0">
                 <div className="h-full w-full p-4 mx-auto container md:pe-7 space-y-4">
                   <h3 className="md:text-xl text-base font-semibold text-text-main">
                     Avaliar este profissional
@@ -1240,7 +1240,7 @@ export function ProfileDetailClient({
                           disabled={
                             !canRateProfile || submittingRating || !userRating
                           }
-                          className="bg-primary text-white hover:bg-primary/90 active:bg-primary/80"
+                          className="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
                         >
                           {submittingRating
                             ? "Enviando..."
@@ -1331,12 +1331,12 @@ export function ProfileDetailClient({
           )}
 
           <div className="w-full flex flex-col md:flex-row gap-2">
-            <div className="bg-card w-full border-y border-border-subtle md:border-l border-l-0 ">
+            <div className="bg-card w-full border-y border-border-subtle md:border-l border-l-0">
               <div className="h-full w-full p-4 mx-auto container md:pe-7">
                 {hasContactInfo && (
                   <div className="space-y-4">
                     <h3 className="md:text-xl text-base font-semibold text-text-main">
-                      Contato e Redes
+                      Contato e redes
                     </h3>
                     <div className="space-y-3">
                       {targetProfile.whatsapp && (
@@ -1345,7 +1345,7 @@ export function ProfileDetailClient({
                           onClick={handleWhatsApp}
                           className="flex w-full items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 text-left transition-colors hover:border-primary/30"
                         >
-                          <FaWhatsapp size={16} className="text-green-600" />
+                          <FaWhatsapp size={16} className="text-success" />
                           <p className="text-sm font-medium text-text-main">
                             {targetProfile.whatsapp}
                           </p>
@@ -1431,7 +1431,7 @@ export function ProfileDetailClient({
               <div className="mx-auto container p-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="md:text-xl text-base font-semibold text-text-main">
-                    Galeria de Fotos
+                    Galeria de fotos
                   </h3>
                 </div>
 
@@ -1444,7 +1444,7 @@ export function ProfileDetailClient({
                           render={
                             <button
                               type="button"
-                              className={`relative rounded-xl overflow-hidden aspect-square cursor-pointer hover:shadow-lg shadow-gray-400 transition-all ${
+                              className={`relative rounded-xl overflow-hidden aspect-square cursor-pointer hover:shadow-lg transition-all ${
                                 index === 0
                                   ? "col-span-2 md:col-span-2 md:row-span-2"
                                   : ""
@@ -1464,11 +1464,11 @@ export function ProfileDetailClient({
                             referrerPolicy="no-referrer"
                           />
                         </DialogTrigger>
-                        <DialogContent className="gap-0 overflow-hidden border-none bg-black/95 p-0 sm:rounded-xl ">
+                        <DialogContent className="gap-0 overflow-hidden border-none bg-black/95 p-0 sm:rounded-xl">
                           <DialogTitle className="sr-only">
-                            Visualização de Foto
+                            Visualização de foto
                           </DialogTitle>
-                          <div className="relative flex h-[80vh] w-full items-center justify-center bg-black ">
+                          <div className="relative flex h-[80vh] w-full items-center justify-center bg-black">
                             <Image
                               src={
                                 typeof photo === "string" ? photo : photo.url
@@ -1506,7 +1506,7 @@ export function ProfileDetailClient({
                     <Link href="/profile">
                       <Button
                         size="sm"
-                        className="bg-primary text-white font-bold h-9"
+                        className="bg-primary text-primary-foreground font-bold h-9"
                       >
                         Adicionar fotos
                       </Button>
@@ -1524,9 +1524,9 @@ export function ProfileDetailClient({
                         )}
                       <Link
                         href="/profile"
-                        className="text-xs font-bold text-white rounded-sm flex justify-center items-center px-4 bg-primary hover:bg-primary/90 active:bg-primary/80 h-8"
+                        className="text-xs font-bold text-primary-foreground rounded-sm flex justify-center items-center px-4 bg-primary hover:bg-primary/90 active:bg-primary/80 h-8"
                       >
-                        Gerenciar Galeria
+                        Gerenciar galeria
                       </Link>
                     </div>
                   )}

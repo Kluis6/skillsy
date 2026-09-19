@@ -57,8 +57,8 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-screen flex items-center justify-center bg-surface p-6">
           <div className="max-w-md w-full bg-card rounded-xl p-8 md:p-10 shadow-lg text-center border border-border-subtle">
-            <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <AlertCircle size={40} className="text-red-500" />
+            <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertCircle size={40} className="text-destructive" />
             </div>
             <h2 className="text-2xl font-bold text-text-main mb-4 font-heading">Ops! Algo deu errado</h2>
             <p className="text-text-muted mb-8 text-sm leading-relaxed">
@@ -67,7 +67,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="flex flex-col gap-3">
               <Button 
                 onClick={this.handleReset}
-                className="w-full bg-primary text-white font-bold h-12 rounded-md hover:bg-primary/90"
+                className="w-full bg-primary text-primary-foreground font-bold h-12 rounded-md hover:bg-primary/90"
               >
                 <RefreshCcw size={18} className="mr-2" /> Tentar Novamente
               </Button>
