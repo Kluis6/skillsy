@@ -24,7 +24,7 @@ export const metadata: Metadata = createPublicMetadata({
   imageDescription:
     "Entenda a missão, os valores e a visão da plataforma para fortalecer conexões de confiança.",
   imageLabel: "Sobre o projeto",
-  socialImagePath: "/weareskillsy/opengraph-image",
+  heroImage: "weareskillsy",
 });
 
 const principles = [
@@ -103,7 +103,7 @@ export default function WeAreSkillsyPage() {
                 precisa de ajuda e quem pode servir com seu trabalho.
               </p>
             </div>
-            {principles.map((principle) => (
+            {/* {principles.map((principle) => (
               <div
                 key={principle.title}
                 className={`rounded-md col-span-12 lg:col-span-4 p-4 border space-y-4`}
@@ -123,20 +123,15 @@ export default function WeAreSkillsyPage() {
                   </p>
                 </div>
               </div>
-            ))}
+            ))} */}
           </div>
         </div>
       </div>
 
       <div className="mx-auto px-4 container my-24">
         <div className="grid grid-cols-12 gap-4 xl:gap-8 gap-y-8">
-          <div className="col-span-12 text-center">
-            <h3 className="text-2xl font-bold text-text-main">
-              O que o Skillsy é
-            </h3>
-          </div>
           <div className="col-span-12 md:col-span-12 lg:col-span-4">
-            <div className="rounded-xl bg-cover relative h-[50vh] overflow-hidden bg-[url(/Gemini_Generated_Image_5g468e5g468e5g46.png)]">
+            <div className=" bg-cover relative h-[50vh] overflow-hidden bg-[url(/Gemini_Generated_Image_5g468e5g468e5g46.png)]">
               <div className="bottom-0 absolute bg-black/80 w-full left-0 p-4">
                 <h3 className="font-bold text-white text-base">
                   Uma plataforma de conexões
@@ -149,7 +144,7 @@ export default function WeAreSkillsyPage() {
             </div>
           </div>
           <div className="col-span-12 md:col-span-6 lg:col-span-4">
-            <div className="rounded-xl bg-cover relative h-[50vh] overflow-hidden bg-[url(/Gemini_Generated_Image_bgs04bbgs04bbgs0.png)]">
+            <div className=" bg-cover relative h-[50vh] overflow-hidden bg-[url(/Gemini_Generated_Image_bgs04bbgs04bbgs0.png)]">
               <div className="bottom-0 absolute bg-black/80 w-full left-0 p-4">
                 <h3 className="font-bold text-white text-base">
                   Um espaço para visibilidade de talentos
@@ -162,7 +157,7 @@ export default function WeAreSkillsyPage() {
             </div>
           </div>
           <div className="col-span-12 md:col-span-6 lg:col-span-4">
-            <div className="rounded-xl bg-cover relative h-[50vh] overflow-hidden bg-[url(/Gemini_Generated_Image_dzdzcqdzdzcqdzdz.png)]">
+            <div className="bg-cover relative h-[50vh] overflow-hidden bg-[url(/Gemini_Generated_Image_dzdzcqdzdzcqdzdz.png)]">
               <div className="bottom-0 absolute bg-black/80 w-full left-0 p-4">
                 <h3 className="font-bold text-white text-base">
                   Uma iniciativa de apoio mútuo
