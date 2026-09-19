@@ -26,6 +26,7 @@ export const metadata: Metadata = createPublicMetadata({
   imageDescription:
     "Entenda as regras da plataforma, os limites do serviço e as responsabilidades de quem usa o Skillsy.",
   imageLabel: "Página jurídica",
+  heroImage: "termos",
 });
 
 const pillars = [

@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       imageTitle: profile.name,
       imageDescription: description,
       imageLabel: profile.category || 'Perfil público',
-      socialImagePath: `/profile/${profile.uid}/opengraph-image`,
+      useRouteOgImage: true,
     });
   } catch (error) {
     return { title: 'Perfil' };

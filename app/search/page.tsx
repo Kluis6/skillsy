@@ -13,7 +13,6 @@ export const metadata: Metadata = createPublicMetadata({
   imageDescription:
     "Compartilhe resultados e descubra serviços por localização, categoria e confiança da comunidade.",
   imageLabel: "Busca pública",
-  socialImagePath: "/search/opengraph-image",
 });
 
 interface SearchPageProps {

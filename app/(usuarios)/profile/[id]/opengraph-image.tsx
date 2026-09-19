@@ -2,11 +2,12 @@ import { notFound } from "next/navigation";
 import { UserService } from "@/services/user-service";
 import {
   createProfileOgImage,
+  loadProfileOgPhoto,
   ogContentType,
   ogSize,
 } from "@/lib/og-image-templates";
 import {
-  getMembershipYears,
+  shouldShowCommunityFriendBadge,
   shouldShowVerifiedBadge,
 } from "@/lib/member-verification";
 
@@ -29,16 +30,14 @@ export default async function OpenGraphImage({ params }: ImageProps) {
 
   return createProfileOgImage({
     name: profile.name,
-    serviceType: profile.serviceType,
-    category: profile.category,
-    location: profile.location,
-    companyName: profile.companyName,
+    headline:
+      profile.serviceType || profile.category || "Membro da comunidade Skillsy",
     bio: profile.bio,
-    rating: profile.rating,
-    reviewCount: profile.reviewCount,
-    photoUrl: profile.photoURL,
-    verified:
-      shouldShowVerifiedBadge(profile) ||
-      typeof getMembershipYears(profile) === "number",
+    location: [profile.publicCity, profile.publicState]
+      .filter(Boolean)
+      .join(", "),
+    photo: await loadProfileOgPhoto(profile.photoURL),
+    verified: shouldShowVerifiedBadge(profile),
+    communityFriend: shouldShowCommunityFriendBadge(profile),
   });
 }

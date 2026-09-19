@@ -13,7 +13,7 @@ export const metadata: Metadata = createPublicMetadata({
   imageDescription:
     "Acompanhe publicações, reflexões e novidades compartilhadas pela comunidade.",
   imageLabel: "Conteúdo público",
-  socialImagePath: "/artigosevagas/opengraph-image",
+  heroImage: "artigosevagas",
 });
 
 export default async function NoticiasPage() {

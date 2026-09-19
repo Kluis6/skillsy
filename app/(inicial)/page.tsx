@@ -14,11 +14,11 @@ export const metadata: Metadata = {
     title: pageTitle,
     description: pageDescription,
     path: "/",
-    imageTitle: "Encontre profissionais e serviços de confiança",
+    imageTitle: "Onde talentos encontram oportunidades",
     imageDescription:
-      "Conheça o Skillsy e compartilhe uma página pública com prévia visual pronta para redes sociais.",
-    imageLabel: "Página inicial",
-    socialImagePath: "/opengraph-image",
+      "O Skillsy conecta membros, profissionais e negócios em uma rede onde indicação, confiança e propósito caminham juntos.",
+    imageLabel: "Rede de confiança entre membros",
+    heroImage: "home",
     keywords: [
       "skillsy",
       "rede de confiança",

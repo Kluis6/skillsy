@@ -1,729 +1,545 @@
+/* eslint-disable @next/next/no-img-element -- Satori (next/og) only renders plain <img>; next/image doesn't apply here. */
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import type { ReactElement } from "react";
 import { ImageResponse } from "next/og";
+import sharp from "sharp";
+
+// Share thumbnails (og:image) for public pages. Two layouts:
+// - createPageOgImage: the page's hero image (or the default blue "S"
+//   background) with a short text. Used by the home, the institutional
+//   pages, posts/jobs and opportunities.
+// - createProfileOgImage: the member's photo (or the default blue "S"
+//   rectangle) with name and part of the bio.
+// Both are served as JPEG: photographic PNGs weigh ~1MB and WhatsApp, the
+// main sharing channel, often skips previews that large.
 
 export const ogSize = {
   width: 1200,
   height: 630,
 };
 
-export const ogContentType = "image/png";
+export const ogContentType = "image/jpeg";
 
-export const OG_BRAND = {
-  bg: "radial-gradient(circle at top left, #F0F7FF 0%, #ffffff 48%, #ffffff 100%)",
-  cardBg: "#ffffff",
-  cardBorder: "1px solid #E5E7EB",
-  cardShadow: "0 8px 24px rgba(0, 26, 65, 0.10)",
-  heroBlue: "linear-gradient(120deg, #0066FF 0%, #0066FF 48%, #00A3FF 100%)",
-  heroBlueAlt: "linear-gradient(160deg, #0066FF 0%, #0066FF 48%, #00A3FF 100%)",
-  heroDark: "linear-gradient(120deg, #0F172A 0%, #001A41 48%, #0066FF 100%)",
-  surface: "linear-gradient(180deg, rgba(246,250,255,1) 0%, rgba(255,255,255,1) 100%)",
-  surfaceSoft:
-    "linear-gradient(180deg, #F0F7FF 0%, #ffffff 100%)",
+const BRAND = {
   primary: "#0066FF",
-  primaryStrong: "#0066FF",
-  primarySoft: "#F0F7FF",
-  primaryPill: "#F0F7FF",
-  primaryPillText: "#0066FF",
-  text: "#001A41",
+  primaryDeep: "#0047B3",
+  primaryLight: "#00A3FF",
+  ink: "#001A41",
   muted: "#4B5563",
-  subtle: "#4B5563",
-  panelBg: "#F0F7FF",
-  panelBorder: "1px solid #E5E7EB",
-  chipBg: "#F0F7FF",
-  whiteOverlay: "rgba(255,255,255,0.16)",
-  whiteOverlayBorder: "1px solid rgba(255,255,255,0.2)",
-  eyebrow: {
-    fontSize: "17px",
-    fontWeight: 800,
-    color: "#4B5563",
-    letterSpacing: "0",
-  },
+  surface: "#F5F9FF",
+};
+
+const DEFAULT_BACKGROUND = `linear-gradient(135deg, ${BRAND.primaryDeep} 0%, ${BRAND.primary} 55%, ${BRAND.primaryLight} 100%)`;
+
+/** Hero images of the public pages. /api/og receives only one of these keys,
+ * never a path, so it can't be made to read any other file. */
+export const OG_HERO_IMAGES = {
+  home: "/bannerhero.png",
+  weareskillsy: "/Gemini_Generated_Image_d74ovcd74ovcd74o.png",
+  join: "/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png",
+  privacidade: "/Gemini_Generated_Image_8gh7rv8gh7rv8gh7.png",
+  termos: "/Gemini_Generated_Image_sneeobsneeobsnee.png",
+  donation: "/donate.png",
+  artigosevagas: "/Gemini_Generated_Image_3hkj2c3hkj2c3hkj.png",
 } as const;
 
-export function truncateOgText(text: string, maxLength: number) {
-  if (text.length <= maxLength) {
-    return text;
-  }
+export type OgHeroImage = keyof typeof OG_HERO_IMAGES;
 
-  return `${text.slice(0, maxLength - 1).trimEnd()}…`;
-}
-
-type MarketingCard = {
-  title: string;
-  description: string;
-};
-
-type MarketingOgOptions = {
-  badge: string;
-  title: string;
-  description: string;
-  kicker?: string;
-  accentFrom?: string;
-  accentTo?: string;
-  surfaceTint?: string;
-  sideHeading: string;
-  sideBody: string;
-  cards?: MarketingCard[];
-};
-
-export function createMarketingOgImage({
-  badge,
-  title,
-  description,
-  kicker = "Skillsy",
-  accentFrom = "#0066FF",
-  accentTo = "#93C5FD",
-  surfaceTint = OG_BRAND.primaryPill,
-  sideHeading,
-  sideBody,
-  cards = [],
-}: MarketingOgOptions) {
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          padding: "32px",
-          background: OG_BRAND.bg,
-          color: "#001A41",
-          fontFamily: "sans-serif",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            width: "100%",
-            height: "100%",
-            overflow: "hidden",
-            borderRadius: "16px",
-            background: OG_BRAND.cardBg,
-            border: OG_BRAND.cardBorder,
-            boxShadow: OG_BRAND.cardShadow,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              width: "56%",
-              padding: "42px",
-              background: OG_BRAND.surfaceSoft,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "18px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "14px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "68px",
-                    height: "68px",
-                    borderRadius: "16px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: accentFrom,
-                    color: "#ffffff",
-                    fontSize: "32px",
-                    fontWeight: 800,
-                  }}
-                >
-                  S
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                  }}
-                >
-                  <div style={{ fontSize: "28px", fontWeight: 700 }}>Skillsy</div>
-                  <div style={{ fontSize: "18px", color: "#4B5563" }}>
-                    {kicker}
-                  </div>
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  alignSelf: "flex-start",
-                  borderRadius: "999px",
-                  background: surfaceTint,
-                  color: OG_BRAND.primaryPillText,
-                  padding: "10px 18px",
-                  fontSize: "18px",
-                  fontWeight: 700,
-                  letterSpacing: "0",
-                }}
-              >
-                {badge}
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "18px",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "54px",
-                    lineHeight: 1.04,
-                    fontWeight: 800,
-                    letterSpacing: "-0.03em",
-                  }}
-                >
-                  {truncateOgText(title, 110)}
-                </div>
-                <div
-                  style={{
-                    fontSize: "25px",
-                    lineHeight: 1.35,
-                    color: "#4B5563",
-                  }}
-                >
-                  {truncateOgText(description, 200)}
-                </div>
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                color: OG_BRAND.muted,
-                fontSize: "19px",
-              }}
-            >
-              <div>skillsy.com.br</div>
-              <div>Perfis públicos • Comunidade • Confiança</div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              width: "44%",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              padding: "32px",
-              background: `linear-gradient(160deg, ${accentFrom} 0%, ${OG_BRAND.primary} 44%, ${accentTo} 100%)`,
-              color: "#ffffff",
-            }}
-          >
-            <div
-              style={{
-                alignSelf: "flex-start",
-                borderRadius: "999px",
-                padding: "10px 16px",
-                background: "rgba(255,255,255,0.18)",
-                fontSize: "18px",
-                fontWeight: 700,
-              }}
-            >
-              Preview social
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "14px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "14px",
-                  padding: "24px",
-                  borderRadius: "16px",
-                  background: "rgba(255,255,255,0.14)",
-                  border: "1px solid rgba(255,255,255,0.22)",
-                }}
-              >
-                <div style={{ fontSize: "30px", fontWeight: 700, lineHeight: 1.2 }}>
-                  {truncateOgText(sideHeading, 60)}
-                </div>
-                <div
-                  style={{
-                    fontSize: "21px",
-                    lineHeight: 1.35,
-                    color: "rgba(255,255,255,0.88)",
-                  }}
-                >
-                  {truncateOgText(sideBody, 120)}
-                </div>
-              </div>
-
-              {cards.length ? (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                  }}
-                >
-                  {cards.slice(0, 3).map((card) => (
-                    <div
-                      key={card.title}
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "4px",
-                        padding: "16px 18px",
-                        borderRadius: "12px",
-                        background: "rgba(255,255,255,0.12)",
-                        border: "1px solid rgba(255,255,255,0.16)",
-                      }}
-                    >
-                      <div style={{ fontSize: "20px", fontWeight: 700 }}>
-                        {truncateOgText(card.title, 42)}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "16px",
-                          lineHeight: 1.3,
-                          color: "rgba(255,255,255,0.86)",
-                        }}
-                      >
-                        {truncateOgText(card.description, 72)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      </div>
-    ),
-    ogSize,
+export function isOgHeroImage(value: unknown): value is OgHeroImage {
+  return (
+    typeof value === "string" &&
+    Object.prototype.hasOwnProperty.call(OG_HERO_IMAGES, value)
   );
 }
 
-type ProfileOgOptions = {
-  name: string;
-  serviceType?: string;
-  category?: string;
-  location?: string;
-  companyName?: string;
-  bio?: string;
-  rating?: number;
-  reviewCount?: number;
-  photoUrl?: string;
-  verified?: boolean;
-};
+export function truncateOgText(text: string, maxLength: number) {
+  const normalized = text.replace(/\s+/g, " ").trim();
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
 
-export function createProfileOgImage({
-  name,
-  serviceType,
-  category,
-  location,
-  companyName,
-  bio,
-  rating,
-  reviewCount,
-  photoUrl,
-  verified,
-}: ProfileOgOptions) {
-  const headline = serviceType || category || "Membro da comunidade";
-  const description =
-    bio?.trim() ||
-    `${name} faz parte da comunidade Skillsy e pode ser encontrado por meio do perfil público.`;
-  const hasPhoto = Boolean(photoUrl?.trim());
-  const ratingLabel =
-    typeof rating === "number"
-      ? `${rating.toFixed(1)} de 5`
-      : "Sem avaliações";
-  const reviewLabel =
-    typeof reviewCount === "number" && reviewCount > 0
-      ? `${reviewCount} avaliações`
-      : "Perfil novo";
+  return `${normalized.slice(0, maxLength - 1).trimEnd()}…`;
+}
 
-  return new ImageResponse(
-    (
+// ---------------------------------------------------------------------------
+// Image loading
+// ---------------------------------------------------------------------------
+
+const MAX_SOURCE_IMAGE_BYTES = 10 * 1024 * 1024;
+
+// Same hosts next.config allows for next/image. User-controlled photo URLs are
+// fetched server-side here, so anything else is refused.
+const REMOTE_IMAGE_HOSTS = [/(^|\.)googleusercontent\.com$/, /(^|\.)picsum\.photos$/];
+
+function isAllowedRemoteHost(hostname: string) {
+  return REMOTE_IMAGE_HOSTS.some((pattern) => pattern.test(hostname));
+}
+
+type ImageBox = { width: number; height: number };
+
+/** Resizes to the exact box and re-encodes as JPEG, so Satori always gets a
+ * small image in a format it supports (profile photos can be WebP). */
+async function toJpegDataUri(input: Buffer, { width, height }: ImageBox) {
+  const output = await sharp(input)
+    .rotate()
+    .resize(width, height, { fit: "cover" })
+    .jpeg({ quality: 80, mozjpeg: true })
+    .toBuffer();
+
+  return `data:image/jpeg;base64,${output.toString("base64")}`;
+}
+
+export async function loadHeroOgImage(
+  hero: OgHeroImage,
+  box: ImageBox = ogSize,
+): Promise<string | undefined> {
+  try {
+    const file = path.join(process.cwd(), "public", OG_HERO_IMAGES[hero]);
+    return await toJpegDataUri(await readFile(file), box);
+  } catch (error) {
+    console.error(`OG image: failed to load hero "${hero}"`, error);
+    return undefined;
+  }
+}
+
+async function readRemoteImage(src: string): Promise<Buffer | undefined> {
+  if (src.startsWith("data:image/")) {
+    const comma = src.indexOf(",");
+    if (comma === -1 || !src.slice(0, comma).endsWith(";base64")) {
+      return undefined;
+    }
+    return Buffer.from(src.slice(comma + 1), "base64");
+  }
+
+  let url: URL;
+  try {
+    url = new URL(src);
+  } catch {
+    return undefined;
+  }
+
+  if (url.protocol !== "https:" || !isAllowedRemoteHost(url.hostname)) {
+    return undefined;
+  }
+
+  const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+  if (!response.ok || !isAllowedRemoteHost(new URL(response.url).hostname)) {
+    return undefined;
+  }
+
+  return Buffer.from(await response.arrayBuffer());
+}
+
+/** Loads a user-provided image (base64 data URI or allowed https URL).
+ * Returns undefined on anything unusable so callers fall back to the default. */
+export async function loadRemoteOgImage(
+  src: string | undefined | null,
+  box: ImageBox = ogSize,
+): Promise<string | undefined> {
+  const trimmed = src?.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  try {
+    const input = await readRemoteImage(trimmed);
+    if (!input || input.length === 0 || input.length > MAX_SOURCE_IMAGE_BYTES) {
+      return undefined;
+    }
+    return await toJpegDataUri(input, box);
+  } catch (error) {
+    console.error("OG image: failed to load remote image", error);
+    return undefined;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Rendering
+// ---------------------------------------------------------------------------
+
+async function renderOgResponse(element: ReactElement) {
+  const png = Buffer.from(await new ImageResponse(element, ogSize).arrayBuffer());
+
+  let body = png;
+  let contentType = "image/png";
+  try {
+    body = await sharp(png).jpeg({ quality: 82, mozjpeg: true }).toBuffer();
+    contentType = ogContentType;
+  } catch (error) {
+    console.error("OG image: JPEG conversion failed, serving PNG", error);
+  }
+
+  return new Response(new Uint8Array(body), {
+    headers: {
+      "Content-Type": contentType,
+      "Cache-Control":
+        "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+    },
+  });
+}
+
+function BrandRow({ tone }: { tone: "light" | "dark" }) {
+  const onDark = tone === "light";
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
       <div
         style={{
+          width: "52px",
+          height: "52px",
+          borderRadius: "12px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: onDark ? "#ffffff" : BRAND.primary,
+          color: onDark ? BRAND.primary : "#ffffff",
+          fontSize: "30px",
+          fontWeight: 900,
+        }}
+      >
+        S
+      </div>
+      <div
+        style={{
+          display: "flex",
+          fontSize: "30px",
+          fontWeight: 700,
+          color: onDark ? "#ffffff" : BRAND.ink,
+        }}
+      >
+        Skillsy
+      </div>
+    </div>
+  );
+}
+
+/** Same shield-check shape as the VerifiedMark shown after names in the app. */
+function VerifiedShield({ size }: { size: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={BRAND.primary}
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  );
+}
+
+/** Same handshake shape as the CommunityFriendMark shown after names in the app. */
+function FriendHandshake({ size }: { size: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#059669"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m11 17 2 2a1 1 0 1 0 3-3" />
+      <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4" />
+      <path d="m21 3 1 11h-2" />
+      <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3" />
+      <path d="M3 4h8" />
+    </svg>
+  );
+}
+
+type PageOgOptions = {
+  /** Already-loaded image (see loadHeroOgImage / loadRemoteOgImage). */
+  image?: string;
+  label: string;
+  title: string;
+  description: string;
+};
+
+export function createPageOgImage({
+  image,
+  label,
+  title,
+  description,
+}: PageOgOptions) {
+  return renderOgResponse(
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        position: "relative",
+        background: DEFAULT_BACKGROUND,
+        color: "#ffffff",
+        fontFamily: "sans-serif",
+      }}
+    >
+      {image ? (
+        <img
+          src={image}
+          alt=""
+          width={ogSize.width}
+          height={ogSize.height}
+          style={{ position: "absolute", top: 0, left: 0, objectFit: "cover" }}
+        />
+      ) : (
+        <div
+          style={{
+            position: "absolute",
+            top: "115px",
+            right: "80px",
+            width: "400px",
+            height: "400px",
+            borderRadius: "48px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(255,255,255,0.12)",
+            border: "2px solid rgba(255,255,255,0.28)",
+            fontSize: "290px",
+            fontWeight: 900,
+            color: "rgba(255,255,255,0.92)",
+          }}
+        >
+          S
+        </div>
+      )}
+
+      {image ? (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            background:
+              "linear-gradient(90deg, rgba(0,26,65,0.94) 0%, rgba(0,26,65,0.8) 42%, rgba(0,26,65,0.25) 78%, rgba(0,26,65,0.05) 100%)",
+          }}
+        />
+      ) : null}
+
+      <div
+        style={{
+          position: "relative",
           width: "100%",
           height: "100%",
           display: "flex",
-          padding: "32px",
-          background: OG_BRAND.bg,
-          color: "#001A41",
-          fontFamily: "sans-serif",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: "56px 64px",
         }}
       >
+        <BrandRow tone="light" />
+
         <div
           style={{
             display: "flex",
-            width: "100%",
-            height: "100%",
-            overflow: "hidden",
-            borderRadius: "16px",
-            background: OG_BRAND.cardBg,
-            border: OG_BRAND.cardBorder,
-            boxShadow: OG_BRAND.cardShadow,
+            flexDirection: "column",
+            gap: "18px",
+            maxWidth: image ? "760px" : "620px",
           }}
         >
           <div
             style={{
-              width: "46%",
+              display: "flex",
+              alignSelf: "flex-start",
+              borderRadius: "999px",
+              padding: "8px 18px",
+              background: "rgba(255,255,255,0.18)",
+              border: "1px solid rgba(255,255,255,0.3)",
+              fontSize: "20px",
+              fontWeight: 700,
+            }}
+          >
+            {truncateOgText(label, 44)}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "54px",
+              fontWeight: 800,
+              lineHeight: 1.06,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {truncateOgText(title, 90)}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "25px",
+              lineHeight: 1.38,
+              color: "rgba(255,255,255,0.9)",
+            }}
+          >
+            {truncateOgText(description, 150)}
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            fontSize: "22px",
+            color: "rgba(255,255,255,0.8)",
+          }}
+        >
+          skillsy.com.br
+        </div>
+      </div>
+    </div>,
+  );
+}
+
+const PROFILE_PHOTO_BOX = { width: 460, height: ogSize.height };
+
+type ProfileOgOptions = {
+  name: string;
+  headline: string;
+  bio?: string;
+  location?: string;
+  /** Already-loaded photo sized to PROFILE_PHOTO_BOX (loadProfileOgPhoto). */
+  photo?: string;
+  verified?: boolean;
+  communityFriend?: boolean;
+};
+
+export function loadProfileOgPhoto(photoUrl: string | undefined | null) {
+  return loadRemoteOgImage(photoUrl, PROFILE_PHOTO_BOX);
+}
+
+export function createProfileOgImage({
+  name,
+  headline,
+  bio,
+  location,
+  photo,
+  verified,
+  communityFriend,
+}: ProfileOgOptions) {
+  const description =
+    bio?.trim() || `${name} faz parte da comunidade Skillsy.`;
+
+  return renderOgResponse(
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        background: "#ffffff",
+        color: BRAND.ink,
+        fontFamily: "sans-serif",
+      }}
+    >
+      <div
+        style={{
+          width: `${PROFILE_PHOTO_BOX.width}px`,
+          height: "100%",
+          display: "flex",
+          background: DEFAULT_BACKGROUND,
+        }}
+      >
+        {photo ? (
+          <img
+            src={photo}
+            alt=""
+            width={PROFILE_PHOTO_BOX.width}
+            height={PROFILE_PHOTO_BOX.height}
+            style={{ objectFit: "cover" }}
+          />
+        ) : (
+          <div
+            style={{
+              width: "100%",
               height: "100%",
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              padding: "34px",
-              background: OG_BRAND.heroDark,
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "300px",
+              fontWeight: 900,
               color: "#ffffff",
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                alignSelf: "flex-start",
-                borderRadius: "999px",
-                padding: "10px 16px",
-                background: "rgba(255,255,255,0.18)",
-                fontSize: "18px",
-                fontWeight: 700,
-              }}
-            >
-              Perfil público
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "20px",
-              }}
-            >
-              {hasPhoto ? (
-                <img
-                  src={photoUrl}
-                  alt={name}
-                  style={{
-                    width: "100%",
-                    height: "300px",
-                    borderRadius: "16px",
-                    objectFit: "cover",
-                    border: "8px solid rgba(255,255,255,0.92)",
-                    background: OG_BRAND.primary,
-                  }}
-                />
-              ) : (
-                <div
-                  style={{
-                    width: "100%",
-                    height: "300px",
-                    borderRadius: "16px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: OG_BRAND.primaryStrong,
-                    border: "8px solid rgba(255,255,255,0.92)",
-                    color: "#ffffff",
-                    fontSize: "148px",
-                    fontWeight: 900,
-                    lineHeight: 1,
-                  }}
-                >
-                  S
-                </div>
-              )}
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
-                  padding: "22px",
-                  borderRadius: "16px",
-                  background: "rgba(255,255,255,0.14)",
-                  border: "1px solid rgba(255,255,255,0.22)",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    fontSize: "37px",
-                    lineHeight: 1.08,
-                    fontWeight: 800,
-                  }}
-                >
-                  {truncateOgText(name, 42)}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    fontSize: "21px",
-                    lineHeight: 1.3,
-                    color: "rgba(255,255,255,0.9)",
-                  }}
-                >
-                  {truncateOgText(headline, 64)}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "10px",
-                    flexWrap: "wrap",
-                    marginTop: "4px",
-                  }}
-                >
-                  {location ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        borderRadius: "999px",
-                        padding: "8px 13px",
-                        background: "rgba(255,255,255,0.16)",
-                        fontSize: "16px",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {truncateOgText(location, 32)}
-                    </div>
-                  ) : null}
-                  {category ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        borderRadius: "999px",
-                        padding: "8px 13px",
-                        background: "rgba(255,255,255,0.16)",
-                        fontSize: "16px",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {truncateOgText(category, 28)}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-              }}
-            >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    fontSize: "18px",
-                    color: "rgba(255,255,255,0.88)",
-                  }}
-                >
-                  <div>{reviewLabel}</div>
-                  <div>{ratingLabel}</div>
-                </div>
-            </div>
+            S
           </div>
+        )}
+      </div>
 
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: "56px 60px",
+          background: BRAND.surface,
+        }}
+      >
+        <BrandRow tone="dark" />
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <div
+              style={{
+                display: "flex",
+                fontSize: "52px",
+                fontWeight: 800,
+                lineHeight: 1.05,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {truncateOgText(name, 26)}
+            </div>
+            {verified ? (
+              <VerifiedShield size={44} />
+            ) : communityFriend ? (
+              <FriendHandshake size={44} />
+            ) : null}
+          </div>
           <div
             style={{
-              width: "54%",
-              height: "100%",
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              padding: "42px",
-              background: OG_BRAND.surfaceSoft,
+              fontSize: "28px",
+              fontWeight: 700,
+              color: BRAND.primary,
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "18px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "14px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "68px",
-                    height: "68px",
-                    borderRadius: "12px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "#0066FF",
-                    color: "#ffffff",
-                    fontSize: "32px",
-                    fontWeight: 800,
-                  }}
-                >
-                  S
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                  }}
-                >
-                  <div style={{ fontSize: "28px", fontWeight: 700 }}>Skillsy</div>
-                  <div style={{ fontSize: "18px", color: "#4B5563" }}>
-                    Rede de confiança entre membros
-                  </div>
-                </div>
-              </div>
-
-              {verified ? (
-                <div
-                  style={{
-                    display: "flex",
-                    alignSelf: "flex-start",
-                    borderRadius: "999px",
-                    background: OG_BRAND.primaryPill,
-                    color: OG_BRAND.primaryPillText,
-                    padding: "10px 18px",
-                    fontSize: "18px",
-                    fontWeight: 700,
-                    letterSpacing: "0",
-                  }}
-                >
-                  Membro verificado
-                </div>
-              ) : null}
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "50px",
-                    lineHeight: 1.04,
-                    fontWeight: 800,
-                    letterSpacing: "-0.03em",
-                  }}
-                >
-                  {truncateOgText(headline, 72)}
-                </div>
-                <div
-                  style={{
-                    fontSize: "24px",
-                    lineHeight: 1.35,
-                    color: "#4B5563",
-                  }}
-                >
-                  {truncateOgText(description, 220)}
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
-                  marginTop: "6px",
-                }}
-              >
-                {companyName ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignSelf: "flex-start",
-                      borderRadius: "12px",
-                      padding: "12px 16px",
-                      background: OG_BRAND.panelBg,
-                      border: OG_BRAND.panelBorder,
-                      fontSize: "18px",
-                      color: OG_BRAND.text,
-                    }}
-                  >
-                    Atua em {truncateOgText(companyName, 34)}
-                  </div>
-                ) : null}
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "12px",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {verified ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        borderRadius: "999px",
-                        background: OG_BRAND.primaryPill,
-                        color: OG_BRAND.primaryPillText,
-                        padding: "10px 16px",
-                        fontSize: "17px",
-                        fontWeight: 700,
-                        letterSpacing: "0",
-                      }}
-                    >
-                      Membro verificado
-                    </div>
-                  ) : null}
-                  {location ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        borderRadius: "999px",
-                        background: "#F1F5F9",
-                        color: OG_BRAND.muted,
-                        padding: "10px 16px",
-                        fontSize: "17px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {truncateOgText(location, 28)}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                color: OG_BRAND.muted,
-                fontSize: "19px",
-              }}
-            >
-              <div>{truncateOgText(location || "Perfil público na comunidade", 44)}</div>
-              <div>skillsy.com.br</div>
-            </div>
+            {truncateOgText(headline, 44)}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "25px",
+              lineHeight: 1.4,
+              color: BRAND.muted,
+            }}
+          >
+            {truncateOgText(description, 170)}
           </div>
         </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            fontSize: "22px",
+            color: BRAND.muted,
+          }}
+        >
+          <div style={{ display: "flex" }}>
+            {truncateOgText(location || "Perfil público", 34)}
+          </div>
+          <div style={{ display: "flex" }}>skillsy.com.br</div>
+        </div>
       </div>
-    ),
-    ogSize,
+    </div>,
   );
 }

@@ -15,6 +15,7 @@ export const metadata: Metadata = createPublicMetadata({
   imageDescription:
     "Sua contribuição pode ajudar a manter a plataforma, ampliar melhorias e fortalecer a comunidade.",
   imageLabel: "Doação",
+  heroImage: "donation",
 });
 
 const PIX_BENEFICIARY = "Luis Antonio de Oliveira Julio";
