@@ -78,13 +78,13 @@ export function ProviderProfileCard({
               <div className="space-y-2">
                 <div className=" flex flex-col">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-heading text-lg font-bold leading-tight text-gray-800 dark:text-white">
+                    <h3 className="font-heading text-lg font-bold leading-tight text-text-main">
                       {provider.name}
                     </h3>
                     <MembershipMark profile={provider} />
                   </div>
 
-                  <p className="text-sm font-normal text-gray-600 line-clamp-1 dark:text-gray-50">
+                  <p className="line-clamp-1 text-sm font-normal text-text-muted">
                     {provider.companyName
                       ? `${roleLabel} na ${provider.companyName}`
                       : roleLabel}
@@ -93,7 +93,7 @@ export function ProviderProfileCard({
               </div>
             </div>
             <div className="">
-              <p className="line-clamp-2 max-w-3xl text-sm leading-relaxed text-gray-500 dark:text-white">
+              <p className="line-clamp-2 max-w-3xl text-sm leading-relaxed text-text-muted">
                 {getBioPreview(provider)}
               </p>
 
@@ -207,7 +207,7 @@ export function ProviderProfileCard({
               {formatReviewCount(reviewCount)}
             </span>
           </div>
-          <span className="inline-flex items-center text-sm font-semibold text-primary dark:text-white">
+          <span className="inline-flex items-center text-sm font-semibold text-primary">
             Ver perfil
             <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" />
           </span>

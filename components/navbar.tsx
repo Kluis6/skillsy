@@ -72,8 +72,8 @@ function DrawerLink({
           className={cn(
             "flex min-h-10 w-full items-center px-3 text-sm font-medium transition-colors border-s-4 border-transparent",
             active
-              ? " text-primary dark:text-white dark:border-cyan-500 border-primary hover:bg-cyan-700/10 "
-              : "text-gray-700 dark:text-gray-50 hover:border-transparent hover:bg-neutral-500/10 ",
+              ? "text-primary border-primary hover:bg-primary/10"
+              : "text-text-main hover:border-transparent hover:bg-muted",
           )}
         >
           {label}
@@ -97,10 +97,10 @@ function DrawerNavigation({
    
       <DrawerHeader className="flex flex-row justify-between">
         <div className="mb-4">
-          <DrawerTitle className="dark:text-white text-base normal-case font-semibold">
+          <DrawerTitle className="text-base font-semibold normal-case text-text-main">
             Skillsy
           </DrawerTitle>
-          <DrawerDescription className="text-sm text-gray-500 dark:text-gray-50">
+          <DrawerDescription className="text-sm text-text-muted">
             Onde talentos encontram oportunidades
           </DrawerDescription>
         </div>
@@ -120,7 +120,7 @@ function DrawerNavigation({
 
       <div className="space-y-4 px-4 overflow-y-auto">
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-50">
+          <h3 className="text-sm font-semibold text-text-main">
             Encontre o que você precisa
           </h3>
           <ul className="space-y-1">
@@ -136,7 +136,7 @@ function DrawerNavigation({
         </div>
 
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-50">
+          <h3 className="text-sm font-semibold text-text-main">
             Quem somos
           </h3>
           <ul className="space-y-1">
@@ -153,7 +153,7 @@ function DrawerNavigation({
 
         {user ? (
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-50">
+            <h3 className="text-sm font-semibold text-text-main">
               Minha conta
             </h3>
             <ul className="space-y-1">
@@ -170,7 +170,7 @@ function DrawerNavigation({
               <li className="mb-4">
                 <Button
                   variant="ghost"
-                  className="w-full justify-start dark:text-white font-medium px-3 h-10 text-sm text-gray-700 normal-case"
+                  className="w-full justify-start font-medium px-3 h-10 text-sm text-text-main normal-case"
                   onClick={handleLogout}
                 >
                   Sair da conta
@@ -217,7 +217,7 @@ export function Navbar({
   };
 
   return (
-    <nav className="sticky w-full top-0 z-50 border-b border-border dark:bg-background/90 bg-white/85 backdrop-blur-md">
+    <nav className="sticky w-full top-0 z-50 border-b border-border-subtle bg-card/85 backdrop-blur-md">
       <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2">
         <div className="flex min-w-0 items-center gap-3">
           {shouldShowBackButton ? (
@@ -245,7 +245,7 @@ export function Navbar({
                     className="md:hidden"
                     aria-label="Abrir menu principal"
                   >
-                    <BsList className="size-4 text-gray-800 dark:text-white" />
+                    <BsList className="size-4 text-text-main" />
                   </Button>
                 }
               />
@@ -262,7 +262,7 @@ export function Navbar({
 
           {!shouldShowBackButton ? (
             <Link href="/" className="flex items-center gap-2">
-              <h1 className="font-heading text-2xl font-semibold tracking-normal text-primary dark:text-white">
+              <h1 className="font-heading text-2xl font-semibold tracking-normal text-primary">
                 Skillsy
               </h1>
             </Link>
@@ -307,7 +307,7 @@ export function Navbar({
                     className="hidden md:flex"
                     aria-label="Abrir menu principal"
                   >
-                    <BsList className="size-4 text-gray-800 dark:text-white" />
+                    <BsList className="size-4 text-text-main" />
                   </Button>
                 }
               ></DrawerTrigger>

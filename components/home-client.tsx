@@ -71,11 +71,11 @@ export function HomeClient({
               className="lg:space-y-12 space-y-8 "
             >
               <div className="text-center space-y-2 ">
-                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold font-heading tracking-tight text-center text-gray-900 dark:text-white">
+                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold font-heading tracking-tight text-center text-text-main">
                   Pessoas da comunidade colocando talento em movimento
                 </h3>
-                <p className="mx-auto max-w-2xl text-base md:text-lg font-normal leading-relaxed text-gray-700 dark:text-gray-50 lg:text-2xl">
-                  Conheça membros que oferecem serviços, e ajudam outras famílias a encontrar soluções
+                <p className="mx-auto max-w-2xl text-base font-normal leading-relaxed text-text-muted md:text-lg">
+                  Conheça membros que oferecem serviços e ajudam outras famílias a encontrar soluções
                   confiáveis.
                 </p>
               </div>

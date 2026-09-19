@@ -50,16 +50,16 @@ export function ContactCTA() {
   };
 
   return (
-    <section className="my-16 bg-cyan-700 border p-4 lg:p-6 xl:p-8 ">
+    <section className="my-16 bg-primary p-4 shadow-md dark:bg-accent lg:p-6 xl:p-8">
       <div className="grid grid-cols-12 gap-y-12 md:gap-8">
         <div className="col-span-12 lg:col-span-6 xl:col-span-7 w-full h-full">
           <div className="space-y-4 justify-center pt-4 lg:pt-0 items-center md:items-start flex flex-col w-full h-full">
-            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold font-heading tracking-tight text-center text-gray-100 dark:text-white">
-              Dúvidas ou Sugestões?
+            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold font-heading tracking-tight text-center text-white md:text-left">
+              Dúvidas ou sugestões?
             </h3>
-            <p className="max-w-2xl text-base md:text-lg font-normal leading-relaxed text-gray-100 dark:text-gray-50 lg:text-2xl">
-              Estamos aqui para ajudar você a encontrar o melhor serviço ou a
-              divulgar o seu talento. Faça parte da nossa rede de excelência.
+            <p className="max-w-2xl text-base font-normal leading-relaxed text-center text-white/90 md:text-left md:text-lg">
+              Conte para a gente como podemos ajudar você a encontrar um
+              serviço ou divulgar o seu talento.
             </p>
           </div>
         </div>
@@ -69,7 +69,7 @@ export function ContactCTA() {
             <CardContent>
               <CardHeader>
                 <CardTitle className="text-text-main text-xl font-medium mb-6 text-center">
-                  Fale Conosco
+                  Fale conosco
                 </CardTitle>
               </CardHeader>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -183,9 +183,9 @@ export function ContactCTA() {
                   type="submit"
                   size="icon-lg"
                   disabled={isSubmitting}
-                  className="w-full rounded-none bg-primary dark:text-white hover:bg-primary/90 active:bg-primary/80 transition-colors text-white font-bold"
+                  className="w-full rounded-none bg-primary font-bold text-primary-foreground transition-colors hover:bg-primary/90 active:bg-primary/80"
                 >
-                  {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
+                  {isSubmitting ? "Enviando..." : "Enviar mensagem"}
                 </Button>
               </form>
             </CardContent>

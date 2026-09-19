@@ -69,11 +69,8 @@ export function HeroSection({
           className="w-full space-y-6 text-center will-change-transform lg:col-span-7 lg:text-left"
         >
           <div className="space-y-4">
-            <p className="text-2xl font-bold text-white drop-shadow-lg/50">
-              Skillsy
-            </p>
             <h2 className="text-balance font-heading drop-shadow-xl/50 text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white  md:text-7xl lg:text-8xl">
-              Onde Talentos encontram oportunidades
+              Onde talentos encontram oportunidades
             </h2>
             <p className="mx-auto hidden md:block max-w-2xl text-base font-semibold leading-relaxed text-white md:text-xl lg:mx-0">
               O Skillsy conecta membros, profissionais e negócios em uma rede
@@ -86,13 +83,13 @@ export function HeroSection({
           variants={itemVariants}
           className="w-full will-change-transform lg:col-span-5"
         >
-          <Card className=" border-none p-4 shadow-sm md:p-6">
+          <Card className="border-none p-4 shadow-xl md:p-6">
             <div className=" space-y-1">
               <p className="text-sm font-bold text-text-main">
                 Encontre alguém da rede
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-100">
-                busque por profissionais e oportunidades
+              <p className="text-sm text-text-muted">
+                Busque profissionais e oportunidades.
               </p>
             </div>
 
@@ -102,14 +99,14 @@ export function HeroSection({
             >
               <div className="relative w-full flex justify-center items-center">
                 <BsSearch
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-cyan-600"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-primary"
                   size={20}
                 />
                 <Input
                   name="q"
                   aria-label="Buscar talentos, profissionais e serviços"
                   placeholder="O que você precisa?"
-                  className="h-12 w-full rounded-full bg-background pl-10 pr-12 text-text-main placeholder:text-gray-400  dark:bg-background/90 dark:placeholder:text-gray-500 "
+                  className="h-12 w-full rounded-full bg-background pl-10 pr-12 text-text-main placeholder:text-text-muted"
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                 />
@@ -167,17 +164,17 @@ export function HeroSection({
                   <Button
                     type="button"
                     variant="ghost"
-                    className="h-auto w-full justify-between px-0 sm:px-4 py-3 text-left text-primary hover:bg-cyan-50  dark:hover:bg-cyan-950/40"
+                    className="h-auto w-full justify-between px-0 sm:px-4 py-3 text-left text-primary hover:bg-accent"
                   >
                     <span>
-                      <span className="block text-xs font-bold dark:text-white text-cyan-800">
+                      <span className="block text-xs font-bold text-primary">
                         Seu talento também pode ajudar alguém.
                       </span>
-                      <span className="block text-xs  dark:text-gray-100 text-cyan-700">
+                      <span className="block text-xs text-text-muted">
                         Crie seu perfil na comunidade.
                       </span>
                     </span>
-                    <ArrowRight className="size-4 dark:text-white text-cyan-800 " />
+                    <ArrowRight className="size-4 text-primary" />
                   </Button>
                 </AuthModal>
               ) : (
@@ -185,17 +182,17 @@ export function HeroSection({
                   render={<Link href="/profile" />}
                   nativeButton={false}
                   variant="ghost"
-                  className="h-auto w-full justify-between px-4 py-3 text-left text-primary  dark:hover:bg-cyan-950/40"
+                  className="h-auto w-full justify-between px-4 py-3 text-left text-primary hover:bg-accent"
                 >
                   <span>
-                    <span className="block text-xs font-bold dark:text-white text-cyan-800">
+                    <span className="block text-xs font-bold text-primary">
                       Mantenha seu perfil pronto para ser encontrado.
                     </span>
-                    <span className="block text-xs dark:text-gray-100 text-cyan-700">
+                    <span className="block text-xs text-text-muted">
                       Atualize suas skills e contatos.
                     </span>
                   </span>
-                  <ArrowRight className="size-4 dark:text-white text-cyan-800" />
+                  <ArrowRight className="size-4 text-primary" />
                 </Button>
               )}
             </div>

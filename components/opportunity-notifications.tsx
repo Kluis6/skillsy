@@ -57,7 +57,7 @@ export function OpportunityNotifications() {
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <BsBell className="size-4 text-gray-700 dark:text-white" />
+        <BsBell className="size-4 text-text-main" />
         {unread > 0 ? (
           <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-white">
             {unread > 9 ? "9+" : unread}
@@ -67,11 +67,11 @@ export function OpportunityNotifications() {
       {open ? (
         <div className="absolute transition-discrete duration-500 md:right-0 -right-14 top-12 z-50 w-sm md:w-[min(22rem,calc(100vw-2rem))] overflow-hidden  border border-border-subtle bg-popover shadow-lg">
           <div className="flex items-center justify-between border-b border-border-subtle bg-surface px-4 py-3">
-            <p className="text-sm font-semibold text-gray-700 dark:text-white">Oportunidades</p>
+            <p className="text-sm font-semibold text-text-main">Oportunidades</p>
             <Link
               href="/oportunidades/para-voce"
               onClick={() => setOpen(false)}
-              className="text-xs font-semibold text-primary dark:text-cyan-500"
+              className="text-xs font-semibold text-primary"
             >
               Ver todas
             </Link>
@@ -113,7 +113,7 @@ export function OpportunityNotifications() {
               ))
             ) : (
               <div className="p-8 text-center">
-                <BsCheckAll  className="mx-auto mb-2 size-6 text-primary dark:text-cyan-500" />
+                <BsCheckAll  className="mx-auto mb-2 size-6 text-primary" />
                 <p className="text-sm text-text-muted">
                   Nenhuma oportunidade nova.
                 </p>

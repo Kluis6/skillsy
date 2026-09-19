@@ -14,7 +14,6 @@ import {
 } from "@/components/profile/recommendation-summary";
 import {
   UserPlus,
-  MapPin,
   Star,
   Info,
   Building2,
@@ -24,11 +23,9 @@ import {
   CalendarDays,
   Clock,
   Flag,
-  ShieldCheck,
   HeartHandshake,
   MessageSquareText,
   Users,
-  Handshake,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
@@ -76,10 +73,6 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { reportUserSchema, type ReportUserFormData } from "@/lib/validations";
 import { REPORT_REASON_LABELS, REPORT_REASON_OPTIONS } from "@/lib/reporting";
-import {
-  shouldShowCommunityFriendBadge,
-  shouldShowVerifiedBadge,
-} from "@/lib/member-verification";
 
 interface ProfileDetailClientProps {
   id: string;
@@ -793,44 +786,6 @@ export function ProfileDetailClient({
     targetProfile.serviceType ||
     targetProfile.category ||
     "Membro da Comunidade Skillsy";
-  const profileTrustItems = [
-    shouldShowVerifiedBadge(targetProfile)
-      ? {
-          label: "Vínculo",
-          value: "Membro verificado",
-          detail: "Informou ramo ou ala e ano de batismo.",
-          icon: ShieldCheck,
-        }
-      : shouldShowCommunityFriendBadge(targetProfile)
-        ? {
-            label: "Vínculo",
-            value: "Amigo da comunidade",
-            detail: "Não é membro da Igreja, mas faz parte da comunidade.",
-            icon: Handshake,
-          }
-        : {
-            label: "Vínculo",
-            value: "Perfil público",
-            detail: "Veja as informações públicas antes de entrar em contato.",
-            icon: ShieldCheck,
-          },
-    {
-      label: "Avaliações",
-      value: formatReviewCount(targetProfile.reviewCount || 0),
-      detail: targetProfile.reviewCount
-        ? `Média de ${Number(targetProfile.rating || 0).toFixed(1)} estrelas nos comentários.`
-        : "Nota em estrelas com comentário opcional.",
-      icon: MessageSquareText,
-    },
-    {
-      label: "Contexto",
-      value: publicLocation || "Brasil",
-      detail: hasAvailabilityInfo
-        ? "Inclui disponibilidade ou horário de atendimento."
-        : "Combine disponibilidade diretamente com o membro.",
-      icon: MapPin,
-    },
-  ];
   return (
     <>
       <Navbar user={user} profile={profile} logout={logout} />
@@ -854,7 +809,7 @@ export function ProfileDetailClient({
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <div className="absolute inset-0 bg-[#D9E2EF] dark:bg-muted/50" />
+                <div className="absolute inset-0 bg-muted" />
               )}
             </div>
 
@@ -876,7 +831,7 @@ export function ProfileDetailClient({
                         <TooltipTrigger
                           render={
                             <Link
-                              className=" size-9 flex border justify-center items-center hover:bg-neutral-100 transition-colors"
+                              className=" size-9 flex border justify-center items-center hover:bg-muted transition-colors"
                               href="/profile"
                             >
                               <LuPencil className="text-text-muted" />
@@ -918,7 +873,7 @@ export function ProfileDetailClient({
                     >
                       <FaWhatsapp /> <p>Falar no WhatsApp</p>
                     </Button>
-                    {user?.uid !== targetProfile.uid && (
+                    {user?.uid !== targetProfile.uid && !targetProfile.isProvider && (
                       <Button
                         size="lg"
                         onClick={handleToggleRecommendation}
@@ -954,8 +909,6 @@ export function ProfileDetailClient({
 
                     <p className="text-base text-text-muted font-normal">
                       {profileRoleLabel}
-                      {targetProfile.companyName &&
-                        ` na ${targetProfile.companyName}`}
                     </p>
                     {(targetProfile.companyName || targetProfile.category) && (
                       <div className="flex flex-wrap items-center gap-2">
@@ -1025,7 +978,7 @@ export function ProfileDetailClient({
                             <TooltipTrigger
                               render={
                                 <Link
-                                  className=" size-9 flex border justify-center items-center hover:bg-neutral-100 transition-colors"
+                                  className=" size-9 flex border justify-center items-center hover:bg-muted transition-colors"
                                   href="/profile"
                                 >
                                   <LuPencil className="text-text-muted" />
@@ -1069,7 +1022,7 @@ export function ProfileDetailClient({
                       >
                         <FaWhatsapp /> <p>Falar no WhatsApp</p>
                       </Button>
-                      {user?.uid !== targetProfile.uid && (
+                      {user?.uid !== targetProfile.uid && !targetProfile.isProvider && (
                         <Button
                           onClick={handleToggleRecommendation}
                           disabled={recommendationLoading}
@@ -1088,32 +1041,6 @@ export function ProfileDetailClient({
             </section>
           </section>
 
-          <section className="border-y border-border-subtle bg-surface">
-            <div className="container mx-auto grid grid-cols-1 gap-2 px-4 py-3 md:grid-cols-3">
-              {profileTrustItems.map((item) => (
-                <div
-                  key={item.label}
-                  className="flex gap-3 rounded-md border border-border-subtle bg-card p-4"
-                >
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-primary/10 text-primary">
-                    <item.icon size={18} />
-                  </div>
-                  <div className="min-w-0 space-y-1">
-                    <p className="text-xs font-semibold text-text-muted">
-                      {item.label}
-                    </p>
-                    <p className="text-sm font-bold text-text-main">
-                      {item.value}
-                    </p>
-                    <p className="text-xs leading-relaxed text-text-muted">
-                      {item.detail}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
           {targetProfile.isProvider ? (
             <section className="border-b border-border-subtle bg-card">
               <div className="container mx-auto flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
@@ -1121,11 +1048,6 @@ export function ProfileDetailClient({
                   <h3 className="text-base font-semibold text-text-main">
                     Indicado pela comunidade
                   </h3>
-                  <RecommendationCount
-                    recommendationCount={targetProfile.recommendationCount || 0}
-                    size={18}
-                    className="text-lg"
-                  />
                   <p className="max-w-2xl text-sm leading-relaxed text-text-muted">
                     Cada membro pode indicar uma vez este profissional.
                   </p>
@@ -1166,7 +1088,7 @@ export function ProfileDetailClient({
               </h3>
               <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap max-w-3xl">
                 {targetProfile.bio ||
-                  "Este membro ainda nao adicionou uma descricao detalhada. Use os sinais do perfil, avaliacoes e canais de contato para entender se faz sentido conversar."}
+                  "Este membro ainda não adicionou uma descrição."}
               </p>
             </div>
           </section>
@@ -1338,7 +1260,7 @@ export function ProfileDetailClient({
                 <div className="flex items-center gap-2">
                   <MessageSquareText size={18} className="text-primary" />
                   <h3 className="md:text-xl text-base font-semibold text-text-main">
-                    Comentários da Comunidade
+                    Comentários da comunidade
                   </h3>
                 </div>
 

@@ -103,7 +103,7 @@ function OpportunityCard({
   const urgencyInfo = urgencyMeta[urgency];
 
   return (
-    <article className="skillsy-surface flex h-full flex-col gap-5 p-5">
+    <article className="flex h-full flex-col gap-5 rounded-lg border border-border-subtle bg-card p-5 shadow-xs">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-2">

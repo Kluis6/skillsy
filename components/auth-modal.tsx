@@ -241,7 +241,7 @@ export function AuthModal({
           <div className="min-w-0">
             <div className="flex min-h-[34rem] flex-col gap-6 p-5 sm:p-7 md:p-8">
               <div>
-                <h1 className="hidden 2xl:block text-3xl md:text-4xl font-bold text-cyan-800 mb-2">
+                <h1 className="hidden 2xl:block text-3xl md:text-4xl font-bold text-primary mb-2">
                   Skillsy
                 </h1>
                 <h2 className="text-base md:text-xl font-medium text-foreground mb-1">

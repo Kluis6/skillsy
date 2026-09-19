@@ -128,14 +128,13 @@ export function HomePageLoading() {
       <section className="min-h-[calc(100svh-5rem)] bg-[radial-gradient(circle_at_top_left,rgba(0,102,255,0.12),transparent_34%),linear-gradient(180deg,rgba(240,247,255,0.65),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.2),transparent_34%),linear-gradient(180deg,rgba(30,41,59,0.65),rgba(15,23,42,0))] md:min-h-[86vh]">
         <div className="container mx-auto grid min-h-[calc(100svh-5rem)] grid-cols-1 items-center gap-10 px-4 py-12 lg:grid-cols-12 lg:py-16 md:min-h-[86vh]">
           <div className="space-y-4 text-center lg:col-span-7 lg:text-left">
-            <Skeleton className="mx-auto h-6 w-24 bg-white/30 lg:mx-0" />
             <Skeleton className="mx-auto h-14 w-full max-w-xl lg:mx-0 md:h-24 lg:h-28" />
             <Skeleton className="mx-auto h-5 w-full max-w-2xl lg:mx-0 md:h-6" />
             <Skeleton className="mx-auto h-5 w-10/12 max-w-xl lg:mx-0 md:h-6" />
           </div>
 
           <div className="w-full lg:col-span-5">
-            <div className="rounded-md border border-border-subtle bg-card p-4 shadow-lg shadow-blue-500/10 md:p-6">
+            <div className="rounded-md border border-border-subtle bg-card p-4 shadow-xl md:p-6">
               <div className="mb-5 space-y-2">
                 <Skeleton className="h-5 w-40" />
                 <Skeleton className="h-4 w-64" />
@@ -574,25 +573,6 @@ export function ProfilePublicPageLoading() {
           </div>
         </section>
 
-        {/* Trust items: Vínculo / Avaliações / Contexto */}
-        <section className="border-y border-border-subtle bg-surface">
-          <div className="container mx-auto grid grid-cols-1 gap-2 px-4 py-3 md:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <div
-                key={index}
-                className="flex gap-3 rounded-md border border-border-subtle bg-card p-4"
-              >
-                <Skeleton className="size-10 shrink-0 rounded-sm" />
-                <div className="min-w-0 flex-1 space-y-1.5">
-                  <Skeleton className="h-3 w-16" />
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-3 w-full" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* Indicado pela comunidade */}
         <section className="border-b border-border-subtle bg-card">
           <div className="container mx-auto flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
@@ -653,7 +633,7 @@ export function ProfilePublicPageLoading() {
           </section>
         </div>
 
-        {/* Comentários da Comunidade */}
+        {/* Comentários da comunidade */}
         <section className="border-y border-border-subtle bg-card">
           <div className="container mx-auto space-y-4 p-4">
             <Skeleton className="h-6 w-56" />

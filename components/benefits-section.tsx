@@ -14,7 +14,7 @@ export function BenefitsSection() {
       description:
         "Encontre pessoas com valores, história e vínculos reais com a comunidade.",
       icon: FaUserTie,
-      color: "text-primary dark:text-cyan-500",
+      color: "text-primary",
       bg: "bg-primary/10",
     },
     {
@@ -22,7 +22,7 @@ export function BenefitsSection() {
       description:
         "Mostre o que você sabe fazer de forma simples, clara e pronta para ser indicada.",
       icon: FaAward,
-      color: "text-primary dark:text-cyan-500",
+      color: "text-primary",
       bg: "bg-primary/10",
     },
     {
@@ -30,7 +30,7 @@ export function BenefitsSection() {
       description:
         "Avaliações e perfis públicos ajudam a transformar uma recomendação em decisão.",
       icon: FaUsers,
-      color: "text-primary dark:text-cyan-500",
+      color: "text-primary",
       bg: "bg-primary/10",
     },
   ];
@@ -87,12 +87,12 @@ export function BenefitsSection() {
               className="flex gap-4 will-change-transform"
             >
               <div className="flex max-w-3xl flex-col space-y-4">
-                <h3 className="text-xl font-heading font-bold text-gray-900 md:text-2xl lg:text-3xl dark:text-white">
+                <h3 className="text-xl font-heading font-bold text-text-main md:text-2xl lg:text-3xl">
                   Uma rede feita por pessoas
                 </h3>
-                <p className="text-base md:text-lg font-normal leading-relaxed text-gray-700 dark:text-gray-50 lg:text-2xl">
-                  O Skillsy aproxima necessidades reais de talentos, <br />
-                  transforme seu trabalho em novas oportunidades.
+                <p className="text-base font-normal leading-relaxed text-text-muted md:text-lg">
+                  O Skillsy aproxima necessidades reais de talentos e transforma
+                  seu trabalho em novas oportunidades.
                 </p>
               </div>
             </motion.div>
@@ -120,10 +120,10 @@ export function BenefitsSection() {
                   />
                 </div>
                 <div className="space-y-2 p-4 md:p-6 lg:p-8">
-                  <h4 className="font-heading text-lg md:text-xl font-bold text-gray-800 dark:text-white">
+                  <h4 className="font-heading text-lg md:text-xl font-bold text-text-main">
                     {benefit.title}
                   </h4>
-                  <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-50">
+                  <p className="text-sm leading-relaxed text-text-muted">
                     {benefit.description}
                   </p>
                 </div>
