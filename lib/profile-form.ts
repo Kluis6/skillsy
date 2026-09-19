@@ -45,10 +45,14 @@ export interface ProfileGalleryItem {
 
 type OptionalString = string | undefined;
 
+export type MembershipType = '' | 'member' | 'friend';
+
 export interface ProfileFormValues {
   name: string;
   bio: string;
   location: string;
+  /** "" = not declared yet. "friend" clears the member fields on save. */
+  membershipType: MembershipType;
   ward: string;
   serviceType: string;
   category: ProviderCategory;
@@ -137,10 +141,17 @@ const normalizeGallery = (gallery: unknown): ProfileGalleryItem[] => {
     .slice(0, 5);
 };
 
+const getMembershipType = (profile: UserProfile): MembershipType => {
+  if (profile.communityFriend) return 'friend';
+  if (profile.ward?.trim() || profile.baptismYear) return 'member';
+  return '';
+};
+
 export const getProfileFormDefaults = (): ProfileFormValues => ({
   name: '',
   bio: '',
   location: '',
+  membershipType: '',
   ward: '',
   serviceType: '',
   category: '',
@@ -174,6 +185,7 @@ export const profileToFormValues = (profile: UserProfile | null): ProfileFormVal
     name: profile.name || '',
     bio: profile.bio || '',
     location: profile.location || '',
+    membershipType: getMembershipType(profile),
     ward: profile.ward || '',
     serviceType: profile.serviceType || '',
     category: normalizeCategory(profile.category),
@@ -209,13 +221,19 @@ export const toProfileUpdatePayload = (values: ProfileFormValues): Partial<UserP
   const isProvider = values.isProvider;
   const providerValues = isProvider ? values : clearProviderFields(values);
 
-  const baptismYear = normalizeOptionalText(providerValues.baptismYear);
+  // A community friend isn't a Church member: the member fields are cleared so
+  // the two badges can never both apply.
+  const isCommunityFriend = values.membershipType === 'friend';
+  const baptismYear = isCommunityFriend
+    ? undefined
+    : normalizeOptionalText(providerValues.baptismYear);
 
   return {
     name: values.name.trim(),
     bio: normalizeOptionalText(values.bio),
     location: normalizeOptionalText(values.location),
-    ward: normalizeOptionalText(values.ward),
+    communityFriend: isCommunityFriend,
+    ward: isCommunityFriend ? undefined : normalizeOptionalText(values.ward),
     isProvider,
     whatsapp: normalizeDigits(values.whatsapp),
     phone: normalizeDigits(values.phone),

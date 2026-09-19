@@ -43,6 +43,9 @@ export interface UserProfile {
   baptismYear?: number;
   memberVerified?: boolean;
   membershipYears?: number;
+  /** Self-declared "Amigo da comunidade": not a member of the Church, but part
+   * of the Skillsy community. Mutually exclusive with the member fields. */
+  communityFriend?: boolean;
   availability?: string[];
   serviceHours?: string;
   isBlocked?: boolean;

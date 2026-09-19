@@ -134,6 +134,11 @@ function normalizeOptionalFirestoreString(value: unknown) {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
+// Must match the searchTokens limit in firestore.rules (isValidPublicProfile).
+const MAX_SEARCH_TOKENS = 400;
+
+/** Every word plus its prefixes of 3+ characters, in the order given: pass
+ * the most important fields first, since the list is capped. */
 function toSearchTokens(...values: Array<unknown>) {
   const words = values
     .filter((value): value is string => typeof value === "string")
@@ -152,7 +157,25 @@ function toSearchTokens(...values: Array<unknown>) {
     for (let length = 3; length < word.length; length += 1)
       tokens.add(word.slice(0, length));
   }
-  return [...tokens].slice(0, 80);
+  return [...tokens].slice(0, MAX_SEARCH_TOKENS);
+}
+
+/** One stem per query word, short enough to catch Portuguese inflections:
+ * "pintor" finds "pintura", "marceneiro" finds "marcenaria". Safe to query
+ * because searchTokens stores every prefix of 3+ characters. */
+function toSearchStems(value: string) {
+  const words = value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((word) => word.length >= 3);
+
+  return [
+    ...new Set(
+      words.map((word) => word.slice(0, Math.max(4, word.length - 4))),
+    ),
+  ];
 }
 
 function getPublicCity(location: unknown) {
@@ -550,6 +573,7 @@ function normalizeUserDocumentForRules(source: Record<string, unknown>) {
   );
   normalized.gallery = normalizeGalleryForRules(normalized.gallery);
   normalized.hasPublicProfile = normalizeBoolean(normalized.hasPublicProfile);
+  normalized.communityFriend = normalizeBoolean(normalized.communityFriend);
 
   normalized.rating = normalizeFiniteNumber(normalized.rating);
   normalized.reviewCount = normalizeFiniteNumber(normalized.reviewCount);
@@ -608,6 +632,7 @@ function toPublicProfileModel(
     publicState: raw.publicState || "",
     ward: raw.ward || "",
     memberVerified: raw.memberVerified ?? false,
+    communityFriend: raw.communityFriend ?? false,
     searchTokens: raw.searchTokens || [],
     companyName: raw.companyName || "",
     gallery: raw.gallery || [],
@@ -646,6 +671,7 @@ function buildPublicProfileData(source: Partial<UserProfile>) {
     publicState,
     ward: source.ward || "",
     memberVerified: source.memberVerified ?? false,
+    communityFriend: source.communityFriend ?? false,
     searchTokens: toSearchTokens(
       source.name,
       source.category,
@@ -653,6 +679,8 @@ function buildPublicProfileData(source: Partial<UserProfile>) {
       source.companyName,
       publicCity,
       publicState,
+      // Last, so a long bio can never push the fields above out of the cap.
+      source.bio,
     ),
     companyName: source.companyName || "",
     gallery: source.gallery || [],
@@ -744,8 +772,17 @@ function isSerializedFirestoreError(error: unknown) {
   }
 }
 
+// Recommendations are the platform's main trust signal, so they rank first;
+// the star rating only breaks ties.
 function sortProvidersByFeaturedRanking(profiles: UserProfile[]) {
   return [...profiles].sort((a, b) => {
+    const aRecommendations = a.recommendationCount ?? 0;
+    const bRecommendations = b.recommendationCount ?? 0;
+
+    if (bRecommendations !== aRecommendations) {
+      return bRecommendations - aRecommendations;
+    }
+
     const aRating = typeof a.rating === "number" ? a.rating : 0;
     const bRating = typeof b.rating === "number" ? b.rating : 0;
 
@@ -895,6 +932,7 @@ export const UserService = {
         "baptismYear",
         "memberVerified",
         "membershipYears",
+        "communityFriend",
         "isBlocked",
         "isDeleted",
         "deletedByUser",
@@ -948,13 +986,31 @@ export const UserService = {
         ),
       );
 
+      // Keys sent explicitly as `undefined` were emptied in the form (a bio
+      // erased, member fields dropped for a community friend). Without this,
+      // the merge below would keep the stored value and the field could never
+      // be cleared.
+      const clearedKeys = new Set(
+        Object.entries(data)
+          .filter(
+            ([key, value]) =>
+              value === undefined &&
+              allowedUserFields.has(key) &&
+              !immutableKeys.has(key),
+          )
+          .map(([key]) => key),
+      );
+      const keptCurrentData = Object.fromEntries(
+        Object.entries(currentData).filter(([key]) => !clearedKeys.has(key)),
+      );
+
       const createdAt =
         currentData.createdAt !== undefined
           ? currentData.createdAt
           : serverTimestamp();
 
       const nextData: Partial<UserProfile> = {
-        ...currentData,
+        ...keptCurrentData,
         ...safeIncomingData,
         uid,
         name:
@@ -1058,13 +1114,16 @@ export const UserService = {
   async getProviders(limitCount: number = 10): Promise<UserProfile[]> {
     const path = "public_profiles";
     try {
+      // Featured providers rank by recommendations, but Firestore can't order
+      // by recommendationCount: older public profiles don't have the field and
+      // orderBy would drop them. So fetch a wider pool and rank it here.
       const q = query(
         collection(db, "public_profiles"),
         where("isProvider", "==", true),
         where("isBlocked", "==", false),
         where("isDeleted", "==", false),
         orderBy("reviewCount", "desc"),
-        limit(limitCount),
+        limit(Math.max(limitCount * 5, 30)),
       );
       const querySnapshot = await getDocs(q);
       return sortProvidersByFeaturedRanking(
@@ -1073,7 +1132,7 @@ export const UserService = {
             toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
           )
           .filter((profile): profile is UserProfile => profile !== null),
-      );
+      ).slice(0, limitCount);
     } catch (error) {
       if (isPermissionDeniedError(error)) {
         return [];
@@ -1091,9 +1150,7 @@ export const UserService = {
   ): Promise<UserProfile[]> {
     const path = "public_profiles";
     try {
-      const normalizedTerms = toSearchTokens(term).filter(
-        (token) => token.length >= 3,
-      );
+      const normalizedTerms = toSearchStems(term);
       const cityTokens = toSearchTokens(location?.city || "").filter(
         (token) => token.length >= 3,
       );

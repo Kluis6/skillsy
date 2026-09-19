@@ -40,6 +40,14 @@ export function shouldShowVerifiedBadge(profile: VerificationSource) {
   return Boolean(profile?.memberVerified) || hasMembershipVerificationData(profile);
 }
 
+/** "Amigo da comunidade" badge. A verified member never shows it, even if an
+ * old document still carries the flag. */
+export function shouldShowCommunityFriendBadge(
+  profile: (VerificationSource & Partial<Pick<UserProfile, "communityFriend">>) | null | undefined,
+) {
+  return profile?.communityFriend === true && !shouldShowVerifiedBadge(profile);
+}
+
 export function deriveMemberVerification(profile: VerificationSource) {
   const memberVerified = hasMembershipVerificationData(profile);
 

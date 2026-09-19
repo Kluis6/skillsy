@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SurfacePanel } from "@/components/ui/page-layout";
-import { VerifiedMark } from "@/components/ui/trust-signals";
+import { MembershipMark } from "@/components/ui/trust-signals";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Camera,
@@ -25,6 +25,8 @@ import {
   MapPin,
   MessageCircle,
   X,
+  ShieldCheck,
+  Handshake,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -42,11 +44,11 @@ import {
   getProfileFormDefaults,
   profileToFormValues,
   toProfileUpdatePayload,
+  type MembershipType,
 } from "@/lib/profile-form";
 
 import { LocationService } from "@/services/location-service";
 import { Footer } from "./footer";
-import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 
 const MAX_IMAGE_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
 const MAX_INLINE_IMAGE_SIZE_BYTES = 100 * 1024;
@@ -78,6 +80,30 @@ const PROFILE_LIMITS = {
   galleryMaxItems: 5,
   galleryDescription: 200,
 };
+
+const MEMBERSHIP_OPTIONS: Array<{
+  value: Exclude<MembershipType, "">;
+  label: string;
+  description: string;
+  icon: typeof ShieldCheck;
+  iconClassName: string;
+}> = [
+  {
+    value: "member",
+    label: "Sou membro",
+    description:
+      "Membro de A Igreja de Jesus Cristo dos Santos dos Últimos Dias.",
+    icon: ShieldCheck,
+    iconClassName: "text-primary",
+  },
+  {
+    value: "friend",
+    label: "Amigo da comunidade",
+    description: "Não sou membro da Igreja, mas faço parte da comunidade.",
+    icon: Handshake,
+    iconClassName: "text-emerald-600 dark:text-emerald-400",
+  },
+];
 
 const readFileAsDataURL = (file: Blob) =>
   new Promise<string>((resolve, reject) => {
@@ -214,7 +240,8 @@ export function ProfileSettingsClient() {
   const nextOnboardingItem = onboardingItems.find((item) => !item.done);
   const publicFieldsSummary = [
     "Nome, foto, capa e bio",
-    "Cidade e UF somente se você autorizar",
+    "Cidade e UF",
+    "Selo de membro ou de amigo da comunidade",
     "Serviço, categoria, disponibilidade e galeria",
     "Contatos e redes preenchidos",
   ];
@@ -730,7 +757,14 @@ export function ProfileSettingsClient() {
                   </div>
                   <h2 className="flex items-center gap-1.5 text-xl font-bold text-text-main mb-1">
                     {formData.name || "Seu Nome"}
-                    {shouldShowVerifiedBadge(formData) && <VerifiedMark size={18} />}
+                    <MembershipMark
+                      size={18}
+                      profile={
+                        formData.membershipType === "member"
+                          ? { ward: formData.ward, baptismYear: formData.baptismYear }
+                          : { communityFriend: formData.membershipType === "friend" }
+                      }
+                    />
                   </h2>
                   <p className="text-sm text-text-muted mb-4">{user.email}</p>
                 </div>
@@ -892,44 +926,127 @@ export function ProfileSettingsClient() {
                         número, complemento e bairro permanecem privados.
                       </p>
                     </div>
-                    <div className="space-y-2 ">
-                      <Label className="text-xs md:text-sm font-medium text-text-muted">
-                        Ramo / Ala
-                      </Label>
-                      <Input
-                        {...register("ward")}
-                        placeholder="Ex: Ala Centro, Estaca Brasil"
-                        maxLength={PROFILE_LIMITS.ward}
-                        className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.ward ? "ring-2 ring-red-500" : ""}`}
-                      />
-                      <p className="text-xs text-text-muted ml-1">
-                        Até {PROFILE_LIMITS.ward} caracteres.
-                      </p>
-                      {errors.ward && (
-                        <p className="text-xs text-red-500 font-bold ml-1">
-                          {errors.ward.message}
+                    <div className="md:col-span-2 space-y-4 rounded-md border border-border-subtle p-4">
+                      <div className="space-y-1">
+                        <p
+                          id="membership-heading"
+                          className="text-xs md:text-sm font-medium text-text-main"
+                        >
+                          Vínculo com a comunidade
+                        </p>
+                        <p className="text-xs text-text-muted">
+                          Define o selo exibido ao lado do seu nome. Opcional.
+                        </p>
+                      </div>
+
+                      <div
+                        role="radiogroup"
+                        aria-labelledby="membership-heading"
+                        className="grid grid-cols-1 gap-2 sm:grid-cols-2"
+                      >
+                        {MEMBERSHIP_OPTIONS.map((option) => {
+                          const selected =
+                            formData.membershipType === option.value;
+                          return (
+                            <button
+                              key={option.value}
+                              type="button"
+                              role="radio"
+                              aria-checked={selected}
+                              onClick={() =>
+                                setValue("membershipType", option.value, {
+                                  shouldDirty: true,
+                                })
+                              }
+                              className={`flex items-start gap-3 rounded-md border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                                selected
+                                  ? "border-primary bg-primary/5"
+                                  : "border-border-subtle hover:border-primary/40"
+                              }`}
+                            >
+                              <option.icon
+                                size={18}
+                                className={`mt-0.5 shrink-0 ${option.iconClassName}`}
+                                aria-hidden="true"
+                              />
+                              <span className="space-y-0.5">
+                                <span className="block text-sm font-semibold text-text-main">
+                                  {option.label}
+                                </span>
+                                <span className="block text-xs text-text-muted">
+                                  {option.description}
+                                </span>
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {formData.membershipType === "member" && (
+                        <div className="space-y-4">
+                          <p className="rounded-md bg-primary/5 px-3 py-2 text-xs text-text-main">
+                            <strong>Apenas para membros</strong> de A Igreja de
+                            Jesus Cristo dos Santos dos Últimos Dias. Com ramo
+                            ou ala e ano de batismo preenchidos, seu perfil
+                            exibe o selo de membro verificado.
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <Label
+                                htmlFor="profile-ward"
+                                className="text-xs md:text-sm font-medium text-text-muted"
+                              >
+                                Ramo / Ala
+                              </Label>
+                              <Input
+                                id="profile-ward"
+                                {...register("ward")}
+                                placeholder="Ex: Ala Centro, Estaca Brasil"
+                                maxLength={PROFILE_LIMITS.ward}
+                                className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.ward ? "ring-2 ring-red-500" : ""}`}
+                              />
+                              <p className="text-xs text-text-muted ml-1">
+                                Até {PROFILE_LIMITS.ward} caracteres.
+                              </p>
+                              {errors.ward && (
+                                <p className="text-xs text-red-500 font-bold ml-1">
+                                  {errors.ward.message}
+                                </p>
+                              )}
+                            </div>
+                            <div className="space-y-2">
+                              <Label
+                                htmlFor="profile-baptism-year"
+                                className="text-xs md:text-sm font-medium text-text-muted"
+                              >
+                                Ano de Batismo
+                              </Label>
+                              <Input
+                                id="profile-baptism-year"
+                                {...register("baptismYear")}
+                                placeholder="Ex: 2010"
+                                inputMode="numeric"
+                                maxLength={4}
+                                className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.baptismYear ? "ring-2 ring-red-500" : ""}`}
+                              />
+                              {errors.baptismYear && (
+                                <p className="text-xs text-red-500 font-bold ml-1">
+                                  {errors.baptismYear.message}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {formData.membershipType === "friend" && (
+                        <p className="rounded-md bg-emerald-500/10 px-3 py-2 text-xs text-text-main">
+                          Seu perfil exibirá o selo{" "}
+                          <strong>Amigo da comunidade</strong> ao lado do seu
+                          nome. Os dados de membro não se aplicam e serão
+                          removidos ao salvar.
                         </p>
                       )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs md:text-sm font-medium text-text-muted">
-                        Ano de Batismo
-                      </Label>
-                      <Input
-                        {...register("baptismYear")}
-                        placeholder="Ex: 2010"
-                        maxLength={4}
-                        className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.baptismYear ? "ring-2 ring-red-500" : ""}`}
-                      />
-                      {errors.baptismYear && (
-                        <p className="text-xs text-red-500 font-bold ml-1">
-                          {errors.baptismYear.message}
-                        </p>
-                      )}
-                      <p className="text-xs text-primary/60 font-medium ml-1">
-                        Preencha junto com a ala ou ramo para exibir o selo de
-                        membro verificado no perfil.
-                      </p>
                     </div>
                   </div>
 

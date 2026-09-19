@@ -97,10 +97,27 @@ const authGalleryImages = [
   },
 ];
 
-export function AuthModal({ children }: { children: React.ReactElement }) {
+type AuthModalProps = {
+  /** The element that opens the modal. Omit it and pass `open` to open the
+   * modal from code (e.g. a toast's "Entrar" action). */
+  children?: React.ReactElement;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+};
+
+export function AuthModal({
+  children,
+  open: controlledOpen,
+  onOpenChange,
+}: AuthModalProps) {
   const { signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = (next: boolean) => {
+    if (controlledOpen === undefined) setUncontrolledOpen(next);
+    onOpenChange?.(next);
+  };
 
   // Login Form
   const {
@@ -193,7 +210,7 @@ export function AuthModal({ children }: { children: React.ReactElement }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={children} nativeButton />
+      {children ? <DialogTrigger render={children} nativeButton /> : null}
       <DialogContent className="max-h-[min(90dvh,48rem)] w-[calc(100vw-2rem)] max-w-[60rem] overflow-y-auto bg-background p-0 text-foreground sm:w-[calc(100vw-3rem)] sm:max-w-[60rem]">
         <div className="grid min-w-0 grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(24rem,0.9fr)]">
           <div className="hidden min-h-[34rem] min-w-0 bg-linear-to-l from-background to-blue-400 p-4 lg:flex">

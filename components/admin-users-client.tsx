@@ -69,8 +69,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { RecommendationStars } from '@/components/profile/recommendation-summary';
-import { VerifiedMark } from '@/components/ui/trust-signals';
+import { formatReviewCount, RecommendationCount } from '@/components/profile/recommendation-summary';
+import { MembershipMark } from '@/components/ui/trust-signals';
 import {
   Dialog,
   DialogContent,
@@ -90,7 +90,6 @@ import {
 import { LocationService } from '@/services/location-service';
 import { BRAZIL_STATES } from '@/lib/brazil-states';
 import { REPORT_REASON_LABELS } from '@/lib/reporting';
-import { shouldShowVerifiedBadge } from '@/lib/member-verification';
 
 const ADMIN_FORM_LIMITS = {
   name: 50,
@@ -516,7 +515,7 @@ export function AdminUsersClient() {
                   <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Localização / Ala</TableHead>
                   <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Status</TableHead>
                   <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Denúncias</TableHead>
-                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Avaliação / Indicações</TableHead>
+                  <TableHead className="font-bold text-text-muted uppercase text-xs tracking-normal">Indicações / Avaliações</TableHead>
                   <TableHead className="text-right pr-8 font-bold text-text-muted uppercase text-xs tracking-normal">Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -537,7 +536,7 @@ export function AdminUsersClient() {
                           <div className="flex flex-col">
                             <span className="font-bold text-text-main flex items-center gap-1">
                               {u.name}
-                              {shouldShowVerifiedBadge(u) && <VerifiedMark size={14} />}
+                              <MembershipMark profile={u} size={14} />
                               {u.role === 'admin' && <Badge variant="secondary" className="h-5 px-1.5 text-xs bg-red-500/10 text-red-500 border-red-500/20 dark:text-red-300">Admin</Badge>}
                             </span>
                             <span className="text-xs text-text-muted flex items-center gap-1"><Mail size={10} /> {u.email}</span>
@@ -590,14 +589,14 @@ export function AdminUsersClient() {
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1">
-                          <div className="flex items-center gap-1 font-bold text-highlight text-sm">
-                            <Star size={14} fill="currentColor" /> {u.rating || '0.0'}
-                            <span className="text-text-muted font-normal text-xs ml-1">({u.reviewCount || 0})</span>
-                          </div>
-                          <RecommendationStars
+                          <RecommendationCount
                             recommendationCount={u.recommendationCount || 0}
-                            size={12}
+                            className="text-sm"
                           />
+                          <div className="flex items-center gap-1 text-xs text-text-muted">
+                            <Star size={12} className="text-highlight" fill="currentColor" />
+                            {Number(u.rating || 0).toFixed(1)} · {formatReviewCount(u.reviewCount || 0)}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell className="text-right pr-8">

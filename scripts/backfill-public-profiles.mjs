@@ -18,6 +18,7 @@ const publicFieldNames = [
   "publicCity",
   "publicState",
   "ward",
+  "communityFriend",
   "searchTokens",
   "companyName",
   "gallery",
@@ -208,7 +209,7 @@ function toSearchTokens(...values) {
       tokens.add(word.slice(0, length));
     }
   }
-  return [...tokens].slice(0, 80);
+  return [...tokens].slice(0, 400);
 }
 
 function readNumberField(field) {
@@ -267,6 +268,8 @@ function fallbackField(fieldName, userId, userDocument) {
       return cloneFieldValue(fields.isBlocked || booleanValue(false));
     case "isDeleted":
       return cloneFieldValue(fields.isDeleted || booleanValue(false));
+    case "communityFriend":
+      return booleanValue(false);
     case "createdAt":
       return cloneFieldValue(
         fields.createdAt || {
@@ -282,42 +285,145 @@ function fallbackField(fieldName, userId, userDocument) {
   }
 }
 
-function buildPublicFields(userDocument) {
+function isNumberValue(value) {
+  return Boolean(value) && ("integerValue" in value || "doubleValue" in value);
+}
+
+// Mirrors shouldSyncPublicProfile in services/user-service.ts.
+function shouldHavePublicProfile(fields) {
+  const hasPublicProfile = fields.hasPublicProfile?.booleanValue;
+  if (typeof hasPublicProfile === "boolean") {
+    return hasPublicProfile;
+  }
+  return fields.isProvider?.booleanValue === true;
+}
+
+// Fields whose value is computed below instead of copied from users/.
+const COMPUTED_FIELDS = new Set([
+  "rating",
+  "reviewCount",
+  "experienceYears",
+  "category",
+  "publicCity",
+  "publicState",
+  "communityFriend",
+  "searchTokens",
+]);
+
+/**
+ * Builds the complete public_profiles document (it's written as a full
+ * replace). Every field must satisfy isValidPublicProfile in firestore.rules:
+ * a field the rules only accept as a number or a known value is omitted when
+ * there's none, never written as "" — an invalid field there makes every
+ * later owner save of the public profile fail.
+ */
+function buildPublicFields(userDocument, existingPublicFields, recommendationCount) {
   const userId = getDocumentId(userDocument.name);
   const fields = userDocument.fields || {};
   const publicFields = {};
 
   for (const fieldName of publicFieldNames) {
+    if (COMPUTED_FIELDS.has(fieldName)) {
+      continue;
+    }
     const sourceValue = fields[fieldName];
     publicFields[fieldName] = sourceValue
       ? cloneFieldValue(sourceValue)
       : fallbackField(fieldName, userId, userDocument);
   }
 
+  // Rating aggregates are maintained on public_profiles by the rating flow,
+  // so a valid value already there wins over the private copy.
+  for (const fieldName of ["rating", "reviewCount"]) {
+    const existing = existingPublicFields?.[fieldName];
+    const fromUser = fields[fieldName];
+    publicFields[fieldName] = isNumberValue(existing)
+      ? cloneFieldValue(existing)
+      : isNumberValue(fromUser)
+        ? cloneFieldValue(fromUser)
+        : { integerValue: "0" };
+  }
+
+  if (isNumberValue(fields.experienceYears)) {
+    publicFields.experienceYears = cloneFieldValue(fields.experienceYears);
+  }
+
+  const category = readStringField(fields.category).trim();
+  if (category) {
+    publicFields.category = stringValue(category);
+  }
+
+  // Recounted from the recommendations subcollection, the source of truth.
+  publicFields.recommendationCount = { integerValue: String(recommendationCount) };
+  publicFields.communityFriend = booleanValue(
+    fields.communityFriend?.booleanValue === true,
+  );
+
   // Mirrors getPublicCity/getPublicState in services/user-service.ts: city
-  // and state are always public now, there's no opt-in gate any more.
+  // and state are always public, and an unresolved state is omitted.
   const location = readStringField(fields.location);
   const publicCity = location.split(",")[0]?.trim() || "";
   const explicitState = readStringField(fields.businessState).trim().toUpperCase();
   const inferredState = location.split(",").at(-1)?.trim().toUpperCase() || "";
-  const publicState = /^[A-Z]{2}$/.test(explicitState || inferredState)
-    ? explicitState || inferredState
-    : "";
+  const publicState = /^[A-Z]{2}$/.test(explicitState)
+    ? explicitState
+    : /^[A-Z]{2}$/.test(inferredState)
+      ? inferredState
+      : "";
   publicFields.publicCity = stringValue(publicCity);
-  publicFields.publicState = stringValue(publicState);
+  if (publicState) {
+    publicFields.publicState = stringValue(publicState);
+  }
   publicFields.memberVerified = booleanValue(computeMemberVerified(fields));
   publicFields.searchTokens = arrayValue(
     toSearchTokens(
       readStringField(fields.name),
-      readStringField(fields.category),
+      category,
       readStringField(fields.serviceType),
       readStringField(fields.companyName),
       publicCity,
       publicState,
+      readStringField(fields.bio),
     ).map(stringValue),
   );
 
   return publicFields;
+}
+
+async function getExistingPublicFields(token, userId) {
+  try {
+    const document = await firestoreRequest(`/public_profiles/${userId}`, {
+      method: "GET",
+      token,
+    });
+    return document.fields || {};
+  } catch (error) {
+    if (String(error.message).includes("(404)")) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+async function countRecommendations(token, userId) {
+  let count = 0;
+  let nextPageToken = "";
+
+  while (true) {
+    const query = new URLSearchParams({ pageSize: "300" });
+    if (nextPageToken) {
+      query.set("pageToken", nextPageToken);
+    }
+    const payload = await firestoreRequest(
+      `/public_profiles/${userId}/recommendations?${query.toString()}`,
+      { method: "GET", token },
+    );
+    count += (payload.documents || []).length;
+    if (!payload.nextPageToken) {
+      return count;
+    }
+    nextPageToken = payload.nextPageToken;
+  }
 }
 
 async function listUsers(token, limit) {
@@ -355,24 +461,32 @@ async function listUsers(token, limit) {
 
 async function writePublicProfile(token, userDocument, dryRun) {
   const userId = getDocumentId(userDocument.name);
-  const fields = buildPublicFields(userDocument);
+  const existingPublicFields = await getExistingPublicFields(token, userId);
 
-  if (dryRun) {
-    return {
-      userId,
-      fields,
-    };
+  // A member who didn't make their profile public must not have one, same as
+  // the app does on save. Deleting the doc keeps its subcollections.
+  if (!shouldHavePublicProfile(userDocument.fields || {})) {
+    if (existingPublicFields && !dryRun) {
+      await firestoreRequest(`/public_profiles/${userId}`, {
+        method: "DELETE",
+        token,
+      });
+    }
+    return { userId, action: existingPublicFields ? "deleted" : "skipped" };
   }
 
-  await firestoreRequest(`/public_profiles/${userId}`, {
-    method: "PATCH",
-    token,
-    body: JSON.stringify({ fields }),
-  });
+  const recommendationCount = await countRecommendations(token, userId);
+  const fields = buildPublicFields(userDocument, existingPublicFields, recommendationCount);
 
-  return {
-    userId,
-  };
+  if (!dryRun) {
+    await firestoreRequest(`/public_profiles/${userId}`, {
+      method: "PATCH",
+      token,
+      body: JSON.stringify({ fields }),
+    });
+  }
+
+  return { userId, action: "written", fields };
 }
 
 async function main() {
@@ -398,10 +512,20 @@ async function main() {
     const result = await writePublicProfile(token, userDocument, options.dryRun);
     processed += 1;
 
-    if (options.dryRun) {
-      console.log(`[dry-run] would backfill public_profiles/${result.userId}`);
+    const prefix = options.dryRun ? "[dry-run] would have " : "";
+    if (result.action === "written") {
+      const f = result.fields;
+      console.log(
+        `${prefix}written public_profiles/${result.userId} ` +
+          `(recommendations=${f.recommendationCount.integerValue}, ` +
+          `memberVerified=${f.memberVerified.booleanValue}, ` +
+          `communityFriend=${f.communityFriend.booleanValue}, ` +
+          `tokens=${f.searchTokens.arrayValue.values.length})`,
+      );
+    } else if (result.action === "deleted") {
+      console.log(`${prefix}deleted public_profiles/${result.userId} (profile is not public)`);
     } else {
-      console.log(`Backfilled public_profiles/${result.userId}`);
+      console.log(`skipped ${result.userId} (profile is not public)`);
     }
   }
 

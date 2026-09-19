@@ -1,4 +1,6 @@
+import type { LucideIcon } from "lucide-react";
 import {
+  Handshake,
   MapPin,
   MessageCircle,
   ShieldCheck,
@@ -6,36 +8,80 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  shouldShowCommunityFriendBadge,
+  shouldShowVerifiedBadge,
+} from "@/lib/member-verification";
 
-type VerifiedMarkProps = {
+type NameMarkProps = {
   size?: number;
   className?: string;
 };
 
-/** The one verified-member signal: a compact icon meant to sit right after
- * a displayed name, everywhere a member's name is shown. Don't build a new
- * verification badge elsewhere — use this. */
-export function VerifiedMark({ size = 14, className }: VerifiedMarkProps) {
+function NameMark({
+  icon: Icon,
+  label,
+  size = 14,
+  className,
+}: NameMarkProps & { icon: LucideIcon; label: string }) {
   return (
     <Tooltip>
       <TooltipTrigger
         render={
-          <span
-            className={cn(
-              "inline-flex shrink-0 items-center text-primary",
-              className,
-            )}
-          >
-            <ShieldCheck size={size} aria-hidden="true" />
-            <span className="sr-only">Membro verificado</span>
+          <span className={cn("inline-flex shrink-0 items-center", className)}>
+            <Icon size={size} aria-hidden="true" />
+            <span className="sr-only">{label}</span>
           </span>
         }
       />
       <TooltipContent>
-        <p>Membro verificado</p>
+        <p>{label}</p>
       </TooltipContent>
     </Tooltip>
   );
+}
+
+/** Verified member (ward + baptism year): shield icon after the name. */
+export function VerifiedMark({ className, ...props }: NameMarkProps) {
+  return (
+    <NameMark
+      icon={ShieldCheck}
+      label="Membro verificado"
+      className={cn("text-primary", className)}
+      {...props}
+    />
+  );
+}
+
+/** Non-member who declared themselves part of the community. */
+export function CommunityFriendMark({ className, ...props }: NameMarkProps) {
+  return (
+    <NameMark
+      icon={Handshake}
+      label="Amigo da comunidade"
+      className={cn("text-emerald-600 dark:text-emerald-400", className)}
+      {...props}
+    />
+  );
+}
+
+type MembershipMarkProps = NameMarkProps & {
+  profile: Parameters<typeof shouldShowCommunityFriendBadge>[0];
+};
+
+/** The membership signal shown right after a member's name, everywhere a name
+ * is displayed: verified member, community friend, or nothing. Use this
+ * instead of picking a mark by hand. */
+export function MembershipMark({ profile, ...props }: MembershipMarkProps) {
+  if (shouldShowVerifiedBadge(profile)) {
+    return <VerifiedMark {...props} />;
+  }
+
+  if (shouldShowCommunityFriendBadge(profile)) {
+    return <CommunityFriendMark {...props} />;
+  }
+
+  return null;
 }
 
 type PublicFieldHintProps = {

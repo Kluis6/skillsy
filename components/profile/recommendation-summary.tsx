@@ -1,6 +1,6 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { HeartHandshake } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -10,10 +10,6 @@ import {
 } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import {
-  getRecommendationRank,
-  RECOMMENDATION_RANK_MAX,
-} from "@/lib/recommendation-rank";
 
 export type Recommender = {
   id: string;
@@ -25,45 +21,50 @@ function getInitial(name?: string) {
   return name?.trim().charAt(0).toUpperCase() || "S";
 }
 
-interface RecommendationStarsProps {
+export function formatRecommendationCount(count: number) {
+  return `${count} ${count === 1 ? "indicação" : "indicações"}`;
+}
+
+export function formatReviewCount(count: number) {
+  return `${count} ${count === 1 ? "avaliação" : "avaliações"}`;
+}
+
+interface RecommendationCountProps {
   recommendationCount: number;
   size?: number;
+  /** Only the number, for tight spots like the card corner badge. */
+  compact?: boolean;
   className?: string;
 }
 
-/** Star-rank badge: fills one more star per recommendation tier, distinct from the review `rating`. */
-export function RecommendationStars({
+/** The platform's headline trust signal: how many members recommend this
+ * professional. Star ratings are secondary and live with the comments. */
+export function RecommendationCount({
   recommendationCount,
   size = 14,
+  compact = false,
   className,
-}: RecommendationStarsProps) {
-  const rank = getRecommendationRank(recommendationCount);
+}: RecommendationCountProps) {
+  const label = formatRecommendationCount(recommendationCount);
 
   return (
-    <Tooltip>
-      <TooltipTrigger
-        render={
-          <div className={cn("flex items-center gap-0.5", className)}>
-            {Array.from({ length: RECOMMENDATION_RANK_MAX }).map((_, index) => (
-              <Star
-                key={index}
-                size={size}
-                className={
-                  index < rank ? "text-highlight" : "text-muted-foreground/30"
-                }
-                fill={index < rank ? "currentColor" : "none"}
-              />
-            ))}
-          </div>
-        }
-      />
-      <TooltipContent>
-        <p>
-          {recommendationCount} indicaç{recommendationCount === 1 ? "ão" : "ões"}{" "}
-          da comunidade
-        </p>
-      </TooltipContent>
-    </Tooltip>
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 font-semibold text-primary",
+        className,
+      )}
+      title={compact ? label : undefined}
+    >
+      <HeartHandshake size={size} aria-hidden="true" className="shrink-0" />
+      {compact ? (
+        <>
+          <span>{recommendationCount}</span>
+          <span className="sr-only">{label}</span>
+        </>
+      ) : (
+        <span>{label}</span>
+      )}
+    </span>
   );
 }
 
@@ -89,8 +90,6 @@ export function RecommendationSummary({
 
   return (
     <div className={cn("flex flex-wrap items-center gap-3", className)}>
-      <RecommendationStars recommendationCount={recommendationCount} />
-
       {displayed.length > 0 ? (
         <AvatarGroup aria-label="Membros que indicam este profissional">
           {displayed.map((person) => (
@@ -119,13 +118,11 @@ export function RecommendationSummary({
             <AvatarGroupCount>+{hiddenCount}</AvatarGroupCount>
           ) : null}
         </AvatarGroup>
-      ) : (
+      ) : recommendationCount === 0 ? (
         <span className="text-sm text-text-muted">
-          {recommendationCount > 0
-            ? `${recommendationCount} pessoa${recommendationCount === 1 ? "" : "s"} indicam`
-            : "Seja a primeira pessoa a indicar"}
+          Seja a primeira pessoa a indicar
         </span>
-      )}
+      ) : null}
     </div>
   );
 }

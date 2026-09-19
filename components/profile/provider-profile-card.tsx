@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, MapPin, Star } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { RecommendationStars } from "@/components/profile/recommendation-summary";
-import { VerifiedMark } from "@/components/ui/trust-signals";
+import {
+  formatReviewCount,
+  RecommendationCount,
+} from "@/components/profile/recommendation-summary";
+import { MembershipMark } from "@/components/ui/trust-signals";
 import { UserProfile } from "@/models/types";
-import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -49,10 +51,8 @@ export function ProviderProfileCard({
   variant = "grid",
   className,
 }: ProviderProfileCardProps) {
-  const isVerified = shouldShowVerifiedBadge(provider);
   const location = provider.publicState;
   const roleLabel = getRoleLabel(provider);
-  const rating = provider.rating || "0.0";
   const reviewCount = provider.reviewCount || 0;
   const recommendationCount = provider.recommendationCount || 0;
   const initial = getInitial(provider.name);
@@ -73,11 +73,6 @@ export function ProviderProfileCard({
                     {initial}
                   </AvatarFallback>
                 </Avatar>
-
-                {/* <div className="flex items-center gap-1  px-2.5 py-1 text-sm font-bold text-highlight md:justify-center">
-              <Star className="size-3.5" fill="currentColor" />
-              <span>{rating}</span>
-            </div> */}
               </div>
 
               <div className="space-y-2">
@@ -86,7 +81,7 @@ export function ProviderProfileCard({
                     <h3 className="font-heading text-lg font-bold leading-tight text-gray-800 dark:text-white">
                       {provider.name}
                     </h3>
-                    {isVerified ? <VerifiedMark /> : null}
+                    <MembershipMark profile={provider} />
                   </div>
 
                   <p className="text-sm font-normal text-gray-600 line-clamp-1 dark:text-gray-50">
@@ -102,7 +97,11 @@ export function ProviderProfileCard({
                 {getBioPreview(provider)}
               </p>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <RecommendationCount
+                  recommendationCount={recommendationCount}
+                  className="px-3 py-1 text-sm"
+                />
                 {location ? (
                   <span className="inline-flex items-center px-3 py-1 text-xs font-medium ">
                     <MapPin className="mr-1 size-3.5 " />
@@ -114,11 +113,8 @@ export function ProviderProfileCard({
                     {provider.category}
                   </span>
                 ) : null}
-                <span className="px-3 py-1 text-xs font-medium">
-                  {reviewCount} avaliacao{reviewCount === 1 ? "" : "es"}
-                </span>
-                <span className="inline-flex items-center px-3 py-1">
-                  <RecommendationStars recommendationCount={recommendationCount} />
+                <span className="px-3 py-1 text-xs text-text-muted">
+                  {formatReviewCount(reviewCount)}
                 </span>
               </div>
             </div>
@@ -163,10 +159,15 @@ export function ProviderProfileCard({
           ) : null}
         </div>
 
-        <Badge className="absolute right-4 top-4 z-30 bg-black/90  text-sm rounded-full shadow">
-          <Star className=" text-yellow-500" fill="currentColor" />
-          <span className="text-yellow-500">{rating}</span>
-        </Badge>
+        {recommendationCount > 0 ? (
+          <Badge className="absolute right-4 top-4 z-30 rounded-full bg-black/90 text-sm shadow">
+            <RecommendationCount
+              recommendationCount={recommendationCount}
+              compact
+              className="text-white"
+            />
+          </Badge>
+        ) : null}
 
         <CardHeader className="rounded-t-none w-full">
           <div className="-mt-18 z-30 flex items-end justify-between gap-3">
@@ -188,7 +189,7 @@ export function ProviderProfileCard({
           <CardTitle className=" w-full flex flex-col col-span-4">
             <span className="flex items-center gap-1.5">
               {provider.name}
-              {isVerified ? <VerifiedMark /> : null}
+              <MembershipMark profile={provider} />
             </span>
             <p className="text-sm font-medium text-text-main">{roleLabel}</p>
           </CardTitle>
@@ -197,11 +198,14 @@ export function ProviderProfileCard({
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex items-center justify-between gap-2 ">
-          <div className="flex flex-col gap-1">
-            <span className="text-xs font-medium text-text-muted">
-              {reviewCount} avaliacao{reviewCount === 1 ? "" : "es"}
+          <div className="flex flex-col gap-0.5">
+            <RecommendationCount
+              recommendationCount={recommendationCount}
+              className="text-sm"
+            />
+            <span className="text-xs text-text-muted">
+              {formatReviewCount(reviewCount)}
             </span>
-            <RecommendationStars recommendationCount={recommendationCount} size={12} />
           </div>
           <span className="inline-flex items-center text-sm font-semibold text-primary dark:text-white">
             Ver perfil

@@ -31,7 +31,6 @@ import Link from "next/link";
 import { AuthModal } from "./auth-modal";
 import { BRAZIL_STATES } from "@/lib/brazil-states";
 import {
-  BsBoxArrowInRight,
   BsList,
   BsSearch,
   BsSliders2,
@@ -470,10 +469,9 @@ export function SearchClient({
                   size="sm"
                   title="Faça login ou crie sua conta"
                   aria-label="Entrar ou criar conta"
-                  className="w-9 md:w-auto h-9 normal-case lg:px-6"
+                  className="h-9 px-3 normal-case lg:px-6"
                 >
-                  <BsBoxArrowInRight className="block size-4 md:hidden" />
-                  <span className="hidden font-medium md:block">Entrar</span>
+                  <span className="font-medium">Entrar</span>
                 </Button>
               </AuthModal>
             )}
@@ -843,18 +841,28 @@ export function SearchClient({
                           : state
                             ? ` em ${selectedStateLabel}`
                             : ""}
-                        . Tente termos mais genéricos ou veja as sugestões
-                        abaixo.
+                        . Tente termos mais genéricos, veja as sugestões
+                        abaixo ou publique o que você precisa para
+                        profissionais da área receberem um alerta.
                       </p>
                     </div>
 
-                    <Button
-                      onClick={clearAllFilters}
-                      variant="outline"
-                      className="px-4 h-10"
-                    >
-                      Limpar filtros
-                    </Button>
+                    <div className="flex flex-col items-center justify-center gap-2 sm:flex-row">
+                      <Button
+                        render={<Link href="/encontrar-ajuda" />}
+                        nativeButton={false}
+                        className="h-10 px-4"
+                      >
+                        Publicar o que preciso
+                      </Button>
+                      <Button
+                        onClick={clearAllFilters}
+                        variant="outline"
+                        className="h-10 px-4"
+                      >
+                        Limpar filtros
+                      </Button>
+                    </div>
                   </div>
 
                   {initialSuggestions.length > 0 && (

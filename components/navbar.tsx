@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BsBoxArrowInRight, BsList, BsXLg } from "react-icons/bs";
+import { BsList, BsXLg } from "react-icons/bs";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { ArrowLeft, User as UserIcon } from "lucide-react";
@@ -335,10 +335,9 @@ export function Navbar({
                 size="sm"
                 title="Faça login ou crie sua conta"
                 aria-label="Entrar ou criar conta"
-                className="w-9 md:w-auto h-9 normal-case lg:px-6"
+                className="h-9 px-3 normal-case lg:px-6"
               >
-                <BsBoxArrowInRight className="block size-4 md:hidden" />
-                <span className="hidden font-medium md:block">Entrar</span>
+                <span className="font-medium">Entrar</span>
               </Button>
             </AuthModal>
           )}

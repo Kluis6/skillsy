@@ -49,8 +49,8 @@ export function PublicIntroCardLoading({ cards = 3 }: { cards?: number }) {
 }
 
 /** Mirrors the default ("grid") variant of ProviderProfileCard: banner with a
- * floating rating badge, an avatar that overlaps the banner, then title/bio
- * and a footer split between reviews+recommendation stars and "Ver perfil". */
+ * floating recommendation badge, an avatar that overlaps the banner, then
+ * title/bio and a footer split between recommendations+reviews and "Ver perfil". */
 function ProviderCardSkeleton() {
   return (
     <div className="relative h-full overflow-hidden rounded-xl border border-border-subtle bg-card">
@@ -84,8 +84,8 @@ function ProviderCardSkeleton() {
 }
 
 /** Mirrors the "list" variant of ProviderProfileCard used by search results:
- * a horizontal row (avatar + name/role, bio, then location/category/review
- * pills and the recommendation stars), not a boxed grid card. */
+ * a horizontal row (avatar + name/role, bio, then recommendation count and
+ * location/category/review pills), not a boxed grid card. */
 function ProviderListRowSkeleton() {
   return (
     <div className="space-y-3 border border-border-subtle p-4 md:p-6">
@@ -574,10 +574,10 @@ export function ProfilePublicPageLoading() {
           </div>
         </section>
 
-        {/* Trust items: Verificação / Reputação / Indicações / Contexto */}
+        {/* Trust items: Vínculo / Avaliações / Contexto */}
         <section className="border-y border-border-subtle bg-surface">
-          <div className="container mx-auto grid grid-cols-1 gap-2 px-4 py-3 md:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, index) => (
+          <div className="container mx-auto grid grid-cols-1 gap-2 px-4 py-3 md:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
                 className="flex gap-3 rounded-md border border-border-subtle bg-card p-4"

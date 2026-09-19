@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { UserService } from "@/services/user-service";
 import { CommunityRecommendation, Rating, UserProfile } from "@/models/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { RecommendationSummary } from "@/components/profile/recommendation-summary";
+import {
+  formatReviewCount,
+  RecommendationCount,
+  RecommendationSummary,
+} from "@/components/profile/recommendation-summary";
 import {
   UserPlus,
   MapPin,
@@ -25,6 +28,7 @@ import {
   HeartHandshake,
   MessageSquareText,
   Users,
+  Handshake,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
@@ -32,7 +36,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
 import { ProfilePublicPageLoading } from "@/components/loading/route-loaders";
-import { VerifiedMark } from "@/components/ui/trust-signals";
+import { MembershipMark } from "@/components/ui/trust-signals";
 import {
   Dialog,
   DialogContent,
@@ -52,6 +56,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Navbar } from "./navbar";
+import { AuthModal } from "./auth-modal";
 import { LuMapPin, LuPencil, LuUserMinus } from "react-icons/lu";
 import { TooltipContent, Tooltip, TooltipTrigger } from "./ui/tooltip";
 import {
@@ -71,7 +76,10 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { reportUserSchema, type ReportUserFormData } from "@/lib/validations";
 import { REPORT_REASON_LABELS, REPORT_REASON_OPTIONS } from "@/lib/reporting";
-import { shouldShowVerifiedBadge } from "@/lib/member-verification";
+import {
+  shouldShowCommunityFriendBadge,
+  shouldShowVerifiedBadge,
+} from "@/lib/member-verification";
 
 interface ProfileDetailClientProps {
   id: string;
@@ -82,7 +90,6 @@ export function ProfileDetailClient({
   id,
   initialProfile,
 }: ProfileDetailClientProps) {
-  const router = useRouter();
   const {
     user,
     profile: currentUserProfile,
@@ -106,6 +113,7 @@ export function ProfileDetailClient({
   >([]);
   const [recommendationLoading, setRecommendationLoading] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   const reportForm = useForm<ReportUserFormData>({
     resolver: zodResolver(reportUserSchema),
@@ -211,10 +219,7 @@ export function ProfileDetailClient({
     if (!user) {
       toast.error("Você precisa estar logado para adicionar contatos", {
         description: "Faça login para criar sua rede de confiança.",
-        action: {
-          label: "Login",
-          onClick: () => router.push("/"),
-        },
+        action: { label: "Entrar", onClick: () => setAuthModalOpen(true) },
       });
       return;
     }
@@ -233,7 +238,7 @@ export function ProfileDetailClient({
     if (!user) {
       toast.error("Entre para indicar um profissional", {
         description: "A indicação comunitária é registrada uma vez por membro.",
-        action: { label: "Login", onClick: () => router.push("/") },
+        action: { label: "Entrar", onClick: () => setAuthModalOpen(true) },
       });
       return;
     }
@@ -789,27 +794,33 @@ export function ProfileDetailClient({
     targetProfile.category ||
     "Membro da Comunidade Skillsy";
   const profileTrustItems = [
+    shouldShowVerifiedBadge(targetProfile)
+      ? {
+          label: "Vínculo",
+          value: "Membro verificado",
+          detail: "Informou ramo ou ala e ano de batismo.",
+          icon: ShieldCheck,
+        }
+      : shouldShowCommunityFriendBadge(targetProfile)
+        ? {
+            label: "Vínculo",
+            value: "Amigo da comunidade",
+            detail: "Não é membro da Igreja, mas faz parte da comunidade.",
+            icon: Handshake,
+          }
+        : {
+            label: "Vínculo",
+            value: "Perfil público",
+            detail: "Veja as informações públicas antes de entrar em contato.",
+            icon: ShieldCheck,
+          },
     {
-      label: "Verificação",
-      value: shouldShowVerifiedBadge(targetProfile)
-        ? "Membro verificado"
-        : "Perfil público",
-      detail: shouldShowVerifiedBadge(targetProfile)
-        ? "Sinal de identidade e participação revisado pela plataforma."
-        : "Veja as informações públicas antes de entrar em contato.",
-      icon: ShieldCheck,
-    },
-    {
-      label: "Reputação",
-      value: `${targetProfile.rating || "0.0"} de 5`,
-      detail: `${targetProfile.reviewCount || 0} avaliação${(targetProfile.reviewCount || 0) === 1 ? "" : "es"} registradas na comunidade.`,
-      icon: Star,
-    },
-    {
-      label: "Indicações",
-      value: `${targetProfile.recommendationCount || 0} pessoa${(targetProfile.recommendationCount || 0) === 1 ? "" : "s"} indicam`,
-      detail: "Cada membro pode registrar uma indicação por profissional.",
-      icon: HeartHandshake,
+      label: "Avaliações",
+      value: formatReviewCount(targetProfile.reviewCount || 0),
+      detail: targetProfile.reviewCount
+        ? `Média de ${Number(targetProfile.rating || 0).toFixed(1)} estrelas nos comentários.`
+        : "Nota em estrelas com comentário opcional.",
+      icon: MessageSquareText,
     },
     {
       label: "Contexto",
@@ -823,6 +834,7 @@ export function ProfileDetailClient({
   return (
     <>
       <Navbar user={user} profile={profile} logout={logout} />
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
 
       <main className="w-full h-full">
         <motion.div
@@ -850,17 +862,11 @@ export function ProfileDetailClient({
               <div className="relative flex flex-col">
                 {/* Avatar Overlap */}
                 <div className="flex items-center md:py-4 py-2 justify-end">
-                  <div className="text-center  border px-2 py-1 space-y-2 flex sm:hidden">
-                    <div className="flex items-baseline justify-center space-x-2">
-                      <Star
-                        size={14}
-                        fill="currentColor"
-                        className="text-yellow-500"
-                      />
-                      <p className="text-base font-medium text-primary">
-                        {targetProfile.rating || "0.0"}
-                      </p>
-                    </div>
+                  <div className="flex border px-2 py-1 sm:hidden">
+                    <RecommendationCount
+                      recommendationCount={targetProfile.recommendationCount || 0}
+                      className="text-sm"
+                    />
                   </div>
                   <div className="sm:flex space-x-2 hidden ">
                     {renderShareButton("size-10 rounded-md")}
@@ -943,9 +949,7 @@ export function ProfileDetailClient({
                       <h2 className="text-xl md:text-3xl font-bold text-text-main leading-tight">
                         {targetProfile.name}
                       </h2>
-                      {shouldShowVerifiedBadge(targetProfile) && (
-                        <VerifiedMark size={20} />
-                      )}
+                      <MembershipMark profile={targetProfile} size={20} />
                     </div>
 
                     <p className="text-base text-text-muted font-normal">
@@ -999,20 +1003,18 @@ export function ProfileDetailClient({
                   </div>
 
                   <div className="flex flex-col w-full sm:w-auto">
-                    <div className="text-center bg-surface rounded-sm border p-4 space-y-2 hidden sm:block">
-                      <p className="text-xs font-bold text-text-muted">
-                        {targetProfile.reviewCount || 0} avaliações
-                      </p>
-                      <div className="flex items-baseline justify-center space-x-2">
-                        <Star
-                          size={18}
-                          fill="currentColor"
-                          className="text-yellow-500"
-                        />
-                        <p className="text-3xl font-bold text-primary ">
-                          {targetProfile.rating || "0.0"}
+                    <div className="hidden space-y-1 rounded-sm border bg-surface p-4 text-center sm:block">
+                      <div className="flex items-center justify-center gap-2 text-primary">
+                        <HeartHandshake size={22} aria-hidden="true" />
+                        <p className="text-3xl font-bold">
+                          {targetProfile.recommendationCount || 0}
                         </p>
                       </div>
+                      <p className="text-xs font-bold text-text-muted">
+                        {(targetProfile.recommendationCount || 0) === 1
+                          ? "indicação"
+                          : "indicações"}
+                      </p>
                     </div>
                     <div className="flex flex-col gap-2 sm:hidden ">
                       <div className="flex gap-2 justify-end">
@@ -1087,7 +1089,7 @@ export function ProfileDetailClient({
           </section>
 
           <section className="border-y border-border-subtle bg-surface">
-            <div className="container mx-auto grid grid-cols-1 gap-2 px-4 py-3 md:grid-cols-4">
+            <div className="container mx-auto grid grid-cols-1 gap-2 px-4 py-3 md:grid-cols-3">
               {profileTrustItems.map((item) => (
                 <div
                   key={item.label}
@@ -1119,12 +1121,13 @@ export function ProfileDetailClient({
                   <h3 className="text-base font-semibold text-text-main">
                     Indicado pela comunidade
                   </h3>
+                  <RecommendationCount
+                    recommendationCount={targetProfile.recommendationCount || 0}
+                    size={18}
+                    className="text-lg"
+                  />
                   <p className="max-w-2xl text-sm leading-relaxed text-text-muted">
-                    {targetProfile.recommendationCount || 0} pessoa
-                    {(targetProfile.recommendationCount || 0) === 1
-                      ? ""
-                      : "s"}{" "}
-                    indicam este profissional. Cada membro pode indicar uma vez.
+                    Cada membro pode indicar uma vez este profissional.
                   </p>
                 </div>
 
@@ -1219,43 +1222,57 @@ export function ProfileDetailClient({
               <div className="bg-card w-full border-y border-border-subtle md:border-l border-l-0 ">
                 <div className="h-full w-full p-4 mx-auto container md:pe-7 space-y-4">
                   <h3 className="md:text-xl text-base font-semibold text-text-main">
-                    Avaliações da Comunidade
+                    Avaliar este profissional
                   </h3>
                   <div className="w-full h-full flex space-x-2 md:space-x-4">
                     <div className="text-center bg-surface rounded-lg border size-26 p-2 flex-none">
                       <div className="flex flex-col items-center justify-center h-full w-full">
-                        <p className="md:text-3xl text-2xl font-bold text-primary">
-                          {targetProfile.rating || "0.0"}
+                        <p className="md:text-3xl text-2xl font-bold text-text-main">
+                          {Number(targetProfile.rating || 0).toFixed(1)}
                         </p>
-                        <div className="flex items-center justify-center gap-0.5 text-highlight py-1">
-                          <Star size={12} fill="currentColor" />
-                          <Star size={12} fill="currentColor" />
-                          <Star size={12} fill="currentColor" />
-                          <Star size={12} fill="currentColor" />
-                          <Star size={12} fill="currentColor" />
+                        <div
+                          className="flex items-center justify-center gap-0.5 py-1 text-highlight"
+                          aria-hidden="true"
+                        >
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              size={12}
+                              fill={
+                                Math.round(targetProfile.rating || 0) >= star
+                                  ? "currentColor"
+                                  : "none"
+                              }
+                            />
+                          ))}
                         </div>
                         <p className="text-xs font-bold text-text-muted">
-                          {targetProfile.reviewCount || 0} avaliações
+                          {formatReviewCount(targetProfile.reviewCount || 0)}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex flex-col space-y-1.5">
                       <p className="text-sm text-text-main font-medium">
-                        Compartilhe sua percepção sobre este profissional.
+                        Dê uma nota em estrelas e, se quiser, deixe um
+                        comentário.
                       </p>
                       <p className="text-xs text-text-muted">
-                        A nota de 1 a 5 estrelas é obrigatória. O comentário é
-                        opcional e a avaliação não está ligada a um serviço
-                        específico.
+                        A nota de 1 a 5 estrelas acompanha o seu comentário,
+                        que é opcional. Seu nome aparece junto à avaliação.
                       </p>
-                      <p className="text-xs font-medium text-text-muted">
-                        Seu nome será exibido junto à avaliação.
-                      </p>
-                      <div className="flex items-center gap-1.5 ">
+                      <div
+                        className="flex items-center gap-1.5"
+                        role="radiogroup"
+                        aria-label="Nota em estrelas"
+                      >
                         {[1, 2, 3, 4, 5].map((star) => (
                           <button
                             key={star}
+                            type="button"
+                            role="radio"
+                            aria-checked={userRating === star}
+                            aria-label={`${star} ${star === 1 ? "estrela" : "estrelas"}`}
                             disabled={!canRateProfile || submittingRating}
                             onMouseEnter={() => setRatingHover(star)}
                             onMouseLeave={() => setRatingHover(0)}

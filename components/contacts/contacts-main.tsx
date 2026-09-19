@@ -6,7 +6,6 @@ import {
   UserMinus,
   MapPin,
   Building2,
-  Star,
   Copy,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -16,8 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserProfile } from "@/models/types";
-import { shouldShowVerifiedBadge } from "@/lib/member-verification";
-import { VerifiedMark } from "@/components/ui/trust-signals";
+import { MembershipMark } from "@/components/ui/trust-signals";
+import { RecommendationCount } from "@/components/profile/recommendation-summary";
 import { useContactsStore } from "@/store/use-contacts-store";
 import { toast } from "sonner";
 import { SidebarTrigger } from "../ui/sidebar";
@@ -298,12 +297,13 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   </Button>
                   <div className="flex justify-end md:text-right md:hidden flex-col">
                     <p className="text-xs font-bold text-text-muted">
-                      Avaliação
+                      Indicações
                     </p>
-                    <div className="flex items-center justify-start drop-shadow-sm gap-1 font-bold text-highlight text-base">
-                      <Star size={14} fill="currentColor" />
-                      {selectedContact.rating || "0.0"}
-                    </div>
+                    <RecommendationCount
+                      recommendationCount={selectedContact.recommendationCount || 0}
+                      compact
+                      className="text-base"
+                    />
                   </div>
                 </div>
               </div>
@@ -316,19 +316,18 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                         <h2 className="text-2xl md:text-3xl font-bold text-text-main font-heading tracking-tight">
                           {selectedContact.name}
                         </h2>
-                        {shouldShowVerifiedBadge(selectedContact) && (
-                          <VerifiedMark size={18} />
-                        )}
+                        <MembershipMark profile={selectedContact} size={18} />
                       </div>
 
                       <div className="text-center md:text-left md:flex flex-col hidden">
                         <p className="text-xs font-bold text-text-muted">
-                          Avaliação
+                          Indicações
                         </p>
-                        <div className="flex items-center justify-center drop-shadow-sm md:justify-start gap-1 font-bold text-highlight text-base">
-                          <Star size={14} fill="currentColor" />
-                          {selectedContact.rating || "0.0"}
-                        </div>
+                        <RecommendationCount
+                          recommendationCount={selectedContact.recommendationCount || 0}
+                          compact
+                          className="text-base"
+                        />
                       </div>
                     </div>
 
