@@ -109,7 +109,7 @@ export function BenefitsSection() {
               <motion.div
                 key={benefit.title}
                 variants={cardVariants}
-                className="flex bg-card border relative "
+                className="flex bg-card border relative shadow-md "
               >
                 <div
                   className={`h-full w-1/3 flex justify-center items-center ${benefit.bg}`}

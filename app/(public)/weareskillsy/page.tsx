@@ -14,6 +14,7 @@ import HeaderSection, {
   type HeaderTextSegment,
 } from "@/components/headersection";
 import { createPublicMetadata } from "@/lib/public-metadata";
+import { Card, CardDescription } from "@/components/ui/card";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "O Que É o Skillsy",
@@ -92,7 +93,7 @@ export default function WeAreSkillsyPage() {
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
-        <div className="w-full rounded-xl bg-card p-4 shadow-sm xl:p-8 border border-border-subtle">
+        <div className="w-full  bg-card p-4 shadow-sm xl:p-8 border border-border-subtle">
           <div className="grid grid-cols-12 gap-2 md:gap-4 md:gap-y-8 xl:gap-8 gap-y-8">
             <div className="col-span-12 space-y-4">
               <h3 className="text-2xl font-bold">Ser Skillsy</h3>
@@ -103,27 +104,7 @@ export default function WeAreSkillsyPage() {
                 precisa de ajuda e quem pode servir com seu trabalho.
               </p>
             </div>
-            {/* {principles.map((principle) => (
-              <div
-                key={principle.title}
-                className={`rounded-md col-span-12 lg:col-span-4 p-4 border space-y-4`}
-              >
-                <div
-                  className={`${principle.tone} flex size-12 items-center justify-center`}
-                >
-                  <principle.icon size={22} />
-                </div>
-
-                <div className="">
-                  <h2 className="text-xl font-bold text-text-main">
-                    {principle.title}
-                  </h2>
-                  <p className="text-sm leading-relaxed text-text-muted">
-                    {principle.description}
-                  </p>
-                </div>
-              </div>
-            ))} */}
+  
           </div>
         </div>
       </div>
@@ -207,7 +188,7 @@ export default function WeAreSkillsyPage() {
               </div>
             </div>
             <div className="col-span-12 md:col-span-6">
-              <div className="w-full md:h-full h-90 relative overflow-hidden rounded-2xl">
+              <div className="w-full md:h-full h-90 relative overflow-hidden ">
                 <Image
                   src={"/Gemini_Generated_Image_g8p7zcg8p7zcg8p7.png"}
                   alt={"Pessoa apresentando seu trabalho na comunidade"}
@@ -223,7 +204,7 @@ export default function WeAreSkillsyPage() {
 
       <section className="container mx-auto px-4 my-24">
         <div className="grid grid-cols-12 gap-4 md:gap-8">
-          <div className="col-span-12 lg:col-span-4">
+          <div className="col-span-12 ">
             <div className="space-y-4">
               <h2 className="text-xl 2xl:text-2xl font-bold text-text-main">
                 Os valores que guiam a plataforma
@@ -235,21 +216,24 @@ export default function WeAreSkillsyPage() {
               </p>
             </div>
           </div>
-          <div className="col-span-12 lg:col-span-8">
+          <div className="col-span-12 ">
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               {values.map((value) => (
                 <div key={value.title} className="md:col-span-4 col-span-12">
-                  <div className="border border-border-subtle p-4 h-full rounded-md space-y-2 bg-surface">
-                    <div className="flex size-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
-                      <value.icon size={22} />
+                  <Card className="h-full flex flex-row p-0 ">
+                    <div className="flex flex-col w-1/3 h-full bg-primary/10 justify-center items-center ">
+                      <value.icon  className="text-primary lg:size-7" />
                     </div>
-                    <h3 className="text-base font-bold text-text-main">
+                     <div className="py-4 pe-4 space-y-2">
+                                <h3 className="text-base font-bold text-text-main">
                       {value.title}
                     </h3>
                     <p className="text-sm font-normal text-text-muted">
                       {value.description}
                     </p>
-                  </div>
+                     </div>
+          
+                  </Card>
                 </div>
               ))}
             </div>
@@ -259,7 +243,7 @@ export default function WeAreSkillsyPage() {
 
       <div className="container mx-auto px-4 my-24">
         <section className="mt-12 grid grid-cols-12 gap-y-8 gap-4 lg:gap-8">
-          <div className="col-span-12 lg:col-span-6 rounded-xl bg-surface border border-border-subtle p-4 md:p-8 lg:p-10 space-y-4">
+          <div className="col-span-12 lg:col-span-6 bg-surface border border-border-subtle p-4 md:p-8 lg:p-10 space-y-4">
             <h2 className="text-xl md:text-2xl font-bold text-text-main">
               O que o Skillsy não pretende ser
             </h2>
@@ -318,7 +302,7 @@ export default function WeAreSkillsyPage() {
       </div>
 
       <div className="container mx-auto px-4 mb-24">
-        <section className="rounded-xl border border-warning-border bg-warning-surface p-4  md:p-8">
+        <section className="border border-warning-border bg-warning-surface p-4  md:p-8">
           <div className="max-w-4xl space-y-4">
             <h2 className="text-xl font-bold text-warning-foreground">
               Comunicado importante
