@@ -35,7 +35,7 @@ interface NavbarProps {
 
 const primaryNavItems = [
   { href: "/search", label: "Buscar profissional" },
-  { href: "/encontrar-ajuda", label: "Pedir ajuda" },
+  { href: "/encontrar-ajuda", label: "O que precisa?" },
   { href: "/oportunidades", label: "Oportunidades" },
 ] as const;
 
