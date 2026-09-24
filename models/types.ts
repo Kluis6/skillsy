@@ -37,6 +37,8 @@ export interface UserProfile {
   businessComplement?: string;
   gallery?: GalleryItem[];
   rating?: number;
+  /** Sum of all scores; the average is ratingSum / reviewCount. */
+  ratingSum?: number;
   reviewCount?: number;
   recommendationCount?: number;
   experienceYears?: number;

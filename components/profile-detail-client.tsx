@@ -754,12 +754,18 @@ export function ProfileDetailClient({
         description:
           "Obrigado por compartilhar sua percepção com a comunidade.",
       });
-      // Refresh profile to show new rating
-      const [updated, updatedRatings] = await Promise.all([
-        UserService.getPublicProfile(id),
-        UserService.getRatings(id),
-      ]);
-      setTargetProfile(updated);
+      // Apply the new score locally instead of refetching the profile.
+      const updatedRatings = await UserService.getRatings(id);
+      setTargetProfile((current) => {
+        if (!current) return current;
+        const count = current.reviewCount || 0;
+        const average = ((current.rating || 0) * count + userRating) / (count + 1);
+        return {
+          ...current,
+          rating: Math.round(average * 10) / 10,
+          reviewCount: count + 1,
+        };
+      });
       setRatings(updatedRatings);
       setRatingComment("");
     } catch (error: any) {

@@ -19,6 +19,7 @@ import {
   deleteDoc,
   Timestamp,
   deleteField,
+  getCountFromServer,
 } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { toPlainValue } from "@/lib/firestore-plain";
@@ -605,6 +606,16 @@ const publicProfileDefaults: Pick<UserProfile, "email" | "role" | "contacts"> =
     contacts: [],
   };
 
+// Profiles store ratingSum + reviewCount so the rules can validate each new
+// rating; the average is derived here. Legacy profiles fall back to rating.
+function getAverageRating(source: Partial<UserProfile>) {
+  const count = source.reviewCount || 0;
+  if (typeof source.ratingSum === "number" && count > 0) {
+    return Math.round((source.ratingSum / count) * 10) / 10;
+  }
+  return source.rating;
+}
+
 function toPublicProfileModel(
   source: Partial<UserProfile> | Record<string, unknown> | null | undefined,
 ): UserProfile | null {
@@ -636,7 +647,7 @@ function toPublicProfileModel(
     searchTokens: raw.searchTokens || [],
     companyName: raw.companyName || "",
     gallery: raw.gallery || [],
-    rating: raw.rating,
+    rating: getAverageRating(raw),
     reviewCount: raw.reviewCount,
     recommendationCount: raw.recommendationCount ?? 0,
     experienceYears: raw.experienceYears,
@@ -684,9 +695,8 @@ function buildPublicProfileData(source: Partial<UserProfile>) {
     ),
     companyName: source.companyName || "",
     gallery: source.gallery || [],
-    rating: source.rating ?? 0,
-    reviewCount: source.reviewCount ?? 0,
-    recommendationCount: source.recommendationCount,
+    // Aggregates (ratingSum, reviewCount, recommendationCount) are only changed
+    // by the rating/recommendation flows the rules validate; merge writes keep them.
     experienceYears: source.experienceYears,
     availability: source.availability || [],
     serviceHours: source.serviceHours || "",
@@ -1384,6 +1394,78 @@ export const UserService = {
     }
   },
 
+  /**
+   * Admin-only: rebuilds ratingSum, reviewCount, rating and recommendationCount
+   * from the ratings and recommendations themselves. Run once to migrate
+   * profiles rated before ratingSum existed, and whenever the numbers drift.
+   * Writes only documents whose values changed.
+   */
+  async recalculateProviderStats(): Promise<{ profiles: number; updated: number }> {
+    const path = "public_profiles";
+    try {
+      const [ratingsSnapshot, profilesSnapshot, usersSnapshot] = await Promise.all([
+        getDocs(collection(db, "ratings")),
+        getDocs(collection(db, "public_profiles")),
+        getDocs(collection(db, "users")),
+      ]);
+
+      const ratingTotals = new Map<string, { sum: number; count: number }>();
+      ratingsSnapshot.forEach((item) => {
+        const { toId, score } = item.data() as Partial<Rating>;
+        if (typeof toId !== "string" || typeof score !== "number") return;
+        const totals = ratingTotals.get(toId) || { sum: 0, count: 0 };
+        ratingTotals.set(toId, { sum: totals.sum + score, count: totals.count + 1 });
+      });
+      const userIds = new Set(usersSnapshot.docs.map((item) => item.id));
+
+      const writes: Array<{ ref: ReturnType<typeof doc>; data: Record<string, number> }> = [];
+      for (const profileDoc of profilesSnapshot.docs) {
+        const uid = profileDoc.id;
+        const current = profileDoc.data() as Partial<UserProfile>;
+        const totals = ratingTotals.get(uid) || { sum: 0, count: 0 };
+        const recommendations = await getCountFromServer(
+          collection(db, "public_profiles", uid, "recommendations"),
+        );
+        const rating =
+          totals.count > 0 ? Math.round((totals.sum / totals.count) * 10) / 10 : 0;
+        const next = {
+          ratingSum: totals.sum,
+          reviewCount: totals.count,
+          rating,
+          recommendationCount: recommendations.data().count,
+        };
+        const changed = (Object.keys(next) as Array<keyof typeof next>).some(
+          (key) => (current[key] ?? null) !== next[key],
+        );
+        if (!changed) continue;
+
+        writes.push({ ref: doc(db, "public_profiles", uid), data: next });
+        if (userIds.has(uid)) {
+          writes.push({
+            ref: doc(db, "users", uid),
+            data: { rating, reviewCount: totals.count },
+          });
+        }
+      }
+
+      for (let index = 0; index < writes.length; index += 450) {
+        const batch = writeBatch(db);
+        writes
+          .slice(index, index + 450)
+          .forEach((write) => batch.update(write.ref, write.data));
+        await batch.commit();
+      }
+
+      return {
+        profiles: profilesSnapshot.size,
+        updated: writes.filter((write) => write.ref.parent.id === "public_profiles").length,
+      };
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+      return { profiles: 0, updated: 0 };
+    }
+  },
+
   async getAllUsers(): Promise<UserProfile[]> {
     const path = "users";
     try {
@@ -1653,7 +1735,6 @@ export const UserService = {
         }
 
         const authorRef = doc(db, "users", fromId);
-        const userRef = doc(db, "users", toId);
         const publicProfileRef = doc(db, "public_profiles", toId);
         const [authorSnapshot, publicProfileSnap] = await Promise.all([
           transaction.get(authorRef),
@@ -1687,18 +1768,21 @@ export const UserService = {
           throw new Error("Este perfil não está disponível para avaliações.");
         }
 
-        const currentRating = publicProfileData.rating || 0;
         const currentCount = publicProfileData.reviewCount || 0;
+        if (currentCount > 0 && typeof publicProfileData.ratingSum !== "number") {
+          throw new Error(
+            "As avaliações deste perfil estão sendo atualizadas. Tente novamente mais tarde.",
+          );
+        }
 
-        const newCount = currentCount + 1;
-        const newRating = (currentRating * currentCount + score) / newCount;
-
+        // The rules check that ratingSum grows by exactly this score, found
+        // through the deterministic rating id.
         transaction.set(voteRef, {
           providerId: toId,
           votedAt: serverTimestamp(),
         });
 
-        const ratingRef = doc(collection(db, "ratings"));
+        const ratingRef = doc(db, "ratings", `${fromId}_${toId}`);
         transaction.set(ratingRef, {
           toId,
           fromId,
@@ -1708,21 +1792,10 @@ export const UserService = {
           createdAt: serverTimestamp(),
         });
 
-        transaction.update(userRef, {
-          rating: Number(newRating.toFixed(1)),
-          reviewCount: newCount,
+        transaction.update(publicProfileRef, {
+          ratingSum: (publicProfileData.ratingSum || 0) + score,
+          reviewCount: currentCount + 1,
         });
-
-        if (publicProfileSnap.exists()) {
-          transaction.set(
-            publicProfileRef,
-            {
-              rating: Number(newRating.toFixed(1)),
-              reviewCount: newCount,
-            },
-            { merge: true },
-          );
-        }
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, "transaction/rating");

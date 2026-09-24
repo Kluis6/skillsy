@@ -12,7 +12,9 @@ import {
   ShieldAlert,
   FileText,
   AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
+import { toast } from "sonner";
 import { motion } from "motion/react";
 import Link from "next/link";
 import {
@@ -28,6 +30,21 @@ import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 export function AdminDashboardClient() {
   const { profile, loading: authLoading } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [recalculating, setRecalculating] = useState(false);
+
+  const handleRecalculateStats = async () => {
+    setRecalculating(true);
+    try {
+      const { profiles, updated } = await UserService.recalculateProviderStats();
+      toast.success("Avaliações recalculadas", {
+        description: `${updated} de ${profiles} perfis atualizados.`,
+      });
+    } catch {
+      toast.error("Não foi possível recalcular as avaliações.");
+    } finally {
+      setRecalculating(false);
+    }
+  };
   const [reports, setReports] = useState<UserReport[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -80,13 +97,28 @@ export function AdminDashboardClient() {
   return (
     <TooltipProvider>
       <div className="pb-20 px-6 md:px-10 py-8 max-w-7xl mx-auto">
-        <div className="mb-10">
-          <h2 className="text-3xl font-bold text-text-main font-heading">
-            Painel administrativo
-          </h2>
-          <p className="text-text-muted mt-1">
-            Visão geral do sistema e atalhos de gerenciamento.
-          </p>
+        <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className="text-3xl font-bold text-text-main font-heading">
+              Painel administrativo
+            </h2>
+            <p className="text-text-muted mt-1">
+              Visão geral do sistema e atalhos de gerenciamento.
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={handleRecalculateStats}
+            disabled={recalculating}
+            title="Refaz notas e indicações a partir das avaliações registradas"
+          >
+            {recalculating ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <RefreshCw />
+            )}
+            Recalcular avaliações
+          </Button>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">

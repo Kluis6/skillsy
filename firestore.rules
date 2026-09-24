@@ -320,7 +320,7 @@ service cloud.firestore {
       let allowedFields = [
         'uid', 'name', 'photoURL', 'bannerURL', 'bio', 'category',
         'isProvider', 'serviceType', 'publicCity', 'publicState', 'ward', 'memberVerified', 'communityFriend', 'searchTokens', 'companyName', 'gallery',
-        'rating', 'reviewCount', 'recommendationCount', 'experienceYears', 'availability',
+        'rating', 'ratingSum', 'reviewCount', 'recommendationCount', 'experienceYears', 'availability',
         'serviceHours', 'whatsapp', 'instagram', 'facebook', 'linkedin',
         'website', 'phone', 'phones', 'isBlocked', 'isDeleted', 'createdAt'
       ];
@@ -348,6 +348,7 @@ service cloud.firestore {
              (!('rating' in data) || data.rating is number) &&
              (!('reviewCount' in data) || data.reviewCount is number) &&
              (!('recommendationCount' in data) || (data.recommendationCount is number && data.recommendationCount >= 0)) &&
+             (!('ratingSum' in data) || (data.ratingSum is number && data.ratingSum >= 0)) &&
              (!('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
              (!('availability' in data) || data.availability == null || isValidAvailabilityList(data.availability)) &&
              (!('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200)) &&
@@ -402,20 +403,50 @@ service cloud.firestore {
                get(publicProfilePath(targetUserId)).data.isBlocked == false);
     }
 
+    // Aggregates on public_profiles: ratingSum + reviewCount (the average is
+    // derived on read) and recommendationCount. Owners can never set or change
+    // them; other members can only add or remove their own contribution.
+    function startsWithEmptyStats(data) {
+      return data.get('rating', 0) == 0 &&
+             data.get('ratingSum', 0) == 0 &&
+             data.get('reviewCount', 0) == 0 &&
+             data.get('recommendationCount', 0) == 0;
+    }
+
+    function keepsAggregateStats(data) {
+      return data.get('rating', 0) == resource.data.get('rating', 0) &&
+             data.get('ratingSum', 0) == resource.data.get('ratingSum', 0) &&
+             data.get('reviewCount', 0) == resource.data.get('reviewCount', 0) &&
+             data.get('recommendationCount', 0) == resource.data.get('recommendationCount', 0);
+    }
+
+    // One rating per member and provider, so the rules can find it by id.
+    function ratingDocPath(raterId, targetUserId) {
+      let ratingId = raterId + '_' + targetUserId;
+      return /databases/$(database)/documents/ratings/$(ratingId);
+    }
+
     function isAllowedRatingAggregateUpdate(targetUserId) {
+      let ratingPath = ratingDocPath(request.auth.uid, targetUserId);
+      let previousCount = resource.data.get('reviewCount', 0);
       return isAuthenticated() &&
              isNotBlocked() &&
              request.auth.uid != targetUserId &&
              canReceiveRatings(targetUserId) &&
-             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount']) &&
-             request.resource.data.rating is number &&
-             request.resource.data.rating >= 1 &&
-             request.resource.data.rating <= 5 &&
-             request.resource.data.reviewCount is number &&
-             request.resource.data.reviewCount >= 1 &&
-             ((!('reviewCount' in resource.data) && request.resource.data.reviewCount == 1) ||
-              (request.resource.data.reviewCount == resource.data.reviewCount + 1)) &&
-             existsAfter(voteDocPath(request.auth.uid, targetUserId));
+             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ratingSum', 'reviewCount']) &&
+             // Profiles rated before ratingSum existed must be migrated first
+             // (scripts/backfill-rating-sums.mjs).
+             ('ratingSum' in resource.data || previousCount == 0) &&
+             !exists(ratingPath) &&
+             existsAfter(ratingPath) &&
+             request.resource.data.reviewCount == previousCount + 1 &&
+             request.resource.data.ratingSum == resource.data.get('ratingSum', 0) + getAfter(ratingPath).data.score;
+    }
+
+    function ratingCreationUpdatesAggregate(targetUserId) {
+      return existsAfter(publicProfilePath(targetUserId)) &&
+             getAfter(publicProfilePath(targetUserId)).data.get('reviewCount', 0) ==
+               get(publicProfilePath(targetUserId)).data.get('reviewCount', 0) + 1;
     }
 
     function recommendationPath(targetUserId, recommenderId) {
@@ -788,17 +819,19 @@ service cloud.firestore {
                     resource.data.email == request.auth.token.email);
       
       // Create: Owner can create as 'user', Admin can create anything
-      allow create: if (isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.role == 'user') || isAdmin();
+      allow create: if (isOwner(userId) &&
+                        isValidUser(request.resource.data) &&
+                        request.resource.data.role == 'user' &&
+                        startsWithEmptyStats(request.resource.data)) ||
+                       isAdmin();
       
-      // Update: Owner can update their info, Admin anything, 
-      // OR a non-owner can perform a rating update if paired with a vote record
+      // Update: Owner can update their info (never the rating aggregates), Admin anything
       allow update: if (isOwner(userId) && isValidUserUpdate(request.resource.data) && 
                         (!('role' in request.resource.data) || keepsSameUserRole(request.resource.data)) &&
                         (!('isBlocked' in request.resource.data) || keepsSameBlockedStatus(request.resource.data)) &&
                         (!('uid' in request.resource.data) || keepsSameUid(userId, request.resource.data)) &&
-                        (!('createdAt' in request.resource.data) || keepsSafeCreatedAt(request.resource.data))) 
-                    || 
-                    isAllowedRatingAggregateUpdate(userId)
+                        (!('createdAt' in request.resource.data) || keepsSafeCreatedAt(request.resource.data)) &&
+                        keepsAggregateStats(request.resource.data))
                     || isAdmin();
       
       // Delete: Only Admin
@@ -825,9 +858,14 @@ service cloud.firestore {
     match /public_profiles/{userId} {
       allow read: if isPublicProfileVisible();
 
-      allow create: if (isOwner(userId) && isValidPublicProfile(request.resource.data, userId)) || isAdmin();
+      allow create: if (isOwner(userId) &&
+                        isValidPublicProfile(request.resource.data, userId) &&
+                        startsWithEmptyStats(request.resource.data)) ||
+                       isAdmin();
 
-      allow update: if (isOwner(userId) && isValidPublicProfile(request.resource.data, userId)) ||
+      allow update: if (isOwner(userId) &&
+                        isValidPublicProfile(request.resource.data, userId) &&
+                        keepsAggregateStats(request.resource.data)) ||
                     isAllowedRatingAggregateUpdate(userId) ||
                     isAllowedRecommendationAggregateUpdate(userId) ||
                     isAdmin();
@@ -868,7 +906,9 @@ service cloud.firestore {
       // Create: Only authenticated users who are not blocked and not rating themselves
       // MUST also create a private vote record to prevent spam while staying anonymous
       allow create: if isAuthenticated() && isNotBlocked() && isValidRating(request.resource.data) &&
-                      existsAfter(voteDocPath(request.auth.uid, request.resource.data.toId));
+                      ratingId == request.auth.uid + '_' + request.resource.data.toId &&
+                      existsAfter(voteDocPath(request.auth.uid, request.resource.data.toId)) &&
+                      ratingCreationUpdatesAggregate(request.resource.data.toId);
 
       // Update/Delete: Only Admin (for moderation)
       allow update, delete: if isAdmin();
