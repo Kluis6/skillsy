@@ -45,11 +45,8 @@ typography:
     lineHeight: 1.2
     letterSpacing: "0"
 rounded:
-  sm: "4px"
-  md: "8px"
-  lg: "12px"
-  xl: "16px"
-  pill: "999px"
+  none: "0"
+  circle: "999px" # só para elementos circulares por natureza: avatar, switch, rádio, spinner, contador
 spacing:
   xs: "4px"
   sm: "8px"
@@ -61,24 +58,24 @@ components:
   button-primary:
     backgroundColor: "{colors.trust-blue}"
     textColor: "{colors.clean-white}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.none}"
     padding: "10px 24px"
     height: "40px"
   button-secondary:
     backgroundColor: "{colors.clean-white}"
     textColor: "{colors.deep-ink}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.none}"
     padding: "10px 16px"
     height: "40px"
   surface-panel:
     backgroundColor: "{colors.clean-white}"
     textColor: "{colors.deep-ink}"
-    rounded: "{rounded.xl}"
+    rounded: "{rounded.none}"
     padding: "24px"
   trust-chip:
     backgroundColor: "{colors.community-surface}"
     textColor: "{colors.trust-blue}"
-    rounded: "{rounded.pill}"
+    rounded: "{rounded.none}"
     padding: "6px 12px"
 ---
 
@@ -202,7 +199,8 @@ Skillsy usa profundidade por camadas tonais, bordas e espaçamento. Sombras são
 - **Do** preferir borda, espaçamento e estado visual claro a sombras pesadas.
 
 ### Don't:
-- **Don't** criar novos cards com `rounded-[2rem]`, `shadow-2xl` ou decoração gratuita.
+- **Don't** arredondar cantos: o sistema é reto (`--radius` e `--radius-*` valem 0). `rounded-full` só em elementos circulares por natureza (avatar, switch, rádio, spinner, contador de notificação).
+- **Don't** criar novos cards com `shadow-2xl` ou decoração gratuita.
 - **Don't** usar azul forte como textura de fundo repetida em telas de produto.
 - **Don't** usar `text-[10px]` para ajuda, erro, limite de campo ou informação pública.
 - **Don't** colocar botão dentro de link ou link dentro de botão.
