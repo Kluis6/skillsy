@@ -58,7 +58,7 @@ export function SurfacePanel({
     <Component
       className={cn(
         // Card level: stands out from the page background.
-        "rounded-lg border border-border-subtle bg-card p-5 shadow-xs md:p-6",
+        "border border-border-subtle bg-card p-5 shadow-xs md:p-6",
         className,
       )}
     >
@@ -85,12 +85,12 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border bg-surface p-10 text-center",
+        "flex flex-col items-center justify-center gap-4 border border-dashed border-border bg-surface p-10 text-center",
         className,
       )}
     >
       {icon ? (
-        <div className="flex size-12 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+        <div className="flex size-12 items-center justify-center bg-secondary text-secondary-foreground">
           {icon}
         </div>
       ) : null}

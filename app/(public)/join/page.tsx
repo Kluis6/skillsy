@@ -103,7 +103,7 @@ export default function JoinPage() {
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
-        <div className="w-full rounded-xl bg-card p-4 shadow-sm xl:p-8 border border-border-subtle">
+        <div className="w-full bg-card p-4 shadow-sm xl:p-8 border border-border-subtle">
           <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
             <div className="col-span-12 space-y-4">
               <h2 className="text-xl md:text-2xl font-bold text-text-main">
@@ -120,10 +120,10 @@ export default function JoinPage() {
             {benefits.map((benefit) => (
               <div
                 key={benefit.title}
-                className={`col-span-12 rounded-md border p-4 lg:col-span-4 space-y-4 `}
+                className={`col-span-12 border p-4 lg:col-span-4 space-y-4 `}
               >
                 <div
-                  className={`flex size-12 items-center justify-center rounded-sm ${benefit.tone}`}
+                  className={`flex size-12 items-center justify-center ${benefit.tone}`}
                 >
                   <benefit.icon size={22} />
                 </div>
@@ -140,7 +140,7 @@ export default function JoinPage() {
 
             <div className="col-span-12 flex flex-col gap-4 sm:flex-row">
               <AuthModal>
-                <Button className="h-12 w-full rounded-full bg-primary px-6 text-base font-bold text-primary-foreground hover:bg-primary/90 sm:w-auto">
+                <Button className="h-12 w-full bg-primary px-6 text-base font-bold text-primary-foreground hover:bg-primary/90 sm:w-auto">
                   Criar minha conta
                   <ArrowRight size={18} className="ml-2" />
                 </Button>
@@ -171,8 +171,8 @@ export default function JoinPage() {
             <div className="grid grid-cols-12 gap-2 md:gap-4 gap-y-8">
               {highlights.map((item) => (
                 <div key={item.title} className="col-span-12 md:col-span-4">
-                  <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
-                    <div className="flex size-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                  <div className="h-full space-y-2 border border-border-subtle bg-surface p-4">
+                    <div className="flex size-12 items-center justify-center bg-primary/10 text-primary">
                       <item.icon size={22} />
                     </div>
                     <h3 className="text-base font-bold text-text-main">
@@ -222,7 +222,7 @@ export default function JoinPage() {
             </div>
 
             <div className="col-span-12 md:col-span-6">
-              <div className="relative h-90 w-full overflow-hidden rounded-2xl md:h-full">
+              <div className="relative h-90 w-full overflow-hidden md:h-full">
                 <Image
                   src="/Gemini_Generated_Image_lb1x7blb1x7blb1x copy.png"
                   alt="Pessoas em colaboração e atendimento"
@@ -237,7 +237,7 @@ export default function JoinPage() {
       </section>
 
       <div className="container mx-auto mb-24 px-4">
-        <section className="rounded-xl border border-warning-border bg-warning-surface p-4  md:p-8">
+        <section className="border border-warning-border bg-warning-surface p-4  md:p-8">
           <div className="max-w-4xl space-y-4">
             <h2 className="text-xl md:text-2xl font-bold text-warning-foreground">
               Comunicado importante
@@ -268,7 +268,7 @@ export default function JoinPage() {
           </p>
           <div className="mt-8 flex justify-center">
             <AuthModal>
-              <Button className="h-12 rounded-full bg-card px-8 text-base font-bold text-primary hover:bg-surface">
+              <Button className="h-12 bg-card px-8 text-base font-bold text-primary hover:bg-surface">
                 Fazer Parte do Skillsy
               </Button>
             </AuthModal>

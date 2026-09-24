@@ -5,7 +5,7 @@ import Link from 'next/link';
 export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-surface text-center">
-      <div className="w-24 h-24 bg-primary/5 text-primary rounded-xl flex items-center justify-center mb-8 rotate-3">
+      <div className="w-24 h-24 bg-primary/5 text-primary flex items-center justify-center mb-8 rotate-3">
         <SearchSlash size={48} />
       </div>
       
@@ -17,7 +17,7 @@ export default function NotFound() {
       <Button
         render={<Link href="/" />}
         nativeButton={false}
-        className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-10 h-14 text-lg font-bold group"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 px-10 h-14 text-lg font-bold group"
       >
         <Home size={22} className="mr-3 group-hover:-translate-y-0.5 transition-transform" />
         Ir para a página inicial

@@ -102,7 +102,7 @@ export function AdminNavbar() {
       <div className="max-w-[1600px] mx-auto flex justify-between items-center">
         <div className="flex items-center gap-8">
           <Link href="/admin" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-primary flex items-center justify-center">
               <ShieldCheck className="text-white" size={20} />
             </div>
             <div className="flex flex-col">
@@ -116,7 +116,7 @@ export function AdminNavbar() {
           </Link>
 
           <div
-            className="hidden md:flex items-center gap-1 bg-surface rounded-xl p-1 border border-border-subtle"
+            className="hidden md:flex items-center gap-1 bg-surface p-1 border border-border-subtle"
             aria-label="Navegação administrativa"
           >
             <Button
@@ -124,7 +124,7 @@ export function AdminNavbar() {
               nativeButton={false}
               variant="ghost"
               size="sm"
-              className={`rounded-lg gap-2 font-bold text-xs h-9 px-4 ${pathname === "/admin" ? "bg-card text-text-main" : "text-text-muted hover:text-primary"}`}
+              className={`gap-2 font-bold text-xs h-9 px-4 ${pathname === "/admin" ? "bg-card text-text-main" : "text-text-muted hover:text-primary"}`}
             >
               <LayoutDashboard size={14} /> Dashboard
             </Button>
@@ -133,7 +133,7 @@ export function AdminNavbar() {
               nativeButton={false}
               variant="ghost"
               size="sm"
-              className={`rounded-lg gap-2 font-bold text-xs h-9 px-4 ${pathname.startsWith("/admin/usuarios") ? "bg-card text-text-main" : "text-text-muted hover:text-primary"}`}
+              className={`gap-2 font-bold text-xs h-9 px-4 ${pathname.startsWith("/admin/usuarios") ? "bg-card text-text-main" : "text-text-muted hover:text-primary"}`}
             >
               <Users size={14} /> Usuários
             </Button>
@@ -142,7 +142,7 @@ export function AdminNavbar() {
               nativeButton={false}
               variant="ghost"
               size="sm"
-              className={`rounded-lg gap-2 font-bold text-xs h-9 px-4 ${pathname.startsWith("/admin/moderacao") ? "bg-card text-text-main" : "text-text-muted hover:text-primary"}`}
+              className={`gap-2 font-bold text-xs h-9 px-4 ${pathname.startsWith("/admin/moderacao") ? "bg-card text-text-main" : "text-text-muted hover:text-primary"}`}
             >
               <ShieldAlert size={14} /> Moderação
             </Button>
@@ -151,7 +151,7 @@ export function AdminNavbar() {
               nativeButton={false}
               variant="ghost"
               size="sm"
-              className={`rounded-lg gap-2 font-bold text-xs h-9 px-4 ${pathname.startsWith("/admin/artigos") ? "bg-card text-text-main" : "text-text-muted hover:text-primary"}`}
+              className={`gap-2 font-bold text-xs h-9 px-4 ${pathname.startsWith("/admin/artigos") ? "bg-card text-text-main" : "text-text-muted hover:text-primary"}`}
             >
               <FileText size={14} /> Artigos
             </Button>
@@ -160,7 +160,7 @@ export function AdminNavbar() {
               nativeButton={false}
               variant="ghost"
               size="sm"
-              className="rounded-lg gap-2 font-bold text-xs h-9 px-4 text-text-muted hover:text-primary"
+              className="gap-2 font-bold text-xs h-9 px-4 text-text-muted hover:text-primary"
             >
               <Home size={14} /> Ver Site
             </Button>
@@ -173,7 +173,7 @@ export function AdminNavbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative rounded-full text-text-muted hover:text-primary"
+                className="relative text-text-muted hover:text-primary"
                 onClick={() => setNotificationsOpen((open) => !open)}
                 aria-expanded={notificationsOpen}
                 aria-haspopup="dialog"
@@ -186,7 +186,7 @@ export function AdminNavbar() {
                 )}
               </Button>
               {notificationsOpen && (
-                <div className="absolute right-0 top-12 z-50 w-80 overflow-hidden rounded-md border border-border-subtle bg-popover p-0 text-popover-foreground shadow-sm">
+                <div className="absolute right-0 top-12 z-50 w-80 overflow-hidden border border-border-subtle bg-popover p-0 text-popover-foreground shadow-sm">
                   <div className="p-4 bg-surface border-b border-border-subtle flex items-center justify-between">
                     <h3 className="text-xs font-bold uppercase tracking-normal text-text-main flex items-center gap-2">
                       <Bell size={14} className="text-primary" /> Notificações
@@ -216,7 +216,7 @@ export function AdminNavbar() {
                           >
                             <div className="flex gap-3">
                               <div
-                                className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${!n.read ? "bg-card shadow-sm" : "bg-surface"}`}
+                                className={`mt-0.5 w-7 h-7 flex items-center justify-center shrink-0 ${!n.read ? "bg-card shadow-sm" : "bg-surface"}`}
                               >
                                 {getIconForType(n.type)}
                               </div>
@@ -302,7 +302,7 @@ export function AdminNavbar() {
               variant="ghost"
               size="icon"
               onClick={logout}
-              className="text-text-muted hover:text-destructive rounded-full"
+              className="text-text-muted hover:text-destructive"
             >
               <LogOut size={18} />
             </Button>

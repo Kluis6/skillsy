@@ -93,7 +93,7 @@ export function PublicFieldHint({ children, className }: PublicFieldHintProps) {
   return (
     <p
       className={cn(
-        "rounded-md bg-surface px-3 py-2 text-xs leading-relaxed text-text-muted",
+        "bg-surface px-3 py-2 text-xs leading-relaxed text-text-muted",
         className,
       )}
     >
@@ -129,7 +129,7 @@ export function TrustPath({ className, compact = false }: TrustPathProps) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-border-subtle bg-card p-3",
+        "border border-border-subtle bg-card p-3",
         className,
       )}
     >
@@ -139,9 +139,9 @@ export function TrustPath({ className, compact = false }: TrustPathProps) {
             {index > 0 ? (
               <span className="absolute right-full top-5 hidden h-px w-2 bg-border-subtle sm:block" />
             ) : null}
-            <div className="flex h-full flex-col gap-2 rounded-md bg-surface px-3 py-2">
+            <div className="flex h-full flex-col gap-2 bg-surface px-3 py-2">
               <div className="flex items-center gap-2">
-                <span className="flex size-7 shrink-0 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <span className="flex size-7 shrink-0 items-center justify-center bg-primary/10 text-primary">
                   <item.icon className="size-3.5" />
                 </span>
                 <span className="truncate text-sm font-bold text-text-main">

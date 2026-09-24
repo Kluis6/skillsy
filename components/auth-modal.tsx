@@ -315,7 +315,7 @@ export function AuthModal({
                             ? "login-password-error"
                             : undefined
                         }
-                        className={`h-10 rounded border-input focus-visible:ring-accent ${loginErrors.password ? "ring-2 ring-destructive" : ""}`}
+                        className={`h-10 border-input focus-visible:ring-accent ${loginErrors.password ? "ring-2 ring-destructive" : ""}`}
                         {...registerLogin("password")}
                       />
                       {loginErrors.password && (

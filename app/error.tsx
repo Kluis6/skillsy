@@ -19,7 +19,7 @@ export default function Error({
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-surface text-center">
-      <div className="w-20 h-20 bg-destructive/10 text-destructive rounded-full flex items-center justify-center mb-6">
+      <div className="w-20 h-20 bg-destructive/10 text-destructive flex items-center justify-center mb-6">
         <AlertCircle size={40} />
       </div>
       
@@ -31,7 +31,7 @@ export default function Error({
       <div className="flex flex-col sm:flex-row gap-4">
         <Button 
           onClick={() => reset()}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8 h-12 font-bold"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 font-bold"
         >
           <RotateCcw size={18} className="mr-2" /> Tentar Novamente
         </Button>
@@ -40,14 +40,14 @@ export default function Error({
           render={<Link href="/" />}
           nativeButton={false}
           variant="outline"
-          className="rounded-md px-8 h-12 font-bold border-border-subtle hover:bg-surface"
+          className="px-8 h-12 font-bold border-border-subtle hover:bg-surface"
         >
           <Home size={18} className="mr-2" /> Voltar ao início
         </Button>
       </div>
 
       {process.env.NODE_ENV === 'development' && (
-        <div className="mt-12 p-6 bg-destructive/5 border border-destructive/20 rounded-xl text-left max-w-2xl w-full overflow-hidden">
+        <div className="mt-12 p-6 bg-destructive/5 border border-destructive/20 text-left max-w-2xl w-full overflow-hidden">
           <p className="text-xs font-mono text-destructive break-words">
             {error.message || 'Erro desconhecido'}
           </p>

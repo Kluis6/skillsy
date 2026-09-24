@@ -380,7 +380,7 @@ export function AdminUsersClient() {
         <ShieldAlert size={64} className="text-destructive mb-6" />
         <h1 className="text-3xl font-bold mb-4">Acesso Negado</h1>
         <p className="text-text-muted mb-8">Esta área é restrita a administradores do sistema.</p>
-        <Button render={<Link href="/" />} nativeButton={false} className="bg-primary text-primary-foreground font-bold rounded-xl px-8">
+        <Button render={<Link href="/" />} nativeButton={false} className="bg-primary text-primary-foreground font-bold px-8">
           Voltar ao início
         </Button>
       </div>
@@ -397,7 +397,7 @@ export function AdminUsersClient() {
                nativeButton={false}
                variant="ghost"
                size="icon"
-               className="rounded-full hover:bg-surface"
+               className="hover:bg-surface"
                aria-label="Voltar ao painel administrativo"
              >
                <ArrowLeft size={20} />
@@ -412,13 +412,13 @@ export function AdminUsersClient() {
               variant="outline"
               onClick={handleSeedData}
               disabled={isSeeding}
-              className="rounded-md px-6 font-bold h-11 border-border-subtle hover:bg-surface"
+              className="px-6 font-bold h-11 border-border-subtle hover:bg-surface"
             >
               {isSeeding ? 'Gerando...' : 'Gerar Dados'}
             </Button>
             <Button 
               onClick={() => setIsAddAdminDialogOpen(true)}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 font-bold  h-11"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 font-bold  h-11"
             >
               <ShieldCheck size={18} className="mr-2" /> Novo Admin
             </Button>
@@ -426,7 +426,7 @@ export function AdminUsersClient() {
         </div>
 
         {/* Filters & Search */}
-        <Card className="bg-card border border-border-subtle rounded-xl p-8 mb-8 shadow-xs">
+        <Card className="bg-card border border-border-subtle p-8 mb-8 shadow-xs">
           <div className="flex flex-col lg:flex-row gap-6 items-end">
             <div className="flex-grow space-y-2 w-full">
               <Label htmlFor="admin-user-search" className="text-xs font-bold text-text-muted uppercase ml-1">Buscar Usuário</Label>
@@ -435,7 +435,7 @@ export function AdminUsersClient() {
                 <Input 
                   id="admin-user-search"
                   placeholder="Ex: João ou joao@exemplo.com" 
-                  className="pl-12 bg-surface border border-input rounded-md h-12 text-sm"
+                  className="pl-12 bg-surface border border-input h-12 text-sm"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -448,7 +448,7 @@ export function AdminUsersClient() {
                 <Input 
                   id="admin-user-ward-filter"
                   placeholder="Ex: Ala Centro" 
-                  className="bg-surface border border-border-subtle rounded-md h-12 text-sm"
+                  className="bg-surface border border-border-subtle h-12 text-sm"
                   value={filterWard}
                   onChange={(e) => setFilterWard(e.target.value)}
                 />
@@ -460,7 +460,7 @@ export function AdminUsersClient() {
                     id="admin-user-state-filter"
                     value={filterState}
                     onChange={(e) => setFilterState(e.target.value || 'all')}
-                    className="w-full appearance-none rounded-md border border-input bg-surface h-12 px-4 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
+                    className="w-full appearance-none border border-input bg-surface h-12 px-4 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
                   >
                     <option value="all">Todos os estados</option>
                     {BRAZIL_STATES.map((state) => (
@@ -472,7 +472,7 @@ export function AdminUsersClient() {
                   <ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
                 </div>
               </div>
-              <div className="flex items-center gap-3 h-12 px-4 bg-surface rounded-md">
+              <div className="flex items-center gap-3 h-12 px-4 bg-surface">
                 <Switch 
                   id="providers-only" 
                   checked={filterHasServices}
@@ -480,7 +480,7 @@ export function AdminUsersClient() {
                 />
                 <Label htmlFor="providers-only" className="text-sm font-medium cursor-pointer">Apenas Prestadores</Label>
               </div>
-              <div className="flex items-center gap-3 h-12 px-4 bg-surface rounded-md">
+              <div className="flex items-center gap-3 h-12 px-4 bg-surface">
                 <Switch
                   id="reported-only"
                   checked={filterReported}
@@ -495,7 +495,7 @@ export function AdminUsersClient() {
         </Card>
 
         {/* Users Table */}
-        <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden mb-10 shadow-xs">
+        <Card className="bg-card border border-border-subtle overflow-hidden mb-10 shadow-xs">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader className="bg-surface/50">
@@ -608,7 +608,7 @@ export function AdminUsersClient() {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => handleToggleBlock(u)}
-                                  className={`w-9 h-9 rounded-md transition-all ${
+                                  className={`w-9 h-9 transition-all ${
                                     u.isBlocked 
                                       ? 'text-success hover:bg-success/15 hover:text-success bg-success/10' 
                                       : 'text-destructive hover:bg-destructive/10 hover:text-destructive'
@@ -618,7 +618,7 @@ export function AdminUsersClient() {
                             >
                               {u.isBlocked ? <CheckCircle size={18} /> : <Ban size={18} />}
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="rounded-xl font-bold text-xs bg-card border-border-subtle shadow-sm px-3 py-2 text-text-main">
+                            <TooltipContent side="top" className="font-bold text-xs bg-card border-border-subtle shadow-sm px-3 py-2 text-text-main">
                               {u.isBlocked ? 'Desbloquear Acesso' : 'Bloquear Acesso'}
                             </TooltipContent>
                           </Tooltip>
@@ -626,19 +626,19 @@ export function AdminUsersClient() {
                           <DropdownMenu>
                             <DropdownMenuTrigger
                               aria-label={`Abrir ações para ${u.name}`}
-                              className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-surface transition-colors cursor-pointer outline-none"
+                              className="flex items-center justify-center w-9 h-9 hover:bg-surface transition-colors cursor-pointer outline-none"
                             >
                               <MoreVertical size={18} />
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="rounded-md border-border-subtle shadow-sm p-2 w-48">
+                            <DropdownMenuContent align="end" className="border-border-subtle shadow-sm p-2 w-48">
                               <DropdownMenuLabel className="text-xs font-bold text-text-muted px-3 py-2">Gerenciar</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => handleEditClick(u)} className="rounded-md cursor-pointer focus:bg-primary/5 focus:text-primary">
+                              <DropdownMenuItem onClick={() => handleEditClick(u)} className="cursor-pointer focus:bg-primary/5 focus:text-primary">
                                 <Edit3 size={16} className="mr-2" /> Editar Perfil
                               </DropdownMenuItem>
                               <DropdownMenuSeparator className="bg-border-subtle my-1" />
                               <DropdownMenuItem 
                                 onClick={() => handleToggleBlock(u)} 
-                                className={`rounded-md cursor-pointer ${u.isBlocked ? 'text-success focus:bg-success/10 focus:text-success' : 'text-destructive focus:bg-destructive/10 focus:text-destructive'}`}
+                                className={`cursor-pointer ${u.isBlocked ? 'text-success focus:bg-success/10 focus:text-success' : 'text-destructive focus:bg-destructive/10 focus:text-destructive'}`}
                               >
                                 {u.isBlocked ? (
                                   <><CheckCircle size={16} className="mr-2" /> Desbloquear</>
@@ -674,7 +674,7 @@ export function AdminUsersClient() {
                   size="icon" 
                   onClick={() => setCurrentPage(1)}
                   disabled={currentPage === 1}
-                  className="w-9 h-9 rounded-xl hover:bg-primary/5 hover:text-primary disabled:opacity-30"
+                  className="w-9 h-9 hover:bg-primary/5 hover:text-primary disabled:opacity-30"
                 >
                   <ChevronsLeft size={16} />
                 </Button>
@@ -683,14 +683,14 @@ export function AdminUsersClient() {
                   size="icon" 
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className="w-9 h-9 rounded-xl hover:bg-primary/5 hover:text-primary disabled:opacity-30"
+                  className="w-9 h-9 hover:bg-primary/5 hover:text-primary disabled:opacity-30"
                 >
                   <ChevronLeft size={16} />
                 </Button>
                 
                 <div className="flex items-center mx-2 gap-1">
                   <span className="text-xs font-bold text-text-muted">Página</span>
-                  <div className="bg-surface px-3 py-1.5 rounded-lg text-xs font-black text-primary border border-border-subtle/50 min-w-[2.5rem] text-center">
+                  <div className="bg-surface px-3 py-1.5 text-xs font-black text-primary border border-border-subtle/50 min-w-[2.5rem] text-center">
                     {currentPage}
                   </div>
                   <span className="text-xs font-bold text-text-muted">de {Math.ceil(filteredUsers.length / ITEMS_PER_PAGE)}</span>
@@ -701,7 +701,7 @@ export function AdminUsersClient() {
                   size="icon" 
                   onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredUsers.length / ITEMS_PER_PAGE), prev + 1))}
                   disabled={currentPage === Math.ceil(filteredUsers.length / ITEMS_PER_PAGE)}
-                  className="w-9 h-9 rounded-xl hover:bg-primary/5 hover:text-primary disabled:opacity-30"
+                  className="w-9 h-9 hover:bg-primary/5 hover:text-primary disabled:opacity-30"
                 >
                   <ChevronRight size={16} />
                 </Button>
@@ -710,7 +710,7 @@ export function AdminUsersClient() {
                   size="icon" 
                   onClick={() => setCurrentPage(Math.ceil(filteredUsers.length / ITEMS_PER_PAGE))}
                   disabled={currentPage === Math.ceil(filteredUsers.length / ITEMS_PER_PAGE)}
-                  className="w-9 h-9 rounded-xl hover:bg-primary/5 hover:text-primary disabled:opacity-30"
+                  className="w-9 h-9 hover:bg-primary/5 hover:text-primary disabled:opacity-30"
                 >
                   <ChevronsRight size={16} />
                 </Button>
@@ -721,7 +721,7 @@ export function AdminUsersClient() {
 
       {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="rounded-xl border border-border-subtle shadow-sm p-8 max-w-2xl overflow-y-auto max-h-[90vh]">
+        <DialogContent className="border border-border-subtle shadow-sm p-8 max-w-2xl overflow-y-auto max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold font-heading">Editar Perfil de Usuário</DialogTitle>
             <DialogDescription>
@@ -731,7 +731,7 @@ export function AdminUsersClient() {
           
           <form onSubmit={editForm.handleSubmit(onSaveEdit)}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
-              <div className="md:col-span-2 rounded-xl border border-warning-border bg-warning-surface px-4 py-3 text-xs text-warning-foreground space-y-1">
+              <div className="md:col-span-2 border border-warning-border bg-warning-surface px-4 py-3 text-xs text-warning-foreground space-y-1">
                 <p className="font-semibold text-sm">Atenção aos limites</p>
                 <p>
                   Campos longos demais ou em formato inválido podem ser rejeitados
@@ -745,7 +745,7 @@ export function AdminUsersClient() {
                   placeholder="Ex: João da Silva"
                   {...editForm.register('name')}
                   maxLength={ADMIN_FORM_LIMITS.name}
-                  className="bg-surface border border-border-subtle rounded-md h-12"
+                  className="bg-surface border border-border-subtle h-12"
                 />
                 <p className="text-xs text-text-muted ml-2">
                   Entre 2 e {ADMIN_FORM_LIMITS.name} caracteres.
@@ -758,7 +758,7 @@ export function AdminUsersClient() {
                   id="email" 
                   value={editingUser?.email || ''} 
                   disabled
-                  className="bg-surface border border-border-subtle rounded-md h-12 opacity-60"
+                  className="bg-surface border border-border-subtle h-12 opacity-60"
                 />
               </div>
               <div className="space-y-2">
@@ -769,7 +769,7 @@ export function AdminUsersClient() {
                     placeholder="Ex: São Paulo, SP"
                     {...editForm.register('location')}
                     maxLength={ADMIN_FORM_LIMITS.location}
-                    className="bg-surface border border-border-subtle rounded-md h-12 flex-grow"
+                    className="bg-surface border border-border-subtle h-12 flex-grow"
                   />
                   <Button
                     type="button"
@@ -777,7 +777,7 @@ export function AdminUsersClient() {
                     size="icon"
                     onClick={handleDetectLocation}
                     disabled={detectingLocation}
-                    className="shrink-0 h-12 w-12 rounded-md bg-surface border border-border-subtle hover:bg-primary/5 hover:text-primary transition-all"
+                    className="shrink-0 h-12 w-12 bg-surface border border-border-subtle hover:bg-primary/5 hover:text-primary transition-all"
                     title="Detectar localização"
                   >
                     {detectingLocation ? <Loader2 size={18} className="animate-spin" /> : <Navigation size={18} />}
@@ -795,7 +795,7 @@ export function AdminUsersClient() {
                   placeholder="Ex: Ala Centro"
                   {...editForm.register('ward')}
                   maxLength={ADMIN_FORM_LIMITS.ward}
-                  className="bg-surface border border-border-subtle rounded-md h-12"
+                  className="bg-surface border border-border-subtle h-12"
                 />
                 <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.ward} caracteres.
@@ -809,7 +809,7 @@ export function AdminUsersClient() {
                   placeholder="Ex: Pintura Residencial"
                   {...editForm.register('serviceType')}
                   maxLength={ADMIN_FORM_LIMITS.serviceType}
-                  className="bg-surface border border-border-subtle rounded-md h-12"
+                  className="bg-surface border border-border-subtle h-12"
                 />
                 <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.serviceType} caracteres.
@@ -821,7 +821,7 @@ export function AdminUsersClient() {
                 <select 
                   id="role"
                   {...editForm.register('role')}
-                  className="w-full bg-surface border border-input rounded-md h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none"
+                  className="w-full bg-surface border border-input h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none"
                 >
                   <option value="user">Usuário Comum</option>
                   <option value="admin">Administrador</option>
@@ -834,7 +834,7 @@ export function AdminUsersClient() {
                   type="number"
                   placeholder="Ex: 2010"
                   {...editForm.register('baptismYear', { valueAsNumber: true })}
-                  className="bg-surface border border-border-subtle rounded-md h-12"
+                  className="bg-surface border border-border-subtle h-12"
                 />
                 {editForm.formState.errors.baptismYear && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.baptismYear.message}</p>}
                 <p className="text-xs text-primary/70 ml-2">
@@ -851,7 +851,7 @@ export function AdminUsersClient() {
                       placeholder="Ex: Rua das Flores"
                       {...editForm.register('businessAddress')}
                       maxLength={ADMIN_FORM_LIMITS.address}
-                      className="bg-surface border border-border-subtle rounded-md h-12"
+                      className="bg-surface border border-border-subtle h-12"
                     />
                     {editForm.formState.errors.businessAddress && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.businessAddress.message}</p>}
                   </div>
@@ -861,7 +861,7 @@ export function AdminUsersClient() {
                       placeholder="Ex: 123"
                       {...editForm.register('businessAddressNumber')}
                       maxLength={ADMIN_FORM_LIMITS.addressNumber}
-                      className="bg-surface border border-border-subtle rounded-md h-12"
+                      className="bg-surface border border-border-subtle h-12"
                     />
                     {editForm.formState.errors.businessAddressNumber && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.businessAddressNumber.message}</p>}
                   </div>
@@ -871,7 +871,7 @@ export function AdminUsersClient() {
                       placeholder="Ex: Centro"
                       {...editForm.register('businessNeighborhood')}
                       maxLength={ADMIN_FORM_LIMITS.neighborhood}
-                      className="bg-surface border border-border-subtle rounded-md h-12"
+                      className="bg-surface border border-border-subtle h-12"
                     />
                     {editForm.formState.errors.businessNeighborhood && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.businessNeighborhood.message}</p>}
                   </div>
@@ -881,7 +881,7 @@ export function AdminUsersClient() {
                       placeholder="Ex: SP"
                       {...editForm.register('businessState')}
                       maxLength={ADMIN_FORM_LIMITS.state}
-                      className="bg-surface border border-border-subtle rounded-md h-12"
+                      className="bg-surface border border-border-subtle h-12"
                     />
                     {editForm.formState.errors.businessState && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.businessState.message}</p>}
                   </div>
@@ -891,7 +891,7 @@ export function AdminUsersClient() {
                       placeholder="Ex: Sala 10, Bloco B"
                       {...editForm.register('businessComplement')}
                       maxLength={ADMIN_FORM_LIMITS.complement}
-                      className="bg-surface border border-border-subtle rounded-md h-12"
+                      className="bg-surface border border-border-subtle h-12"
                     />
                     {editForm.formState.errors.businessComplement && <p className="text-xs text-destructive font-bold ml-2">{editForm.formState.errors.businessComplement.message}</p>}
                   </div>
@@ -916,7 +916,7 @@ export function AdminUsersClient() {
                             : [...current, day];
                           editForm.setValue('availability', next, { shouldDirty: true });
                         }}
-                        className={`h-10 px-4 rounded-xl text-xs font-bold transition-all border-2 ${
+                        className={`h-10 px-4 text-xs font-bold transition-all border-2 ${
                           isSelected 
                             ? 'bg-primary border-primary text-primary-foreground'
                             : 'bg-surface border-transparent text-text-muted hover:border-primary/20'
@@ -936,7 +936,7 @@ export function AdminUsersClient() {
                   {...editForm.register('serviceHours')}
                   placeholder="Ex: 08:00 - 18:00 ou Por agendamento"
                   maxLength={ADMIN_FORM_LIMITS.serviceHours}
-                  className="bg-surface border border-border-subtle rounded-md h-12"
+                  className="bg-surface border border-border-subtle h-12"
                 />
                 <p className="text-xs text-text-muted ml-2">
                   Até {ADMIN_FORM_LIMITS.serviceHours} caracteres.
@@ -945,7 +945,7 @@ export function AdminUsersClient() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-6 p-6 bg-surface rounded-xl mb-6">
+            <div className="flex flex-wrap gap-6 p-6 bg-surface mb-6">
               <div className="flex items-center gap-3">
                 <Switch 
                   id="edit-isProvider" 
@@ -965,10 +965,10 @@ export function AdminUsersClient() {
             </div>
 
             <DialogFooter className="gap-3">
-              <Button type="button" variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="rounded-md h-12 px-8 font-bold">
+              <Button type="button" variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="h-12 px-8 font-bold">
                 Cancelar
               </Button>
-              <Button type="submit" disabled={editForm.formState.isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md h-12 px-8 font-bold">
+              <Button type="submit" disabled={editForm.formState.isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-8 font-bold">
                 {editForm.formState.isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
               </Button>
             </DialogFooter>
@@ -978,7 +978,7 @@ export function AdminUsersClient() {
 
       {/* Add Admin Dialog */}
       <Dialog open={isAddAdminDialogOpen} onOpenChange={setIsAddAdminDialogOpen}>
-        <DialogContent className="rounded-xl border border-border-subtle shadow-sm p-8 max-w-md">
+        <DialogContent className="border border-border-subtle shadow-sm p-8 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold font-heading">Novo Administrador</DialogTitle>
             <DialogDescription>
@@ -988,7 +988,7 @@ export function AdminUsersClient() {
           
           <form onSubmit={adminForm.handleSubmit(onCreateAdmin)}>
             <div className="space-y-6 py-6">
-              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-xs text-text-muted space-y-1">
+              <div className="border border-primary/20 bg-primary/5 p-4 text-xs text-text-muted space-y-1">
                 <p className="font-semibold text-text-main">
                   Regras do pré-cadastro administrativo
                 </p>
@@ -1004,7 +1004,7 @@ export function AdminUsersClient() {
                   placeholder="Ex: João Silva"
                   {...adminForm.register('name')}
                   maxLength={ADMIN_FORM_LIMITS.name}
-                  className="bg-surface border border-border-subtle rounded-md h-12"
+                  className="bg-surface border border-border-subtle h-12"
                 />
                 {adminForm.formState.errors.name && <p className="text-xs text-destructive font-bold ml-2">{adminForm.formState.errors.name.message}</p>}
                 <p className="text-xs text-text-muted ml-2">
@@ -1019,7 +1019,7 @@ export function AdminUsersClient() {
                   placeholder="Ex: joao@exemplo.com"
                   {...adminForm.register('email')}
                   maxLength={ADMIN_FORM_LIMITS.adminEmail}
-                  className="bg-surface border border-border-subtle rounded-md h-12"
+                  className="bg-surface border border-border-subtle h-12"
                 />
                 {adminForm.formState.errors.email && <p className="text-xs text-destructive font-bold ml-2">{adminForm.formState.errors.email.message}</p>}
                 <p className="text-xs text-text-muted ml-2">
@@ -1029,13 +1029,13 @@ export function AdminUsersClient() {
             </div>
 
             <DialogFooter className="gap-3">
-              <Button type="button" variant="ghost" onClick={() => setIsAddAdminDialogOpen(false)} className="rounded-md h-12 px-8 font-bold">
+              <Button type="button" variant="ghost" onClick={() => setIsAddAdminDialogOpen(false)} className="h-12 px-8 font-bold">
                 Cancelar
               </Button>
               <Button 
                 type="submit"
                 disabled={adminForm.formState.isSubmitting}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md h-12 px-8 font-bold"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-8 font-bold"
               >
                 {adminForm.formState.isSubmitting ? 'Criando...' : 'Criar Administrador'}
               </Button>

@@ -79,7 +79,7 @@ export function ContactCTA() {
                       placeholder="Nome *"
                       maxLength={CONTACT_LIMITS.name}
                       {...register("name")}
-                      className={` border-1 h-10 md:h-12  text-text-main rounded-full placeholder:text-text-muted/50 transition-all ${
+                      className={` border-1 h-10 md:h-12  text-text-main placeholder:text-text-muted/50 transition-all ${
                         errors.name
                           ? "border-destructive/60 focus:border-destructive"
                           : touchedFields.name && !errors.name
@@ -112,7 +112,7 @@ export function ContactCTA() {
                       type="email"
                       maxLength={CONTACT_LIMITS.email}
                       {...register("email")}
-                      className={`border-1 h-10 md:h-12 rounded-full border-border-subtle text-text-main placeholder:text-text-muted/50 transition-all ${
+                      className={`border-1 h-10 md:h-12 border-border-subtle text-text-main placeholder:text-text-muted/50 transition-all ${
                         errors.email
                           ? "border-destructive/60 focus:border-destructive"
                           : touchedFields.email && !errors.email

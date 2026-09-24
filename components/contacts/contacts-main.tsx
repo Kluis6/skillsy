@@ -206,7 +206,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
   };
 
   const renderShareSheet = () => (
-    <SheetContent side="bottom" className="rounded-t-lg">
+    <SheetContent side="bottom" className="">
       <SheetHeader className="text-left">
         <SheetTitle>Compartilhar contato</SheetTitle>
         <SheetDescription className="">
@@ -224,7 +224,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-auto w-full md:w-1/3 justify-start gap-3 p-4 text-left rounded-sm"
+                  className="h-auto w-full md:w-1/3 justify-start gap-3 p-4 text-left"
                   onClick={action.onClick}
                 />
               }
@@ -285,13 +285,13 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                 </Avatar>
                 <div className="flex justify-end p-4 gap-x-2">
                   {renderShareButton(
-                    "hidden md:flex justify-center items-center size-10 rounded-sm",
+                    "hidden md:flex justify-center items-center size-10",
                   )}
 
                   <Button
                     type="button"
                     onClick={handleWhatsApp}
-                    className="h-10 px-6 hidden rounded-sm md:flex bg-success text-success-foreground hover:bg-success/90 font-bold space-x-1"
+                    className="h-10 px-6 hidden md:flex bg-success text-success-foreground hover:bg-success/90 font-bold space-x-1"
                   >
                     <BsWhatsapp className="size-4" /> <p>WhatsApp</p>
                   </Button>
@@ -358,12 +358,12 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   </div>
 
                   <div className="flex md:hidden flex-wrap justify-center gap-2">
-                    {renderShareButton("size-10 rounded-sm")}
+                    {renderShareButton("size-10")}
 
                     <Button
                       type="button"
                       onClick={handleWhatsApp}
-                      className="h-10 px-6 flex bg-success text-success-foreground hover:bg-success/90 font-bold space-x-1 rounded-sm"
+                      className="h-10 px-6 flex bg-success text-success-foreground hover:bg-success/90 font-bold space-x-1"
                     >
                       <BsWhatsapp className="size-4" /> <p>WhatsApp</p>
                     </Button>
@@ -397,12 +397,12 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   });
                 }}
                 variant="destructive"
-                className="h-10 md:w-1/2 w-full font-bold space-x-2 rounded-sm"
+                className="h-10 md:w-1/2 w-full font-bold space-x-2"
               >
                 <UserMinus size={18} /> <p>Remover contato</p>
               </Button>
               <Link
-                className="h-10 w-full flex justify-center items-center space-x-2 text-primary-foreground font-bold bg-primary hover:bg-primary/90 active:bg-primary/80 rounded-sm"
+                className="h-10 w-full flex justify-center items-center space-x-2 text-primary-foreground font-bold bg-primary hover:bg-primary/90 active:bg-primary/80"
                 href={`/profile/${selectedContact.uid}`}
               >
                 <LuUserRound size={18} /> <p className="text-sm">Ver contato</p>
@@ -411,7 +411,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
           </motion.div>
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center p-12">
-            <div className="w-24 h-24 bg-primary/5 rounded-full flex items-center justify-center mb-6">
+            <div className="w-24 h-24 bg-primary/5 flex items-center justify-center mb-6">
               <Users size={48} className="text-primary/20" />
             </div>
             <h3 className="text-2xl font-bold text-text-main mb-2">

@@ -188,7 +188,6 @@ function BrandRow({ tone }: { tone: "light" | "dark" }) {
         style={{
           width: "52px",
           height: "52px",
-          borderRadius: "12px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -297,7 +296,6 @@ export function createPageOgImage({
             right: "80px",
             width: "400px",
             height: "400px",
-            borderRadius: "48px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -352,7 +350,6 @@ export function createPageOgImage({
             style={{
               display: "flex",
               alignSelf: "flex-start",
-              borderRadius: "999px",
               padding: "8px 18px",
               background: "rgba(255,255,255,0.18)",
               border: "1px solid rgba(255,255,255,0.3)",

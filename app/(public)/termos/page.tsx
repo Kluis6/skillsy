@@ -90,7 +90,7 @@ export default function TermosPage() {
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
-        <div className="w-full rounded-xl bg-card p-4 shadow-sm xl:p-8 border border-border-subtle">
+        <div className="w-full bg-card p-4 shadow-sm xl:p-8 border border-border-subtle">
           <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
             <div className="col-span-12 space-y-4">
               <h2 className="text-xl lg:text-2xl font-bold text-text-main">
@@ -110,10 +110,10 @@ export default function TermosPage() {
             {pillars.map((item) => (
               <div
                 key={item.title}
-                className={`col-span-12 rounded-md border p-4 md:col-span-4 space-y-4  `}
+                className={`col-span-12 border p-4 md:col-span-4 space-y-4  `}
               >
                 <div
-                  className={`flex size-12 items-center justify-center rounded-sm ${item.tone}`}
+                  className={`flex size-12 items-center justify-center ${item.tone}`}
                 >
                   <item.icon size={22} />
                 </div>
@@ -141,9 +141,9 @@ export default function TermosPage() {
           </div>
 
           <div className="col-span-12">
-            <div className="rounded-xl border border-border-subtle bg-surface p-4 md:p-6 lg:p-8 space-y-4">
+            <div className="border border-border-subtle bg-surface p-4 md:p-6 lg:p-8 space-y-4">
               <div className="flex items-start gap-4">
-                <div className="flex size-12 shrink-0 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <div className="flex size-12 shrink-0 items-center justify-center bg-primary/10 text-primary">
                   <Scale size={22} />
                 </div>
               </div>
@@ -153,7 +153,7 @@ export default function TermosPage() {
                   criada para facilitar conexões profissionais e apoio mútuo
                   entre membros da comunidade.
                 </p>
-                <div className="rounded-lg border border-warning-border bg-warning-surface p-5 text-sm leading-relaxed text-warning-foreground">
+                <div className="border border-warning-border bg-warning-surface p-5 text-sm leading-relaxed text-warning-foreground">
                   <strong className="text-warning-foreground">Aviso importante:</strong>{" "}
                   a Skillsy não é afiliada, administrada, patrocinada nem
                   endossada oficialmente por{" "}
@@ -198,9 +198,9 @@ export default function TermosPage() {
             <div className="col-span-12 md:col-span-6">
               <div className="grid grid-cols-1 gap-4">
                 {flow.map((item, index) => (
-                  <div key={item} className="rounded-md border border-border-subtle bg-card p-4">
+                  <div key={item} className="border border-border-subtle bg-card p-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-primary text-sm font-bold text-primary-foreground">
+                      <div className="flex size-10 shrink-0 items-center justify-center bg-primary text-sm font-bold text-primary-foreground">
                         {index + 1}
                       </div>
                       <p className="text-sm leading-relaxed text-text-muted">
@@ -233,8 +233,8 @@ export default function TermosPage() {
           <div className="col-span-12 lg:col-span-8">
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               <div className="col-span-12 lg:col-span-6">
-                <div className="h-full rounded-md border border-border-subtle bg-surface p-4 space-y-4">
-                  <div className="mb-4 flex size-12 items-center justify-center rounded-sm bg-warning/15 text-warning">
+                <div className="h-full border border-border-subtle bg-surface p-4 space-y-4">
+                  <div className="mb-4 flex size-12 items-center justify-center bg-warning/15 text-warning">
                     <AlertTriangle size={22} />
                   </div>
                   <h3 className="text-lg font-bold text-text-main">
@@ -254,8 +254,8 @@ export default function TermosPage() {
               </div>
 
               <div className="col-span-12 lg:col-span-6">
-                <div className="h-full rounded-md border border-border-subtle bg-surface p-4 space-y-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <div className="h-full border border-border-subtle bg-surface p-4 space-y-4">
+                  <div className="flex size-12 items-center justify-center bg-primary/10 text-primary">
                     <ShieldCheck size={22} />
                   </div>
 
@@ -281,13 +281,13 @@ export default function TermosPage() {
 
       <div className="container mx-auto mb-24 px-4">
         <section className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div className="rounded-xl border border-border-subtle bg-surface p-4 md:p- lg:p-10">
+          <div className="border border-border-subtle bg-surface p-4 md:p- lg:p-10">
             <div className="space-y-4">
               <h2 className="text-xl lg:text-2xl font-bold text-text-main">
                 Privacidade e dados
               </h2>
               <div className="flex items-start gap-3">
-                <div className="flex size-10 md:size-12 shrink-0 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <div className="flex size-10 md:size-12 shrink-0 items-center justify-center bg-primary/10 text-primary">
                   <UserCheck size={18} />
                 </div>
                 <p className="text-sm leading-relaxed text-text-muted">
@@ -329,10 +329,10 @@ export default function TermosPage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-warning-border bg-warning-surface p-5 text-sm leading-relaxed text-warning-foreground">
+            <div className="border border-warning-border bg-warning-surface p-5 text-sm leading-relaxed text-warning-foreground">
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-warning/15 text-warning">
+                  <div className="flex size-10 shrink-0 items-center justify-center bg-warning/15 text-warning">
                     <RefreshCcw size={18} />
                   </div>
                   <div>
@@ -344,7 +344,7 @@ export default function TermosPage() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-warning/15 text-warning">
+                  <div className="flex size-10 shrink-0 items-center justify-center bg-warning/15 text-warning">
                     <Mail size={18} />
                   </div>
                   <div>

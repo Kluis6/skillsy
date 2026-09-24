@@ -440,13 +440,13 @@ export function SearchClient({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="O que você procura? Pintor, Advogado, Bolo de Pote…"
-                className="pl-12 h-10 w-full rounded-full placeholder:text-text-muted placeholder:sm:text-sm"
+                className="pl-12 h-10 w-full placeholder:text-text-muted placeholder:sm:text-sm"
               />
               <Button
                 type="submit"
                 size="icon"
                 aria-label="Buscar profissionais"
-                className="rounded-r-full absolute right-1 top-1/2 -translate-y-1/2 bg-primary  text-primary-foreground px-6 h-8  hidden sm:flex justify-center items-center transition-colors"
+                className="absolute right-1 top-1/2 -translate-y-1/2 bg-primary  text-primary-foreground px-6 h-8  hidden sm:flex justify-center items-center transition-colors"
               >
                 <BsSearch className="text-white" size={20} />
               </Button>
@@ -494,7 +494,7 @@ export function SearchClient({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="O que você procura?"
-                className="pl-12 h-10 w-full rounded-full bg-card placeholder:text-text-muted placeholder:text-xs"
+                className="pl-12 h-10 w-full bg-card placeholder:text-text-muted placeholder:text-xs"
               />
             </div>
           </form>
@@ -664,7 +664,7 @@ export function SearchClient({
                     <button
                       type="button"
                       onClick={() => handleStateChange("all")}
-                      className="rounded-full px-3 py-1 text-xs font-medium hover:text-primary"
+                      className="px-3 py-1 text-xs font-medium hover:text-primary"
                     >
                       Local: {activeLocationLabel} ×
                     </button>

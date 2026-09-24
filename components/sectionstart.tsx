@@ -133,7 +133,7 @@ export default function Sectionstart() {
                     </p>
                     {/* <Link
                         href={step.href}
-                        className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/90"
+                        className="mt-4 inline-flex items-center gap-2 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/90"
                       >
                         {step.cta}
                         <ArrowRight size={16} />
@@ -155,7 +155,7 @@ export default function Sectionstart() {
                     delay: image.delay,
                     ease: "easeOut",
                   }}
-                  className={`${image.className} group relative w-full h-full overflow-hidden rounded-xl`}
+                  className={`${image.className} group relative w-full h-full overflow-hidden`}
                 >
                   <Image
                     src={image.src}

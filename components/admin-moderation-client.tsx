@@ -274,7 +274,7 @@ export function AdminModerationClient() {
         ].map(({ label, value, detail, icon: Icon, tone }) => (
           <div
             key={label}
-            className="rounded-lg border border-border-subtle bg-card p-4 shadow-xs"
+            className="border border-border-subtle bg-card p-4 shadow-xs"
           >
             <Icon className={`mb-3 size-5 ${tone}`} aria-hidden="true" />
             <p className="text-2xl font-semibold tabular-nums text-text-main">
@@ -286,7 +286,7 @@ export function AdminModerationClient() {
         ))}
       </section>
 
-      <section className="overflow-hidden rounded-lg border border-border-subtle bg-card shadow-xs">
+      <section className="overflow-hidden border border-border-subtle bg-card shadow-xs">
         <div className="flex flex-col gap-3 border-b border-border-subtle p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="font-semibold text-text-main">Casos para revisar</h2>
@@ -299,7 +299,7 @@ export function AdminModerationClient() {
             <select
               value={filter}
               onChange={(event) => setFilter(event.target.value as QueueFilter)}
-              className="h-9 rounded-md border border-input bg-card px-2 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="h-9 border border-input bg-card px-2 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <option value="open">Abertas</option>
               <option value="overdue">Vencidas</option>
@@ -403,7 +403,7 @@ export function AdminModerationClient() {
           </DialogHeader>
           {selectedReport && (
             <div className="space-y-5">
-              <div className="rounded-md bg-surface p-4 text-sm">
+              <div className="bg-surface p-4 text-sm">
                 <p className="font-medium text-text-main">
                   Perfil denunciado:{" "}
                   {selectedReport.reportedUserName ||
@@ -434,7 +434,7 @@ export function AdminModerationClient() {
                     onChange={(event) =>
                       setStatus(event.target.value as ModerationStatus)
                     }
-                    className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    className="h-10 w-full border border-input bg-card px-3 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
                     <option value="new">Nova</option>
                     <option value="in_review">Em análise</option>
@@ -450,7 +450,7 @@ export function AdminModerationClient() {
                     onChange={(event) =>
                       setPriority(event.target.value as Priority)
                     }
-                    className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    className="h-10 w-full border border-input bg-card px-3 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
                     <option value="high">Alta</option>
                     <option value="normal">Normal</option>

@@ -240,7 +240,7 @@ export function PostPublicActions({
                 <select
                   id="post-report-reason"
                   {...reportForm.register("reason")}
-                  className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                  className="flex h-10 w-full border border-input bg-background px-3 py-2 text-sm"
                 >
                   {reportReasonOptions.map((option) => (
                     <option key={option.value} value={option.value}>

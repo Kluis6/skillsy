@@ -174,7 +174,7 @@ export function AdminPostsClient() {
             id="admin-post-status"
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value as "all" | PostStatus)}
-            className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+            className="h-10 w-full border border-input bg-background px-3 text-sm"
           >
             <option value="all">Todos os status</option>
             <option value="draft">Rascunhos</option>
@@ -272,7 +272,7 @@ export function AdminPostsClient() {
           </DialogHeader>
 
           {reviewIntent ? (
-            <div className="rounded-md border border-border-subtle bg-surface p-4">
+            <div className="border border-border-subtle bg-surface p-4">
               <p className="text-sm font-bold text-text-main">{reviewIntent.post.title}</p>
               <p className="mt-1 text-xs text-text-muted">
                 por {reviewIntent.post.authorName} • {reviewIntent.post.authorEmail}

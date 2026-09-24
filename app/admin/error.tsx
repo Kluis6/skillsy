@@ -18,7 +18,7 @@ export default function AdminError({
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-surface text-center">
-      <div className="w-20 h-20 bg-warning/15 text-warning rounded-full flex items-center justify-center mb-6">
+      <div className="w-20 h-20 bg-warning/15 text-warning flex items-center justify-center mb-6">
         <ShieldAlert size={40} />
       </div>
       
@@ -30,7 +30,7 @@ export default function AdminError({
       <div className="flex flex-col sm:flex-row gap-4">
         <Button 
           onClick={() => reset()}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8 h-12 font-bold"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 font-bold"
         >
           <RotateCcw size={18} className="mr-2" /> Tentar Novamente
         </Button>
@@ -39,7 +39,7 @@ export default function AdminError({
           render={<Link href="/admin" />}
           nativeButton={false}
           variant="outline"
-          className="rounded-md px-8 h-12 font-bold border-border-subtle hover:bg-surface"
+          className="px-8 h-12 font-bold border-border-subtle hover:bg-surface"
         >
           <ArrowLeft size={18} className="mr-2" /> Voltar ao Dashboard
         </Button>
@@ -47,7 +47,7 @@ export default function AdminError({
 
       <div className="mt-12 text-xs text-text-muted">
         Se o problema persistir, entre em contato com o suporte técnico informando o erro: 
-        <code className="ml-1 bg-surface px-2 py-1 rounded border border-border-subtle">{error.digest || 'admin-root-error'}</code>
+        <code className="ml-1 bg-surface px-2 py-1 border border-border-subtle">{error.digest || 'admin-root-error'}</code>
       </div>
     </div>
   );

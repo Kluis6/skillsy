@@ -29,7 +29,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
 
   if (posts.length === 0) {
     return (
-      <div className="rounded-md border border-dashed border-border-subtle bg-card p-10 text-center text-text-muted">
+      <div className="border border-dashed border-border-subtle bg-card p-10 text-center text-text-muted">
         Nenhuma publicação publicada ainda.
       </div>
     );
@@ -37,7 +37,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
 
   return (
     <div className="mx-auto container w-full mb-8  space-y-8 -mt-7 z-50">
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 isolate bg-card rounded-xl p-4 shadow-sm border border-border-subtle">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 isolate bg-card p-4 shadow-sm border border-border-subtle">
         <div className="flex  justify-center items-center gap-1 w-full md:w-fit">
           <button
             type="button"
@@ -78,7 +78,7 @@ export function PostListClient({ posts }: { posts: Post[] }) {
       </div>
 
       {filteredPosts.length === 0 ? (
-        <div className="rounded-md border border-dashed border-border-subtle bg-card p-10 text-center text-text-muted">
+        <div className="border border-dashed border-border-subtle bg-card p-10 text-center text-text-muted">
           Nenhuma publicação encontrada para este filtro.
         </div>
       ) : (

@@ -257,7 +257,7 @@ export function PostEditorClient({
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-3xl rounded-xl border border-border-subtle bg-card p-10 text-center shadow-xs">
+      <div className="mx-auto max-w-3xl border border-border-subtle bg-card p-10 text-center shadow-xs">
         <h1 className="text-2xl font-bold text-text-main">Acesso restrito</h1>
         <p className="mt-2 text-text-muted">
           Faça login para escrever e gerenciar seus artigos.
@@ -271,7 +271,7 @@ export function PostEditorClient({
 
   if (!canPublish) {
     return (
-      <div className="mx-auto max-w-3xl rounded-xl border border-border-subtle bg-card p-10 text-center shadow-xs">
+      <div className="mx-auto max-w-3xl border border-border-subtle bg-card p-10 text-center shadow-xs">
         <h1 className="text-2xl font-bold text-text-main">
           Publicação disponível para membros verificados
         </h1>
@@ -290,18 +290,18 @@ export function PostEditorClient({
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 text-sm text-text-muted">
+      <div className="border border-primary/20 bg-primary/5 p-5 text-sm text-text-muted">
         Escolha entre artigo e vaga. Para publicar, a postagem precisa ter pelo menos
         texto ou imagem de capa. O resumo é opcional e as tags continuam limitadas a 5.
       </div>
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 rounded-xl border border-border-subtle bg-card p-6 md:p-8 shadow-xs">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 border border-border-subtle bg-card p-6 md:p-8 shadow-xs">
         <div className="space-y-2">
           <Label htmlFor="category">Categoria</Label>
           <select
             id="category"
             {...form.register("category")}
-            className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-11 w-full border border-input bg-background px-3 py-2 text-sm"
           >
             <option value="article">{POST_CATEGORY_LABELS.article}</option>
             <option value="job">{POST_CATEGORY_LABELS.job}</option>
@@ -396,7 +396,7 @@ export function PostEditorClient({
         {coverImageValue ? (
           <div className="space-y-2">
             <Label>Prévia da capa</Label>
-            <div className="relative h-56 overflow-hidden rounded-xl border border-border-subtle bg-surface">
+            <div className="relative h-56 overflow-hidden border border-border-subtle bg-surface">
               <Image
                 src={coverImageValue}
                 alt="Prévia da imagem de capa"

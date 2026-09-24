@@ -30,7 +30,7 @@ export function ContactsClient() {
           Você precisa estar logado para ver seus contatos.
         </p>
         <Link href="/">
-          <Button className="bg-primary text-primary-foreground font-bold rounded-xl px-8">
+          <Button className="bg-primary text-primary-foreground font-bold px-8">
             Voltar ao início
           </Button>
         </Link>

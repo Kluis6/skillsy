@@ -68,7 +68,7 @@ export function ContactsAside({
           />
           <Input
             placeholder="Buscar contatos..."
-            className="pl-10 h-10 text-sm bg-card focus:bg-card placeholder:text-text-muted rounded-full border-input"
+            className="pl-10 h-10 text-sm bg-card focus:bg-card placeholder:text-text-muted border-input"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -79,7 +79,7 @@ export function ContactsAside({
         {loading ? (
           <div className="p-4 space-y-4">
             {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className="h-20 w-full rounded-xl" />
+              <Skeleton key={i} className="h-20 w-full" />
             ))}
           </div>
         ) : filteredContacts.length > 0 ? (
@@ -113,7 +113,7 @@ export function ContactsAside({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-10 rounded-full text-text-muted hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
+                        className="h-10 text-text-muted hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleContact(c.uid).then(() => {

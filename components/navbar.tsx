@@ -279,7 +279,7 @@ export function Navbar({
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                      "px-3 py-2 text-sm font-medium transition-colors",
                       active
                         ? "bg-primary text-primary-foreground"
                         : "text-text-muted hover:bg-primary/10 hover:text-primary",

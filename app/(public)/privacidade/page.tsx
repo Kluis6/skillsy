@@ -95,7 +95,7 @@ export default function PrivacidadePage() {
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
-        <div className="w-full rounded-xl bg-card p-4 shadow-sm xl:p-8 border border-border-subtle">
+        <div className="w-full bg-card p-4 shadow-sm xl:p-8 border border-border-subtle">
           <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
             <div className="col-span-12 space-y-4">
               <h2 className="text-xl md:text-2xl font-bold text-text-main">
@@ -118,10 +118,10 @@ export default function PrivacidadePage() {
             {summaries.map((item) => (
               <div
                 key={item.title}
-                className={`col-span-12 rounded-md border p-4 lg:col-span-4 space-y-4 `}
+                className={`col-span-12 border p-4 lg:col-span-4 space-y-4 `}
               >
                 <div
-                  className={`flex size-12 items-center justify-center rounded-sm ${item.tone}`}
+                  className={`flex size-12 items-center justify-center ${item.tone}`}
                 >
                   <item.icon size={22} />
                 </div>
@@ -149,7 +149,7 @@ export default function PrivacidadePage() {
 
           {dataTypes.map((item, index) => (
             <div key={item} className="col-span-12 md:col-span-4">
-              <div className="h-full rounded-xl bg-primary p-6 text-white dark:bg-accent">
+              <div className="h-full bg-primary p-6 text-white dark:bg-accent">
                 <span className="text-sm font-bold text-white/80">
                   Grupo {index + 1}
                 </span>
@@ -190,9 +190,9 @@ export default function PrivacidadePage() {
             <div className="col-span-12 md:col-span-6">
               <div className="grid grid-cols-1 gap-4">
                 {useCases.map((item) => (
-                  <div key={item} className="rounded-md border border-border-subtle bg-card p-4">
+                  <div key={item} className="border border-border-subtle bg-card p-4">
                     <div className="flex items-start gap-3">
-                      <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                      <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center bg-primary/10 text-primary">
                         <Eye size={18} />
                       </div>
                       <p className="text-sm leading-relaxed text-text-muted">
@@ -225,8 +225,8 @@ export default function PrivacidadePage() {
           <div className="col-span-12 lg:col-span-8">
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               <div className="col-span-12 md:col-span-4">
-                <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <div className="h-full space-y-2 border border-border-subtle bg-surface p-4">
+                  <div className="flex size-12 items-center justify-center bg-primary/10 text-primary">
                     <Share2 size={22} />
                   </div>
                   <h3 className="text-base font-bold text-text-main">
@@ -240,8 +240,8 @@ export default function PrivacidadePage() {
                 </div>
               </div>
               <div className="col-span-12 md:col-span-4">
-                <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <div className="h-full space-y-2 border border-border-subtle bg-surface p-4">
+                  <div className="flex size-12 items-center justify-center bg-primary/10 text-primary">
                     <Lock size={22} />
                   </div>
                   <h3 className="text-base font-bold text-text-main">
@@ -255,8 +255,8 @@ export default function PrivacidadePage() {
                 </div>
               </div>
               <div className="col-span-12 md:col-span-4">
-                <div className="h-full space-y-2 rounded-md border border-border-subtle bg-surface p-4">
-                  <div className="flex size-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <div className="h-full space-y-2 border border-border-subtle bg-surface p-4">
+                  <div className="flex size-12 items-center justify-center bg-primary/10 text-primary">
                     <ShieldCheck size={22} />
                   </div>
                   <h3 className="text-base font-bold text-text-main">
@@ -276,7 +276,7 @@ export default function PrivacidadePage() {
 
       <div className="container mx-auto mb-24 px-4">
         <section className="mt-12 grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2">
-          <div className="rounded-xl border border-border-subtle bg-surface p-4 md:p-6 lg:p-10">
+          <div className="border border-border-subtle bg-surface p-4 md:p-6 lg:p-10">
             <div className="space-y-4">
               <h2 className="text-xl lg:text-2xl font-bold text-text-main">
                 Seus direitos e escolhas
@@ -288,7 +288,7 @@ export default function PrivacidadePage() {
                 {rights.map((item) => (
                   <div
                     key={item}
-                    className="rounded-md border border-border-subtle bg-card p-4 text-sm text-text-muted"
+                    className="border border-border-subtle bg-card p-4 text-sm text-text-muted"
                   >
                     {item}
                   </div>
@@ -322,9 +322,9 @@ export default function PrivacidadePage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-warning-border bg-warning-surface p-4 text-sm leading-relaxed text-warning-foreground">
+            <div className="border border-warning-border bg-warning-surface p-4 text-sm leading-relaxed text-warning-foreground">
               <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-sm bg-warning/15 text-warning">
+                <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center bg-warning/15 text-warning">
                   <RefreshCcw size={18} />
                 </div>
                 <div>
@@ -341,7 +341,7 @@ export default function PrivacidadePage() {
       </div>
 
       <section className="container mx-auto mb-24 px-4">
-        <div className="rounded-md border border-border-subtle bg-surface p-4 md:p-6 lg:p-10">
+        <div className="border border-border-subtle bg-surface p-4 md:p-6 lg:p-10">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-4">
               <h2 className="text-xl lg:text-2xl font-bold text-text-main">
@@ -364,7 +364,7 @@ export default function PrivacidadePage() {
               {cookieCategories.map((item) => (
                 <div
                   key={item}
-                  className="rounded-xl border border-border-subtle bg-card p-4 text-sm text-text-muted shadow-xs"
+                  className="border border-border-subtle bg-card p-4 text-sm text-text-muted shadow-xs"
                 >
                   {item}
                 </div>

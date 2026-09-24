@@ -106,7 +106,7 @@ export function HeroSection({
                   name="q"
                   aria-label="Buscar talentos, profissionais e serviços"
                   placeholder="O que você precisa?"
-                  className="h-12 w-full rounded-full bg-background pl-10 pr-12 text-text-main placeholder:text-text-muted"
+                  className="h-12 w-full bg-background pl-10 pr-12 text-text-main placeholder:text-text-muted"
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                 />
@@ -114,7 +114,7 @@ export function HeroSection({
                   <button
                     type="button"
                     onClick={() => setSearchTerm("")}
-                    className="absolute right-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface hover:text-text-main"
+                    className="absolute right-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center text-text-muted transition-colors hover:bg-surface hover:text-text-main"
                     aria-label="Limpar busca"
                   >
                     <X className="size-4" />

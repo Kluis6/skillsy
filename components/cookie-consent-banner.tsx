@@ -42,7 +42,7 @@ export function CookieConsentBanner() {
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 p-4">
-      <div className="mx-auto max-w-4xl overflow-hidden rounded-xl border border-border-subtle bg-card shadow-lg">
+      <div className="mx-auto max-w-4xl overflow-hidden border border-border-subtle bg-card shadow-lg">
         <div className="bg-linear-to-r from-primary to-primary/80 px-5 py-3 text-primary-foreground">
           <div className="flex items-center gap-2 text-sm font-semibold tracking-tight">
             <ShieldCheck size={18} />

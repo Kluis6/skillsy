@@ -507,7 +507,7 @@ export function ProfileSettingsClient() {
         <Button
           render={<Link href="/" />}
           nativeButton={false}
-          className="bg-primary text-primary-foreground font-bold rounded-xl px-8"
+          className="bg-primary text-primary-foreground font-bold px-8"
         >
           Voltar ao início
         </Button>
@@ -533,7 +533,7 @@ export function ProfileSettingsClient() {
               type="submit"
               form="profile-settings-form"
               disabled={loading || uploading !== null || !isDirty}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 transition-colors rounded-sm px-6 font-bold h-10"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 transition-colors px-6 font-bold h-10"
             >
               {loading ? (
                 "Salvando..."
@@ -637,17 +637,17 @@ export function ProfileSettingsClient() {
                       </span>
                     </div>
                     <div
-                      className="h-2 overflow-hidden rounded-full bg-surface"
+                      className="h-2 overflow-hidden bg-surface"
                       aria-hidden="true"
                     >
                       <div
-                        className="h-full rounded-full bg-primary transition-[width] duration-200"
+                        className="h-full bg-primary transition-[width] duration-200"
                         style={{
                           width: `${(onboardingDoneCount / onboardingItems.length) * 100}%`,
                         }}
                       />
                     </div>
-                    <div className="divide-y divide-border-subtle rounded-md border border-border-subtle">
+                    <div className="divide-y divide-border-subtle border border-border-subtle">
                       {onboardingItems.map((item) => {
                         const Icon = item.icon;
                         return (
@@ -708,7 +708,7 @@ export function ProfileSettingsClient() {
                     type="button"
                     onClick={() => bannerInputRef.current?.click()}
                     disabled={uploading === "banner"}
-                    className="absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white p-2 rounded-xl hover:bg-white/30 transition-colors disabled:opacity-50"
+                    className="absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white p-2 hover:bg-white/30 transition-colors disabled:opacity-50"
                     title="Alterar capa"
                     aria-label="Alterar capa do perfil"
                   >
@@ -739,7 +739,7 @@ export function ProfileSettingsClient() {
                       onClick={() => avatarInputRef.current?.click()}
                       disabled={uploading === "avatar"}
                       aria-label="Alterar foto do perfil"
-                      className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-2.5 rounded-xl shadow-sm hover:scale-105 transition-transform disabled:opacity-50"
+                      className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-2.5 shadow-sm hover:scale-105 transition-transform disabled:opacity-50"
                     >
                       {uploading === "avatar" ? (
                         <Loader2 size={18} className="animate-spin" />
@@ -784,9 +784,9 @@ export function ProfileSettingsClient() {
                     {readinessPercent}%
                   </Badge>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-surface">
+                <div className="h-2 overflow-hidden bg-surface">
                   <div
-                    className="h-full rounded-full bg-primary transition-all"
+                    className="h-full bg-primary transition-all"
                     style={{ width: `${readinessPercent}%` }}
                   />
                 </div>
@@ -818,7 +818,7 @@ export function ProfileSettingsClient() {
                     </li>
                   ))}
                 </ul>
-                <p className="rounded-md bg-surface p-3 text-xs text-text-muted">
+                <p className="bg-surface p-3 text-xs text-text-muted">
                   Imagens: até 10 MB por arquivo em{" "}
                   {SUPPORTED_IMAGE_FORMATS_LABEL}.
                 </p>
@@ -827,7 +827,7 @@ export function ProfileSettingsClient() {
 
             {/* Right Column: Detailed Info */}
             <div className="lg:col-span-2 space-y-2">
-              <SurfacePanel className="rounded-none border-x-0 px-4 py-4 md:rounded-xl md:border-x md:px-8">
+              <SurfacePanel className="rounded-none border-x-0 px-4 py-4 md:border-x md:px-8">
                 <div className="flex items-start gap-3">
                   <Eye className="mt-0.5 size-4 shrink-0 text-primary" />
                   <div className="space-y-1">
@@ -860,7 +860,7 @@ export function ProfileSettingsClient() {
                         <Input
                           {...register("name")}
                           maxLength={PROFILE_LIMITS.name}
-                          className={`bg-surface focus:bg-card rounded-sm text-sm h-12 transition-all ${
+                          className={`bg-surface focus:bg-card text-sm h-12 transition-all ${
                             errors.name
                               ? "border-destructive/60 focus:border-destructive ring-0"
                               : touchedFields.name && !errors.name
@@ -897,7 +897,7 @@ export function ProfileSettingsClient() {
                           {...register("location")}
                           placeholder="Ex: São Paulo, SP"
                           maxLength={PROFILE_LIMITS.location}
-                          className={`bg-surface focus:bg-card transition-all rounded-sm text-sm h-12 flex-grow ${errors.location ? "ring-2 ring-destructive" : ""}`}
+                          className={`bg-surface focus:bg-card transition-all text-sm h-12 flex-grow ${errors.location ? "ring-2 ring-destructive" : ""}`}
                         />
                         <Button
                           type="button"
@@ -905,7 +905,7 @@ export function ProfileSettingsClient() {
                           onClick={handleDetectLocation}
                           disabled={detectingLocation}
                           aria-label="Detectar minha localização"
-                          className="size-12 rounded-sm bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 transition-colors disabled:opacity-50"
+                          className="size-12 bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 transition-colors disabled:opacity-50"
                           title="Detectar minha localização"
                         >
                           {detectingLocation ? (
@@ -926,7 +926,7 @@ export function ProfileSettingsClient() {
                         número, complemento e bairro permanecem privados.
                       </p>
                     </div>
-                    <div className="md:col-span-2 space-y-4 rounded-md border border-border-subtle p-4">
+                    <div className="md:col-span-2 space-y-4 border border-border-subtle p-4">
                       <div className="space-y-1">
                         <p
                           id="membership-heading"
@@ -958,7 +958,7 @@ export function ProfileSettingsClient() {
                                   shouldDirty: true,
                                 })
                               }
-                              className={`flex items-start gap-3 rounded-md border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                              className={`flex items-start gap-3 border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                                 selected
                                   ? "border-primary bg-primary/5"
                                   : "border-border-subtle hover:border-primary/40"
@@ -984,7 +984,7 @@ export function ProfileSettingsClient() {
 
                       {formData.membershipType === "member" && (
                         <div className="space-y-4">
-                          <p className="rounded-md bg-primary/5 px-3 py-2 text-xs text-text-main">
+                          <p className="bg-primary/5 px-3 py-2 text-xs text-text-main">
                             <strong>Apenas para membros</strong> de A Igreja de
                             Jesus Cristo dos Santos dos Últimos Dias. Com ramo
                             ou ala e ano de batismo preenchidos, seu perfil
@@ -1003,7 +1003,7 @@ export function ProfileSettingsClient() {
                                 {...register("ward")}
                                 placeholder="Ex: Ala Centro, Estaca Brasil"
                                 maxLength={PROFILE_LIMITS.ward}
-                                className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.ward ? "ring-2 ring-destructive" : ""}`}
+                                className={`bg-surface focus:bg-card transition-all text-sm h-12 ${errors.ward ? "ring-2 ring-destructive" : ""}`}
                               />
                               <p className="text-xs text-text-muted ml-1">
                                 Até {PROFILE_LIMITS.ward} caracteres.
@@ -1027,7 +1027,7 @@ export function ProfileSettingsClient() {
                                 placeholder="Ex: 2010"
                                 inputMode="numeric"
                                 maxLength={4}
-                                className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.baptismYear ? "ring-2 ring-destructive" : ""}`}
+                                className={`bg-surface focus:bg-card transition-all text-sm h-12 ${errors.baptismYear ? "ring-2 ring-destructive" : ""}`}
                               />
                               {errors.baptismYear && (
                                 <p className="text-xs text-destructive font-bold ml-1">
@@ -1040,7 +1040,7 @@ export function ProfileSettingsClient() {
                       )}
 
                       {formData.membershipType === "friend" && (
-                        <p className="rounded-md bg-success/10 px-3 py-2 text-xs text-text-main">
+                        <p className="bg-success/10 px-3 py-2 text-xs text-text-main">
                           Seu perfil exibirá o selo{" "}
                           <strong>Amigo da comunidade</strong> ao lado do seu
                           nome. Os dados de membro não se aplicam e serão
@@ -1064,7 +1064,7 @@ export function ProfileSettingsClient() {
                     <Textarea
                       {...register("bio")}
                       placeholder="Conte um pouco sobre você e seus talentos..."
-                      className={`bg-surface focus:bg-card transition-all text-sm rounded-sm min-h-[150px] p-4 focus:ring-2 focus:ring-primary/20 ${errors.bio ? "ring-2 ring-destructive" : ""}`}
+                      className={`bg-surface focus:bg-card transition-all text-sm min-h-[150px] p-4 focus:ring-2 focus:ring-primary/20 ${errors.bio ? "ring-2 ring-destructive" : ""}`}
                       maxLength={PROFILE_LIMITS.bio}
                     />
                     <p className="text-xs text-text-muted ml-1">
@@ -1123,7 +1123,7 @@ export function ProfileSettingsClient() {
 
                 <div className="space-y-6">
                   {!formData.isProvider ? (
-                    <div className="rounded-md border border-border-subtle bg-surface p-4 text-sm text-text-muted">
+                    <div className="border border-border-subtle bg-surface p-4 text-sm text-text-muted">
                       Ative{" "}
                       <span className="font-semibold text-text-main">
                         Quero anunciar
@@ -1140,7 +1140,7 @@ export function ProfileSettingsClient() {
                         <div className="relative">
                           <select
                             {...register("category")}
-                            className={`w-full bg-surface border focus:bg-card rounded-sm h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none ${errors.category ? "ring-2 ring-destructive" : ""}`}
+                            className={`w-full bg-surface border focus:bg-card h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none ${errors.category ? "ring-2 ring-destructive" : ""}`}
                           >
                             <option value="">Selecione uma categoria</option>
                             {PROVIDER_CATEGORIES.map((category) => (
@@ -1167,7 +1167,7 @@ export function ProfileSettingsClient() {
                           {...register("serviceType")}
                           placeholder="Ex: Eletricista, Professor de Inglês, etc."
                           maxLength={PROFILE_LIMITS.serviceType}
-                          className={`bg-surface focus:bg-card text-sm transition-all rounded-sm h-12 ${errors.serviceType ? "ring-2 ring-destructive" : ""}`}
+                          className={`bg-surface focus:bg-card text-sm transition-all h-12 ${errors.serviceType ? "ring-2 ring-destructive" : ""}`}
                         />
                         <p className="text-xs text-text-muted ml-1">
                           Até {PROFILE_LIMITS.serviceType} caracteres.
@@ -1190,7 +1190,7 @@ export function ProfileSettingsClient() {
                           {...register("companyName")}
                           placeholder="Ex: Silva Construções"
                           maxLength={PROFILE_LIMITS.companyName}
-                          className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.companyName ? "ring-2 ring-destructive" : ""}`}
+                          className={`bg-surface focus:bg-card transition-all text-sm h-12 ${errors.companyName ? "ring-2 ring-destructive" : ""}`}
                         />
                         {errors.companyName && (
                           <p className="text-xs text-destructive font-bold ml-1">
@@ -1242,7 +1242,7 @@ export function ProfileSettingsClient() {
                           {...register("serviceHours")}
                           placeholder="Ex: 08:00 - 18:00 ou Por agendamento"
                           maxLength={PROFILE_LIMITS.serviceHours}
-                          className={`bg-surface focus:bg-card transition-all text-sm rounded-sm h-12 ${errors.serviceHours ? "ring-2 ring-destructive" : ""}`}
+                          className={`bg-surface focus:bg-card transition-all text-sm h-12 ${errors.serviceHours ? "ring-2 ring-destructive" : ""}`}
                         />
                         <p className="text-xs text-text-muted ml-1">
                           Horário ou disponibilidade resumida, até{" "}
@@ -1276,7 +1276,7 @@ export function ProfileSettingsClient() {
                           {...register("businessAddress")}
                           placeholder="Ex: Rua das Flores"
                           maxLength={PROFILE_LIMITS.address}
-                          className={`bg-surface focus:bg-card transition-all rounded-sm h-12 ${errors.businessAddress ? "ring-2 ring-destructive" : ""}`}
+                          className={`bg-surface focus:bg-card transition-all h-12 ${errors.businessAddress ? "ring-2 ring-destructive" : ""}`}
                         />
                       </div>
                       <div className="space-y-2 col-span-1">
@@ -1287,7 +1287,7 @@ export function ProfileSettingsClient() {
                           {...register("businessAddressNumber")}
                           placeholder="Ex: 123"
                           maxLength={PROFILE_LIMITS.addressNumber}
-                          className={`bg-surface focus:bg-card transition-all rounded-sm h-12 ${errors.businessAddressNumber ? "ring-2 ring-destructive" : ""}`}
+                          className={`bg-surface focus:bg-card transition-all h-12 ${errors.businessAddressNumber ? "ring-2 ring-destructive" : ""}`}
                         />
                       </div>
                       <div className="space-y-2 col-span-2">
@@ -1298,7 +1298,7 @@ export function ProfileSettingsClient() {
                           {...register("businessNeighborhood")}
                           placeholder="Ex: Centro"
                           maxLength={PROFILE_LIMITS.neighborhood}
-                          className={`bg-surface focus:bg-card transition-all rounded-sm h-12 ${errors.businessNeighborhood ? "ring-2 ring-destructive" : ""}`}
+                          className={`bg-surface focus:bg-card transition-all h-12 ${errors.businessNeighborhood ? "ring-2 ring-destructive" : ""}`}
                         />
                       </div>
                       <div className="space-y-2 col-auto">
@@ -1309,7 +1309,7 @@ export function ProfileSettingsClient() {
                           {...register("businessState")}
                           placeholder="Ex: SP"
                           maxLength={PROFILE_LIMITS.state}
-                          className={`focus:bg-card bg-surface rounded-sm text-sm h-12 ${errors.businessState ? "ring-2 ring-destructive" : ""}`}
+                          className={`focus:bg-card bg-surface text-sm h-12 ${errors.businessState ? "ring-2 ring-destructive" : ""}`}
                         />
                       </div>
                       <div className="space-y-2 col-span-2">
@@ -1320,7 +1320,7 @@ export function ProfileSettingsClient() {
                           {...register("businessComplement")}
                           placeholder="Ex: Sala 10, Bloco B"
                           maxLength={PROFILE_LIMITS.complement}
-                          className={`focus:bg-card bg-surface rounded-sm text-sm h-12 ${errors.businessComplement ? "ring-2 ring-destructive" : ""}`}
+                          className={`focus:bg-card bg-surface text-sm h-12 ${errors.businessComplement ? "ring-2 ring-destructive" : ""}`}
                         />
                       </div>
                     </div>
@@ -1350,7 +1350,7 @@ export function ProfileSettingsClient() {
                       placeholder="Ex: 11999999999"
                       inputMode="numeric"
                       maxLength={PROFILE_LIMITS.whatsappDigitsMax}
-                      className={`bg-surface rounded-sm text-sm h-12 ${errors.whatsapp ? "ring-2 ring-destructive" : ""}`}
+                      className={`bg-surface text-sm h-12 ${errors.whatsapp ? "ring-2 ring-destructive" : ""}`}
                     />
                     <p className="text-xs text-text-muted ml-1">
                       Somente números, de {PROFILE_LIMITS.whatsappDigitsMin} a{" "}
@@ -1374,7 +1374,7 @@ export function ProfileSettingsClient() {
                       placeholder="Ex: 1133334444"
                       inputMode="numeric"
                       maxLength={PROFILE_LIMITS.phoneDigitsMax}
-                      className={`bg-surface rounded-sm text-sm h-12 ${errors.phone ? "ring-2 ring-destructive" : ""}`}
+                      className={`bg-surface text-sm h-12 ${errors.phone ? "ring-2 ring-destructive" : ""}`}
                     />
                     <p className="text-xs text-text-muted ml-1">
                       Somente números, até {PROFILE_LIMITS.phoneDigitsMax}{" "}
@@ -1394,7 +1394,7 @@ export function ProfileSettingsClient() {
                       {...register("instagram")}
                       placeholder="@seuusuario"
                       maxLength={PROFILE_LIMITS.socialHandle}
-                      className={`bg-surface rounded-sm text-sm h-12 ${errors.instagram ? "ring-2 ring-destructive" : ""}`}
+                      className={`bg-surface text-sm h-12 ${errors.instagram ? "ring-2 ring-destructive" : ""}`}
                     />
                     <p className="text-xs text-text-muted ml-1">
                       Usuário do Instagram com até {PROFILE_LIMITS.socialHandle}{" "}
@@ -1414,7 +1414,7 @@ export function ProfileSettingsClient() {
                       {...register("facebook")}
                       placeholder="Link do perfil"
                       maxLength={PROFILE_LIMITS.socialUrl}
-                      className={`bg-surface rounded-sm text-sm h-12 ${errors.facebook ? "ring-2 ring-destructive" : ""}`}
+                      className={`bg-surface text-sm h-12 ${errors.facebook ? "ring-2 ring-destructive" : ""}`}
                     />
                     {errors.facebook && (
                       <p className="text-xs text-destructive font-bold ml-1">
@@ -1430,7 +1430,7 @@ export function ProfileSettingsClient() {
                       {...register("linkedin")}
                       placeholder="Link do perfil"
                       maxLength={PROFILE_LIMITS.socialUrl}
-                      className={`bg-surface rounded-sm text-sm h-12 ${errors.linkedin ? "ring-2 ring-destructive" : ""}`}
+                      className={`bg-surface text-sm h-12 ${errors.linkedin ? "ring-2 ring-destructive" : ""}`}
                     />
                     {errors.linkedin && (
                       <p className="text-xs text-destructive font-bold ml-1">
@@ -1446,7 +1446,7 @@ export function ProfileSettingsClient() {
                       {...register("website")}
                       placeholder="https://exemplo.com"
                       maxLength={PROFILE_LIMITS.website}
-                      className={`bg-surface rounded-sm h-12 text-sm  ${errors.website ? "ring-2 ring-destructive" : ""}`}
+                      className={`bg-surface h-12 text-sm  ${errors.website ? "ring-2 ring-destructive" : ""}`}
                     />
                     <p className="text-xs text-text-muted ml-1">
                       URL completa com `https://`, até {PROFILE_LIMITS.website}{" "}
@@ -1478,7 +1478,7 @@ export function ProfileSettingsClient() {
                     variant="default"
                     onClick={handleAddPhoto}
                     disabled={uploading === "gallery"}
-                    className="hidden md:flex rounded-sm h-10 text-sm bg-primary px-4 hover:bg-primary/90 active:bg-primary/80 text-primary-foreground font-bold disabled:opacity-50"
+                    className="hidden md:flex h-10 text-sm bg-primary px-4 hover:bg-primary/90 active:bg-primary/80 text-primary-foreground font-bold disabled:opacity-50"
                   >
                     {uploading === "gallery" ? (
                       <Loader2 size={16} className="mr-2 animate-spin" />
@@ -1495,7 +1495,7 @@ export function ProfileSettingsClient() {
                     onChange={(e) => handleFileChange(e, "gallery")}
                   />
                 </div>
-                <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-xs text-text-muted space-y-1">
+                <div className="border border-primary/20 bg-primary/5 p-4 text-xs text-text-muted space-y-1">
                   <p className="font-semibold text-text-main">
                     Regras da galeria
                   </p>
@@ -1512,7 +1512,7 @@ export function ProfileSettingsClient() {
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {formData.gallery.map((photo, index) => (
                     <div key={index} className="flex flex-col gap-2">
-                      <div className="relative aspect-square rounded-xl overflow-hidden group border border-border-subtle">
+                      <div className="relative aspect-square overflow-hidden group border border-border-subtle">
                         <Image
                           src={photo.url}
                           alt={`Galeria ${index}`}
@@ -1527,7 +1527,7 @@ export function ProfileSettingsClient() {
                             type="button"
                             onClick={() => removePhoto(index)}
                             aria-label={`Remover foto ${index + 1} da galeria`}
-                            className="rounded-full w-8 h-8"
+                            className="w-8 h-8"
                           >
                             <Trash2 size={14} />
                           </Button>
@@ -1549,7 +1549,7 @@ export function ProfileSettingsClient() {
                             shouldValidate: true,
                           });
                         }}
-                        className="text-xs min-h-[50px] h-auto p-2 bg-surface border border-border-subtle resize-none rounded-xl"
+                        className="text-xs min-h-[50px] h-auto p-2 bg-surface border border-border-subtle resize-none"
                       />
                       <p className="text-xs text-text-muted ml-1">
                         {(photo.description || "").length}/
@@ -1558,7 +1558,7 @@ export function ProfileSettingsClient() {
                     </div>
                   ))}
                   {formData.gallery.length === 0 && (
-                    <div className="col-span-full py-12 text-center bg-surface rounded-xl border-2 border-dashed border-border-subtle">
+                    <div className="col-span-full py-12 text-center bg-surface border-2 border-dashed border-border-subtle">
                       <Camera className="mx-auto h-10 w-10 text-text-muted/20 mb-3" />
                       <p className="text-sm text-text-muted font-medium">
                         Sua galeria está vazia.
@@ -1573,7 +1573,7 @@ export function ProfileSettingsClient() {
                     variant="default"
                     onClick={handleAddPhoto}
                     disabled={uploading === "gallery"}
-                    className="md:hidden flex rounded-sm h-10 text-sm bg-primary px-4 hover:bg-primary/90 active:bg-primary/80 text-primary-foreground font-bold disabled:opacity-50"
+                    className="md:hidden flex h-10 text-sm bg-primary px-4 hover:bg-primary/90 active:bg-primary/80 text-primary-foreground font-bold disabled:opacity-50"
                   >
                     {uploading === "gallery" ? (
                       <Loader2 size={16} className="mr-2 animate-spin" />
@@ -1595,7 +1595,7 @@ export function ProfileSettingsClient() {
                   </p>
                 </div>
 
-                <div className="flex flex-col gap-4 rounded-sm border border-destructive/30 bg-destructive/5 p-4 md:p-5">
+                <div className="flex flex-col gap-4 border border-destructive/30 bg-destructive/5 p-4 md:p-5">
                   <div className="space-y-1">
                     <p className="text-sm font-semibold text-destructive">
                       Cancelar minha conta
@@ -1612,7 +1612,7 @@ export function ProfileSettingsClient() {
                       variant="destructive"
                       onClick={handleCancelAccount}
                       disabled={cancelingAccount || loading}
-                      className="rounded-sm h-10 px-4"
+                      className="h-10 px-4"
                     >
                       {cancelingAccount ? (
                         <>

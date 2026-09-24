@@ -103,7 +103,7 @@ function OpportunityCard({
   const urgencyInfo = urgencyMeta[urgency];
 
   return (
-    <article className="flex h-full flex-col gap-5 rounded-lg border border-border-subtle bg-card p-5 shadow-xs">
+    <article className="flex h-full flex-col gap-5 border border-border-subtle bg-card p-5 shadow-xs">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -538,7 +538,7 @@ export function OpportunitiesClient({
               <select
                 id="opportunity-category"
                 required
-                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                className="h-10 w-full border border-input bg-background px-3 text-sm"
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
               >
@@ -558,7 +558,7 @@ export function OpportunitiesClient({
               <select
                 id="opportunity-urgency"
                 required
-                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                className="h-10 w-full border border-input bg-background px-3 text-sm"
                 value={form.urgency}
                 onChange={(e) =>
                   setForm({
@@ -587,7 +587,7 @@ export function OpportunitiesClient({
               <select
                 id="opportunity-state"
                 required
-                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                className="h-10 w-full border border-input bg-background px-3 text-sm"
                 value={form.state}
                 onChange={(e) => setForm({ ...form, state: e.target.value })}
               >
@@ -783,7 +783,7 @@ export function OpportunitiesClient({
             </label>
             <select
               id="filter-category"
-              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              className="h-10 w-full border border-input bg-background px-3 text-sm"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
@@ -799,7 +799,7 @@ export function OpportunitiesClient({
             </label>
             <select
               id="filter-state"
-              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              className="h-10 w-full border border-input bg-background px-3 text-sm"
               value={state}
               onChange={(e) => setState(e.target.value)}
             >

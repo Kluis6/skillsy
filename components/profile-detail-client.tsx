@@ -437,7 +437,7 @@ export function ProfileDetailClient({
   ];
 
   const renderShareSheet = () => (
-    <SheetContent side="bottom" className="rounded-t-lg">
+    <SheetContent side="bottom" className="">
       <SheetHeader className="text-left">
         <SheetTitle>Compartilhar perfil</SheetTitle>
         <SheetDescription>
@@ -510,7 +510,7 @@ export function ProfileDetailClient({
                 render={
                   <Button
                     variant="outline"
-                    className={` ${className || "rounded-sm size-10"}`}
+                    className={` ${className || "size-10"}`}
                   />
                 }
               >
@@ -824,8 +824,8 @@ export function ProfileDetailClient({
                     />
                   </div>
                   <div className="sm:flex space-x-2 hidden">
-                    {renderShareButton("size-10 rounded-md")}
-                    {renderReportButton("size-10 rounded-md")}
+                    {renderShareButton("size-10")}
+                    {renderReportButton("size-10")}
                     {user?.uid === targetProfile.uid ? (
                       <Tooltip>
                         <TooltipTrigger
@@ -928,7 +928,7 @@ export function ProfileDetailClient({
                         {targetProfile.category && (
                           <Badge
                             variant="secondary"
-                            className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                            className="bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
                           >
                             {targetProfile.category}
                           </Badge>
@@ -956,7 +956,7 @@ export function ProfileDetailClient({
                   </div>
 
                   <div className="flex flex-col w-full sm:w-auto">
-                    <div className="hidden space-y-1 rounded-sm border bg-surface p-4 text-center sm:block">
+                    <div className="hidden space-y-1 border bg-surface p-4 text-center sm:block">
                       <div className="flex items-center justify-center gap-2 text-primary">
                         <HeartHandshake size={22} aria-hidden="true" />
                         <p className="text-3xl font-bold">
@@ -1147,7 +1147,7 @@ export function ProfileDetailClient({
                     Avaliar este profissional
                   </h3>
                   <div className="w-full h-full flex space-x-2 md:space-x-4">
-                    <div className="text-center bg-surface rounded-lg border size-26 p-2 flex-none">
+                    <div className="text-center bg-surface border size-26 p-2 flex-none">
                       <div className="flex flex-col items-center justify-center h-full w-full">
                         <p className="md:text-3xl text-2xl font-bold text-text-main">
                           {Number(targetProfile.rating || 0).toFixed(1)}
@@ -1269,7 +1269,7 @@ export function ProfileDetailClient({
                     Carregando comentários...
                   </p>
                 ) : ratings.length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-border-subtle bg-surface p-4">
+                  <div className="border border-dashed border-border-subtle bg-surface p-4">
                     <p className="text-sm text-text-muted">
                       Ainda não há avaliações públicas sobre este profissional.
                     </p>
@@ -1283,7 +1283,7 @@ export function ProfileDetailClient({
                     {ratings.map((rating) => (
                       <article
                         key={rating.id}
-                        className="rounded-lg border border-border-subtle bg-surface p-4 space-y-3"
+                        className="border border-border-subtle bg-surface p-4 space-y-3"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="space-y-1">
@@ -1343,7 +1343,7 @@ export function ProfileDetailClient({
                         <button
                           type="button"
                           onClick={handleWhatsApp}
-                          className="flex w-full items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 text-left transition-colors hover:border-primary/30"
+                          className="flex w-full items-center gap-3 border border-border-subtle bg-surface px-3 py-3 text-left transition-colors hover:border-primary/30"
                         >
                           <FaWhatsapp size={16} className="text-success" />
                           <p className="text-sm font-medium text-text-main">
@@ -1355,7 +1355,7 @@ export function ProfileDetailClient({
                         <button
                           type="button"
                           onClick={handlePhoneCall}
-                          className="flex w-full items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 text-left transition-colors hover:border-primary/30"
+                          className="flex w-full items-center gap-3 border border-border-subtle bg-surface px-3 py-3 text-left transition-colors hover:border-primary/30"
                         >
                           <FaPhone size={16} className="text-primary" />
                           <p className="text-sm font-medium text-text-main">
@@ -1370,7 +1370,7 @@ export function ProfileDetailClient({
                           )}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
+                          className="flex items-center gap-3 border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
                         >
                           <FaInstagram size={16} className="text-pink-600" />
                           <span className="break-all text-sm font-medium text-text-main">
@@ -1383,7 +1383,7 @@ export function ProfileDetailClient({
                           href={formatUrl(targetProfile.facebook)}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
+                          className="flex items-center gap-3 border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
                         >
                           <FaFacebookF size={16} className="text-blue-600" />
                           <p className="break-all text-sm font-medium text-text-main">
@@ -1396,7 +1396,7 @@ export function ProfileDetailClient({
                           href={formatUrl(targetProfile.linkedin)}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
+                          className="flex items-center gap-3 border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
                         >
                           <FaLinkedinIn size={16} className="text-sky-700" />
                           <p className="break-all text-sm font-medium text-text-main">
@@ -1409,7 +1409,7 @@ export function ProfileDetailClient({
                           href={formatUrl(targetProfile.website)}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-3 rounded-md border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
+                          className="flex items-center gap-3 border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
                         >
                           <Globe size={16} className="text-primary" />
                           <p className="break-all text-sm font-medium text-text-main">
@@ -1444,7 +1444,7 @@ export function ProfileDetailClient({
                           render={
                             <button
                               type="button"
-                              className={`relative rounded-xl overflow-hidden aspect-square cursor-pointer hover:shadow-lg transition-all ${
+                              className={`relative overflow-hidden aspect-square cursor-pointer hover:shadow-lg transition-all ${
                                 index === 0
                                   ? "col-span-2 md:col-span-2 md:row-span-2"
                                   : ""
@@ -1464,7 +1464,7 @@ export function ProfileDetailClient({
                             referrerPolicy="no-referrer"
                           />
                         </DialogTrigger>
-                        <DialogContent className="gap-0 overflow-hidden border-none bg-black/95 p-0 sm:rounded-xl">
+                        <DialogContent className="gap-0 overflow-hidden border-none bg-black/95 p-0">
                           <DialogTitle className="sr-only">
                             Visualização de foto
                           </DialogTitle>
@@ -1498,7 +1498,7 @@ export function ProfileDetailClient({
                     ))}
                   </div>
                 ) : (
-                  <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-border-subtle rounded-xl bg-surface/50">
+                  <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-border-subtle bg-surface/50">
                     <Camera className="w-12 h-12 text-text-muted/30 mb-4" />
                     <p className="text-sm text-text-muted font-medium mb-4">
                       Sua galeria ainda não possui fotos profissionais.
@@ -1518,13 +1518,13 @@ export function ProfileDetailClient({
                     <div className="flex items-center gap-4">
                       {targetProfile.gallery &&
                         targetProfile.gallery.length > 0 && (
-                          <span className="text-xs text-text-muted font-medium bg-surface px-2 py-0.5 rounded-full border border-border-subtle">
+                          <span className="text-xs text-text-muted font-medium bg-surface px-2 py-0.5 border border-border-subtle">
                             {targetProfile.gallery.length}/5 fotos
                           </span>
                         )}
                       <Link
                         href="/profile"
-                        className="text-xs font-bold text-primary-foreground rounded-sm flex justify-center items-center px-4 bg-primary hover:bg-primary/90 active:bg-primary/80 h-8"
+                        className="text-xs font-bold text-primary-foreground flex justify-center items-center px-4 bg-primary hover:bg-primary/90 active:bg-primary/80 h-8"
                       >
                         Gerenciar galeria
                       </Link>

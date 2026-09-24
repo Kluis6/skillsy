@@ -69,7 +69,7 @@ export function AdminDashboardClient() {
           Esta área é restrita a administradores do sistema.
         </p>
         <Link href="/">
-          <Button className="bg-primary text-primary-foreground font-bold rounded-xl px-8">
+          <Button className="bg-primary text-primary-foreground font-bold px-8">
             Voltar ao início
           </Button>
         </Link>
@@ -90,7 +90,7 @@ export function AdminDashboardClient() {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden shadow-xs">
+          <Card className="bg-card border border-border-subtle overflow-hidden shadow-xs">
             <CardHeader className="pb-2">
               <CardDescription className="text-xs font-bold text-text-muted">
                 Total de usuários
@@ -101,7 +101,7 @@ export function AdminDashboardClient() {
             </CardHeader>
             <div className="h-1 bg-primary w-full opacity-20" />
           </Card>
-          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden shadow-xs">
+          <Card className="bg-card border border-border-subtle overflow-hidden shadow-xs">
             <CardHeader className="pb-2">
               <CardDescription className="text-xs font-bold text-text-muted">
                 Prestadores de serviço
@@ -112,7 +112,7 @@ export function AdminDashboardClient() {
             </CardHeader>
             <div className="h-1 bg-success w-full opacity-20" />
           </Card>
-          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden shadow-xs">
+          <Card className="bg-card border border-border-subtle overflow-hidden shadow-xs">
             <CardHeader className="pb-2">
               <CardDescription className="text-xs font-bold text-text-muted">
                 Membros verificados
@@ -123,7 +123,7 @@ export function AdminDashboardClient() {
             </CardHeader>
             <div className="h-1 bg-warning w-full opacity-20" />
           </Card>
-          <Card className="bg-card border border-border-subtle rounded-xl overflow-hidden shadow-xs">
+          <Card className="bg-card border border-border-subtle overflow-hidden shadow-xs">
             <CardHeader className="pb-2">
               <CardDescription className="text-xs font-bold text-text-muted">
                 Denúncias abertas
@@ -147,9 +147,9 @@ export function AdminDashboardClient() {
             transition={{ delay: 0.1 }}
           >
             <Link href="/admin/usuarios">
-              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all rounded-xl p-8 cursor-pointer h-full shadow-xs">
+              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all p-8 cursor-pointer h-full shadow-xs">
                 <div className="flex justify-between items-start mb-6">
-                  <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  <div className="w-14 h-14 bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                     <Users size={28} />
                   </div>
                   <ArrowRight
@@ -174,9 +174,9 @@ export function AdminDashboardClient() {
             transition={{ delay: 0.15 }}
           >
             <Link href="/admin/moderacao">
-              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-colors rounded-xl p-6 cursor-pointer h-full shadow-xs">
+              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-colors p-6 cursor-pointer h-full shadow-xs">
                 <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 bg-destructive/10 rounded-lg flex items-center justify-center text-destructive">
+                  <div className="w-12 h-12 bg-destructive/10 flex items-center justify-center text-destructive">
                     <AlertTriangle size={24} />
                   </div>
                   <ArrowRight
@@ -201,9 +201,9 @@ export function AdminDashboardClient() {
             transition={{ delay: 0.2 }}
           >
             <Link href="/admin/artigos">
-              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all rounded-xl p-8 cursor-pointer h-full shadow-xs">
+              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all p-8 cursor-pointer h-full shadow-xs">
                 <div className="flex justify-between items-start mb-6">
-                  <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  <div className="w-14 h-14 bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                     <FileText size={28} />
                   </div>
                   <ArrowRight

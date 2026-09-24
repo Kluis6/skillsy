@@ -160,7 +160,7 @@ export function ProviderProfileCard({
         </div>
 
         {recommendationCount > 0 ? (
-          <Badge className="absolute right-4 top-4 z-30 rounded-full bg-black/90 text-sm shadow">
+          <Badge className="absolute right-4 top-4 z-30 bg-black/90 text-sm shadow">
             <RecommendationCount
               recommendationCount={recommendationCount}
               compact
@@ -180,7 +180,7 @@ export function ProviderProfileCard({
           </div>
           <CardAction className="">
             {location ? (
-              <Badge variant="secondary" className="rounded-full">
+              <Badge variant="secondary" className="">
                 <MapPin className="" />
                 {location}
               </Badge>

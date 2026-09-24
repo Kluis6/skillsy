@@ -71,7 +71,7 @@ export default function DonationPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#001A41]/85 via-[#001A41]/45 to-[#001A41]/15" />
         <div className="container relative z-10 mx-auto px-4 pb-16 pt-28">
           <div className="max-w-3xl space-y-5">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm font-semibold text-white">
+            <div className="inline-flex items-center gap-2 border border-white/20 bg-white/10 px-3 py-1 text-sm font-semibold text-white">
               <ShieldCheck className="size-4" />
               Apoio voluntário
             </div>
@@ -88,7 +88,7 @@ export default function DonationPage() {
       </section>
 
       <div className="container mx-auto isolate -mt-8 space-y-10 px-4">
-        <section className="rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:p-8 shadow-xs">
+        <section className="border border-border-subtle bg-card p-5 md:p-6 lg:p-8 shadow-xs">
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
             <div className="space-y-3">
               <h2 className="text-xl font-bold text-text-main md:text-2xl">
@@ -102,7 +102,7 @@ export default function DonationPage() {
               </p>
             </div>
 
-            <div className="space-y-3 rounded-xl border border-border-subtle bg-surface p-4">
+            <div className="space-y-3 border border-border-subtle bg-surface p-4">
               {donationAssurances.map((item) => (
                 <div key={item} className="flex gap-3">
                   <BadgeCheck className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -119,10 +119,10 @@ export default function DonationPage() {
           {impactItems.map((item) => (
             <div
               key={item.title}
-              className="col-span-12 space-y-4 rounded-xl border border-border-subtle bg-card p-5 md:col-span-4 lg:p-6 shadow-xs"
+              className="col-span-12 space-y-4 border border-border-subtle bg-card p-5 md:col-span-4 lg:p-6 shadow-xs"
             >
               <div
-                className={`flex h-12 w-12 items-center justify-center rounded-sm border ${item.tone}`}
+                className={`flex h-12 w-12 items-center justify-center border ${item.tone}`}
               >
                 <item.icon size={22} />
               </div>
@@ -139,10 +139,10 @@ export default function DonationPage() {
         </section>
 
         <section className="grid grid-cols-12 gap-4 gap-y-8 lg:gap-6">
-          <div className="col-span-12 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8 shadow-xs">
+          <div className="col-span-12 border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8 shadow-xs">
             <div className="space-y-8">
               <div className="flex items-center gap-3">
-                <div className="md:flex hidden h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <div className="md:flex hidden h-12 w-12 items-center justify-center bg-primary/10 text-primary">
                   <QrCode size={24} />
                 </div>
                 <div>
@@ -156,7 +156,7 @@ export default function DonationPage() {
               </div>
 
               {hasQrCode ? (
-                <div className="mx-auto flex size-70 lg:size-80 items-center justify-center rounded-md overflow-hidden border border-border-subtle">
+                <div className="mx-auto flex size-70 lg:size-80 items-center justify-center overflow-hidden border border-border-subtle">
                   {/* Substitua PIX_QR_CODE_SRC pelo caminho real da imagem do QR Code */}
                   <Image
                     src={PIX_QR_CODE_SRC}
@@ -167,7 +167,7 @@ export default function DonationPage() {
                   />
                 </div>
               ) : (
-                <div className="mx-auto flex min-h-[320px] max-w-sm flex-col items-center justify-center rounded-xl border-2 border-dashed border-border-subtle bg-surface p-8 text-center">
+                <div className="mx-auto flex min-h-[320px] max-w-sm flex-col items-center justify-center border-2 border-dashed border-border-subtle bg-surface p-8 text-center">
                   <QrCode size={56} className="mb-4 text-text-muted" />
                   <h3 className="text-lg font-bold text-text-main">
                     Área reservada para o QR Code Pix
@@ -186,10 +186,10 @@ export default function DonationPage() {
             </div>
           </div>
 
-          <div className="col-span-12 rounded-xl border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8 shadow-xs">
+          <div className="col-span-12 border border-border-subtle bg-card p-5 md:p-6 lg:col-span-6 lg:p-8 shadow-xs">
             <div className="space-y-8">
               <div className="flex items-center gap-3">
-                <div className="md:flex hidden h-12 w-12 items-center justify-center rounded-md bg-highlight/10 text-highlight">
+                <div className="md:flex hidden h-12 w-12 items-center justify-center bg-highlight/10 text-highlight">
                   <Wallet size={24} />
                 </div>
                 <div>
@@ -203,7 +203,7 @@ export default function DonationPage() {
               </div>
 
               <div className="space-y-5">
-                <div className="rounded-xl border border-border-subtle bg-surface p-4">
+                <div className="border border-border-subtle bg-surface p-4">
                   <span className="mb-1 block text-xs font-bold text-text-muted">
                     Recebedor
                   </span>
@@ -212,7 +212,7 @@ export default function DonationPage() {
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-border-subtle bg-surface p-4">
+                <div className="border border-border-subtle bg-surface p-4">
                   <span className="mb-1 block text-xs font-bold text-text-muted">
                     Tipo de chave
                   </span>
@@ -228,7 +228,7 @@ export default function DonationPage() {
         </section>
 
         <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-xl border border-warning-border bg-warning-surface p-5">
+          <div className="border border-warning-border bg-warning-surface p-5">
             <div className="flex gap-3">
               <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" />
               <div>
@@ -244,7 +244,7 @@ export default function DonationPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-border-subtle bg-card p-5 shadow-xs">
+          <div className="border border-border-subtle bg-card p-5 shadow-xs">
             <h2 className="text-xl font-bold text-text-main">Antes de doar</h2>
             <div className="mt-3 space-y-2 text-sm leading-relaxed text-text-muted">
               <p>
