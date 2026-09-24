@@ -11,5 +11,14 @@
       "source": "functions",
       "codebase": "opportunity-alerts"
     }
-  ]
+  ],
+  "emulators": {
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": false
+    },
+    "singleProjectMode": true
+  }
 }

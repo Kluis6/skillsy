@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-skillsy \"node --test tests/rules/*.test.mjs\"",
     "clean": "next clean",
     "deploy:firestore-rules": "firebase deploy --only firestore --project gen-lang-client-0463625624",
     "backfill:public-profiles": "node scripts/backfill-public-profiles.mjs",
@@ -52,6 +53,7 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@tailwindcss/postcss": "4.1.11",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^20",
