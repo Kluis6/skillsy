@@ -7,7 +7,14 @@ import { UserService } from '@/services/user-service';
 // Deduplicates the fetch shared by generateMetadata and the page in one request.
 const getPublicProfile = cache((id: string) => UserService.getPublicProfile(id));
 
-export const dynamic = 'force-dynamic';
+// Public data, regenerated at most once a minute (ISR) instead of querying
+// Firestore on every visit. Personal and realtime parts load on the client.
+export const revalidate = 60;
+
+// Profiles are rendered on their first request and then cached.
+export function generateStaticParams() {
+  return [];
+}
 
 interface Props {
   params: Promise<{ id: string }>;

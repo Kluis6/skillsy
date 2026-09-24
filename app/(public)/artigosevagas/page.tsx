@@ -3,7 +3,9 @@ import { PostListClient } from "@/components/posts/post-list-client";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { PostService } from "@/services/post-service";
 
-export const dynamic = "force-dynamic";
+// Public data, regenerated at most once a minute (ISR) instead of querying
+// Firestore on every visit. Personal and realtime parts load on the client.
+export const revalidate = 60;
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Notícias, Artigos e Vagas",
