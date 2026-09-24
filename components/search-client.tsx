@@ -394,7 +394,8 @@ export function SearchClient({
   );
 
   return (
-    <div className="min-h-screen bg-surface/30 w-full space-y-2">
+    // Column layout so the footer stays at the bottom when results are few.
+    <div className="flex min-h-svh w-full flex-col space-y-2 bg-surface/30">
       <nav className="sticky w-full top-0 z-50 border-b border-border-subtle bg-card/85 backdrop-blur-md">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2">
           <div className="flex items-center space-x-2">
@@ -507,7 +508,7 @@ export function SearchClient({
         </div>
       </nav>
 
-      <main className="container mx-auto px-4">
+      <main className="container mx-auto w-full flex-1 px-4">
         <div className="flex flex-col lg:flex-row gap-6">
           <aside className="hidden w-full shrink-0 self-start border border-border-subtle bg-card shadow-xs lg:sticky lg:top-20 lg:block lg:w-72">
             <div className="p-4 md:p-4">
