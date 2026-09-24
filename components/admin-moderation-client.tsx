@@ -27,6 +27,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
@@ -34,6 +41,26 @@ const SLA_HOURS = 48;
 type QueueFilter = "open" | "all" | "overdue" | "resolved";
 type ModerationStatus = "new" | "in_review" | "resolved" | "dismissed";
 type Priority = "low" | "normal" | "high";
+
+const QUEUE_FILTER_LABELS: Record<QueueFilter, string> = {
+  open: "Abertas",
+  overdue: "Vencidas",
+  resolved: "Concluídas",
+  all: "Todas",
+};
+
+const MODERATION_STATUS_LABELS: Record<ModerationStatus, string> = {
+  new: "Nova",
+  in_review: "Em análise",
+  resolved: "Resolvida",
+  dismissed: "Descartada",
+};
+
+const PRIORITY_LABELS: Record<Priority, string> = {
+  high: "Alta",
+  normal: "Normal",
+  low: "Baixa",
+};
 
 const statusMeta: Record<
   ModerationStatus,
@@ -294,19 +321,33 @@ export function AdminModerationClient() {
               Ordenados por prioridade e prazo mais próximo.
             </p>
           </div>
-          <label className="flex items-center gap-2 text-sm text-text-muted">
-            Mostrar
-            <select
-              value={filter}
-              onChange={(event) => setFilter(event.target.value as QueueFilter)}
-              className="h-9 border border-input bg-card px-2 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          <div className="flex items-center gap-2">
+            <Label
+              htmlFor="moderation-queue-filter"
+              className="text-sm text-text-muted"
             >
-              <option value="open">Abertas</option>
-              <option value="overdue">Vencidas</option>
-              <option value="resolved">Concluídas</option>
-              <option value="all">Todas</option>
-            </select>
-          </label>
+              Mostrar
+            </Label>
+            <Select
+              items={QUEUE_FILTER_LABELS}
+              value={filter}
+              onValueChange={(value) => value && setFilter(value)}
+            >
+              <SelectTrigger
+                id="moderation-queue-filter"
+                className="h-9 min-w-32 bg-card px-2 text-sm"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(QUEUE_FILTER_LABELS).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {visibleReports.length === 0 ? (
@@ -428,34 +469,49 @@ export function AdminModerationClient() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="moderation-status">Situação</Label>
-                  <select
-                    id="moderation-status"
+                  <Select
+                    items={MODERATION_STATUS_LABELS}
                     value={status}
-                    onChange={(event) =>
-                      setStatus(event.target.value as ModerationStatus)
-                    }
-                    className="h-10 w-full border border-input bg-card px-3 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    onValueChange={(value) => value && setStatus(value)}
                   >
-                    <option value="new">Nova</option>
-                    <option value="in_review">Em análise</option>
-                    <option value="resolved">Resolvida</option>
-                    <option value="dismissed">Descartada</option>
-                  </select>
+                    <SelectTrigger
+                      id="moderation-status"
+                      className="h-10 w-full bg-card px-3 text-sm"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(MODERATION_STATUS_LABELS).map(
+                        ([value, label]) => (
+                          <SelectItem key={value} value={value}>
+                            {label}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="moderation-priority">Prioridade</Label>
-                  <select
-                    id="moderation-priority"
+                  <Select
+                    items={PRIORITY_LABELS}
                     value={priority}
-                    onChange={(event) =>
-                      setPriority(event.target.value as Priority)
-                    }
-                    className="h-10 w-full border border-input bg-card px-3 text-sm text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    onValueChange={(value) => value && setPriority(value)}
                   >
-                    <option value="high">Alta</option>
-                    <option value="normal">Normal</option>
-                    <option value="low">Baixa</option>
-                  </select>
+                    <SelectTrigger
+                      id="moderation-priority"
+                      className="h-10 w-full bg-card px-3 text-sm"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+                        <SelectItem key={value} value={value}>
+                          {label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="space-y-2">

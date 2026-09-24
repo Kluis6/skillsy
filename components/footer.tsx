@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { openCookiePreferences } from "@/lib/cookie-consent";
+import { Button } from "@/components/ui/button";
 
 export function Footer() {
   return (
@@ -35,13 +36,14 @@ export function Footer() {
             >
               Privacidade
             </Link>
-            <button
+            <Button
               type="button"
+              variant="link"
               onClick={openCookiePreferences}
-              className="hover:text-primary text-text-muted transition-colors text-sm font-normal"
+              className="h-auto p-0 text-sm font-normal text-text-muted no-underline hover:text-primary hover:no-underline"
             >
               Cookies
-            </button>
+            </Button>
           </div>
           <p className="order-3 lg:order-2 text-text-muted text-center text-xs md:text-left">
             © {new Date().getFullYear()} <strong>Skillsy</strong>. Criado para fortalecer a comunidade

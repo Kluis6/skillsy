@@ -6,6 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SurfacePanel } from "@/components/ui/page-layout";
 import { MembershipMark } from "@/components/ui/trust-signals";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -34,7 +42,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 import imageCompression from "browser-image-compression";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { profileSchema, type ProfileFormData } from "@/lib/validations";
 import {
@@ -150,6 +158,7 @@ export function ProfileSettingsClient() {
   const contactSectionRef = useRef<HTMLDivElement>(null);
 
   const {
+    control,
     register,
     handleSubmit,
     setValue,
@@ -704,11 +713,12 @@ export function ProfileSettingsClient() {
                       referrerPolicy="no-referrer"
                     />
                   )}
-                  <button
+                  <Button
                     type="button"
+                    size="icon-lg"
                     onClick={() => bannerInputRef.current?.click()}
                     disabled={uploading === "banner"}
-                    className="absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white p-2 hover:bg-white/30 transition-colors disabled:opacity-50"
+                    className="absolute top-4 right-4 bg-white/20 text-white backdrop-blur-md hover:bg-white/30"
                     title="Alterar capa"
                     aria-label="Alterar capa do perfil"
                   >
@@ -717,7 +727,7 @@ export function ProfileSettingsClient() {
                     ) : (
                       <Camera size={18} />
                     )}
-                  </button>
+                  </Button>
                   <input
                     type="file"
                     ref={bannerInputRef}
@@ -734,19 +744,20 @@ export function ProfileSettingsClient() {
                         {formData.name[0]}
                       </AvatarFallback>
                     </Avatar>
-                    <button
+                    <Button
                       type="button"
+                      size="icon"
                       onClick={() => avatarInputRef.current?.click()}
                       disabled={uploading === "avatar"}
                       aria-label="Alterar foto do perfil"
-                      className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-2.5 shadow-sm hover:scale-105 transition-transform disabled:opacity-50"
+                      className="absolute bottom-0 right-0 size-10 shadow-sm hover:scale-105"
                     >
                       {uploading === "avatar" ? (
                         <Loader2 size={18} className="animate-spin" />
                       ) : (
                         <Camera size={18} />
                       )}
-                    </button>
+                    </Button>
                     <input
                       type="file"
                       ref={avatarInputRef}
@@ -939,48 +950,43 @@ export function ProfileSettingsClient() {
                         </p>
                       </div>
 
-                      <div
-                        role="radiogroup"
+                      <RadioGroup
                         aria-labelledby="membership-heading"
                         className="grid grid-cols-1 gap-2 sm:grid-cols-2"
+                        value={formData.membershipType || null}
+                        onValueChange={(value) =>
+                          setValue(
+                            "membershipType",
+                            value as ProfileFormData["membershipType"],
+                            { shouldDirty: true },
+                          )
+                        }
                       >
-                        {MEMBERSHIP_OPTIONS.map((option) => {
-                          const selected =
-                            formData.membershipType === option.value;
-                          return (
-                            <button
-                              key={option.value}
-                              type="button"
-                              role="radio"
-                              aria-checked={selected}
-                              onClick={() =>
-                                setValue("membershipType", option.value, {
-                                  shouldDirty: true,
-                                })
-                              }
-                              className={`flex items-start gap-3 border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                                selected
-                                  ? "border-primary bg-primary/5"
-                                  : "border-border-subtle hover:border-primary/40"
-                              }`}
-                            >
-                              <option.icon
-                                size={18}
-                                className={`mt-0.5 shrink-0 ${option.iconClassName}`}
-                                aria-hidden="true"
-                              />
-                              <span className="space-y-0.5">
-                                <span className="block text-sm font-semibold text-text-main">
-                                  {option.label}
-                                </span>
-                                <span className="block text-xs text-text-muted">
-                                  {option.description}
-                                </span>
+                        {MEMBERSHIP_OPTIONS.map((option) => (
+                          <Label
+                            key={option.value}
+                            className="flex cursor-pointer items-start gap-3 border border-border-subtle p-3 text-left leading-normal transition-colors hover:border-primary/40 has-data-checked:border-primary has-data-checked:bg-primary/5 has-focus-visible:ring-2 has-focus-visible:ring-primary"
+                          >
+                            <RadioGroupItem
+                              value={option.value}
+                              className="mt-0.5"
+                            />
+                            <option.icon
+                              size={18}
+                              className={`mt-0.5 shrink-0 ${option.iconClassName}`}
+                              aria-hidden="true"
+                            />
+                            <span className="space-y-0.5">
+                              <span className="block text-sm font-semibold text-text-main">
+                                {option.label}
                               </span>
-                            </button>
-                          );
-                        })}
-                      </div>
+                              <span className="block text-xs text-text-muted">
+                                {option.description}
+                              </span>
+                            </span>
+                          </Label>
+                        ))}
+                      </RadioGroup>
 
                       {formData.membershipType === "member" && (
                         <div className="space-y-4">
@@ -1134,22 +1140,42 @@ export function ProfileSettingsClient() {
                   ) : (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                       <div className="space-y-2">
-                        <Label className="text-xs md:text-sm font-medium text-text-muted">
+                        <Label
+                          htmlFor="profile-category"
+                          className="text-xs md:text-sm font-medium text-text-muted"
+                        >
                           Categoria do serviço
                         </Label>
-                        <div className="relative">
-                          <select
-                            {...register("category")}
-                            className={`w-full bg-surface border focus:bg-card h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none ${errors.category ? "ring-2 ring-destructive" : ""}`}
-                          >
-                            <option value="">Selecione uma categoria</option>
-                            {PROVIDER_CATEGORIES.map((category) => (
-                              <option key={category} value={category}>
-                                {category}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
+                        <Controller
+                          control={control}
+                          name="category"
+                          render={({ field }) => (
+                            <Select
+                              name={field.name}
+                              value={field.value || null}
+                              onValueChange={(value) =>
+                                field.onChange(value ?? "")
+                              }
+                            >
+                              <SelectTrigger
+                                id="profile-category"
+                                ref={field.ref}
+                                onBlur={field.onBlur}
+                                aria-invalid={Boolean(errors.category)}
+                                className="h-12 w-full bg-surface px-4 text-sm"
+                              >
+                                <SelectValue placeholder="Selecione uma categoria" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {PROVIDER_CATEGORIES.map((category) => (
+                                  <SelectItem key={category} value={category}>
+                                    {category}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
                         {errors.category && (
                           <p className="text-xs text-destructive font-bold ml-1">
                             {errors.category.message}

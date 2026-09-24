@@ -32,6 +32,14 @@ import Link from "next/link";
 import { toast } from "sonner";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ProfilePublicPageLoading } from "@/components/loading/route-loaders";
 import { MembershipMark } from "@/components/ui/trust-signals";
 import {
@@ -67,7 +75,7 @@ import { PiShareFat } from "react-icons/pi";
 import { BsWhatsapp } from "react-icons/bs";
 import { FaTelegramPlane } from "react-icons/fa";
 import { AVAILABILITY_OPTIONS } from "@/lib/profile-form";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -568,19 +576,41 @@ export function ProfileDetailClient({
               fraude, spam ou informações enganosas.
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-text-main">
-                Motivo
-              </label>
-              <select
-                {...reportForm.register("reason")}
-                className="w-full border border-input bg-background px-3 py-2 text-sm"
+              <Label
+                htmlFor="profile-report-reason"
+                className="text-sm font-medium text-text-main"
               >
-                {REPORT_REASON_OPTIONS.map((reason) => (
-                  <option key={reason} value={reason}>
-                    {REPORT_REASON_LABELS[reason]}
-                  </option>
-                ))}
-              </select>
+                Motivo
+              </Label>
+              <Controller
+                control={reportForm.control}
+                name="reason"
+                render={({ field }) => (
+                  <Select
+                    items={REPORT_REASON_LABELS}
+                    name={field.name}
+                    value={field.value}
+                    onValueChange={(value) => value && field.onChange(value)}
+                  >
+                    <SelectTrigger
+                      id="profile-report-reason"
+                      ref={field.ref}
+                      onBlur={field.onBlur}
+                      aria-invalid={Boolean(reportForm.formState.errors.reason)}
+                      className="h-10 w-full px-3 text-sm"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {REPORT_REASON_OPTIONS.map((reason) => (
+                        <SelectItem key={reason} value={reason}>
+                          {REPORT_REASON_LABELS[reason]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
               {reportForm.formState.errors.reason && (
                 <p className="text-xs font-bold text-destructive">
                   {reportForm.formState.errors.reason.message}
@@ -588,10 +618,14 @@ export function ProfileDetailClient({
               )}
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-text-main">
+              <Label
+                htmlFor="profile-report-details"
+                className="text-sm font-medium text-text-main"
+              >
                 Detalhes adicionais
-              </label>
+              </Label>
               <Textarea
+                id="profile-report-details"
                 {...reportForm.register("details")}
                 placeholder="Descreva o problema com até 1000 caracteres."
                 maxLength={1000}

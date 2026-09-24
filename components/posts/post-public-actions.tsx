@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Flag, Pencil, Share2, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
@@ -22,6 +22,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
@@ -237,17 +244,35 @@ export function PostPublicActions({
             >
               <div className="space-y-2">
                 <Label htmlFor="post-report-reason">Motivo</Label>
-                <select
-                  id="post-report-reason"
-                  {...reportForm.register("reason")}
-                  className="flex h-10 w-full border border-input bg-background px-3 py-2 text-sm"
-                >
-                  {reportReasonOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                <Controller
+                  control={reportForm.control}
+                  name="reason"
+                  render={({ field }) => (
+                    <Select
+                      items={reportReasonOptions}
+                      name={field.name}
+                      value={field.value}
+                      onValueChange={(value) => value && field.onChange(value)}
+                    >
+                      <SelectTrigger
+                        id="post-report-reason"
+                        ref={field.ref}
+                        onBlur={field.onBlur}
+                        aria-invalid={Boolean(reportForm.formState.errors.reason)}
+                        className="h-10 w-full px-3 text-sm"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {reportReasonOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
                 {reportForm.formState.errors.reason ? (
                   <p className="text-xs font-medium text-destructive">
                     {reportForm.formState.errors.reason.message}

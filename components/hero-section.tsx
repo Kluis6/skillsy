@@ -111,14 +111,16 @@ export function HeroSection({
                   onChange={(event) => setSearchTerm(event.target.value)}
                 />
                 {searchTerm ? (
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => setSearchTerm("")}
-                    className="absolute right-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center text-text-muted transition-colors hover:bg-surface hover:text-text-main"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted hover:bg-surface hover:text-text-main"
                     aria-label="Limpar busca"
                   >
                     <X className="size-4" />
-                  </button>
+                  </Button>
                 ) : null}
               </div>
 

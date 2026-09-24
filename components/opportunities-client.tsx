@@ -30,6 +30,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   PageHeader,
   EmptyState,
@@ -45,6 +54,9 @@ const emptyForm: OpportunityFormInput = {
   state: "",
   urgency: "normal",
 };
+
+const followUpToggleClass =
+  "aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground";
 
 const urgencyMeta = {
   normal: {
@@ -512,12 +524,12 @@ export function OpportunitiesClient({
         <SurfacePanel>
           <form onSubmit={submit} className="grid gap-4 md:grid-cols-2">
             <div className="space-y-1.5 md:col-span-2">
-              <label
+              <Label
                 htmlFor="opportunity-title"
                 className="text-sm font-medium"
               >
                 Título da oportunidade
-              </label>
+              </Label>
               <Input
                 id="opportunity-title"
                 required
@@ -529,82 +541,108 @@ export function OpportunitiesClient({
               />
             </div>
             <div className="space-y-1.5">
-              <label
+              <Label
                 htmlFor="opportunity-category"
                 className="text-sm font-medium"
               >
                 Tipo de serviço
-              </label>
-              <select
-                id="opportunity-category"
+              </Label>
+              <Select
                 required
-                className="h-10 w-full border border-input bg-background px-3 text-sm"
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                value={form.category || null}
+                onValueChange={(value) =>
+                  setForm({ ...form, category: value ?? "" })
+                }
               >
-                <option value="">Selecione</option>
-                {PROVIDER_CATEGORIES.map((item) => (
-                  <option key={item}>{item}</option>
-                ))}
-              </select>
+                <SelectTrigger
+                  id="opportunity-category"
+                  className="h-10 w-full px-3 text-sm"
+                >
+                  <SelectValue>{form.category || "Selecione"}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {PROVIDER_CATEGORIES.map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
-              <label
+              <Label
                 htmlFor="opportunity-urgency"
                 className="text-sm font-medium"
               >
                 Urgência
-              </label>
-              <select
-                id="opportunity-urgency"
+              </Label>
+              <Select
                 required
-                className="h-10 w-full border border-input bg-background px-3 text-sm"
                 value={form.urgency}
-                onChange={(e) =>
+                onValueChange={(value) =>
                   setForm({
                     ...form,
-                    urgency: e.target.value as OpportunityFormInput["urgency"],
+                    urgency: (value ??
+                      "normal") as OpportunityFormInput["urgency"],
                   })
                 }
               >
-                {Object.entries(urgencyMeta).map(([value, meta]) => (
-                  <option key={value} value={value}>
-                    {meta.label}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger
+                  id="opportunity-urgency"
+                  className="h-10 w-full px-3 text-sm"
+                >
+                  <SelectValue>{urgencyMeta[form.urgency].label}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(urgencyMeta).map(([value, meta]) => (
+                    <SelectItem key={value} value={value}>
+                      {meta.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <p className="text-xs leading-relaxed text-text-muted">
                 {urgencyMeta[form.urgency].help}
               </p>
             </div>
             <div className="space-y-1.5">
-              <label
+              <Label
                 htmlFor="opportunity-state"
                 className="text-sm font-medium"
               >
                 Estado
-              </label>
-              <select
-                id="opportunity-state"
+              </Label>
+              <Select
                 required
-                className="h-10 w-full border border-input bg-background px-3 text-sm"
-                value={form.state}
-                onChange={(e) => setForm({ ...form, state: e.target.value })}
+                value={form.state || null}
+                onValueChange={(value) =>
+                  setForm({ ...form, state: value ?? "" })
+                }
               >
-                <option value="">Selecione</option>
-                {BRAZIL_STATES.filter((item) => item.value !== "all").map(
-                  (item) => (
-                    <option key={item.value} value={item.value}>
-                      {item.label}
-                    </option>
-                  ),
-                )}
-              </select>
+                <SelectTrigger
+                  id="opportunity-state"
+                  className="h-10 w-full px-3 text-sm"
+                >
+                  <SelectValue>
+                    {BRAZIL_STATES.find((item) => item.value === form.state)
+                      ?.label || "Selecione"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {BRAZIL_STATES.filter((item) => item.value !== "all").map(
+                    (item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ),
+                  )}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="opportunity-city" className="text-sm font-medium">
+              <Label htmlFor="opportunity-city" className="text-sm font-medium">
                 Cidade
-              </label>
+              </Label>
               <Input
                 id="opportunity-city"
                 required
@@ -615,12 +653,12 @@ export function OpportunitiesClient({
               />
             </div>
             <div className="space-y-1.5">
-              <label
+              <Label
                 htmlFor="opportunity-neighborhood"
                 className="text-sm font-medium"
               >
                 Bairro
-              </label>
+              </Label>
               <Input
                 id="opportunity-neighborhood"
                 required
@@ -633,12 +671,12 @@ export function OpportunitiesClient({
               />
             </div>
             <div className="space-y-1.5 md:col-span-2">
-              <label
+              <Label
                 htmlFor="opportunity-description"
                 className="text-sm font-medium"
               >
                 Descreva o serviço
-              </label>
+              </Label>
               <Textarea
                 id="opportunity-description"
                 required
@@ -707,55 +745,45 @@ export function OpportunitiesClient({
                     <legend className="text-sm font-medium text-text-main">
                       Algum profissional respondeu?
                     </legend>
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        type="button"
-                        variant={draft.receivedResponse ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => updateDraft({ receivedResponse: true })}
-                      >
+                    <ToggleGroup
+                      variant="outline"
+                      size="sm"
+                      className="flex-wrap"
+                      value={[draft.receivedResponse ? "yes" : "no"]}
+                      onValueChange={(value) => {
+                        if (value[0])
+                          updateDraft({ receivedResponse: value[0] === "yes" });
+                      }}
+                    >
+                      <ToggleGroupItem value="yes" className={followUpToggleClass}>
                         Sim
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={
-                          !draft.receivedResponse ? "default" : "outline"
-                        }
-                        size="sm"
-                        onClick={() => updateDraft({ receivedResponse: false })}
-                      >
+                      </ToggleGroupItem>
+                      <ToggleGroupItem value="no" className={followUpToggleClass}>
                         Ainda não
-                      </Button>
-                    </div>
+                      </ToggleGroupItem>
+                    </ToggleGroup>
                   </fieldset>
                   <fieldset className="space-y-2">
                     <legend className="text-sm font-medium text-text-main">
                       Você ficou satisfeito com o Skillsy?
                     </legend>
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        type="button"
-                        variant={
-                          draft.platformSatisfied ? "default" : "outline"
-                        }
-                        size="sm"
-                        onClick={() => updateDraft({ platformSatisfied: true })}
-                      >
+                    <ToggleGroup
+                      variant="outline"
+                      size="sm"
+                      className="flex-wrap"
+                      value={[draft.platformSatisfied ? "yes" : "no"]}
+                      onValueChange={(value) => {
+                        if (value[0])
+                          updateDraft({ platformSatisfied: value[0] === "yes" });
+                      }}
+                    >
+                      <ToggleGroupItem value="yes" className={followUpToggleClass}>
                         Sim
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={
-                          !draft.platformSatisfied ? "default" : "outline"
-                        }
-                        size="sm"
-                        onClick={() =>
-                          updateDraft({ platformSatisfied: false })
-                        }
-                      >
+                      </ToggleGroupItem>
+                      <ToggleGroupItem value="no" className={followUpToggleClass}>
                         Pode melhorar
-                      </Button>
-                    </div>
+                      </ToggleGroupItem>
+                    </ToggleGroup>
                   </fieldset>
                 </div>
               </div>
@@ -778,40 +806,58 @@ export function OpportunitiesClient({
       {mode === "all" ? (
         <SurfacePanel className="flex flex-col gap-4 md:flex-row md:items-end">
           <div className="w-full space-y-1.5">
-            <label htmlFor="filter-category" className="text-sm font-medium">
+            <Label htmlFor="filter-category" className="text-sm font-medium">
               Serviço
-            </label>
-            <select
-              id="filter-category"
-              className="h-10 w-full border border-input bg-background px-3 text-sm"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+            </Label>
+            <Select
+              value={category || "all"}
+              onValueChange={(value) =>
+                setCategory(!value || value === "all" ? "" : value)
+              }
             >
-              <option value="">Todos os serviços</option>
-              {PROVIDER_CATEGORIES.map((item) => (
-                <option key={item}>{item}</option>
-              ))}
-            </select>
+              <SelectTrigger
+                id="filter-category"
+                className="h-10 w-full px-3 text-sm"
+              >
+                <SelectValue>{category || "Todos os serviços"}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os serviços</SelectItem>
+                {PROVIDER_CATEGORIES.map((item) => (
+                  <SelectItem key={item} value={item}>
+                    {item}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="w-full space-y-1.5">
-            <label htmlFor="filter-state" className="text-sm font-medium">
+            <Label htmlFor="filter-state" className="text-sm font-medium">
               Estado
-            </label>
-            <select
-              id="filter-state"
-              className="h-10 w-full border border-input bg-background px-3 text-sm"
-              value={state}
-              onChange={(e) => setState(e.target.value)}
+            </Label>
+            <Select
+              value={state || "all"}
+              onValueChange={(value) =>
+                setState(!value || value === "all" ? "" : value)
+              }
             >
-              <option value="">Todos os estados</option>
-              {BRAZIL_STATES.filter((item) => item.value !== "all").map(
-                (item) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
-                  </option>
-                ),
-              )}
-            </select>
+              <SelectTrigger id="filter-state" className="h-10 w-full px-3 text-sm">
+                <SelectValue>
+                  {BRAZIL_STATES.find((item) => item.value === state)?.label ||
+                    "Todos os estados"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os estados</SelectItem>
+                {BRAZIL_STATES.filter((item) => item.value !== "all").map(
+                  (item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ),
+                )}
+              </SelectContent>
+            </Select>
           </div>
         </SurfacePanel>
       ) : null}

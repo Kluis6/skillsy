@@ -12,6 +12,7 @@ import { BenefitsSection } from "@/components/benefits-section";
 import { ContactCTA } from "@/components/contact-cta";
 import { CategoryCarousel } from "@/components/category-carousel";
 import { AuthModal } from "@/components/auth-modal";
+import { Button } from "@/components/ui/button";
 import { UserProfile } from "@/models/types";
 import { Categorywall } from "./categorywall";
 import { ProviderProfileCard } from "@/components/profile/provider-profile-card";
@@ -121,12 +122,13 @@ export function HomeClient({
               </p>
 
               <AuthModal>
-                <button
+                <Button
                   type="button"
-                  className="bg-transparent font-bold text-primary hover:underline"
+                  variant="link"
+                  className="h-auto px-1 text-sm font-bold"
                 >
                   Crie seu perfil na comunidade
-                </button>
+                </Button>
               </AuthModal>
             </div>
           )}

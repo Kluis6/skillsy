@@ -8,6 +8,13 @@ import { PostService } from "@/services/post-service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState, PageHeader, SurfacePanel } from "@/components/ui/page-layout";
@@ -27,6 +34,14 @@ const statusLabels: Record<PostStatus, string> = {
   pending_review: "Em revisão",
   published: "Publicado",
   rejected: "Rejeitado",
+};
+
+const STATUS_FILTER_LABELS: Record<"all" | PostStatus, string> = {
+  all: "Todos os status",
+  draft: "Rascunhos",
+  pending_review: "Em revisão",
+  published: "Publicados",
+  rejected: "Rejeitados",
 };
 
 export function AdminPostsClient() {
@@ -170,18 +185,22 @@ export function AdminPostsClient() {
           <Label htmlFor="admin-post-status" className="text-xs font-bold text-text-muted">
             Status
           </Label>
-          <select
-            id="admin-post-status"
+          <Select
+            items={STATUS_FILTER_LABELS}
             value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as "all" | PostStatus)}
-            className="h-10 w-full border border-input bg-background px-3 text-sm"
+            onValueChange={(value) => value && setStatusFilter(value)}
           >
-            <option value="all">Todos os status</option>
-            <option value="draft">Rascunhos</option>
-            <option value="pending_review">Em revisão</option>
-            <option value="published">Publicados</option>
-            <option value="rejected">Rejeitados</option>
-          </select>
+            <SelectTrigger id="admin-post-status" className="h-10 w-full px-3 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(STATUS_FILTER_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </SurfacePanel>
 

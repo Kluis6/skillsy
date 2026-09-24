@@ -652,31 +652,37 @@ export function SearchClient({
                     Filtros ativos:
                   </span>
                   {query ? (
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
+                      size="sm"
                       onClick={clearSearchQuery}
-                      className="px-3 py-1 text-xs font-medium  hover:text-primary"
+                      className="hover:text-primary"
                     >
                       Busca: {query} ×
-                    </button>
+                    </Button>
                   ) : null}
                   {activeLocationLabel ? (
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleStateChange("all")}
-                      className="px-3 py-1 text-xs font-medium hover:text-primary"
+                      className="hover:text-primary"
                     >
                       Local: {activeLocationLabel} ×
-                    </button>
+                    </Button>
                   ) : null}
                   {selectedCategory ? (
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleCategoryChange(null)}
-                      className="px-3 py-1 text-xs font-medium  hover:text-primary"
+                      className="hover:text-primary"
                     >
                       Categoria: {selectedCategory} ×
-                    </button>
+                    </Button>
                   ) : null}
                   <Button
                     type="button"

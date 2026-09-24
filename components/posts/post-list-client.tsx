@@ -4,8 +4,15 @@ import { useMemo, useState } from "react";
 import { Post } from "@/models/types";
 import { PostCard } from "@/components/posts/post-card";
 import { CreatePostCta } from "./create-post-cta";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 type PostFilter = "all" | Post["category"];
+
+const FILTER_OPTIONS: { value: PostFilter; label: string }[] = [
+  { value: "all", label: "Todos" },
+  { value: "article", label: "Artigos" },
+  { value: "job", label: "Vagas" },
+];
 
 export function PostListClient({ posts }: { posts: Post[] }) {
   const [filter, setFilter] = useState<PostFilter>("all");
@@ -38,41 +45,25 @@ export function PostListClient({ posts }: { posts: Post[] }) {
   return (
     <div className="mx-auto container w-full mb-8  space-y-8 -mt-7 z-50">
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 isolate bg-card p-4 shadow-sm border border-border-subtle">
-        <div className="flex  justify-center items-center gap-1 w-full md:w-fit">
-          <button
-            type="button"
-            onClick={() => setFilter("all")}
-            className={`w-full md:w-fit md:px-4 h-10 text-sm font-semibold transition-colors cursor-pointer ${
-              filter === "all"
-                ? "text-primary bg-primary/10"
-                : "text-text-muted hover:bg-surface"
-            }`}
-          >
-            Todos ({counts.all})
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilter("article")}
-            className={`w-full md:w-fit md:px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
-              filter === "article"
-                ? "text-primary bg-primary/10"
-                : "text-text-muted hover:bg-surface"
-            }`}
-          >
-            Artigos ({counts.article})
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilter("job")}
-            className={`w-full md:w-fit md:px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
-              filter === "job"
-                ? "text-primary bg-primary/10"
-                : "text-text-muted hover:bg-surface"
-            }`}
-          >
-            Vagas ({counts.job})
-          </button>
-        </div>
+        <ToggleGroup
+          aria-label="Filtrar publicações"
+          spacing={1}
+          className="w-full md:w-fit"
+          value={[filter]}
+          onValueChange={(value) => {
+            if (value[0]) setFilter(value[0] as PostFilter);
+          }}
+        >
+          {FILTER_OPTIONS.map((option) => (
+            <ToggleGroupItem
+              key={option.value}
+              value={option.value}
+              className="h-10 flex-1 text-sm font-semibold text-text-muted hover:bg-surface md:flex-none md:px-4 aria-pressed:bg-primary/10 aria-pressed:text-primary"
+            >
+              {option.label} ({counts[option.value]})
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
 
         <CreatePostCta />
       </div>

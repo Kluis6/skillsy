@@ -3,6 +3,8 @@
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -140,9 +142,12 @@ export function ContactCTA() {
 
                 <div className="space-y-1">
                   <div className="flex justify-between items-center px-1 mb-1">
-                    <span className="text-xs font-normal text-text-muted uppercase">
+                    <Label
+                      htmlFor="contact-message"
+                      className="text-xs font-normal text-text-muted uppercase"
+                    >
                       Sua mensagem *
-                    </span>
+                    </Label>
                     <span
                       className={`text-xs font-bold ${messageText?.length > 1000 ? "text-destructive" : "text-text-muted"}`}
                     >
@@ -150,10 +155,12 @@ export function ContactCTA() {
                     </span>
                   </div>
                   <div className="relative">
-                    <textarea
+                    <Textarea
+                      id="contact-message"
                       placeholder="Conte-nos como podemos ajudar..."
                       {...register("message")}
-                      className={`w-full border rounded-none p-4 text-text-main placeholder:text-text-muted/50 h-32 outline-none transition-all ${
+                      aria-invalid={Boolean(errors.message)}
+                      className={`h-32 p-4 pr-10 text-text-main placeholder:text-text-muted/50 transition-all ${
                         errors.message
                           ? "border-destructive/60 focus:border-destructive"
                           : touchedFields.message && !errors.message

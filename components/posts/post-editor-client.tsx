@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, useWatch } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import imageCompression from "browser-image-compression";
 import { ImagePlus, Loader2, Trash2 } from "lucide-react";
@@ -21,6 +21,13 @@ import { Button } from "@/components/ui/button";
 import { PostEditorPageLoading } from "@/components/loading/route-loaders";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -298,14 +305,34 @@ export function PostEditorClient({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 border border-border-subtle bg-card p-6 md:p-8 shadow-xs">
         <div className="space-y-2">
           <Label htmlFor="category">Categoria</Label>
-          <select
-            id="category"
-            {...form.register("category")}
-            className="flex h-11 w-full border border-input bg-background px-3 py-2 text-sm"
-          >
-            <option value="article">{POST_CATEGORY_LABELS.article}</option>
-            <option value="job">{POST_CATEGORY_LABELS.job}</option>
-          </select>
+          <Controller
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <Select
+                items={POST_CATEGORY_LABELS}
+                name={field.name}
+                value={field.value}
+                onValueChange={(value) => value && field.onChange(value)}
+              >
+                <SelectTrigger
+                  id="category"
+                  ref={field.ref}
+                  onBlur={field.onBlur}
+                  aria-invalid={Boolean(form.formState.errors.category)}
+                  className="h-11 w-full px-3 text-sm"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="article">
+                    {POST_CATEGORY_LABELS.article}
+                  </SelectItem>
+                  <SelectItem value="job">{POST_CATEGORY_LABELS.job}</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
           {form.formState.errors.category ? (
             <p className="text-xs font-bold text-destructive">
               {form.formState.errors.category.message}

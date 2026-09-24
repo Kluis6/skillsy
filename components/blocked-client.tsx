@@ -40,12 +40,14 @@ export function BlockedClient() {
           >
             <Mail size={20} className="text-primary" /> suporte@skillsy.com
           </a>
-          <button 
+          <Button
+            type="button"
+            variant="secondary"
             onClick={() => toast.info('Suporte Indisponível', { description: 'O suporte via WhatsApp está temporariamente fora do ar. Por favor, use o e-mail.' })}
-            className="flex items-center justify-center gap-3 p-4 bg-surface text-text-main font-semibold hover:bg-success/10 transition-colors w-full border-none cursor-pointer"
+            className="h-auto w-full gap-3 bg-surface p-4 text-sm font-semibold text-text-main hover:bg-success/10"
           >
             <MessageCircle size={20} className="text-success" /> Suporte via WhatsApp
-          </button>
+          </Button>
         </div>
 
         <Button 

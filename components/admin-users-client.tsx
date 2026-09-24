@@ -6,7 +6,7 @@ import { UserService } from '@/services/user-service';
 import { UserProfile, UserReport } from '@/models/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { 
   adminEditUserSchema, 
@@ -36,7 +36,6 @@ import {
   Loader2,
   Clock,
   CalendarDays,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -80,6 +79,14 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Switch } from '@/components/ui/switch';
 import { 
   Tooltip,
@@ -103,6 +110,11 @@ const ADMIN_FORM_LIMITS = {
   complement: 100,
   serviceHours: 100,
   adminEmail: 100,
+};
+
+const ROLE_LABELS: Record<AdminEditUserFormData['role'], string> = {
+  user: 'Usuário Comum',
+  admin: 'Administrador',
 };
 
 export function AdminUsersClient() {
@@ -455,22 +467,25 @@ export function AdminUsersClient() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="admin-user-state-filter" className="text-xs font-bold text-text-muted uppercase ml-1">Estado (UF)</Label>
-                <div className="relative">
-                  <select
+                <Select
+                  items={BRAZIL_STATES}
+                  value={filterState}
+                  onValueChange={(value) => setFilterState(value || 'all')}
+                >
+                  <SelectTrigger
                     id="admin-user-state-filter"
-                    value={filterState}
-                    onChange={(e) => setFilterState(e.target.value || 'all')}
-                    className="w-full appearance-none border border-input bg-surface h-12 px-4 pr-10 text-sm text-text-main outline-none transition-colors focus:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
+                    className="h-12 w-full bg-surface px-4 text-sm"
                   >
-                    <option value="all">Todos os estados</option>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
                     {BRAZIL_STATES.map((state) => (
-                      <option key={state.value} value={state.value}>
+                      <SelectItem key={state.value} value={state.value}>
                         {state.label}
-                      </option>
+                      </SelectItem>
                     ))}
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
-                </div>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex items-center gap-3 h-12 px-4 bg-surface">
                 <Switch 
@@ -818,14 +833,34 @@ export function AdminUsersClient() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role" className="text-xs font-bold text-text-muted ml-1">Papel no Sistema</Label>
-                <select 
-                  id="role"
-                  {...editForm.register('role')}
-                  className="w-full bg-surface border border-input h-12 px-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none appearance-none"
-                >
-                  <option value="user">Usuário Comum</option>
-                  <option value="admin">Administrador</option>
-                </select>
+                <Controller
+                  control={editForm.control}
+                  name="role"
+                  render={({ field }) => (
+                    <Select
+                      items={ROLE_LABELS}
+                      name={field.name}
+                      value={field.value}
+                      onValueChange={(value) => value && field.onChange(value)}
+                    >
+                      <SelectTrigger
+                        id="role"
+                        ref={field.ref}
+                        onBlur={field.onBlur}
+                        className="h-12 w-full bg-surface px-4 text-sm"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>
+                            {label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="baptismYear" className="text-xs font-bold text-text-muted ml-1">Ano de batismo</Label>
@@ -902,31 +937,25 @@ export function AdminUsersClient() {
                 <Label className="text-xs font-bold text-text-muted ml-1 flex items-center gap-1">
                   <CalendarDays size={12} /> Disponibilidade
                 </Label>
-                <div className="flex flex-wrap gap-2">
-                  {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].map((day) => {
-                    const isSelected = editForm.watch('availability')?.includes(day);
-                    return (
-                      <button
-                        key={day}
-                        type="button"
-                        onClick={() => {
-                          const current = editForm.getValues('availability') || [];
-                          const next = isSelected 
-                            ? current.filter(d => d !== day)
-                            : [...current, day];
-                          editForm.setValue('availability', next, { shouldDirty: true });
-                        }}
-                        className={`h-10 px-4 text-xs font-bold transition-all border-2 ${
-                          isSelected 
-                            ? 'bg-primary border-primary text-primary-foreground'
-                            : 'bg-surface border-transparent text-text-muted hover:border-primary/20'
-                        }`}
-                      >
-                        {day}
-                      </button>
-                    );
-                  })}
-                </div>
+                <ToggleGroup
+                  multiple
+                  aria-label="Dias de disponibilidade"
+                  className="flex-wrap"
+                  value={editForm.watch('availability') || []}
+                  onValueChange={(next) =>
+                    editForm.setValue('availability', next, { shouldDirty: true })
+                  }
+                >
+                  {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].map((day) => (
+                    <ToggleGroupItem
+                      key={day}
+                      value={day}
+                      className="h-10 px-4 bg-surface font-bold text-text-muted aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+                    >
+                      {day}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
               </div>
               <div className="space-y-2 pt-2 md:col-span-2">
                 <Label className="text-xs font-bold text-text-muted ml-1 flex items-center gap-1">

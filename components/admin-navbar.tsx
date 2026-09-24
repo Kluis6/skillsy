@@ -192,12 +192,15 @@ export function AdminNavbar() {
                       <Bell size={14} className="text-primary" /> Notificações
                     </h3>
                     {unreadCount > 0 && (
-                      <button
+                      <Button
+                        type="button"
+                        variant="link"
+                        size="xs"
                         onClick={handleMarkAllAsRead}
-                        className="text-xs font-bold text-primary hover:underline"
+                        className="h-auto p-0 font-bold"
                       >
                         Ler todas
-                      </button>
+                      </Button>
                     )}
                   </div>
                   <ScrollArea className="h-[300px]">
