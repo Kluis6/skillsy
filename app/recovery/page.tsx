@@ -1,3 +1,4 @@
+import { AuthPage } from "@/components/auth-page";
 import { createPrivateMetadata } from "@/lib/public-metadata";
 
 export const metadata = createPrivateMetadata({
@@ -6,7 +7,5 @@ export const metadata = createPrivateMetadata({
 });
 
 export default function Page() {
-    return (
-        <div>recove</div>
-    );
+  return <AuthPage defaultTab="login" />;
 }

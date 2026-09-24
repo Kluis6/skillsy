@@ -103,14 +103,19 @@ type AuthModalProps = {
   children?: React.ReactElement;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** Tab shown when the modal opens. */
+  defaultTab?: "login" | "signup";
 };
 
 export function AuthModal({
   children,
   open: controlledOpen,
   onOpenChange,
+  defaultTab = "login",
 }: AuthModalProps) {
-  const { signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth();
+  const { signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword } =
+    useAuth();
+  const [tab, setTab] = useState<"login" | "signup">(defaultTab);
   const [loading, setLoading] = useState(false);
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const open = controlledOpen ?? uncontrolledOpen;
@@ -123,6 +128,8 @@ export function AuthModal({
   const {
     register: registerLogin,
     handleSubmit: handleSubmitLogin,
+    getValues: getLoginValues,
+    setError: setLoginError,
     formState: { errors: loginErrors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -142,7 +149,6 @@ export function AuthModal({
     resolver: zodResolver(signUpSchema),
     mode: "onBlur",
     defaultValues: {
-      name: "",
       email: "",
       password: "",
     },
@@ -196,7 +202,7 @@ export function AuthModal({
   const handleEmailSignUp = async (data: SignUpFormData) => {
     setLoading(true);
     try {
-      await signUpWithEmail(data.email, data.password, data.name);
+      await signUpWithEmail(data.email, data.password);
       setOpen(false);
       toast.success("Conta criada com sucesso!");
     } catch (error: any) {
@@ -206,6 +212,28 @@ export function AuthModal({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleForgotPassword = async () => {
+    const email = getLoginValues("email").trim();
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setLoginError("email", {
+        message: "Informe seu e-mail acima para receber o link de redefinição.",
+      });
+      return;
+    }
+    setLoading(true);
+    try {
+      await resetPassword(email);
+    } catch {
+      // Same message either way, so the form does not reveal who has an account.
+    } finally {
+      setLoading(false);
+    }
+    toast.success("Verifique seu e-mail", {
+      description:
+        "Se houver uma conta com esse endereço, enviamos um link para criar uma nova senha.",
+    });
   };
 
   return (
@@ -245,16 +273,18 @@ export function AuthModal({
                   Skillsy
                 </h1>
                 <h2 className="text-base md:text-xl font-medium text-foreground mb-1">
-                  Bem-vindo de volta!
+                  {tab === "login" ? "Bem-vindo de volta!" : "Crie sua conta"}
                 </h2>
                 <p className="text-xs font-normal md:text-sm text-muted-foreground mb-2 xxl:mb-6">
-                  Faça login ou crie uma conta para continuar compartilhado suas
-                  habilidades.
+                  {tab === "login"
+                    ? "Entre para continuar compartilhando suas habilidades."
+                    : "Leva menos de um minuto. Você completa seu perfil depois."}
                 </p>
               </div>
 
               <Tabs
-                defaultValue="login"
+                value={tab}
+                onValueChange={(value) => setTab(value as "login" | "signup")}
                 className="w-full space-y-5 transition-all 2xl:space-y-6"
               >
                 <TabsList className="w-full space-x-2 bg-muted">
@@ -326,6 +356,15 @@ export function AuthModal({
                           {loginErrors.password.message}
                         </p>
                       )}
+                      <Button
+                        type="button"
+                        variant="link"
+                        onClick={handleForgotPassword}
+                        disabled={loading}
+                        className="h-auto p-0 text-xs"
+                      >
+                        Esqueci minha senha
+                      </Button>
                     </div>
                     <Button
                       type="submit"
@@ -347,40 +386,6 @@ export function AuthModal({
                     className="space-y-4"
                     noValidate
                   >
-                    {/* <div className="space-y-2">
-                    <Label
-                      htmlFor="signup-name"
-                      className="text-xs md:text-sm font-medium text-muted-foreground"
-                    >
-                      Nome<span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      id="signup-name"
-                      placeholder="Como você quer aparecer no Skillsy"
-                      aria-invalid={Boolean(signUpErrors.name)}
-                      aria-describedby={
-                        signUpErrors.name
-                          ? "signup-name-error"
-                          : "signup-name-help"
-                      }
-                      className={`h-10 border-input focus-visible:ring-accent ${signUpErrors.name ? "ring-2 ring-destructive" : ""}`}
-                      {...registerSignUp("name")}
-                    />
-                    <p
-                      id="signup-name-help"
-                      className="text-xs text-muted-foreground ml-1"
-                    >
-                      Use entre 2 e 50 caracteres.
-                    </p>
-                    {signUpErrors.name && (
-                      <p
-                        id="signup-name-error"
-                        className="text-xs text-destructive font-bold ml-1"
-                      >
-                        {signUpErrors.name.message}
-                      </p>
-                    )}
-                  </div> */}
                     <div className="space-y-2">
                       <Label
                         htmlFor="signup-email"
@@ -405,7 +410,7 @@ export function AuthModal({
                         id="signup-email-help"
                         className="text-xs text-muted-foreground ml-1"
                       >
-                        Use um e-mail válido com até 30 caracteres.
+                        Use um e-mail que você acessa: é por ele que você recupera a senha.
                       </p>
                       {signUpErrors.email && (
                         <p

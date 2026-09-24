@@ -10,7 +10,7 @@ import {
   signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  updateProfile as firebaseUpdateProfile
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { UserService } from '@/services/user-service';
@@ -22,7 +22,8 @@ interface AuthContextType {
   profile: UserProfile | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
-  signUpWithEmail: (email: string, pass: string, name: string) => Promise<void>;
+  signUpWithEmail: (email: string, pass: string) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
   signInWithEmail: (email: string, pass: string) => Promise<void>;
   toggleContact: (contactId: string) => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
@@ -129,27 +130,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUpWithEmail = async (email: string, pass: string, name: string) => {
+  // The onAuthStateChanged listener creates the profile for every new
+  // account; creating it here as well raced with it and failed the rules.
+  const signUpWithEmail = async (email: string, pass: string) => {
     try {
-      const res = await createUserWithEmailAndPassword(auth, email, pass);
-      await firebaseUpdateProfile(res.user, { displayName: name });
-      
-      const newProfile: Partial<UserProfile> = {
-        uid: res.user.uid,
-        name: name,
-        email: email,
-        photoURL: '',
-        isProvider: false,
-        role: 'user',
-        contacts: [],
-      };
-      await UserService.createProfile(newProfile);
-      const userProfile = await UserService.getProfile(res.user.uid);
-      setProfile(userProfile);
+      await createUserWithEmailAndPassword(auth, email, pass);
     } catch (error) {
       console.error('Error signing up with email:', error);
       throw error;
     }
+  };
+
+  const resetPassword = async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
   };
 
   const signInWithEmail = async (email: string, pass: string) => {
@@ -227,7 +220,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, signUpWithEmail, signInWithEmail, toggleContact, updateProfile, cancelAccount, logout }}>
+    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, signUpWithEmail, signInWithEmail, resetPassword, toggleContact, updateProfile, cancelAccount, logout }}>
       {children}
     </AuthContext.Provider>
   );

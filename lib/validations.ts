@@ -135,11 +135,9 @@ export const loginSchema = z.object({
     .min(6, 'A senha deve ter pelo menos 6 caracteres'),
 });
 
+// The name is filled in later on the profile; new accounts start as
+// "Membro Skillsy", like Google sign-ins without a display name.
 export const signUpSchema = z.object({
-  name: z.string()
-    .min(1, 'Nome é obrigatório')
-    .min(2, 'O nome deve ter pelo menos 2 caracteres')
-    .max(50, 'O nome deve ter no máximo 50 caracteres'),
   email: z.string()
     .min(1, 'E-mail é obrigatório')
     .email('E-mail inválido')

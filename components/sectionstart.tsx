@@ -21,7 +21,7 @@ const steps = [
     description:
       "Receba contatos, converse com mais clareza e aproxime seu trabalho de quem realmente precisa do seu serviço.",
     cta: "Ver oportunidades",
-    href: "/search",
+    href: "/oportunidades",
   },
   {
     eyebrow: "FORTALEÇA SUA MARCA",
