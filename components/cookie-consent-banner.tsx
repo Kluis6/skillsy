@@ -46,13 +46,13 @@ export function CookieConsentBanner() {
         <div className="bg-linear-to-r from-primary to-primary/80 px-5 py-3 text-primary-foreground">
           <div className="flex items-center gap-2 text-sm font-semibold tracking-tight">
             <ShieldCheck size={18} />
-            Controle de cookies e preferencias
+            Controle de cookies e preferências
           </div>
         </div>
 
         <div className="space-y-4 px-5 py-4 text-sm text-text-muted md:px-6 md:py-5">
           <p>
-            Esta plataforma salva cookies. Mais informacoes estao na nossa{" "}
+            Esta plataforma salva cookies. Mais informações estão na nossa{" "}
             <Link
               className="font-semibold text-primary underline underline-offset-4"
               href="/privacidade"
@@ -69,14 +69,14 @@ export function CookieConsentBanner() {
               className="border-border-subtle"
               onClick={() => handleChoice("rejected")}
             >
-              Fechar
+              Recusar
             </Button>
             <Button
               type="button"
               className="bg-primary text-primary-foreground hover:bg-primary/90"
               onClick={() => handleChoice("accepted")}
             >
-              Entendi
+              Aceitar
             </Button>
           </div>
         </div>

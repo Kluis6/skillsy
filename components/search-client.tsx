@@ -854,8 +854,8 @@ export function SearchClient({
                             ? ` em ${selectedStateLabel}`
                             : ""}
                         . Tente termos mais genéricos, veja as sugestões
-                        abaixo ou publique o que você precisa para
-                        profissionais da área receberem um alerta.
+                        abaixo ou publique o que você precisa no mural de
+                        oportunidades.
                       </p>
                     </div>
 

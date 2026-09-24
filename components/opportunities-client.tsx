@@ -219,7 +219,7 @@ function getModeCopy(mode: OpportunitiesMode) {
       eyebrow: "Encontrar ajuda",
       title: "O que você precisa resolver?",
       description:
-        "Busque um profissional ou publique uma oportunidade — quem atende na sua categoria e região é avisado.",
+        "Busque um profissional ou publique uma oportunidade no mural, onde profissionais filtram por serviço e estado.",
       createLabel: "Publicar oportunidade",
     };
   }
@@ -496,7 +496,7 @@ export function OpportunitiesClient({
                 Publicar oportunidade
               </h2>
               <p className="text-sm leading-relaxed text-text-muted">
-                Sua oportunidade entra no mural e alerta profissionais compatíveis.
+                Sua oportunidade entra no mural, visível para profissionais do mesmo serviço e estado.
               </p>
             </div>
             <Button
@@ -889,7 +889,11 @@ export function OpportunitiesClient({
         <EmptyState
           icon={<BriefcaseBusiness className="size-6" />}
           title="Nenhuma oportunidade encontrada"
-          description="Ajuste os filtros ou crie a primeira oportunidade desta necessidade na comunidade."
+          description={
+            mode === "all" && (category || state)
+              ? "Ajuste os filtros ou crie a primeira oportunidade desta necessidade na comunidade."
+              : "Ainda não há oportunidades abertas. Publique a primeira e ela aparece aqui no mural."
+          }
         />
       )}
     </main>
