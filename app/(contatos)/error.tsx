@@ -2,7 +2,7 @@
 
 import { RouteError } from "@/components/route-error";
 
-export default function RootError({
+export default function ContactsError({
   error,
   retry,
 }: {
@@ -13,11 +13,10 @@ export default function RootError({
     <RouteError
       error={error}
       retry={retry}
-      title="Algo deu errado"
-      description="Ocorreu um erro inesperado ao carregar esta página. Tente novamente em instantes."
+      title="Não foi possível carregar seus contatos"
+      description="Houve uma falha temporária ao buscar seus contatos. Tente novamente em instantes."
       backHref="/"
       backLabel="Voltar ao início"
-      fullScreen
     />
   );
 }
