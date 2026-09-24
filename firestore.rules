@@ -782,6 +782,7 @@ service cloud.firestore {
       allow read: if isOwner(userId) ||
                    isAdmin() ||
                    (isAuthenticated() &&
+                    request.auth.token.email_verified == true &&
                     resource.data.email is string &&
                     request.auth.token.email is string &&
                     resource.data.email == request.auth.token.email);

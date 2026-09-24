@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/footer";
@@ -12,6 +13,11 @@ import { LuArrowLeft } from "react-icons/lu";
 
 export const dynamic = "force-dynamic";
 
+// Deduplicates the fetch shared by generateMetadata and the page in one request.
+const getPublishedPost = cache((slug: string) =>
+  PostService.getPublishedPostBySlug(slug),
+);
+
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
@@ -20,7 +26,7 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await PostService.getPublishedPostBySlug(slug);
+  const post = await getPublishedPost(slug);
 
   if (!post) {
     return {
@@ -42,7 +48,7 @@ export async function generateMetadata({
 
 export default async function NoticiaDetalhePage({ params }: PageProps) {
   const { slug } = await params;
-  const post = await PostService.getPublishedPostBySlug(slug);
+  const post = await getPublishedPost(slug);
 
   if (!post) {
     notFound();

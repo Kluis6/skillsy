@@ -47,8 +47,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           let userProfile = await UserService.getProfile(user.uid);
           
           if (!userProfile) {
-            // Check if there's a pre-registered profile by email (e.g. created by another admin)
-            const existingByEmail = await UserService.getProfileByEmail(user.email || '');
+            // Check if there's a pre-registered profile by email (e.g. created by another admin).
+            // Only verified emails may claim it; the rules deny this read otherwise.
+            const existingByEmail =
+              user.email && user.emailVerified
+                ? await UserService.getProfileByEmail(user.email)
+                : null;
             
             if (existingByEmail && (!existingByEmail.uid || existingByEmail.uid === "")) {
               // This is a pre-registered profile without a valid UID yet

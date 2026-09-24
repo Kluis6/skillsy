@@ -1,7 +1,11 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import { ProfileDetailClient } from '@/components/profile-detail-client';
 import { createPublicMetadata } from '@/lib/public-metadata';
 import { UserService } from '@/services/user-service';
+
+// Deduplicates the fetch shared by generateMetadata and the page in one request.
+const getPublicProfile = cache((id: string) => UserService.getPublicProfile(id));
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +16,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   try {
-    const profile = await UserService.getPublicProfile(id);
+    const profile = await getPublicProfile(id);
     if (!profile) return { title: 'Perfil não encontrado' };
 
     const title = `${profile.name} | ${profile.serviceType || 'Membro'}`;
@@ -34,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PublicProfilePage({ params }: Props) {
   const { id } = await params;
-  const initialProfile = await UserService.getPublicProfile(id);
+  const initialProfile = await getPublicProfile(id);
   
   return <ProfileDetailClient id={id} initialProfile={initialProfile} />;
 }
