@@ -1587,127 +1587,39 @@ export const UserService = {
     }
   },
 
-  async seedUsers(): Promise<void> {
-    const fakeUsers: Partial<UserProfile>[] = [
-      {
-        uid: "fake_1",
-        name: "Ricardo Oliveira",
-        email: "ricardo.manutencao@example.com",
-        isProvider: true,
-        category: "Manutenção",
-        serviceType: "Eletricista e Encanador",
-        location: "São Paulo, SP",
-        ward: "Ala Jardins",
-        companyName: "Oliveira Reparos",
-        bio: "Profissional com 15 anos de experiência em manutenção residencial e predial.",
-        whatsapp: "11988887777",
-        baptismYear: 2008,
-        rating: 4.8,
-        reviewCount: 12,
-        role: "user",
-        photoURL: "https://picsum.photos/seed/ricardo/200",
-        bannerURL: "https://picsum.photos/seed/ricardo_banner/800/200",
-      },
-      {
-        uid: "fake_2",
-        name: "Ana Cláudia Santos",
-        email: "ana.doces@example.com",
-        isProvider: true,
-        category: "Cozinha",
-        serviceType: "Bolos e Doces Gourmet",
-        location: "Curitiba, PR",
-        ward: "Ala Portão",
-        companyName: "Ana Doces",
-        bio: "Faço bolos para casamentos, aniversários e eventos especiais com ingredientes de primeira.",
-        whatsapp: "41999998888",
-        baptismYear: 2012,
-        rating: 5.0,
-        reviewCount: 25,
-        role: "user",
-        photoURL: "https://picsum.photos/seed/ana/200",
-        bannerURL: "https://picsum.photos/seed/ana_banner/800/200",
-      },
-      {
-        uid: "fake_3",
-        name: "Marcos Vinícius",
-        email: "marcos.tech@example.com",
-        isProvider: true,
-        category: "Tecnologia",
-        serviceType: "Desenvolvedor Web Fullstack",
-        location: "Belo Horizonte, MG",
-        ward: "Ala Pampulha",
-        companyName: "MV Tech Solutions",
-        bio: "Especialista em React, Node.js e aplicativos mobile. Ajudo sua empresa a crescer digitalmente.",
-        whatsapp: "31977776666",
-        rating: 4.9,
-        reviewCount: 8,
-        role: "user",
-        photoURL: "https://picsum.photos/seed/marcos/200",
-        bannerURL: "https://picsum.photos/seed/marcos_banner/800/200",
-      },
-      {
-        uid: "fake_4",
-        name: "Juliana Ferreira",
-        email: "juliana.limpeza@example.com",
-        isProvider: true,
-        category: "Limpeza",
-        serviceType: "Limpeza Pós-Obra e Residencial",
-        location: "Rio de Janeiro, RJ",
-        ward: "Ala Barra",
-        companyName: "Brilho Total",
-        bio: "Serviço de limpeza detalhado e confiável para sua casa ou escritório.",
-        whatsapp: "21966665555",
-        baptismYear: 2005,
-        rating: 4.7,
-        reviewCount: 15,
-        role: "user",
-        photoURL: "https://picsum.photos/seed/juliana/200",
-        bannerURL: "https://picsum.photos/seed/juliana_banner/800/200",
-      },
-      {
-        uid: "fake_5",
-        name: "Paulo Souza",
-        email: "paulo.reformas@example.com",
-        isProvider: true,
-        category: "Reformas",
-        serviceType: "Pintura e Drywall",
-        location: "Porto Alegre, RS",
-        ward: "Ala Moinhos",
-        companyName: "Souza Pinturas",
-        bio: "Pintura residencial e comercial com acabamento impecável e rapidez.",
-        whatsapp: "51955554444",
-        rating: 4.6,
-        reviewCount: 10,
-        role: "user",
-        photoURL: "https://picsum.photos/seed/paulo/200",
-        bannerURL: "https://picsum.photos/seed/paulo_banner/800/200",
-      },
-    ];
-
+  /**
+   * Admin-only: deletes the demo profiles the old "Gerar Dados" button created
+   * (fake_1 … fake_5), with their public profiles, recommendations and the
+   * ratings they received. Safe to run again; it only touches those ids.
+   */
+  async removeSeedUsers(): Promise<number> {
+    const seedIds = ["fake_1", "fake_2", "fake_3", "fake_4", "fake_5"];
     try {
-      const batch = writeBatch(db);
-      for (const user of fakeUsers) {
-        const docRef = doc(db, "users", user.uid!);
-        const createdAt = serverTimestamp();
-        const nextPrivateProfile = applyDerivedVerificationFields({
-          ...user,
-          hasPublicProfile:
-            typeof user.hasPublicProfile === "boolean"
-              ? user.hasPublicProfile
-              : user.isProvider === true,
-          createdAt,
-        });
+      let removed = 0;
+      for (const uid of seedIds) {
+        const [userSnap, publicSnap, ratingsSnap] = await Promise.all([
+          getDoc(doc(db, "users", uid)),
+          getDoc(doc(db, "public_profiles", uid)),
+          getDocs(query(collection(db, "ratings"), where("toId", "==", uid))),
+        ]);
+        // Recommendations are only readable while the public profile exists.
+        const recommendationsSnap = publicSnap.exists()
+          ? await getDocs(collection(db, "public_profiles", uid, "recommendations"))
+          : null;
+        if (!userSnap.exists() && !publicSnap.exists()) continue;
 
-        batch.set(docRef, nextPrivateProfile);
-        syncPublicProfileBatch(
-          batch,
-          user.uid!,
-          nextPrivateProfile as Partial<UserProfile>,
-        );
+        const batch = writeBatch(db);
+        recommendationsSnap?.forEach((item) => batch.delete(item.ref));
+        ratingsSnap.forEach((item) => batch.delete(item.ref));
+        if (publicSnap.exists()) batch.delete(publicSnap.ref);
+        if (userSnap.exists()) batch.delete(userSnap.ref);
+        await batch.commit();
+        removed += 1;
       }
-      await batch.commit();
+      return removed;
     } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, "users/seed");
+      handleFirestoreError(error, OperationType.DELETE, "users/fake_*");
+      return 0;
     }
   },
 

@@ -880,8 +880,9 @@ service cloud.firestore {
                       isValidCommunityRecommendation(request.resource.data, recommenderId) &&
                       recommendationCreationUpdatesCount(userId);
         allow update: if false;
-        allow delete: if isOwner(recommenderId) &&
-                      recommendationDeletionUpdatesCount(userId);
+        allow delete: if (isOwner(recommenderId) &&
+                        recommendationDeletionUpdatesCount(userId)) ||
+                       isAdmin();
       }
     }
 

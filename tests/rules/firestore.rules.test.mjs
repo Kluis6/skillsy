@@ -24,6 +24,7 @@ const LEGACY_PROVIDER = "legacy";
 const RATER = "rater";
 const RECOMMENDER = "recommender";
 const BLOCKED = "blocked";
+const ADMIN = "admin";
 
 let env;
 
@@ -97,6 +98,7 @@ beforeEach(async () => {
       setDoc(doc(db, "users", RATER), userDoc(RATER)),
       setDoc(doc(db, "users", RECOMMENDER), userDoc(RECOMMENDER)),
       setDoc(doc(db, "users", BLOCKED), userDoc(BLOCKED, { isBlocked: true })),
+      setDoc(doc(db, "users", ADMIN), userDoc(ADMIN, { role: "admin" })),
       setDoc(
         doc(db, "public_profiles", PROVIDER),
         publicProfileDoc(PROVIDER, { rating: 4, ratingSum: 8, reviewCount: 2, recommendationCount: 1 }),
@@ -277,6 +279,10 @@ describe("indicações", () => {
     batch.delete(doc(db, "public_profiles", PROVIDER, "recommendations", RATER));
     batch.update(doc(db, "public_profiles", PROVIDER), { recommendationCount: 0 });
     await assertSucceeds(batch.commit());
+  });
+
+  test("admin remove indicações (limpeza de perfis de teste)", async () => {
+    await assertSucceeds(deleteDoc(doc(dbAs(ADMIN), "public_profiles", PROVIDER, "recommendations", RATER)));
   });
 
   test("remover a indicação sem decrementar é rejeitado", async () => {

@@ -133,7 +133,7 @@ export function AdminUsersClient() {
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddAdminDialogOpen, setIsAddAdminDialogOpen] = useState(false);
-  const [isSeeding, setIsSeeding] = useState(false);
+  const [isRemovingSeed, setIsRemovingSeed] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -367,18 +367,24 @@ export function AdminUsersClient() {
     }
   };
 
-  const handleSeedData = async () => {
-    if (!confirm('Isso irá gerar 5 usuários de teste no banco de dados. Deseja continuar?')) return;
-    
-    setIsSeeding(true);
+  const hasSeedUsers = users.some((u) => u.uid.startsWith('fake_'));
+
+  const handleRemoveSeedData = async () => {
+    if (!confirm('Isso apaga os 5 perfis de teste (fake_1 a fake_5), com as avaliações e indicações deles. Deseja continuar?')) return;
+
+    setIsRemovingSeed(true);
     try {
-      await UserService.seedUsers();
-      toast.success('Dados de teste gerados com sucesso!');
+      const removed = await UserService.removeSeedUsers();
+      toast.success(
+        removed > 0
+          ? `${removed} perfis de teste removidos.`
+          : 'Nenhum perfil de teste encontrado.',
+      );
       fetchUsers();
     } catch (error) {
-      toast.error('Erro ao gerar dados de teste');
+      toast.error('Erro ao remover dados de teste');
     } finally {
-      setIsSeeding(false);
+      setIsRemovingSeed(false);
     }
   };
 
@@ -424,14 +430,16 @@ export function AdminUsersClient() {
              </div>
           </div>
           <div className="flex items-center gap-4">
-            <Button 
-              variant="outline"
-              onClick={handleSeedData}
-              disabled={isSeeding}
-              className="px-6 font-bold h-11 border-border-subtle hover:bg-surface"
-            >
-              {isSeeding ? 'Gerando...' : 'Gerar Dados'}
-            </Button>
+            {hasSeedUsers ? (
+              <Button
+                variant="destructive"
+                onClick={handleRemoveSeedData}
+                disabled={isRemovingSeed}
+                className="px-6 font-bold h-11"
+              >
+                {isRemovingSeed ? 'Removendo...' : 'Remover dados de teste'}
+              </Button>
+            ) : null}
             <Button 
               onClick={() => setIsAddAdminDialogOpen(true)}
               className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 font-bold  h-11"
