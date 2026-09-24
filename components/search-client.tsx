@@ -410,14 +410,13 @@ export function SearchClient({
                   <Button
                     size="icon-lg"
                     variant="ghost"
-                    className="md:hidden"
                     aria-label="Abrir menu principal"
                   >
                     <BsList className="size-4 text-text-main" />
                   </Button>
                 }
               />
-              <DrawerContent className="w-screen">
+              <DrawerContent className="w-screen sm:max-w-sm">
                 <SearchDrawerNavigation
                   pathname={pathname}
                   user={user}

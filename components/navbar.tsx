@@ -268,7 +268,8 @@ export function Navbar({
             </Link>
           ) : null}
 
-          {/* {!shouldShowBackButton ? (
+          {/* Main sections stay visible on large screens; the drawer keeps the rest. */}
+          {!shouldShowBackButton ? (
             <div className="hidden items-center gap-1 lg:flex">
               {primaryNavItems.map((item) => {
                 const active = isActivePath(pathname, item.href);
@@ -290,7 +291,7 @@ export function Navbar({
                 );
               })}
             </div>
-          ) : null} */}
+          ) : null}
         </div>
 
         <div className="flex items-center justify-between space-x-2">
