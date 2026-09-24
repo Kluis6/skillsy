@@ -104,7 +104,6 @@ export default function WeAreSkillsyPage() {
                 precisa de ajuda e quem pode servir com seu trabalho.
               </p>
             </div>
-  
           </div>
         </div>
       </div>
@@ -203,8 +202,8 @@ export default function WeAreSkillsyPage() {
       </div>
 
       <section className="container mx-auto px-4 my-24">
-        <div className="grid grid-cols-12 gap-4 md:gap-8">
-          <div className="col-span-12 ">
+        <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
+          <div className="col-span-12">
             <div className="space-y-4">
               <h2 className="text-xl 2xl:text-2xl font-bold text-text-main">
                 Os valores que guiam a plataforma
@@ -216,28 +215,23 @@ export default function WeAreSkillsyPage() {
               </p>
             </div>
           </div>
-          <div className="col-span-12 ">
-            <div className="grid grid-cols-12 gap-4 gap-y-8">
-              {values.map((value) => (
-                <div key={value.title} className="md:col-span-4 col-span-12">
-                  <Card className="h-full flex flex-row p-0 ">
-                    <div className="flex flex-col w-1/3 h-full bg-primary/10 justify-center items-center ">
-                      <value.icon  className="text-primary lg:size-7" />
+           {values.map((value) => (
+                <div key={value.title} className="lg:col-span-4 col-span-12">
+                  <div className="h-full w-full flex flex-row border border-border-subtle bg-surface overflow-hidden">
+                    <div className="flex flex-col px-4 h-full bg-primary/10 justify-center items-center ">
+                      <value.icon className="text-primary lg:size-7" />
                     </div>
-                     <div className="py-4 pe-4 space-y-2">
-                                <h3 className="text-base font-bold text-text-main">
-                      {value.title}
-                    </h3>
-                    <p className="text-sm font-normal text-text-muted">
-                      {value.description}
-                    </p>
-                     </div>
-          
-                  </Card>
+                    <div className="p-4 space-y-2">
+                      <h3 className="text-base font-bold text-text-main">
+                        {value.title}
+                      </h3>
+                      <p className="text-sm font-normal text-text-muted">
+                        {value.description}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               ))}
-            </div>
-          </div>
         </div>
       </section>
 
