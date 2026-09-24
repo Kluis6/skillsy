@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { UserProfile } from "@/models/types";
@@ -270,13 +270,19 @@ export function SearchClient({
       ? selectedStateLabel
       : null;
 
-  useEffect(() => {
+  // Sync with the route during render instead of in effects: the search box
+  // follows the query, and any filter change goes back to page 1.
+  const [syncedQuery, setSyncedQuery] = useState(query);
+  if (query !== syncedQuery) {
+    setSyncedQuery(query);
     setSearchTerm(query);
-  }, [query]);
-
-  useEffect(() => {
+  }
+  const routeFiltersKey = [query, city, state, selectedCategory].join("|");
+  const [syncedFiltersKey, setSyncedFiltersKey] = useState(routeFiltersKey);
+  if (routeFiltersKey !== syncedFiltersKey) {
+    setSyncedFiltersKey(routeFiltersKey);
     setCurrentPage(1);
-  }, [query, city, state, selectedCategory]);
+  }
 
   const results = initialResults;
 

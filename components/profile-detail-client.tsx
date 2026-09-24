@@ -75,7 +75,7 @@ import { PiShareFat } from "react-icons/pi";
 import { BsWhatsapp } from "react-icons/bs";
 import { FaTelegramPlane } from "react-icons/fa";
 import { AVAILABILITY_OPTIONS } from "@/lib/profile-form";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -108,11 +108,19 @@ export function ProfileDetailClient({
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [loadingRatings, setLoadingRatings] = useState(false);
   const [submittingRating, setSubmittingRating] = useState(false);
-  const [isRecommended, setIsRecommended] = useState(false);
-  const [recommendations, setRecommendations] = useState<
+  const [recommendedState, setIsRecommended] = useState(false);
+  const [loadedRecommendations, setRecommendations] = useState<
     CommunityRecommendation[]
   >([]);
   const [recommendationLoading, setRecommendationLoading] = useState(false);
+  // Recommendations only apply to providers (and never to your own profile);
+  // derive that here instead of resetting state inside the effects below.
+  const isRecommended =
+    Boolean(user?.uid) &&
+    Boolean(targetProfile?.isProvider) &&
+    user?.uid !== targetProfile?.uid &&
+    recommendedState;
+  const recommendations = targetProfile?.isProvider ? loadedRecommendations : [];
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
@@ -124,6 +132,7 @@ export function ProfileDetailClient({
       details: "",
     },
   });
+  const reportDetails = useWatch({ control: reportForm.control, name: "details" });
 
   const shareUrl = targetProfile
     ? typeof window === "undefined"
@@ -194,7 +203,6 @@ export function ProfileDetailClient({
       !targetProfile?.isProvider ||
       user.uid === targetProfile.uid
     ) {
-      setIsRecommended(false);
       return;
     }
 
@@ -205,7 +213,6 @@ export function ProfileDetailClient({
 
   useEffect(() => {
     if (!targetProfile?.uid || !targetProfile.isProvider) {
-      setRecommendations([]);
       return;
     }
 
@@ -633,7 +640,7 @@ export function ProfileDetailClient({
               />
               <div className="flex items-center justify-between text-xs text-text-muted">
                 <span>Opcional, mas ajuda na análise.</span>
-                <span>{(reportForm.watch("details") || "").length}/1000</span>
+                <span>{(reportDetails || "").length}/1000</span>
               </div>
               {reportForm.formState.errors.details && (
                 <p className="text-xs font-bold text-destructive">

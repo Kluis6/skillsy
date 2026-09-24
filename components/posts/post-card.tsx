@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Post } from "@/models/types";
 import { POST_CATEGORY_LABELS, getPostExcerpt } from "@/lib/post-utils";
@@ -20,11 +21,18 @@ export function PostCard({ post }: { post: Post }) {
       <article className="col-span-12 lg:col-span-4 h-full w-full">
         <Card className="relative mx-auto w-full pt-0">
           {post.coverImageUrl ? (
-            <img
-              src={post.coverImageUrl}
-              alt={post.title}
-              className="relative z-20 h-38 w-full object-cover"
-            />
+            <div className="relative z-20 h-38 w-full">
+              {/* Covers can be uploads (data URLs) or links to any site, so
+                  they skip the optimizer's host allowlist. */}
+              <Image
+                src={post.coverImageUrl}
+                alt={post.title}
+                fill
+                unoptimized
+                sizes="(min-width: 1024px) 33vw, 100vw"
+                className="object-cover"
+              />
+            </div>
           ) : null}
           <CardHeader>
             <div>

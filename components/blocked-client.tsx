@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ShieldAlert, Mail, MessageCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
@@ -10,11 +11,12 @@ import { toast } from 'sonner';
 
 export function BlockedClient() {
   const { user } = useAuth();
+  const router = useRouter();
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      window.location.href = '/';
+      router.replace('/');
     } catch (error) {
       toast.error('Erro ao sair');
     }

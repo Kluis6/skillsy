@@ -256,27 +256,39 @@ export function OpportunitiesClient({
     Record<string, { receivedResponse: boolean; platformSatisfied: boolean }>
   >({});
   const modeCopy = getModeCopy(mode);
-  useEffect(() => {
+  // Sync state with props/profile during render instead of in effects
+  // (https://react.dev/learn/you-might-not-need-an-effect).
+  const [syncedOpportunities, setSyncedOpportunities] =
+    useState(initialOpportunities);
+  if (initialOpportunities !== syncedOpportunities) {
+    setSyncedOpportunities(initialOpportunities);
     setOpportunities(initialOpportunities);
-  }, [initialOpportunities]);
-  useEffect(() => {
-    if (!profile) return;
+  }
+
+  // Prefill the form location from the profile.
+  const formDefaultsKey = profile
+    ? [profile.uid, profile.location, profile.businessState].join("|")
+    : "";
+  const [syncedFormDefaultsKey, setSyncedFormDefaultsKey] = useState("");
+  if (profile && formDefaultsKey !== syncedFormDefaultsKey) {
+    setSyncedFormDefaultsKey(formDefaultsKey);
     setForm((current) => ({
       ...current,
       city: current.city || profile.location || "",
       state: current.state || profile.businessState || "",
     }));
-  }, [profile?.uid, profile?.location, profile?.businessState]);
-  useEffect(() => {
-    if (!profile?.isProvider) return;
+  }
+
+  // Providers start with the filters set to their own service and state.
+  const providerFiltersKey = profile?.isProvider
+    ? [profile.uid, profile.category, profile.businessState].join("|")
+    : "";
+  const [syncedProviderFiltersKey, setSyncedProviderFiltersKey] = useState("");
+  if (profile?.isProvider && providerFiltersKey !== syncedProviderFiltersKey) {
+    setSyncedProviderFiltersKey(providerFiltersKey);
     setCategory(profile.category || "");
     setState(profile.businessState || "");
-  }, [
-    profile?.uid,
-    profile?.isProvider,
-    profile?.category,
-    profile?.businessState,
-  ]);
+  }
   useEffect(() => {
     if (
       mode !== "for-you" ||

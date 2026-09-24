@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,7 +42,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 import imageCompression from "browser-image-compression";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { profileSchema, type ProfileFormData } from "@/lib/validations";
 import {
@@ -88,6 +88,34 @@ const PROFILE_LIMITS = {
   galleryMaxItems: 5,
   galleryDescription: 200,
 };
+
+type OnboardingIntent = "find" | "offer" | "both";
+
+// Onboarding choices live in localStorage; read them through
+// useSyncExternalStore so the server render and hydration stay consistent.
+const ONBOARDING_INTENT_KEY = "skillsy:onboarding-intent";
+const ONBOARDING_DISMISSED_KEY = "skillsy:onboarding-dismissed";
+const ONBOARDING_CHANGE_EVENT = "skillsy:onboarding-change";
+
+function subscribeOnboarding(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  window.addEventListener(ONBOARDING_CHANGE_EVENT, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(ONBOARDING_CHANGE_EVENT, onChange);
+  };
+}
+
+function readOnboardingSnapshot() {
+  const intent = window.localStorage.getItem(ONBOARDING_INTENT_KEY) ?? "";
+  const dismissed = window.localStorage.getItem(ONBOARDING_DISMISSED_KEY) ?? "";
+  return `${intent}|${dismissed}`;
+}
+
+function writeOnboarding(key: string, value: string) {
+  window.localStorage.setItem(key, value);
+  window.dispatchEvent(new Event(ONBOARDING_CHANGE_EVENT));
+}
 
 const MEMBERSHIP_OPTIONS: Array<{
   value: Exclude<MembershipType, "">;
@@ -145,10 +173,17 @@ export function ProfileSettingsClient() {
   const [loading, setLoading] = useState(false);
   const [cancelingAccount, setCancelingAccount] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
-  const [onboardingIntent, setOnboardingIntent] = useState<
-    "find" | "offer" | "both" | null
-  >(null);
-  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+  const onboardingSnapshot = useSyncExternalStore(
+    subscribeOnboarding,
+    readOnboardingSnapshot,
+    () => "|",
+  );
+  const [savedIntent, dismissedFlag] = onboardingSnapshot.split("|");
+  const onboardingIntent: OnboardingIntent | null =
+    savedIntent === "find" || savedIntent === "offer" || savedIntent === "both"
+      ? savedIntent
+      : null;
+  const onboardingDismissed = dismissedFlag === "true";
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
@@ -162,7 +197,6 @@ export function ProfileSettingsClient() {
     register,
     handleSubmit,
     setValue,
-    watch,
     reset,
     getValues,
     formState: { errors, touchedFields, isDirty },
@@ -172,7 +206,7 @@ export function ProfileSettingsClient() {
     defaultValues: getProfileFormDefaults(),
   });
 
-  const formData = watch();
+  const formData = useWatch({ control }) as ProfileFormData;
   const readinessItems = [
     {
       label: "Nome público",
@@ -261,24 +295,6 @@ export function ProfileSettingsClient() {
     }
   }, [profile, reset]);
 
-  useEffect(() => {
-    const savedIntent = window.localStorage.getItem(
-      "skillsy:onboarding-intent",
-    );
-    const dismissed = window.localStorage.getItem(
-      "skillsy:onboarding-dismissed",
-    );
-
-    if (
-      savedIntent === "find" ||
-      savedIntent === "offer" ||
-      savedIntent === "both"
-    ) {
-      setOnboardingIntent(savedIntent);
-    }
-    setOnboardingDismissed(dismissed === "true");
-  }, []);
-
   const [detectingLocation, setDetectingLocation] = useState(false);
 
   const handleDetectLocation = async () => {
@@ -325,9 +341,8 @@ export function ProfileSettingsClient() {
     }
   };
 
-  const chooseOnboardingIntent = (intent: "find" | "offer" | "both") => {
-    setOnboardingIntent(intent);
-    window.localStorage.setItem("skillsy:onboarding-intent", intent);
+  const chooseOnboardingIntent = (intent: OnboardingIntent) => {
+    writeOnboarding(ONBOARDING_INTENT_KEY, intent);
 
     if (intent === "offer" || intent === "both") {
       setValue("isProvider", true, { shouldDirty: true, shouldValidate: true });
@@ -335,8 +350,7 @@ export function ProfileSettingsClient() {
   };
 
   const dismissOnboarding = () => {
-    setOnboardingDismissed(true);
-    window.localStorage.setItem("skillsy:onboarding-dismissed", "true");
+    writeOnboarding(ONBOARDING_DISMISSED_KEY, "true");
   };
 
   const focusOnboardingStep = (stepId: string) => {

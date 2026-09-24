@@ -6,7 +6,7 @@ import { UserService } from '@/services/user-service';
 import { UserProfile, UserReport } from '@/models/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { 
   adminEditUserSchema, 
@@ -120,7 +120,6 @@ const ROLE_LABELS: Record<AdminEditUserFormData['role'], string> = {
 export function AdminUsersClient() {
   const { profile, loading: authLoading } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([]);
   const [reports, setReports] = useState<UserReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -160,6 +159,10 @@ export function AdminUsersClient() {
       isProvider: false,
       isBlocked: false,
     }
+  });
+  const [editAvailability, editIsProvider, editIsBlocked] = useWatch({
+    control: editForm.control,
+    name: ['availability', 'isProvider', 'isBlocked'],
   });
 
   const adminForm = useForm<AdminCreateAdminFormData>({
@@ -202,24 +205,24 @@ export function AdminUsersClient() {
     }
   };
 
-  const fetchUsers = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [allUsers, allReports] = await Promise.all([
-        UserService.getAllUsers(),
-        UserService.getAllReports(),
-      ]);
-      setUsers(allUsers);
-      setReports(allReports);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      toast.error('Erro ao carregar usuários');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // Starts with loading = true; later refreshes update the list in place.
+  // State is only set in the promise callbacks, never synchronously.
+  const fetchUsers = useCallback(
+    () =>
+      Promise.all([UserService.getAllUsers(), UserService.getAllReports()])
+        .then(([allUsers, allReports]) => {
+          setUsers(allUsers);
+          setReports(allReports);
+        })
+        .catch((error) => {
+          console.error('Error fetching users:', error);
+          toast.error('Erro ao carregar usuários');
+        })
+        .finally(() => setLoading(false)),
+    [],
+  );
 
-  const applyFilters = useCallback(() => {
+  const filteredUsers = useMemo(() => {
     let result = [...users];
 
     if (searchTerm) {
@@ -263,21 +266,22 @@ export function AdminUsersClient() {
       });
     }
 
-    setFilteredUsers(result);
-    setCurrentPage(1); // Reset to first page when filters change
+    return result;
   }, [users, searchTerm, filterWard, filterState, filterHasServices, filterReported, filterRecent, sortOrder, reportCountsByUser]);
 
-  useEffect(() => {
-    if (profile?.role === 'admin') {
-      fetchUsers();
-    }
-  }, [profile, fetchUsers]);
+  // Back to the first page when the filters change (adjusted during render).
+  const filtersKey = [searchTerm, filterWard, filterState, filterHasServices, filterReported, filterRecent, sortOrder].join('|');
+  const [pagedFiltersKey, setPagedFiltersKey] = useState(filtersKey);
+  if (filtersKey !== pagedFiltersKey) {
+    setPagedFiltersKey(filtersKey);
+    setCurrentPage(1);
+  }
 
   useEffect(() => {
     if (profile?.role === 'admin') {
-      applyFilters();
+      void fetchUsers();
     }
-  }, [applyFilters, profile]);
+  }, [profile?.role, fetchUsers]);
 
   const handleEditClick = (user: UserProfile) => {
     setEditingUser(user);
@@ -332,7 +336,7 @@ export function AdminUsersClient() {
         return;
       }
 
-      const tempId = `pre_${Math.random().toString(36).substring(2, 11)}`;
+      const tempId = `pre_${crypto.randomUUID().replace(/-/g, '').slice(0, 9)}`;
       const newAdmin: Partial<UserProfile> = {
         uid: tempId,
         name: data.name,
@@ -941,7 +945,7 @@ export function AdminUsersClient() {
                   multiple
                   aria-label="Dias de disponibilidade"
                   className="flex-wrap"
-                  value={editForm.watch('availability') || []}
+                  value={editAvailability || []}
                   onValueChange={(next) =>
                     editForm.setValue('availability', next, { shouldDirty: true })
                   }
@@ -978,7 +982,7 @@ export function AdminUsersClient() {
               <div className="flex items-center gap-3">
                 <Switch 
                   id="edit-isProvider" 
-                  checked={editForm.watch('isProvider')}
+                  checked={editIsProvider}
                   onCheckedChange={(checked) => editForm.setValue('isProvider', checked)}
                 />
                 <Label htmlFor="edit-isProvider" className="text-sm font-bold cursor-pointer">Prestador de Serviço</Label>
@@ -986,7 +990,7 @@ export function AdminUsersClient() {
               <div className="flex items-center gap-3">
                 <Switch 
                   id="edit-blocked" 
-                  checked={editForm.watch('isBlocked')}
+                  checked={editIsBlocked}
                   onCheckedChange={(checked) => editForm.setValue('isBlocked', checked)}
                 />
                 <Label htmlFor="edit-blocked" className="text-sm font-bold text-destructive cursor-pointer">Bloquear Acesso</Label>

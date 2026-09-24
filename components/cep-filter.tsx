@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import { MapPin, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,14 +24,17 @@ export function CepFilter({
     state: string;
   } | null>(initialLocation || null);
 
-  useEffect(() => {
-    if (initialLocation) {
-      setLocation(initialLocation);
-    } else {
-      setLocation(null);
-      setCep("");
-    }
-  }, [initialLocation]);
+  // Follow the parent's location: adjust state during render when it changes
+  // (https://react.dev/learn/you-might-not-need-an-effect).
+  const initialLocationKey = initialLocation
+    ? `${initialLocation.city}|${initialLocation.state}`
+    : "";
+  const [syncedLocationKey, setSyncedLocationKey] = useState(initialLocationKey);
+  if (initialLocationKey !== syncedLocationKey) {
+    setSyncedLocationKey(initialLocationKey);
+    setLocation(initialLocation || null);
+    if (!initialLocation) setCep("");
+  }
 
   const handleCepChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "").slice(0, 8);

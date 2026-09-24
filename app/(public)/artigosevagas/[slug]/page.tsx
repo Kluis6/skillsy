@@ -81,6 +81,8 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
                 src={post.coverImageUrl}
                 alt={post.title}
                 fill
+                // Covers can link to any site; skip the host allowlist.
+                unoptimized
                 sizes="100vw"
                 className="object-cover"
               />

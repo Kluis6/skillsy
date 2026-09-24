@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { Post, PostStatus } from "@/models/types";
@@ -57,24 +57,25 @@ export function AdminPostsClient() {
   } | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
 
-  const loadPosts = async () => {
-    try {
-      setIsLoading(true);
-      const result = await PostService.getAllPostsForAdmin();
-      setPosts(result);
-    } catch (error) {
-      console.error(error);
-      toast.error("Não foi possível carregar os artigos.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Starts with isLoading = true; reloads set it themselves before calling.
+  // State is only set in the promise callbacks, never synchronously.
+  const loadPosts = useCallback(
+    () =>
+      PostService.getAllPostsForAdmin()
+        .then(setPosts)
+        .catch((error) => {
+          console.error(error);
+          toast.error("Não foi possível carregar os artigos.");
+        })
+        .finally(() => setIsLoading(false)),
+    [],
+  );
 
   useEffect(() => {
     if (profile?.role === "admin") {
-      loadPosts();
+      void loadPosts();
     }
-  }, [profile]);
+  }, [profile?.role, loadPosts]);
 
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
@@ -117,6 +118,7 @@ export function AdminPostsClient() {
         );
         setReviewIntent(null);
         setRejectionReason("");
+        setIsLoading(true);
         await loadPosts();
       } catch (error) {
         console.error(error);
@@ -139,6 +141,7 @@ export function AdminPostsClient() {
           isFeatured: !post.isFeatured,
         });
         toast.success(post.isFeatured ? "Destaque removido." : "Artigo marcado como destaque.");
+        setIsLoading(true);
         await loadPosts();
       } catch (error) {
         console.error(error);

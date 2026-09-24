@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { contactSchema, ContactFormData } from "@/lib/validations";
 import { UserService } from "@/services/user-service";
@@ -23,7 +23,7 @@ export function ContactCTA() {
     register,
     handleSubmit,
     reset,
-    watch,
+    control,
     formState: { errors, isSubmitting, touchedFields },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -35,7 +35,7 @@ export function ContactCTA() {
     },
   });
 
-  const messageText = watch("message");
+  const messageText = useWatch({ control, name: "message" });
 
   const onSubmit = async (data: ContactFormData) => {
     try {

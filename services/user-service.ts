@@ -608,7 +608,7 @@ const publicProfileDefaults: Pick<UserProfile, "email" | "role" | "contacts"> =
 
 // Profiles store ratingSum + reviewCount so the rules can validate each new
 // rating; the average is derived here. Legacy profiles fall back to rating.
-function getAverageRating(source: Partial<UserProfile>) {
+export function getAverageRating(source: Partial<UserProfile>) {
   const count = source.reviewCount || 0;
   if (typeof source.ratingSum === "number" && count > 0) {
     return Math.round((source.ratingSum / count) * 10) / 10;

@@ -23,18 +23,19 @@ function timeAgo(value: unknown) {
 
 export function OpportunityNotifications() {
   const { user } = useAuth();
-  const [items, setItems] = useState<UserNotification[]>([]);
+  const [subscribedItems, setItems] = useState<UserNotification[]>([]);
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  const uid = user?.uid;
+  // Signed out: show nothing, without clearing state inside the effect.
+  const items = uid ? subscribedItems : [];
   const unread = items.filter((item) => !item.read).length;
 
   useEffect(() => {
-    if (!user) {
-      setItems([]);
-      return;
-    }
-    return UserNotificationService.subscribe(user.uid, setItems);
-  }, [user?.uid]);
+    if (!uid) return;
+    return UserNotificationService.subscribe(uid, setItems);
+  }, [uid]);
 
   useEffect(() => {
     if (!open) return;

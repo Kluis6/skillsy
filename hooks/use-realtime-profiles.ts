@@ -3,69 +3,52 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/models/types";
 import { toPlainValue } from "@/lib/firestore-plain";
+import { getAverageRating } from "@/services/user-service";
 
 export function useRealtimeProfiles(
   providers: UserProfile[],
   onUpdate: (updatedProviders: UserProfile[]) => void,
 ) {
-  const unsubscribesRef = useRef<(() => void)[]>([]);
-  const profilesMapRef = useRef<Map<string, UserProfile>>(
-    new Map(providers.map((p) => [p.uid, p])),
-  );
+  // Latest values for the listeners, without resubscribing on every render.
+  const providersRef = useRef(providers);
+  const onUpdateRef = useRef(onUpdate);
+  useEffect(() => {
+    providersRef.current = providers;
+    onUpdateRef.current = onUpdate;
+  });
+
+  // Resubscribe only when the set of listed profiles changes.
+  const uidsKey = providers.map((provider) => provider.uid).join(",");
 
   useEffect(() => {
-    // Update the map with current providers
-    profilesMapRef.current = new Map(providers.map((p) => [p.uid, p]));
+    const uids = uidsKey ? uidsKey.split(",") : [];
+    const profiles = new Map(
+      providersRef.current.map((provider) => [provider.uid, provider]),
+    );
 
-    // Unsubscribe from all previous listeners
-    unsubscribesRef.current.forEach((unsubscribe) => unsubscribe());
-    unsubscribesRef.current = [];
+    const unsubscribes = uids.map((uid) =>
+      onSnapshot(
+        doc(db, "public_profiles", uid),
+        (docSnapshot) => {
+          if (!docSnapshot.exists()) return;
+          const data = toPlainValue(
+            docSnapshot.data() as UserProfile,
+          ) as Partial<UserProfile>;
+          // Keep the fields the listing already had and derive the average
+          // from ratingSum, like the services do (the stored rating may be stale).
+          profiles.set(uid, {
+            ...profiles.get(uid),
+            ...data,
+            rating: getAverageRating(data),
+          } as UserProfile);
+          onUpdateRef.current(Array.from(profiles.values()));
+        },
+        (error) => {
+          console.error(`Error listening to profile ${uid}:`, error);
+        },
+      ),
+    );
 
-    // Subscribe to changes for each provider
-    providers.forEach((provider) => {
-      try {
-        const unsubscribe = onSnapshot(
-          doc(db, "public_profiles", provider.uid),
-          (docSnapshot) => {
-            if (docSnapshot.exists()) {
-              const plainData = toPlainValue(
-                docSnapshot.data() as UserProfile,
-              ) as Partial<UserProfile>;
-              // Update with the latest data from Firestore, preserving existing fields
-              const existingProfile =
-                profilesMapRef.current.get(provider.uid) || provider;
-              const updatedData = {
-                ...existingProfile,
-                ...plainData,
-              };
-              profilesMapRef.current.set(provider.uid, updatedData);
-              // Notify parent of updates
-              onUpdate(Array.from(profilesMapRef.current.values()));
-            }
-          },
-          (error) => {
-            console.error(`Error listening to profile ${provider.uid}:`, error);
-          },
-        );
-
-        unsubscribesRef.current.push(unsubscribe);
-      } catch (error) {
-        console.error(`Failed to set up listener for ${provider.uid}:`, error);
-      }
-    });
-
-    return () => {
-      // Cleanup: unsubscribe from all listeners
-      unsubscribesRef.current.forEach((unsubscribe) => unsubscribe());
-      unsubscribesRef.current = [];
-    };
-  }, [providers.length, JSON.stringify(providers.map((p) => p.uid))]);
-
-  useEffect(() => {
-    return () => {
-      // Cleanup on unmount
-      unsubscribesRef.current.forEach((unsubscribe) => unsubscribe());
-      unsubscribesRef.current = [];
-    };
-  }, []);
+    return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
+  }, [uidsKey]);
 }

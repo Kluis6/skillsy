@@ -135,22 +135,20 @@ export function AdminModerationClient() {
   const [saving, setSaving] = useState(false);
   const [now] = useState(() => Date.now());
 
-  const loadQueue = useCallback(async () => {
-    if (profile?.role !== "admin") return;
-    setLoading(true);
-    try {
-      const [loadedReports, loadedUsers] = await Promise.all([
-        UserService.getAllReports(),
-        UserService.getAllUsers(),
-      ]);
-      setReports(loadedReports);
-      setUsers(loadedUsers);
-    } catch (error) {
-      console.error("Unable to load moderation queue", error);
-      toast.error("Não foi possível carregar a fila de moderação.");
-    } finally {
-      setLoading(false);
-    }
+  // Starts with loading = true; reloads set it themselves before calling.
+  // State is only set in the promise callbacks, never synchronously.
+  const loadQueue = useCallback(() => {
+    if (profile?.role !== "admin") return Promise.resolve();
+    return Promise.all([UserService.getAllReports(), UserService.getAllUsers()])
+      .then(([loadedReports, loadedUsers]) => {
+        setReports(loadedReports);
+        setUsers(loadedUsers);
+      })
+      .catch((error) => {
+        console.error("Unable to load moderation queue", error);
+        toast.error("Não foi possível carregar a fila de moderação.");
+      })
+      .finally(() => setLoading(false));
   }, [profile?.role]);
 
   useEffect(() => {
@@ -221,6 +219,7 @@ export function AdminModerationClient() {
       });
       toast.success("Decisão registrada na fila.");
       setSelectedReport(null);
+      setLoading(true);
       await loadQueue();
     } catch (error) {
       console.error("Unable to update report", error);
@@ -259,7 +258,10 @@ export function AdminModerationClient() {
         <Button
           type="button"
           variant="outline"
-          onClick={() => void loadQueue()}
+          onClick={() => {
+            setLoading(true);
+            void loadQueue();
+          }}
         >
           Atualizar fila
         </Button>
