@@ -93,7 +93,7 @@ export function PublicFieldHint({ children, className }: PublicFieldHintProps) {
   return (
     <p
       className={cn(
-        "bg-surface px-3 py-2 text-xs leading-relaxed text-text-muted",
+        "bg-surface px-3 py-2 text-sm leading-relaxed text-text-muted",
         className,
       )}
     >
@@ -149,7 +149,7 @@ export function TrustPath({ className, compact = false }: TrustPathProps) {
                 </span>
               </div>
               {!compact ? (
-                <p className="text-xs leading-relaxed text-text-muted">
+                <p className="text-sm leading-relaxed text-text-muted">
                   {item.description}
                 </p>
               ) : null}
