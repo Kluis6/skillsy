@@ -89,16 +89,12 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
             </div>
           ) : null}
 
-          <div className="flex  items-center justify-between p-4">
-            {post.isFeatured ? (
-              <Badge className="bg-primary/10 text-primary border-primary/10">
-                Destaque
-              </Badge>
-            ) : null}
-            <h3 className="text-xs text-text-muted">
-              por <strong> {post.authorName}</strong>
-            </h3>
-            <div>
+          {/* Text column capped at ~65 characters per line for readability. */}
+          <div className="mx-auto flex max-w-prose items-center justify-between px-4 py-4">
+            <p className="text-sm text-text-muted">
+              por <strong>{post.authorName}</strong>
+            </p>
+            <div className="flex gap-2">
               <Badge
                 variant="secondary"
                 className={` ${POST_CATEGORY_LABELS[post.category] === "Vagas" ? "bg-success/15 text-success" : "bg-warning/15 text-warning-foreground"} `}
@@ -112,17 +108,17 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
               ) : null}
             </div>
           </div>
-          <div className="px-4 space-y-4">
-            <h3 className="text-xl md:text-3xl lg:text-4xl font-black text-text-main">
+          <div className="mx-auto max-w-prose space-y-4 px-4">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-text-main">
               {post.title}
-            </h3>
-            <p className="text-base leading-6 text-text-muted font-normal">
+            </h1>
+            <p className="text-lg leading-7 text-text-muted font-normal">
               {getPostExcerpt(post)}
             </p>
             <PostPublicActions post={post} redirectOnDelete="/artigosevagas" />
             <article>
               {post.content.trim() ? (
-                <p className="whitespace-pre-wrap leading-6 text-base text-text-muted font-normal">
+                <p className="whitespace-pre-wrap text-base leading-7 text-text-main font-normal">
                   {post.content}
                 </p>
               ) : (
