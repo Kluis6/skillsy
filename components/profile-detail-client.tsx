@@ -120,7 +120,9 @@ export function ProfileDetailClient({
     Boolean(targetProfile?.isProvider) &&
     user?.uid !== targetProfile?.uid &&
     recommendedState;
-  const recommendations = targetProfile?.isProvider ? loadedRecommendations : [];
+  const recommendations = targetProfile?.isProvider
+    ? loadedRecommendations
+    : [];
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
@@ -132,7 +134,10 @@ export function ProfileDetailClient({
       details: "",
     },
   });
-  const reportDetails = useWatch({ control: reportForm.control, name: "details" });
+  const reportDetails = useWatch({
+    control: reportForm.control,
+    name: "details",
+  });
 
   const shareUrl = targetProfile
     ? typeof window === "undefined"
@@ -152,6 +157,11 @@ export function ProfileDetailClient({
     targetProfile &&
     targetProfile.isProvider &&
     user?.uid !== targetProfile.uid,
+  );
+  const hasReviews = (targetProfile?.reviewCount || 0) > 0;
+  // Mobile keeps the main contact action on screen while scrolling.
+  const showStickyWhatsApp = Boolean(
+    targetProfile?.whatsapp && user?.uid !== targetProfile?.uid,
   );
   const publicLocation = [targetProfile?.publicCity, targetProfile?.publicState]
     .filter(Boolean)
@@ -766,7 +776,8 @@ export function ProfileDetailClient({
       setTargetProfile((current) => {
         if (!current) return current;
         const count = current.reviewCount || 0;
-        const average = ((current.rating || 0) * count + userRating) / (count + 1);
+        const average =
+          ((current.rating || 0) * count + userRating) / (count + 1);
         return {
           ...current,
           rating: Math.round(average * 10) / 10,
@@ -838,7 +849,9 @@ export function ProfileDetailClient({
       <Navbar user={user} profile={profile} logout={logout} />
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
 
-      <main className="w-full h-full">
+      <main
+        className={`w-full h-full ${showStickyWhatsApp ? "pb-20 sm:pb-0" : ""}`}
+      >
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -856,7 +869,7 @@ export function ProfileDetailClient({
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <div className="absolute inset-0 bg-muted" />
+                <div className="absolute inset-0 bg-linear-to-r from-primary/15 via-primary/5 to-surface" />
               )}
             </div>
 
@@ -866,7 +879,9 @@ export function ProfileDetailClient({
                 <div className="flex items-center md:py-4 py-2 justify-end">
                   <div className="flex border px-2 py-1 sm:hidden">
                     <RecommendationCount
-                      recommendationCount={targetProfile.recommendationCount || 0}
+                      recommendationCount={
+                        targetProfile.recommendationCount || 0
+                      }
                       className="text-sm"
                     />
                   </div>
@@ -920,18 +935,19 @@ export function ProfileDetailClient({
                     >
                       <FaWhatsapp /> <p>Falar no WhatsApp</p>
                     </Button>
-                    {user?.uid !== targetProfile.uid && !targetProfile.isProvider && (
-                      <Button
-                        size="lg"
-                        onClick={handleToggleRecommendation}
-                        disabled={recommendationLoading}
-                        variant="outline"
-                        className="px-5 font-semibold rounded-none"
-                      >
-                        <HeartHandshake className="size-4" />
-                        {isRecommended ? "Você indicou" : "Eu indico"}
-                      </Button>
-                    )}
+                    {user?.uid !== targetProfile.uid &&
+                      !targetProfile.isProvider && (
+                        <Button
+                          size="lg"
+                          onClick={handleToggleRecommendation}
+                          disabled={recommendationLoading}
+                          variant="outline"
+                          className="px-5 font-semibold rounded-none"
+                        >
+                          <HeartHandshake className="size-4" />
+                          {isRecommended ? "Você indicou" : "Eu indico"}
+                        </Button>
+                      )}
                   </div>
                 </div>
                 <div className="-mt-28 sm:-mt-34 md:-mt-38 mb-4 relative z-10 size-28 sm:size-32 md:size-40">
@@ -1069,18 +1085,19 @@ export function ProfileDetailClient({
                       >
                         <FaWhatsapp /> <p>Falar no WhatsApp</p>
                       </Button>
-                      {user?.uid !== targetProfile.uid && !targetProfile.isProvider && (
-                        <Button
-                          onClick={handleToggleRecommendation}
-                          disabled={recommendationLoading}
-                          variant="outline"
-                          size="lg"
-                          className="w-full font-semibold"
-                        >
-                          <HeartHandshake className="size-4" />
-                          {isRecommended ? "Você indicou" : "Eu indico"}
-                        </Button>
-                      )}
+                      {user?.uid !== targetProfile.uid &&
+                        !targetProfile.isProvider && (
+                          <Button
+                            onClick={handleToggleRecommendation}
+                            disabled={recommendationLoading}
+                            variant="outline"
+                            size="lg"
+                            className="w-full font-semibold"
+                          >
+                            <HeartHandshake className="size-4" />
+                            {isRecommended ? "Você indicou" : "Eu indico"}
+                          </Button>
+                        )}
                     </div>
                   </div>
                 </div>
@@ -1197,26 +1214,32 @@ export function ProfileDetailClient({
                     <div className="text-center bg-surface border size-26 p-2 flex-none">
                       <div className="flex flex-col items-center justify-center h-full w-full">
                         <p className="md:text-3xl text-2xl font-bold text-text-main">
-                          {Number(targetProfile.rating || 0).toFixed(1)}
+                          {hasReviews
+                            ? Number(targetProfile.rating || 0).toFixed(1)
+                            : "—"}
                         </p>
-                        <div
-                          className="flex items-center justify-center gap-0.5 py-1 text-highlight"
-                          aria-hidden="true"
-                        >
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                              key={star}
-                              size={12}
-                              fill={
-                                Math.round(targetProfile.rating || 0) >= star
-                                  ? "currentColor"
-                                  : "none"
-                              }
-                            />
-                          ))}
-                        </div>
+                        {hasReviews ? (
+                          <div
+                            className="flex items-center justify-center gap-0.5 py-1 text-highlight"
+                            aria-hidden="true"
+                          >
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                size={12}
+                                fill={
+                                  Math.round(targetProfile.rating || 0) >= star
+                                    ? "currentColor"
+                                    : "none"
+                                }
+                              />
+                            ))}
+                          </div>
+                        ) : null}
                         <p className="text-xs font-bold text-text-muted">
-                          {formatReviewCount(targetProfile.reviewCount || 0)}
+                          {hasReviews
+                            ? formatReviewCount(targetProfile.reviewCount || 0)
+                            : "Ainda sem avaliações"}
                         </p>
                       </div>
                     </div>
@@ -1227,42 +1250,53 @@ export function ProfileDetailClient({
                         comentário.
                       </p>
                       <p className="text-xs text-text-muted">
-                        A nota de 1 a 5 estrelas acompanha o seu comentário,
-                        que é opcional. Seu nome aparece junto à avaliação.
+                        A nota de 1 a 5 estrelas acompanha o seu comentário, que
+                        é opcional. Seu nome aparece junto à avaliação.
                       </p>
-                      <div
-                        className="flex items-center gap-1.5"
-                        role="radiogroup"
-                        aria-label="Nota em estrelas"
-                      >
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <button
-                            key={star}
-                            type="button"
-                            role="radio"
-                            aria-checked={userRating === star}
-                            aria-label={`${star} ${star === 1 ? "estrela" : "estrelas"}`}
-                            disabled={!canRateProfile || submittingRating}
-                            onMouseEnter={() => setRatingHover(star)}
-                            onMouseLeave={() => setRatingHover(0)}
-                            onClick={() => handleRatingSelect(star)}
-                            className={`transition-all ${
-                              (ratingHover || userRating || 0) >= star
-                                ? "text-highlight"
-                                : "text-border-subtle"
-                            } disabled:opacity-50`}
-                          >
-                            <Star
-                              size={24}
-                              fill={
+                      {!user ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-fit"
+                          onClick={() => setAuthModalOpen(true)}
+                        >
+                          Entrar para avaliar
+                        </Button>
+                      ) : (
+                        <div
+                          className="flex items-center gap-1.5"
+                          role="radiogroup"
+                          aria-label="Nota em estrelas"
+                        >
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              role="radio"
+                              aria-checked={userRating === star}
+                              aria-label={`${star} ${star === 1 ? "estrela" : "estrelas"}`}
+                              disabled={!canRateProfile || submittingRating}
+                              onMouseEnter={() => setRatingHover(star)}
+                              onMouseLeave={() => setRatingHover(0)}
+                              onClick={() => handleRatingSelect(star)}
+                              className={`transition-all ${
                                 (ratingHover || userRating || 0) >= star
-                                  ? "currentColor"
-                                  : "none"
-                              }
-                            />
-                          </button>
-                        ))}
-                      </div>
+                                  ? "text-highlight"
+                                  : "text-border-subtle"
+                              } disabled:opacity-50`}
+                            >
+                              <Star
+                                size={24}
+                                fill={
+                                  (ratingHover || userRating || 0) >= star
+                                    ? "currentColor"
+                                    : "none"
+                                }
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                   {user && (
@@ -1583,6 +1617,18 @@ export function ProfileDetailClient({
           ) : null}
         </motion.div>
       </main>
+
+      {showStickyWhatsApp ? (
+        <div className="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-border-subtle bg-card/95 p-3 backdrop-blur sm:hidden">
+          <Button
+            onClick={handleWhatsApp}
+            size="lg"
+            className="h-12 flex-1 bg-success font-bold text-success-foreground hover:bg-success/90 active:bg-success/80"
+          >
+            <FaWhatsapp /> Falar no WhatsApp
+          </Button>
+        </div>
+      ) : null}
     </>
   );
 }
