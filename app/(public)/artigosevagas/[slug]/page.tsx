@@ -11,9 +11,9 @@ import { PostService } from "@/services/post-service";
 import Link from "next/link";
 import { LuArrowLeft } from "react-icons/lu";
 
-// Public data, regenerated at most once a minute (ISR) instead of querying
+// Public data, regenerated at most every 5 minutes (ISR) instead of querying
 // Firestore on every visit. Personal and realtime parts load on the client.
-export const revalidate = 60;
+export const revalidate = 300;
 
 // No posts are prerendered at build time; each one is rendered on its first
 // request and then cached like the rest of the page.

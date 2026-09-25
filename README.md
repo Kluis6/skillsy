@@ -51,5 +51,5 @@ O projeto está no plano **Spark**, que não permite publicar Functions. O códi
 
 ## Cache e headers
 
-- Páginas públicas usam ISR com `revalidate = 60`: mudanças aparecem em até 1 minuto.
+- Páginas públicas usam ISR com `revalidate = 300`: mudanças aparecem em até 5 minutos e o Firestore é lido no máximo uma vez a cada 5 minutos por página (o banco é "free tier": 50 mil leituras por dia, sem opção de aumentar).
 - Headers de segurança ficam em [`next.config.ts`](next.config.ts). A CSP está em modo `Report-Only` até ser validada em produção.

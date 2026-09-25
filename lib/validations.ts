@@ -3,6 +3,10 @@ import { AVAILABILITY_OPTIONS, PROVIDER_CATEGORIES } from '@/lib/profile-form';
 import { REPORT_REASON_OPTIONS } from '@/lib/reporting';
 import { POST_CATEGORY_OPTIONS } from '@/lib/post-utils';
 
+// Zod 4 probes `new Function` to speed up parsing; the Content-Security-Policy
+// (no 'unsafe-eval') reports that probe, so use the eval-free parser.
+z.config({ jitless: true });
+
 const currentYear = new Date().getFullYear();
 
 const optionalTextField = (max: number, message: string) =>

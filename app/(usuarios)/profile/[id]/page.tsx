@@ -7,9 +7,9 @@ import { UserService } from '@/services/user-service';
 // Deduplicates the fetch shared by generateMetadata and the page in one request.
 const getPublicProfile = cache((id: string) => UserService.getPublicProfile(id));
 
-// Public data, regenerated at most once a minute (ISR) instead of querying
+// Public data, regenerated at most every 5 minutes (ISR) instead of querying
 // Firestore on every visit. Personal and realtime parts load on the client.
-export const revalidate = 60;
+export const revalidate = 300;
 
 // Profiles are rendered on their first request and then cached.
 export function generateStaticParams() {
