@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, MapPin } from "lucide-react";
+import { ArrowRight, MapPin, Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   formatReviewCount,
@@ -36,6 +36,44 @@ function getRoleLabel(provider: UserProfile) {
     provider.serviceType ||
     provider.category ||
     (provider.isProvider ? "Prestador de serviço" : "Membro da comunidade")
+  );
+}
+
+/**
+ * Trust signals for listings: the average rating when there are reviews and
+ * recommendations when there are any. Zeros are not shown as metrics.
+ */
+function ProviderSignals({
+  rating,
+  reviewCount,
+  recommendationCount,
+}: {
+  rating?: number;
+  reviewCount: number;
+  recommendationCount: number;
+}) {
+  if (reviewCount === 0 && recommendationCount === 0) {
+    return <span className="text-sm text-text-muted">Novo na comunidade</span>;
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+      {reviewCount > 0 ? (
+        <span className="inline-flex items-center gap-1 text-sm font-semibold text-text-main">
+          <Star className="size-3.5 text-highlight" fill="currentColor" aria-hidden="true" />
+          {(rating || 0).toFixed(1).replace(".", ",")}
+          <span className="font-normal text-text-muted">
+            ({formatReviewCount(reviewCount)})
+          </span>
+        </span>
+      ) : null}
+      {recommendationCount > 0 ? (
+        <RecommendationCount
+          recommendationCount={recommendationCount}
+          className="text-sm"
+        />
+      ) : null}
+    </div>
   );
 }
 
@@ -97,10 +135,11 @@ export function ProviderProfileCard({
                 {getBioPreview(provider)}
               </p>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <RecommendationCount
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <ProviderSignals
+                  rating={provider.rating}
+                  reviewCount={reviewCount}
                   recommendationCount={recommendationCount}
-                  className="px-3 py-1 text-sm"
                 />
                 {location ? (
                   <span className="inline-flex items-center px-3 py-1 text-xs font-medium">
@@ -113,9 +152,6 @@ export function ProviderProfileCard({
                     {provider.category}
                   </span>
                 ) : null}
-                <span className="px-3 py-1 text-xs text-text-muted">
-                  {formatReviewCount(reviewCount)}
-                </span>
               </div>
             </div>
           </div>
@@ -191,22 +227,18 @@ export function ProviderProfileCard({
               {provider.name}
               <MembershipMark profile={provider} />
             </span>
-            <p className="text-sm font-medium text-text-main">{roleLabel}</p>
+            <p className="text-sm font-normal text-text-muted">{roleLabel}</p>
           </CardTitle>
           <CardDescription className="line-clamp-2 col-span-4">
             {getBioPreview(provider)}
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex items-center justify-between gap-2">
-          <div className="flex flex-col gap-0.5">
-            <RecommendationCount
-              recommendationCount={recommendationCount}
-              className="text-sm"
-            />
-            <span className="text-xs text-text-muted">
-              {formatReviewCount(reviewCount)}
-            </span>
-          </div>
+          <ProviderSignals
+            rating={provider.rating}
+            reviewCount={reviewCount}
+            recommendationCount={recommendationCount}
+          />
           <span className="inline-flex items-center text-sm font-semibold text-primary">
             Ver perfil
             <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" />
