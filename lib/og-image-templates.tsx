@@ -70,7 +70,7 @@ const MAX_SOURCE_IMAGE_BYTES = 10 * 1024 * 1024;
 
 // Same hosts next.config allows for next/image. User-controlled photo URLs are
 // fetched server-side here, so anything else is refused.
-const REMOTE_IMAGE_HOSTS = [/(^|\.)googleusercontent\.com$/, /(^|\.)picsum\.photos$/];
+const REMOTE_IMAGE_HOSTS = [/(^|\.)googleusercontent\.com$/];
 
 function isAllowedRemoteHost(hostname: string) {
   return REMOTE_IMAGE_HOSTS.some((pattern) => pattern.test(hostname));

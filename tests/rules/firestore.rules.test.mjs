@@ -10,7 +10,9 @@ import {
 import {
   deleteDoc,
   doc,
+  collection,
   getDoc,
+  getDocs,
   serverTimestamp,
   setDoc,
   setLogLevel,
@@ -133,6 +135,34 @@ describe("users: leitura", () => {
   test("email igual e verificado dá acesso (vínculo de perfil pré-cadastrado)", async () => {
     const owner = dbAs("new-uid", { email: `${PROVIDER}@example.com`, email_verified: true });
     await assertSucceeds(getDoc(doc(owner, "users", PROVIDER)));
+  });
+});
+
+describe("admin", () => {
+  beforeEach(async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await setDoc(doc(db, "public_profiles", "hidden"), publicProfileDoc("hidden", { isBlocked: true }));
+      await setDoc(doc(db, "public_profiles", "member"), publicProfileDoc("member", { isProvider: false }));
+      await setDoc(doc(db, "public_profiles", "member", "recommendations", RATER), {
+        recommenderId: RATER,
+        recommenderName: `Nome ${RATER}`,
+        createdAt: Timestamp.now(),
+      });
+    });
+  });
+
+  test("admin lista todos os perfis públicos, inclusive os ocultos", async () => {
+    await assertSucceeds(getDocs(collection(dbAs(ADMIN), "public_profiles")));
+  });
+
+  test("membro comum não lê perfil oculto", async () => {
+    await assertFails(getDoc(doc(dbAs(RATER), "public_profiles", "hidden")));
+  });
+
+  test("admin lê indicações de qualquer perfil (recálculo e limpeza)", async () => {
+    await assertSucceeds(getDocs(collection(dbAs(ADMIN), "public_profiles", "member", "recommendations")));
+    await assertFails(getDocs(collection(dbAs(RATER), "public_profiles", "member", "recommendations")));
   });
 });
 

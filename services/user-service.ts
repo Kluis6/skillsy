@@ -811,13 +811,18 @@ function sortProvidersByFeaturedRanking(profiles: UserProfile[]) {
   });
 }
 
-function filterVisibleProviders(profiles: Array<UserProfile | null>) {
-  return profiles.filter(
-    (profile): profile is UserProfile =>
-      profile !== null &&
-      profile.isProvider === true &&
-      !profile.isDeleted &&
-      !profile.isBlocked,
+/**
+ * Only profiles actively offering services belong in professional listings
+ * (home, search, suggestions): "Quero anunciar" on, not blocked, not deleted.
+ */
+export function isActiveProvider(
+  profile: Partial<UserProfile> | null | undefined,
+): profile is UserProfile {
+  return (
+    profile != null &&
+    profile.isProvider === true &&
+    profile.isBlocked !== true &&
+    profile.isDeleted !== true
   );
 }
 
@@ -1141,7 +1146,7 @@ export const UserService = {
           .map((doc) =>
             toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
           )
-          .filter((profile): profile is UserProfile => profile !== null),
+          .filter(isActiveProvider),
       ).slice(0, limitCount);
     } catch (error) {
       if (isPermissionDeniedError(error)) {
@@ -1188,13 +1193,7 @@ export const UserService = {
         .map((doc) =>
           toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
         )
-        .filter(
-          (profile): profile is UserProfile =>
-            profile !== null &&
-            profile.isProvider === true &&
-            !profile.isDeleted &&
-            !profile.isBlocked,
-        );
+        .filter(isActiveProvider);
 
       return sortProvidersByFeaturedRanking(
         candidates.filter((profile) => {
@@ -1584,42 +1583,6 @@ export const UserService = {
       await batch.commit();
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
-    }
-  },
-
-  /**
-   * Admin-only: deletes the demo profiles the old "Gerar Dados" button created
-   * (fake_1 … fake_5), with their public profiles, recommendations and the
-   * ratings they received. Safe to run again; it only touches those ids.
-   */
-  async removeSeedUsers(): Promise<number> {
-    const seedIds = ["fake_1", "fake_2", "fake_3", "fake_4", "fake_5"];
-    try {
-      let removed = 0;
-      for (const uid of seedIds) {
-        const [userSnap, publicSnap, ratingsSnap] = await Promise.all([
-          getDoc(doc(db, "users", uid)),
-          getDoc(doc(db, "public_profiles", uid)),
-          getDocs(query(collection(db, "ratings"), where("toId", "==", uid))),
-        ]);
-        // Recommendations are only readable while the public profile exists.
-        const recommendationsSnap = publicSnap.exists()
-          ? await getDocs(collection(db, "public_profiles", uid, "recommendations"))
-          : null;
-        if (!userSnap.exists() && !publicSnap.exists()) continue;
-
-        const batch = writeBatch(db);
-        recommendationsSnap?.forEach((item) => batch.delete(item.ref));
-        ratingsSnap.forEach((item) => batch.delete(item.ref));
-        if (publicSnap.exists()) batch.delete(publicSnap.ref);
-        if (userSnap.exists()) batch.delete(userSnap.ref);
-        await batch.commit();
-        removed += 1;
-      }
-      return removed;
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, "users/fake_*");
-      return 0;
     }
   },
 

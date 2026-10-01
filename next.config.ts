@@ -50,11 +50,6 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '*.googleusercontent.com',
       },
-      {
-        // Placeholder images used by seed/demo data.
-        protocol: 'https',
-        hostname: 'picsum.photos',
-      },
     ],
   },
   ...(process.env.VERCEL ? {} : { output: 'standalone' as const }),

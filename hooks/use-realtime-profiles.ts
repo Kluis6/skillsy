@@ -3,7 +3,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/models/types";
 import { toPlainValue } from "@/lib/firestore-plain";
-import { getAverageRating } from "@/services/user-service";
+import { getAverageRating, isActiveProvider } from "@/services/user-service";
 
 export function useRealtimeProfiles(
   providers: UserProfile[],
@@ -30,17 +30,25 @@ export function useRealtimeProfiles(
       onSnapshot(
         doc(db, "public_profiles", uid),
         (docSnapshot) => {
-          if (!docSnapshot.exists()) return;
+          if (!docSnapshot.exists()) {
+            profiles.delete(uid);
+            onUpdateRef.current(Array.from(profiles.values()));
+            return;
+          }
           const data = toPlainValue(
             docSnapshot.data() as UserProfile,
           ) as Partial<UserProfile>;
           // Keep the fields the listing already had and derive the average
           // from ratingSum, like the services do (the stored rating may be stale).
-          profiles.set(uid, {
+          const updated = {
             ...profiles.get(uid),
             ...data,
             rating: getAverageRating(data),
-          } as UserProfile);
+          } as UserProfile;
+          // Someone who stops offering services (or is blocked/deleted)
+          // leaves the listing instead of staying on screen.
+          if (isActiveProvider(updated)) profiles.set(uid, updated);
+          else profiles.delete(uid);
           onUpdateRef.current(Array.from(profiles.values()));
         },
         (error) => {

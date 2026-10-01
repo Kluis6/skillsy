@@ -856,7 +856,10 @@ service cloud.firestore {
     }
 
     match /public_profiles/{userId} {
-      allow read: if isPublicProfileVisible();
+      // Admins also read hidden (blocked/deleted) profiles: the admin tools
+      // list the whole collection, and a list query is rejected outright if
+      // any document it could return fails the rule.
+      allow read: if isPublicProfileVisible() || isAdmin();
 
       allow create: if (isOwner(userId) &&
                         isValidPublicProfile(request.resource.data, userId) &&
@@ -873,7 +876,7 @@ service cloud.firestore {
       allow delete: if isOwner(userId) || isAdmin();
 
       match /recommendations/{recommenderId} {
-        allow read: if canReceiveRatings(userId);
+        allow read: if canReceiveRatings(userId) || isAdmin();
         allow create: if isOwner(recommenderId) &&
                       recommenderId != userId &&
                       isNotBlocked() &&
