@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { UserService } from "@/services/user-service";
 import { UserProfile } from "@/models/types";
-import { useRealtimeProfiles } from "./use-realtime-profiles";
 
 export function useSearchController(initialProviders: UserProfile[] = []) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -12,11 +11,6 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
   const [providers, setProviders] = useState<UserProfile[]>(initialProviders);
   const [searching, setSearching] = useState(false);
   const searchRequestId = useRef(0);
-
-  // Enable real-time synchronization for profile updates
-  useRealtimeProfiles(providers, (updatedProviders) => {
-    setProviders(updatedProviders);
-  });
 
   const fetchInitialProviders = useCallback(async () => {
     try {
