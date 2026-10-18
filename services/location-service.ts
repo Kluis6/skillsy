@@ -46,7 +46,12 @@ export class LocationService {
               'Sergipe': 'SE', 'Tocantins': 'TO'
             };
 
-            const stateCode = stateMap[state] || state;
+            // Nominatim returns the UF ready as ISO 3166-2 ("BR-SP"); the name map is a fallback.
+            const isoCode = data.address['ISO3166-2-lvl4'];
+            const stateCode =
+              typeof isoCode === 'string' && /^BR-[A-Z]{2}$/.test(isoCode)
+                ? isoCode.slice(3)
+                : stateMap[state] || state;
 
             resolve({
               city,

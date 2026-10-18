@@ -301,7 +301,10 @@ export function ProfileSettingsClient() {
     setDetectingLocation(true);
     try {
       const data = await LocationService.getCurrentLocation();
-      setValue("location", data.display, { shouldValidate: true });
+      setValue("location", data.display, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
       toast.success("Localização detectada!", { description: data.display });
     } catch (error: any) {
       toast.error("Erro de geolocalização", { description: error.message });
