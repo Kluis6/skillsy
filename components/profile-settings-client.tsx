@@ -210,7 +210,10 @@ export function ProfileSettingsClient() {
   const readinessItems = [
     {
       label: "Nome público",
-      done: Boolean(formData.name?.trim()),
+      // New accounts start as "Membro Skillsy"; that default is not done.
+      done: Boolean(
+        formData.name?.trim() && formData.name.trim() !== "Membro Skillsy",
+      ),
     },
     {
       label: "Foto de perfil",
@@ -228,12 +231,17 @@ export function ProfileSettingsClient() {
       label: "Contato para retorno",
       done: Boolean(formData.whatsapp?.trim() || formData.phone?.trim()),
     },
-    {
-      label: "Serviço anunciado",
-      done:
-        !formData.isProvider ||
-        Boolean(formData.category?.trim() && formData.serviceType?.trim()),
-    },
+    // Only for members who advertise a service.
+    ...(formData.isProvider
+      ? [
+          {
+            label: "Serviço anunciado",
+            done: Boolean(
+              formData.category?.trim() && formData.serviceType?.trim(),
+            ),
+          },
+        ]
+      : []),
   ];
   const readinessDoneCount = readinessItems.filter((item) => item.done).length;
   const readinessPercent = Math.round(
@@ -605,12 +613,14 @@ export function ProfileSettingsClient() {
                     <p className="text-sm font-medium text-text-main">
                       O que você quer fazer primeiro?
                     </p>
-                    <div className="flex flex-col gap-2 sm:flex-row">
+                    {/* Grid cells bound the width; Button is shrink-0, so in a
+                        flex row the third option overflowed on tablets. */}
+                    <div className="grid gap-2 sm:grid-cols-3">
                       <Button
                         type="button"
                         variant="outline"
                         onClick={() => chooseOnboardingIntent("find")}
-                        className="h-auto justify-start whitespace-normal px-4 py-3 text-left"
+                        className="h-auto w-full min-w-0 justify-start whitespace-normal px-4 py-3 text-left"
                       >
                         <span>
                           <span className="block font-semibold">
@@ -625,7 +635,7 @@ export function ProfileSettingsClient() {
                         type="button"
                         variant="outline"
                         onClick={() => chooseOnboardingIntent("offer")}
-                        className="h-auto justify-start whitespace-normal px-4 py-3 text-left"
+                        className="h-auto w-full min-w-0 justify-start whitespace-normal px-4 py-3 text-left"
                       >
                         <span>
                           <span className="block font-semibold">
@@ -640,7 +650,7 @@ export function ProfileSettingsClient() {
                         type="button"
                         variant="outline"
                         onClick={() => chooseOnboardingIntent("both")}
-                        className="h-auto justify-start whitespace-normal px-4 py-3 text-left"
+                        className="h-auto w-full min-w-0 justify-start whitespace-normal px-4 py-3 text-left"
                       >
                         <span>
                           <span className="block font-semibold">Os dois</span>
@@ -735,7 +745,7 @@ export function ProfileSettingsClient() {
                     size="icon-lg"
                     onClick={() => bannerInputRef.current?.click()}
                     disabled={uploading === "banner"}
-                    className="absolute top-4 right-4 bg-white/20 text-white backdrop-blur-md hover:bg-white/30"
+                    className="absolute top-4 right-4 border border-border-subtle bg-card/90 text-text-main shadow-sm backdrop-blur-md hover:bg-card"
                     title="Alterar capa"
                     aria-label="Alterar capa do perfil"
                   >
@@ -1302,10 +1312,13 @@ export function ProfileSettingsClient() {
                 </div>
                 <div className="space-y-4">
                   {formData.isProvider && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    // Three columns at every size: on phones a one-column grid
+                    // plus col-span-2/3 children made implicit columns and
+                    // squeezed "Número" and "Estado".
+                    <div className="grid grid-cols-3 gap-x-3 gap-y-5 md:gap-6">
                       <div className="col-span-3">
                         <h4 className="text-sm font-bold text-text-main">
-                          Endereço comercial
+                          Endereço comercial{" "}
                           <span className="text-text-muted text-xs font-medium">
                             (Opcional)
                           </span>
@@ -1344,7 +1357,7 @@ export function ProfileSettingsClient() {
                           className={`bg-surface focus:bg-card transition-all h-12 ${errors.businessNeighborhood ? "ring-2 ring-destructive" : ""}`}
                         />
                       </div>
-                      <div className="space-y-2 col-auto">
+                      <div className="space-y-2 col-span-1">
                         <Label className="text-xs md:text-sm font-medium text-text-muted">
                           Estado
                         </Label>
@@ -1644,8 +1657,7 @@ export function ProfileSettingsClient() {
                       Cancelar minha conta
                     </p>
                     <p className="text-xs text-destructive">
-                      todos seus dados serão apagados na plataforma, deseja
-                      continuar?
+                      Todos os seus dados serão apagados da plataforma. Deseja continuar?
                     </p>
                   </div>
 
