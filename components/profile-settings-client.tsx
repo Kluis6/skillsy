@@ -745,7 +745,7 @@ export function ProfileSettingsClient() {
                     size="icon-lg"
                     onClick={() => bannerInputRef.current?.click()}
                     disabled={uploading === "banner"}
-                    className="absolute top-4 right-4 border border-border-subtle bg-card/90 text-text-main shadow-sm backdrop-blur-md hover:bg-card"
+                    className="absolute top-4 right-4 bg-primary text-primary-foreground shadow-md hover:bg-primary/90 active:bg-primary/80"
                     title="Alterar capa"
                     aria-label="Alterar capa do perfil"
                   >
