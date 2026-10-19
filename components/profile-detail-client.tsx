@@ -1210,7 +1210,7 @@ export function ProfileDetailClient({
                   <h3 className="md:text-xl text-base font-semibold text-text-main">
                     Avaliar este profissional
                   </h3>
-                  <div className="w-full h-full flex space-x-2 md:space-x-4">
+                  <div className="flex w-full space-x-2 md:space-x-4">
                     <div className="text-center bg-surface border size-26 p-2 flex-none">
                       <div className="flex flex-col items-center justify-center h-full w-full">
                         <p className="md:text-3xl text-2xl font-bold text-text-main">
@@ -1244,62 +1244,69 @@ export function ProfileDetailClient({
                       </div>
                     </div>
 
-                    <div className="flex flex-col space-y-1.5">
-                      <p className="text-sm text-text-main font-medium">
-                        Dê uma nota em estrelas e, se quiser, deixe um
-                        comentário.
+                    {user?.uid === targetProfile.uid ? (
+                      <p className="text-sm text-text-muted">
+                        Este é o seu perfil. Quando outros membros avaliarem seu
+                        trabalho, a nota aparece aqui.
                       </p>
-                      <p className="text-xs text-text-muted">
-                        A nota de 1 a 5 estrelas acompanha o seu comentário, que
-                        é opcional. Seu nome aparece junto à avaliação.
-                      </p>
-                      {!user ? (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="w-fit"
-                          onClick={() => setAuthModalOpen(true)}
-                        >
-                          Entrar para avaliar
-                        </Button>
-                      ) : (
-                        <div
-                          className="flex items-center gap-1.5"
-                          role="radiogroup"
-                          aria-label="Nota em estrelas"
-                        >
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                              key={star}
-                              type="button"
-                              role="radio"
-                              aria-checked={userRating === star}
-                              aria-label={`${star} ${star === 1 ? "estrela" : "estrelas"}`}
-                              disabled={!canRateProfile || submittingRating}
-                              onMouseEnter={() => setRatingHover(star)}
-                              onMouseLeave={() => setRatingHover(0)}
-                              onClick={() => handleRatingSelect(star)}
-                              className={`transition-all ${
-                                (ratingHover || userRating || 0) >= star
-                                  ? "text-highlight"
-                                  : "text-border-subtle"
-                              } disabled:opacity-50`}
-                            >
-                              <Star
-                                size={24}
-                                fill={
+                    ) : (
+                      <div className="flex flex-col space-y-1.5">
+                        <p className="text-sm text-text-main font-medium">
+                          Dê uma nota em estrelas e, se quiser, deixe um
+                          comentário.
+                        </p>
+                        <p className="text-xs text-text-muted">
+                          A nota de 1 a 5 estrelas acompanha o seu comentário,
+                          que é opcional. Seu nome aparece junto à avaliação.
+                        </p>
+                        {!user ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="w-fit"
+                            onClick={() => setAuthModalOpen(true)}
+                          >
+                            Entrar para avaliar
+                          </Button>
+                        ) : (
+                          <div
+                            className="flex items-center gap-1.5"
+                            role="radiogroup"
+                            aria-label="Nota em estrelas"
+                          >
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                key={star}
+                                type="button"
+                                role="radio"
+                                aria-checked={userRating === star}
+                                aria-label={`${star} ${star === 1 ? "estrela" : "estrelas"}`}
+                                disabled={!canRateProfile || submittingRating}
+                                onMouseEnter={() => setRatingHover(star)}
+                                onMouseLeave={() => setRatingHover(0)}
+                                onClick={() => handleRatingSelect(star)}
+                                className={`transition-all ${
                                   (ratingHover || userRating || 0) >= star
-                                    ? "currentColor"
-                                    : "none"
-                                }
-                              />
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                                    ? "text-highlight"
+                                    : "text-border-subtle"
+                                } disabled:opacity-50`}
+                              >
+                                <Star
+                                  size={24}
+                                  fill={
+                                    (ratingHover || userRating || 0) >= star
+                                      ? "currentColor"
+                                      : "none"
+                                  }
+                                />
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  {user && (
+                  {user && canRateProfile && (
                     <>
                       <Textarea
                         value={ratingComment}
@@ -1510,10 +1517,26 @@ export function ProfileDetailClient({
           user?.uid === targetProfile.uid ? (
             <section className="bg-card border border-border-subtle relative overflow-hidden">
               <div className="mx-auto container p-4 space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
                   <h3 className="md:text-xl text-base font-semibold text-text-main">
                     Galeria de fotos
                   </h3>
+                  {user?.uid === targetProfile.uid &&
+                  targetProfile.gallery &&
+                  targetProfile.gallery.length > 0 ? (
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-medium text-text-muted">
+                        {targetProfile.gallery.length}/5 fotos
+                      </span>
+                      <Button
+                        size="sm"
+                        render={<Link href="/profile" />}
+                        nativeButton={false}
+                      >
+                        Gerenciar galeria
+                      </Button>
+                    </div>
+                  ) : null}
                 </div>
 
                 {targetProfile.gallery && targetProfile.gallery.length > 0 ? (
@@ -1584,34 +1607,15 @@ export function ProfileDetailClient({
                     <p className="text-sm text-text-muted font-medium mb-4">
                       Sua galeria ainda não possui fotos profissionais.
                     </p>
-                    <Link href="/profile">
-                      <Button
-                        size="sm"
-                        className="bg-primary text-primary-foreground font-bold h-9"
-                      >
-                        Adicionar fotos
-                      </Button>
-                    </Link>
+                    <Button
+                      size="sm"
+                      render={<Link href="/profile" />}
+                      nativeButton={false}
+                    >
+                      Adicionar fotos
+                    </Button>
                   </div>
                 )}
-                <div className="flex justify-end items-center">
-                  {user?.uid === targetProfile.uid && (
-                    <div className="flex items-center gap-4">
-                      {targetProfile.gallery &&
-                        targetProfile.gallery.length > 0 && (
-                          <span className="text-xs text-text-muted font-medium bg-surface px-2 py-0.5 border border-border-subtle">
-                            {targetProfile.gallery.length}/5 fotos
-                          </span>
-                        )}
-                      <Link
-                        href="/profile"
-                        className="text-xs font-bold text-primary-foreground flex justify-center items-center px-4 bg-primary hover:bg-primary/90 active:bg-primary/80 h-8"
-                      >
-                        Gerenciar galeria
-                      </Link>
-                    </div>
-                  )}
-                </div>
               </div>
             </section>
           ) : null}
