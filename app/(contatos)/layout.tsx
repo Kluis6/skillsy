@@ -7,8 +7,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       defaultOpen
       style={
         {
-          "--sidebar-width-mobile": "100vw",
-          "--sidebar-width-desktop": "50vw",
+          // Wide enough for full contact names (the default is 16rem).
+          "--sidebar-width": "24rem",
         } as CSSProperties
       }
     >

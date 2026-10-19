@@ -267,7 +267,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
             <div className="w-full bg-card">
               <div className="relative w-full h-52 md:h-68">
                 <div className="h-40 md:h-50 w-full relative">
-                  {selectedContact.bannerURL && (
+                  {selectedContact.bannerURL ? (
                     <Image
                       src={selectedContact.bannerURL}
                       alt="Banner"
@@ -275,6 +275,9 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                       className="object-cover"
                       referrerPolicy="no-referrer"
                     />
+                  ) : (
+                    // Same fallback as the profile cards on the home page.
+                    <div className="absolute inset-0 bg-radial-[at_25%_25%] from-primary/70 to-primary" />
                   )}
                 </div>
                 <Avatar className="size-30 md:size-38 border-[6px] border-card shadow-sm absolute bottom-0 md:left-4 left-1/2 -translate-x-1/2 md:translate-x-1">
