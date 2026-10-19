@@ -4,11 +4,8 @@ import Image from "next/image";
 import {
   ArrowRight,
   Heart,
-  ShieldCheck,
-  Star,
   Trophy,
   Users,
-  Zap,
 } from "lucide-react";
 import { AuthModal } from "@/components/auth-modal";
 import HeaderSection, {
@@ -29,27 +26,6 @@ export const metadata: Metadata = createPublicMetadata({
   imageLabel: "Cadastro público",
   heroImage: "join",
 });
-
-const benefits = [
-  {
-    title: "Confiança que aproxima",
-    description:
-      "Conecte-se com pessoas que valorizam honestidade, respeito e bom atendimento em cada contato.",
-    icon: ShieldCheck,
-  },
-  {
-    title: "Visibilidade na sua região",
-    description:
-      "Mostre seu trabalho para pessoas da sua cidade e arredores que buscam indicações mais confiáveis.",
-    icon: Zap,
-  },
-  {
-    title: "Reputação com experiência real",
-    description:
-      "Receba avaliações de quem contratou você e ajude outros usuários a decidir com mais segurança.",
-    icon: Star,
-  },
-];
 
 const highlights = [
   {
@@ -115,15 +91,6 @@ export default function JoinPage() {
               </p>
             </div>
 
-            {benefits.map((benefit) => (
-              <FeatureCard
-                key={benefit.title}
-                icon={benefit.icon}
-                title={benefit.title}
-                description={benefit.description}
-                className="col-span-12 lg:col-span-4"
-              />
-            ))}
 
             <div className="col-span-12 flex flex-col gap-4 sm:flex-row">
               <AuthModal>
