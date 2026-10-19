@@ -106,7 +106,7 @@ export function AdminNavbar() {
               <ShieldCheck className="text-white" size={20} />
             </div>
             <div className="flex flex-col">
-              <h1 className="text-lg font-black tracking-tighter uppercase leading-none">
+              <h1 className="text-lg font-black tracking-tighter uppercase leading-none text-brand">
                 Skillsy
               </h1>
               <span className="text-xs font-bold text-primary">

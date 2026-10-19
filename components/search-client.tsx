@@ -386,7 +386,7 @@ export function SearchClient({
               </DrawerContent>
             </Drawer>
             <Link href="/">
-              <h1 className="font-heading text-2xl font-semibold tracking-normal text-primary">
+              <h1 className="font-heading text-2xl font-semibold tracking-normal text-brand">
                 Skillsy
               </h1>
             </Link>

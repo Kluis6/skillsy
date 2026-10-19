@@ -13,6 +13,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-brand: var(--brand);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -102,6 +103,9 @@
   --text-muted: oklch(0.49 0.02 250);
 
   --primary: oklch(0.52 0.105 223);
+  /* Brand wordmark only (not for buttons or links): deep navy between the
+     primary blue and the hero overlay (#001A41). */
+  --brand: oklch(0.36 0.1 245);
   --primary-foreground: oklch(0.985 0.012 200);
   --secondary: oklch(0.945 0.008 230);
   --secondary-foreground: oklch(0.3 0.03 240);
@@ -159,6 +163,7 @@
   /* Lighter primary so text-primary stays readable (8:1) on dark surfaces;
      buttons flip to dark text on it. */
   --primary: oklch(0.75 0.11 215);
+  --brand: oklch(0.84 0.075 235);
   --primary-foreground: oklch(0.2 0.04 230);
   --secondary: oklch(0.27 0.014 250);
   --secondary-foreground: oklch(0.95 0.005 250);

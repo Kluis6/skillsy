@@ -264,7 +264,7 @@ export function Navbar({
 
           {!shouldShowBackButton ? (
             <Link href="/" className="flex items-center gap-2">
-              <h1 className="font-heading text-2xl font-semibold tracking-normal text-primary">
+              <h1 className="font-heading text-2xl font-semibold tracking-normal text-brand">
                 Skillsy
               </h1>
             </Link>
