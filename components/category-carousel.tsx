@@ -205,7 +205,7 @@ export function CategoryCarousel() {
     <div className="w-full h-[65vh] sm:h-[70vh] lg:h-[78vh] relative hidden md:block">
       <div className="relative group container mx-auto px-4">
         <div className="flex justify-center items-center  z-10 shadow-sm object-fill bg-center h-[38vh] bg-[url(/Gemini_Generated_Image_esodutesodutesod.png)]">
-          <div className="absolute top-[calc(100%-6rem)] z-40 w-[calc(100%-4rem)] space-y-2 border border-border bg-card p-4 text-card-foreground shadow-xl md:w-[calc(100%-6rem)] md:space-y-4 md:p-8 lg:w-[calc(100%-8rem)]">
+          <div className="absolute top-[calc(100%-6rem)] z-40 w-[calc(100%-4rem)] space-y-2 border border-border bg-card p-4 text-card-foreground shadow-md md:w-[calc(100%-6rem)] md:space-y-4 md:p-8 lg:w-[calc(100%-8rem)]">
             <div className="w-full">
               <h3 className="text-center font-heading text-xl font-bold tracking-tight text-foreground lg:text-2xl">
                 As categorias mais populares
