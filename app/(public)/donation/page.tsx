@@ -18,10 +18,8 @@ export const metadata: Metadata = createPublicMetadata({
   heroImage: "donation",
 });
 
-const PIX_BENEFICIARY = "Luis Antonio de Oliveira Julio";
 const PIX_KEY =
   "00020126330014BR.GOV.BCB.PIX0111103710237185204000053039865802BR5924LUIS ANTONIO DE OLIVEIRA6015DUQUE DE CAXIAS62070503***6304B4C4";
-const PIX_KEY_TYPE = "CPF/CNPJ";
 const PIX_QR_CODE_SRC = "/WhatsApp Image 2026-05-28 at 16.02.56.jpeg";
 
 const impactItems = [
@@ -197,30 +195,12 @@ export default function DonationPage() {
                     Opção de Pix Copia e Cola
                   </h2>
                   <p className="text-sm text-text-muted">
-                    Use os dados abaixo para doar manualmente.
+                    Copie o código e cole na área Pix do app do seu banco.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-5">
-                <div className="border border-border-subtle bg-surface p-4">
-                  <span className="mb-1 block text-xs font-bold text-text-muted">
-                    Recebedor
-                  </span>
-                  <p className="text-sm font-medium text-text-main">
-                    {PIX_BENEFICIARY}
-                  </p>
-                </div>
-
-                <div className="border border-border-subtle bg-surface p-4">
-                  <span className="mb-1 block text-xs font-bold text-text-muted">
-                    Tipo de chave
-                  </span>
-                  <p className="text-sm font-medium text-text-main">
-                    {PIX_KEY_TYPE}
-                  </p>
-                </div>
-
                 <PixCopyField pixKey={PIX_KEY} />
               </div>
             </div>

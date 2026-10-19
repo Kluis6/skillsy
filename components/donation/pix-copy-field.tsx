@@ -56,9 +56,12 @@ export function PixCopyField({ pixKey }: PixCopyFieldProps) {
           <Copy className="size-4" />
         </span>
       </span>
-      <code className="block max-h-28 overflow-hidden break-all border border-border-subtle bg-card px-3 py-3 text-xs leading-relaxed text-text-muted">
-        {pixKey}
-      </code>
+      {/* The code embeds the recipient's name and CPF, so it is copied but
+          not printed on the page. */}
+      <span className="block border border-border-subtle bg-card px-3 py-3 text-sm leading-relaxed text-text-muted">
+        Código Pix pronto para colar. Os dados do recebedor aparecem no app
+        do banco antes de você confirmar.
+      </span>
       <span className="mt-3 block text-xs font-medium text-primary">
         Toque ou clique para copiar e colar no app do banco.
       </span>
