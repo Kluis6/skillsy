@@ -55,7 +55,8 @@ function isActivePath(pathname: string | null, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function DrawerLink({
+// Shared with the search page drawer.
+export function DrawerLink({
   href,
   label,
   active,
@@ -73,7 +74,7 @@ function DrawerLink({
           className={cn(
             "flex min-h-10 w-full items-center px-3 text-sm font-medium transition-colors border-s-4 border-transparent",
             active
-              ? "text-primary border-primary hover:bg-primary/10"
+              ? "border-primary bg-primary/10 text-primary hover:bg-primary/15"
               : "text-text-main hover:border-transparent hover:bg-muted",
           )}
         >

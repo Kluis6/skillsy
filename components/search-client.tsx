@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { primaryNavItems, secondaryNavItems } from "@/components/navbar";
+import {
+  DrawerLink,
+  primaryNavItems,
+  secondaryNavItems,
+} from "@/components/navbar";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { UserProfile } from "@/models/types";
@@ -80,35 +84,6 @@ function isActivePath(pathname: string | null, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function SearchDrawerLink({
-  href,
-  label,
-  active,
-}: {
-  href: string;
-  label: string;
-  active: boolean;
-}) {
-  return (
-    <li>
-      <DrawerClose className="w-full">
-        <Link
-          href={href}
-          aria-current={active ? "page" : undefined}
-          className={cn(
-            "flex min-h-10 w-full items-center px-3 text-sm font-medium transition-colors border-s-4 border-transparent",
-            active
-              ? "text-primary border-primary hover:bg-primary/10"
-              : "text-text-main hover:border-transparent hover:bg-muted",
-          )}
-        >
-          {label}
-        </Link>
-      </DrawerClose>
-    </li>
-  );
-}
-
 function SearchDrawerNavigation({
   pathname,
   user,
@@ -150,7 +125,7 @@ function SearchDrawerNavigation({
           </h3>
           <ul className="space-y-1">
             {primaryNavItems.map((item) => (
-              <SearchDrawerLink
+              <DrawerLink
                 key={item.href}
                 href={item.href}
                 label={item.label}
@@ -166,7 +141,7 @@ function SearchDrawerNavigation({
           </h3>
           <ul className="space-y-1">
             {secondaryNavItems.map((item) => (
-              <SearchDrawerLink
+              <DrawerLink
                 key={item.href}
                 href={item.href}
                 label={item.label}
@@ -182,12 +157,12 @@ function SearchDrawerNavigation({
               Minha conta
             </h3>
             <ul className="space-y-1">
-              <SearchDrawerLink
+              <DrawerLink
                 href="/contacts"
                 label="Meus contatos"
                 active={isActivePath(pathname, "/contacts")}
               />
-              <SearchDrawerLink
+              <DrawerLink
                 href="/profile"
                 label="Configurações do perfil"
                 active={isActivePath(pathname, "/profile")}
