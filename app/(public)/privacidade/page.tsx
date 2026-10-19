@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import { FeatureCard } from "@/components/ui/feature-card";
 import Link from "next/link";
 import {
-  Database,
   Eye,
   Lock,
   RefreshCcw,
   Share2,
   ShieldCheck,
-  UserCheck,
 } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { createPublicMetadata } from "@/lib/public-metadata";
@@ -27,27 +24,6 @@ export const metadata: Metadata = createPublicMetadata({
   imageLabel: "Página jurídica",
   heroImage: "privacidade",
 });
-
-const summaries = [
-  {
-    title: "Coleta responsável",
-    description:
-      "Tratamos dados de cadastro, perfil e uso da plataforma na medida necessária para a operação do Skillsy.",
-    icon: Database,
-  },
-  {
-    title: "Uso com finalidade clara",
-    description:
-      "Os dados ajudam a exibir perfis, facilitar conexões, proteger contas e manter a experiência funcionando.",
-    icon: Eye,
-  },
-  {
-    title: "Direitos do titular",
-    description:
-      "Você pode acessar, corrigir e solicitar exclusão de dados, observadas as hipóteses legais aplicáveis.",
-    icon: UserCheck,
-  },
-];
 
 const dataTypes = [
   "Dados de cadastro, como nome, e-mail e identificadores necessários para autenticação.",
@@ -113,15 +89,6 @@ export default function PrivacidadePage() {
               </div>
             </div>
 
-            {summaries.map((item) => (
-              <FeatureCard
-                key={item.title}
-                icon={item.icon}
-                title={item.title}
-                description={item.description}
-                className="col-span-12 lg:col-span-4"
-              />
-            ))}
           </div>
         </div>
       </div>
