@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FeatureCard } from "@/components/ui/feature-card";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -35,21 +36,18 @@ const pillars = [
     description:
       "A Skillsy aproxima quem precisa de um serviço e quem deseja oferecê-lo.",
     icon: Info,
-    tone: "bg-primary/10 text-primary border-primary/20",
   },
   {
     title: "Sem intermediação",
     description:
       "Pagamentos, contratos, valores e combinados são feitos diretamente entre as partes.",
     icon: AlertTriangle,
-    tone: "bg-warning/10 text-warning border-warning-border",
   },
   {
     title: "Responsabilidade",
     description:
       "A plataforma não emprega, certifica, supervisiona nem garante os serviços anunciados.",
     icon: ShieldCheck,
-    tone: "bg-destructive/10 text-destructive border-destructive/30",
   },
 ];
 
@@ -108,25 +106,13 @@ export default function TermosPage() {
             </div>
 
             {pillars.map((item) => (
-              <div
+              <FeatureCard
                 key={item.title}
-                className={`col-span-12 border p-4 md:col-span-4 space-y-4  `}
-              >
-                <div
-                  className={`flex size-12 items-center justify-center ${item.tone}`}
-                >
-                  <item.icon size={22} />
-                </div>
-
-                <div className="">
-                  <h3 className="text-lg font-bold text-text-main">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-text-muted">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
+                icon={item.icon}
+                title={item.title}
+                description={item.description}
+                className="col-span-12 md:col-span-4"
+              />
             ))}
           </div>
         </div>

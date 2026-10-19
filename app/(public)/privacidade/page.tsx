@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FeatureCard } from "@/components/ui/feature-card";
 import Link from "next/link";
 import {
   Database,
@@ -33,21 +34,18 @@ const summaries = [
     description:
       "Tratamos dados de cadastro, perfil e uso da plataforma na medida necessária para a operação do Skillsy.",
     icon: Database,
-    tone: "bg-primary/10 text-primary border-primary/20",
   },
   {
     title: "Uso com finalidade clara",
     description:
       "Os dados ajudam a exibir perfis, facilitar conexões, proteger contas e manter a experiência funcionando.",
     icon: Eye,
-    tone: "bg-warning/10 text-warning border-warning-border",
   },
   {
     title: "Direitos do titular",
     description:
       "Você pode acessar, corrigir e solicitar exclusão de dados, observadas as hipóteses legais aplicáveis.",
     icon: UserCheck,
-    tone: "bg-destructive/10 text-destructive border-destructive/30",
   },
 ];
 
@@ -116,24 +114,13 @@ export default function PrivacidadePage() {
             </div>
 
             {summaries.map((item) => (
-              <div
+              <FeatureCard
                 key={item.title}
-                className={`col-span-12 border p-4 lg:col-span-4 space-y-4 `}
-              >
-                <div
-                  className={`flex size-12 items-center justify-center ${item.tone}`}
-                >
-                  <item.icon size={22} />
-                </div>
-                <div className="">
-                  <h3 className="text-lg lg:text-xl font-bold text-text-main">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-text-muted">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
+                icon={item.icon}
+                title={item.title}
+                description={item.description}
+                className="col-span-12 lg:col-span-4"
+              />
             ))}
           </div>
         </div>

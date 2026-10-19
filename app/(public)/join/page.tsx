@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FeatureCard } from "@/components/ui/feature-card";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -35,21 +36,18 @@ const benefits = [
     description:
       "Conecte-se com pessoas que valorizam honestidade, respeito e bom atendimento em cada contato.",
     icon: ShieldCheck,
-    tone: "bg-primary/10 text-primary",
   },
   {
     title: "Visibilidade na sua região",
     description:
       "Mostre seu trabalho para pessoas da sua cidade e arredores que buscam indicações mais confiáveis.",
     icon: Zap,
-    tone: "bg-warning/10 text-warning",
   },
   {
     title: "Reputação com experiência real",
     description:
       "Receba avaliações de quem contratou você e ajude outros usuários a decidir com mais segurança.",
     icon: Star,
-    tone: "bg-destructive/10 text-destructive",
   },
 ];
 
@@ -118,24 +116,13 @@ export default function JoinPage() {
             </div>
 
             {benefits.map((benefit) => (
-              <div
+              <FeatureCard
                 key={benefit.title}
-                className={`col-span-12 border p-4 lg:col-span-4 space-y-4 `}
-              >
-                <div
-                  className={`flex size-12 items-center justify-center ${benefit.tone}`}
-                >
-                  <benefit.icon size={22} />
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-lg font-bold text-text-main">
-                    {benefit.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-text-muted">
-                    {benefit.description}
-                  </p>
-                </div>
-              </div>
+                icon={benefit.icon}
+                title={benefit.title}
+                description={benefit.description}
+                className="col-span-12 lg:col-span-4"
+              />
             ))}
 
             <div className="col-span-12 flex flex-col gap-4 sm:flex-row">
@@ -168,21 +155,16 @@ export default function JoinPage() {
           </div>
 
           <div className="col-span-12 lg:col-span-8">
-            <div className="grid grid-cols-12 gap-2 md:gap-4 gap-y-8">
+            <div className="grid grid-cols-12 gap-4">
               {highlights.map((item) => (
-                <div key={item.title} className="col-span-12 md:col-span-4">
-                  <div className="h-full space-y-2 border border-border-subtle bg-surface p-4">
-                    <div className="flex size-12 items-center justify-center bg-primary/10 text-primary">
-                      <item.icon size={22} />
-                    </div>
-                    <h3 className="text-base font-bold text-text-main">
-                      {item.title}
-                    </h3>
-                    <p className="text-sm font-normal text-text-muted">
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
+                // Stacked: this column is too narrow for three side by side.
+                <FeatureCard
+                  key={item.title}
+                  icon={item.icon}
+                  title={item.title}
+                  description={item.description}
+                  className="col-span-12"
+                />
               ))}
             </div>
           </div>

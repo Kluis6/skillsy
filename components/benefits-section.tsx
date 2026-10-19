@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { FeatureCard } from "@/components/ui/feature-card";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthModal } from "@/components/auth-modal";
@@ -14,24 +15,18 @@ export function BenefitsSection() {
       description:
         "Encontre pessoas com valores, história e vínculos reais com a comunidade.",
       icon: FaUserTie,
-      color: "text-primary",
-      bg: "bg-primary/10",
     },
     {
       title: "Talentos com dignidade",
       description:
         "Mostre o que você sabe fazer de forma simples, clara e pronta para ser indicada.",
       icon: FaAward,
-      color: "text-primary",
-      bg: "bg-primary/10",
     },
     {
       title: "Indicações que ajudam",
       description:
         "Avaliações e perfis públicos ajudam a transformar uma recomendação em decisão.",
       icon: FaUsers,
-      color: "text-primary",
-      bg: "bg-primary/10",
     },
   ];
 
@@ -106,27 +101,13 @@ export function BenefitsSection() {
             className="col-span-12 grid w-full grid-cols-1 gap-4 will-change-transform md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6"
           >
             {benefits.map((benefit) => (
-              <motion.div
-                key={benefit.title}
-                variants={cardVariants}
-                className="flex bg-card border relative shadow-md "
-              >
-                <div
-                  className={`h-full w-1/3 flex justify-center items-center ${benefit.bg}`}
-                >
-                  <benefit.icon
-                    className={`size-7 ${benefit.color}`}
-                    aria-hidden="true"
-                  />
-                </div>
-                <div className="space-y-2 p-4 md:p-6 lg:p-8">
-                  <h4 className="font-heading text-lg md:text-xl font-bold text-text-main">
-                    {benefit.title}
-                  </h4>
-                  <p className="text-sm leading-relaxed text-text-muted">
-                    {benefit.description}
-                  </p>
-                </div>
+              <motion.div key={benefit.title} variants={cardVariants}>
+                <FeatureCard
+                  icon={benefit.icon}
+                  title={benefit.title}
+                  description={benefit.description}
+                  titleAs="h4"
+                />
               </motion.div>
             ))}
           </motion.div>

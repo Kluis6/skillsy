@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FeatureCard } from "@/components/ui/feature-card";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -215,23 +216,15 @@ export default function WeAreSkillsyPage() {
               </p>
             </div>
           </div>
-           {values.map((value) => (
-                <div key={value.title} className="lg:col-span-4 col-span-12">
-                  <div className="h-full w-full flex flex-row border border-border-subtle bg-surface overflow-hidden">
-                    <div className="flex flex-col px-4 h-full bg-primary/10 justify-center items-center ">
-                      <value.icon className="text-primary lg:size-7" />
-                    </div>
-                    <div className="p-4 space-y-2">
-                      <h3 className="text-base font-bold text-text-main">
-                        {value.title}
-                      </h3>
-                      <p className="text-sm font-normal text-text-muted">
-                        {value.description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          {values.map((value) => (
+            <FeatureCard
+              key={value.title}
+              icon={value.icon}
+              title={value.title}
+              description={value.description}
+              className="col-span-12 lg:col-span-4"
+            />
+          ))}
         </div>
       </section>
 
