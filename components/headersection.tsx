@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { HERO_OVERLAY_CLASS } from "@/lib/hero";
+import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
 
 export type HeaderTextSegment = {
@@ -15,6 +16,8 @@ export interface HeaderSectionProps {
   headlineSegments: HeaderTextSegment[];
   /** Optional line under the headline, same formatting on every page. */
   description?: string;
+  /** Extra classes for the background image, e.g. its object position. */
+  imageClassName?: string;
   overlayClassName?: string;
   containerClassName?: string;
   headlineClassName?: string;
@@ -26,6 +29,7 @@ export default function HeaderSection({
   backgroundImageAlt,
   headlineSegments,
   description,
+  imageClassName,
   overlayClassName = HERO_OVERLAY_CLASS,
   headlineClassName = "max-w-xl text-balance font-heading text-3xl font-bold tracking-tight text-white drop-shadow-lg md:text-4xl xl:text-5xl",
   headlineWrapperClassName = "absolute inset-0 z-40 flex items-center",
@@ -41,7 +45,7 @@ export default function HeaderSection({
         <Image
           src={backgroundImageSrc}
           alt={backgroundImageAlt}
-          className="object-cover"
+          className={cn("object-cover", imageClassName)}
           fill
           sizes="100vw"
           priority

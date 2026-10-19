@@ -74,6 +74,7 @@ export default function JoinPage() {
         backgroundImageSrc="/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png"
         backgroundImageAlt="Pessoas e serviços em contexto comunitário"
         headlineSegments={headerHeadlineSegments}
+        imageClassName="sm:object-top"
       />
 
       <div className="container mx-auto isolate -mt-8 mb-16 w-full px-4">
