@@ -222,7 +222,8 @@ export default function WeAreSkillsyPage() {
               icon={value.icon}
               title={value.title}
               description={value.description}
-              className="col-span-12 lg:col-span-4"
+              // Same as the home profile cards at rest: border, no shadow.
+              className="col-span-12 shadow-none lg:col-span-4"
             />
           ))}
         </div>
