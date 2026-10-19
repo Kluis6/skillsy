@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { FeatureCard } from "@/components/ui/feature-card";
-import { HERO_OVERLAY_CLASS } from "@/lib/hero";
+import HeaderSection from "@/components/headersection";
 import Image from "next/image";
 import Link from "next/link";
-import { AlertTriangle, QrCode, ShieldCheck, Wallet } from "lucide-react";
+import { AlertTriangle, QrCode, Wallet } from "lucide-react";
 import { PixCopyField } from "@/components/donation/pix-copy-field";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { LuHandshake, LuLightbulb } from "react-icons/lu";
@@ -50,33 +50,14 @@ export default function DonationPage() {
 
   return (
     <main className="min-h-screen w-full bg-surface pb-10">
-      <section className="relative flex min-h-[58vh] w-full items-end overflow-hidden">
-        <Image
-          src="/donate.png"
-          alt="Pessoa usando tecnologia para apoiar conexões na comunidade"
-          fill
-          sizes="100vw"
-          priority
-          className="object-cover object-right md:object-center"
-        />
-        <div className={`absolute inset-0 ${HERO_OVERLAY_CLASS}`} />
-        <div className="container relative z-10 mx-auto px-4 pb-16 pt-28">
-          <div className="max-w-3xl space-y-5">
-            <div className="inline-flex items-center gap-2 border border-white/20 bg-white/10 px-3 py-1 text-sm font-semibold text-white">
-              <ShieldCheck className="size-4" />
-              Apoio voluntário
-            </div>
-            <h1 className="text-balance font-heading text-4xl font-black leading-none tracking-[-0.035em] text-white md:text-6xl">
-              Ajude o Skillsy a continuar conectando pessoas reais.
-            </h1>
-            <p className="max-w-2xl text-pretty text-base leading-relaxed text-white/88 md:text-xl">
-              Sua contribuição ajuda a manter a plataforma disponível, melhorar
-              os perfis públicos e fortalecer conexões com mais contexto e
-              confiança.
-            </p>
-          </div>
-        </div>
-      </section>
+      <HeaderSection
+        backgroundImageSrc="/donate.png"
+        backgroundImageAlt="Pessoa usando tecnologia para apoiar conexões na comunidade"
+        headlineSegments={[
+          { text: "Ajude o Skillsy a continuar conectando pessoas reais." },
+        ]}
+        description="Sua contribuição ajuda a manter a plataforma disponível, melhorar os perfis públicos e fortalecer conexões com mais contexto e confiança."
+      />
 
       <div className="container mx-auto isolate -mt-8 space-y-10 px-4">
         <section className="border border-border-subtle bg-card p-5 md:p-6 lg:p-8 shadow-xs">

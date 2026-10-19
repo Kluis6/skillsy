@@ -13,6 +13,8 @@ export interface HeaderSectionProps {
   backgroundImageSrc: string;
   backgroundImageAlt: string;
   headlineSegments: HeaderTextSegment[];
+  /** Optional line under the headline, same formatting on every page. */
+  description?: string;
   overlayClassName?: string;
   containerClassName?: string;
   headlineClassName?: string;
@@ -23,6 +25,7 @@ export default function HeaderSection({
   backgroundImageSrc,
   backgroundImageAlt,
   headlineSegments,
+  description,
   overlayClassName = HERO_OVERLAY_CLASS,
   headlineClassName = "max-w-xl text-balance font-heading text-3xl font-bold tracking-tight text-white drop-shadow-lg md:text-4xl xl:text-5xl",
   headlineWrapperClassName = "absolute inset-0 z-40 flex items-center",
@@ -61,6 +64,11 @@ export default function HeaderSection({
               </span>
             ))}
           </h1>
+          {description ? (
+            <p className="mt-4 max-w-xl text-pretty text-base leading-relaxed text-white/90 drop-shadow md:text-lg">
+              {description}
+            </p>
+          ) : null}
         </div>
       </motion.div>
     </section>
