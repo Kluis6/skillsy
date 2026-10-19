@@ -4,10 +4,10 @@ import Link from "next/link";
 import {
   ArrowRight,
   Compass,
+  Handshake,
   HeartHandshake,
   Lightbulb,
-  ShieldCheck,
-  Sparkles,
+  TrendingUp,
   Users,
 } from "lucide-react";
 import Image from "next/image";
@@ -34,7 +34,7 @@ const principles = [
     title: "Crescimento",
     description:
       "A plataforma existe para abrir espaço para talentos locais, ampliar visibilidade e gerar oportunidades reais.",
-    icon: Sparkles,
+    icon: TrendingUp,
     tone: "bg-destructive/10 text-destructive",
   },
   {
@@ -48,7 +48,7 @@ const principles = [
     title: "Confiança",
     description:
       "Queremos facilitar conexões mais seguras, claras e respeitosas entre pessoas que buscam ou oferecem serviços.",
-    icon: ShieldCheck,
+    icon: Handshake,
     tone: "bg-primary/10 text-primary",
   },
 ];

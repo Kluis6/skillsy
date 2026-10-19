@@ -3,10 +3,16 @@ import { FeatureCard } from "@/components/ui/feature-card";
 import HeaderSection from "@/components/headersection";
 import Image from "next/image";
 import Link from "next/link";
-import { AlertTriangle, QrCode, Wallet } from "lucide-react";
+import {
+  AlertTriangle,
+  Equal,
+  QrCode,
+  Rocket,
+  Server,
+  Wallet,
+} from "lucide-react";
 import { PixCopyField } from "@/components/donation/pix-copy-field";
 import { createPublicMetadata } from "@/lib/public-metadata";
-import { LuHandshake, LuLightbulb } from "react-icons/lu";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Apoie o Skillsy",
@@ -29,19 +35,19 @@ const impactItems = [
     title: "Manter a plataforma no ar",
     description:
       "Ajuda com hospedagem, banco de dados, manutenção técnica e continuidade dos perfis públicos.",
-    icon: Wallet,
+    icon: Server,
   },
   {
     title: "Melhorar a experiência",
     description:
       "Contribui para filtros melhores, compartilhamento, perfil público, segurança e correções importantes.",
-    icon: LuLightbulb,
+    icon: Rocket,
   },
   {
     title: "Apoio sem favorecimento",
     description:
       "A doação é voluntária e não compra destaque, prioridade, selo ou qualquer vantagem dentro do Skillsy.",
-    icon: LuHandshake,
+    icon: Equal,
   },
 ];
 

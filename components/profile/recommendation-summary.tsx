@@ -1,6 +1,8 @@
 "use client";
 
-import { HeartHandshake } from "lucide-react";
+import {
+  ThumbsUp,
+} from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -55,7 +57,7 @@ export function RecommendationCount({
       )}
       title={compact ? label : undefined}
     >
-      <HeartHandshake size={size} aria-hidden="true" className="shrink-0" />
+      <ThumbsUp size={size} aria-hidden="true" className="shrink-0" />
       {compact ? (
         <>
           <span>{recommendationCount}</span>

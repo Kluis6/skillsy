@@ -14,32 +14,32 @@ import {
   adminCreateAdminSchema, 
   AdminCreateAdminFormData 
 } from '@/lib/validations';
-import { 
-  Users, 
-  Search, 
-  ShieldAlert, 
-  ShieldCheck, 
+import {
   AlertTriangle,
-  Edit3, 
-  Ban, 
-  CheckCircle,
-  Star,
   ArrowLeft,
   ArrowUpDown,
+  Ban,
   Briefcase,
-  Church,
-  MapPin,
-  Mail,
   Calendar,
-  MoreVertical,
-  Navigation,
-  Loader2,
-  Clock,
   CalendarDays,
+  CheckCircle,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
-  ChevronsRight
+  ChevronsRight,
+  Church,
+  Clock,
+  Edit3,
+  Loader2,
+  Mail,
+  MapPin,
+  MoreVertical,
+  Navigation,
+  Search,
+  ShieldAlert,
+  Star,
+  UserCog,
+  Users,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -412,7 +412,7 @@ export function AdminUsersClient() {
               onClick={() => setIsAddAdminDialogOpen(true)}
               className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 font-bold  h-11"
             >
-              <ShieldCheck size={18} className="mr-2" /> Novo Admin
+              <UserCog size={18} className="mr-2" /> Novo Admin
             </Button>
           </div>
         </div>

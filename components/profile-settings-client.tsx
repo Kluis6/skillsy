@@ -18,23 +18,23 @@ import { SurfacePanel } from "@/components/ui/page-layout";
 import { MembershipMark } from "@/components/ui/trust-signals";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Camera,
-  Plus,
-  Trash2,
-  ArrowLeft,
-  Save,
-  Loader2,
   AlertCircle,
+  ArrowLeft,
+  Camera,
   CheckCircle2,
-  Navigation,
   Eye,
+  HandHeart,
   ListChecks,
-  BriefcaseBusiness,
+  Loader2,
   MapPin,
   MessageCircle,
-  X,
+  Navigation,
+  Plus,
+  Save,
   ShieldCheck,
-  Handshake,
+  Store,
+  Trash2,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -136,7 +136,7 @@ const MEMBERSHIP_OPTIONS: Array<{
     value: "friend",
     label: "Amigo da comunidade",
     description: "Não sou membro da Igreja, mas faço parte da comunidade.",
-    icon: Handshake,
+    icon: HandHeart,
     iconClassName: "text-success",
   },
 ];
@@ -272,7 +272,7 @@ export function ProfileSettingsClient() {
               formData.serviceType?.trim(),
             ),
             action: "Configurar serviço",
-            icon: BriefcaseBusiness,
+            icon: Store,
           },
           {
             id: "contact",

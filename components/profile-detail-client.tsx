@@ -13,19 +13,19 @@ import {
   RecommendationSummary,
 } from "@/components/profile/recommendation-summary";
 import {
-  UserPlus,
-  Star,
-  Info,
   Building2,
-  Camera,
-  Globe,
-  Copy,
   CalendarDays,
+  Camera,
+  Church,
   Clock,
+  Copy,
   Flag,
-  HeartHandshake,
+  Globe,
+  Info,
   MessageSquareText,
-  Users,
+  Star,
+  ThumbsUp,
+  UserPlus,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
@@ -944,7 +944,7 @@ export function ProfileDetailClient({
                           variant="outline"
                           className="px-5 font-semibold rounded-none"
                         >
-                          <HeartHandshake className="size-4" />
+                          <ThumbsUp className="size-4" />
                           {isRecommended ? "Você indicou" : "Eu indico"}
                         </Button>
                       )}
@@ -1010,7 +1010,7 @@ export function ProfileDetailClient({
 
                     {!targetProfile.isProvider && targetProfile.ward && (
                       <div className="flex items-center space-x-2">
-                        <Users size={18} className="text-text-main" />
+                        <Church size={18} className="text-text-main" />
                         <p className="text-sm text-text-main font-normal">
                           {targetProfile.ward}
                         </p>
@@ -1021,7 +1021,7 @@ export function ProfileDetailClient({
                   <div className="flex flex-col w-full sm:w-auto">
                     <div className="hidden space-y-1 border bg-surface p-4 text-center sm:block">
                       <div className="flex items-center justify-center gap-2 text-primary">
-                        <HeartHandshake size={22} aria-hidden="true" />
+                        <ThumbsUp size={22} aria-hidden="true" />
                         <p className="text-3xl font-bold">
                           {targetProfile.recommendationCount || 0}
                         </p>
@@ -1094,7 +1094,7 @@ export function ProfileDetailClient({
                             size="lg"
                             className="w-full font-semibold"
                           >
-                            <HeartHandshake className="size-4" />
+                            <ThumbsUp className="size-4" />
                             {isRecommended ? "Você indicou" : "Eu indico"}
                           </Button>
                         )}
@@ -1135,7 +1135,7 @@ export function ProfileDetailClient({
                       variant={isRecommended ? "outline" : "default"}
                       className="w-full sm:w-auto"
                     >
-                      <HeartHandshake className="size-4" />
+                      <ThumbsUp className="size-4" />
                       {isRecommended ? "Você indicou" : "Eu indico"}
                     </Button>
                   ) : null}

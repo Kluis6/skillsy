@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSearchController } from "@/hooks/use-search-controller";
-import { Briefcase } from "lucide-react";
+import {
+  SearchX,
+} from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -99,7 +101,7 @@ export function HomeClient({
                 </div>
               ) : (
                 <div className="mx-auto max-w-2xl  bg-surface/40 px-6 py-20 text-center">
-                  <Briefcase className="mx-auto mb-4 h-12 w-12 text-primary/40" />
+                  <SearchX className="mx-auto mb-4 h-12 w-12 text-primary/40" />
                   <h4 className="text-xl font-bold text-text-main">
                     Ainda não encontramos alguém com esses filtros
                   </h4>

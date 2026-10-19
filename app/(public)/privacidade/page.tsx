@@ -5,7 +5,6 @@ import {
   Lock,
   RefreshCcw,
   Share2,
-  ShieldCheck,
 } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { createPublicMetadata } from "@/lib/public-metadata";
@@ -211,7 +210,7 @@ export default function PrivacidadePage() {
               <div className="col-span-12 md:col-span-4">
                 <div className="h-full space-y-2 border border-border-subtle bg-surface p-4">
                   <div className="flex size-12 items-center justify-center bg-primary/10 text-primary">
-                    <ShieldCheck size={22} />
+                    <Lock size={22} />
                   </div>
                   <h3 className="text-base font-bold text-text-main">
                     Segurança

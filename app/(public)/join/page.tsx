@@ -3,7 +3,7 @@ import { FeatureCard } from "@/components/ui/feature-card";
 import Image from "next/image";
 import {
   ArrowRight,
-  Heart,
+  Sprout,
   Trophy,
   Users,
 } from "lucide-react";
@@ -44,7 +44,7 @@ const highlights = [
     title: "Comunidade mais forte",
     description:
       "Quando talentos locais se apoiam, todos ganham: profissionais, famílias e a rede ao redor.",
-    icon: Heart,
+    icon: Sprout,
   },
 ];
 

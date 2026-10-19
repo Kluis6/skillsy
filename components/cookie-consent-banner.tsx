@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import {
+  Cookie,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -45,7 +47,7 @@ export function CookieConsentBanner() {
       <div className="mx-auto max-w-4xl overflow-hidden border border-border-subtle bg-card shadow-lg">
         <div className="bg-linear-to-r from-primary to-primary/80 px-5 py-3 text-primary-foreground">
           <div className="flex items-center gap-2 text-sm font-semibold tracking-tight">
-            <ShieldCheck size={18} />
+            <Cookie size={18} />
             Controle de cookies e preferências
           </div>
         </div>

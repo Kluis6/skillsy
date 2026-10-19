@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  Handshake,
+  HandHeart,
   MapPin,
   MessageCircle,
   ShieldCheck,
@@ -57,7 +57,7 @@ export function VerifiedMark({ className, ...props }: NameMarkProps) {
 export function CommunityFriendMark({ className, ...props }: NameMarkProps) {
   return (
     <NameMark
-      icon={Handshake}
+      icon={HandHeart}
       label="Amigo da comunidade"
       className={cn("text-success", className)}
       {...props}

@@ -7,18 +7,18 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  LayoutDashboard,
-  Users,
-  FileText,
-  ShieldAlert,
-  ShieldCheck,
-  LogOut,
-  Home,
-  Settings,
   Bell,
   Check,
-  Clock,
   ChevronRight,
+  Clock,
+  ExternalLink,
+  FileText,
+  Flag,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  ShieldAlert,
+  Users,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
@@ -91,7 +91,7 @@ export function AdminNavbar() {
       case "new_user":
         return <Users size={14} className="text-primary" />;
       case "report":
-        return <ShieldCheck size={14} className="text-destructive" />;
+        return <Flag size={14} className="text-destructive" />;
       default:
         return <Bell size={14} className="text-primary" />;
     }
@@ -103,7 +103,7 @@ export function AdminNavbar() {
         <div className="flex items-center gap-8">
           <Link href="/admin" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary flex items-center justify-center">
-              <ShieldCheck className="text-white" size={20} />
+              <LayoutDashboard className="text-white" size={20} />
             </div>
             <div className="flex flex-col">
               <h1 className="text-lg font-black tracking-tighter uppercase leading-none text-brand">
@@ -162,7 +162,7 @@ export function AdminNavbar() {
               size="sm"
               className="gap-2 font-bold text-xs h-9 px-4 text-text-muted hover:text-primary"
             >
-              <Home size={14} /> Ver Site
+              <ExternalLink size={14} /> Ver Site
             </Button>
           </div>
         </div>

@@ -8,7 +8,7 @@ import {
   BriefcaseBusiness,
   ClipboardPlus,
   Clock3,
-  ListChecks,
+  LayoutList,
   MapPin,
   MessageCircle,
   Plus,
@@ -511,7 +511,7 @@ export function OpportunitiesClient({
             </Button>
           </SurfacePanel>
           <SurfacePanel className="flex flex-col gap-4">
-            <ListChecks className="size-5 text-primary" />
+            <LayoutList className="size-5 text-primary" />
             <div className="space-y-1">
               <h2 className="font-heading text-lg font-semibold text-text-main">
                 Ver oportunidades
