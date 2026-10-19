@@ -2,12 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  AlertTriangle,
-  FileText,
   Mail,
   RefreshCcw,
-  ShieldCheck,
-  UserCheck,
 } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { createPublicMetadata } from "@/lib/public-metadata";
@@ -181,9 +177,6 @@ export default function TermosPage() {
             <div className="grid grid-cols-12 gap-4 gap-y-8">
               <div className="col-span-12 lg:col-span-6">
                 <div className="h-full border border-border-subtle bg-surface p-4 space-y-4">
-                  <div className="mb-4 flex size-12 items-center justify-center bg-warning/15 text-warning">
-                    <AlertTriangle size={22} />
-                  </div>
                   <h3 className="text-lg font-bold text-text-main">
                     Limites da plataforma
                   </h3>
@@ -202,10 +195,6 @@ export default function TermosPage() {
 
               <div className="col-span-12 lg:col-span-6">
                 <div className="h-full border border-border-subtle bg-surface p-4 space-y-4">
-                  <div className="flex size-12 items-center justify-center bg-primary/10 text-primary">
-                    <ShieldCheck size={22} />
-                  </div>
-
                   <div className="space-y-2">
                     <h3 className="text-lg font-bold text-text-main">
                       Conduta dos usuários
@@ -228,22 +217,16 @@ export default function TermosPage() {
 
       <div className="container mx-auto mb-24 px-4">
         <section className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div className="border border-border-subtle bg-surface p-4 md:p- lg:p-10">
+          <div className="border border-border-subtle bg-surface p-4 md:p-6 lg:p-10">
             <div className="space-y-4">
               <h2 className="text-xl lg:text-2xl font-bold text-text-main">
                 Privacidade e dados
               </h2>
-              <div className="flex items-start gap-3">
-                <div className="flex size-10 md:size-12 shrink-0 items-center justify-center bg-primary/10 text-primary">
-                  <UserCheck size={18} />
-                </div>
-                <p className="text-sm leading-relaxed text-text-muted">
-                  O tratamento dos seus dados pessoais segue a nossa Política de
-                  Privacidade, que explica quais informações podem ser
-                  coletadas, como são usadas e quais escolhas você tem dentro da
-                  plataforma.
-                </p>
-              </div>
+              <p className="text-sm leading-relaxed text-text-muted">
+                O tratamento dos seus dados pessoais segue a nossa Política de
+                Privacidade, que explica quais informações podem ser coletadas,
+                como são usadas e quais escolhas você tem dentro da plataforma.
+              </p>
               <p className="text-sm leading-relaxed text-text-muted">
                 Para entender melhor esse tratamento, consulte a{" "}
                 <Link
