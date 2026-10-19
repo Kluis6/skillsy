@@ -26,7 +26,8 @@ export function FeatureCard({
     <div
       data-slot="feature-card"
       className={cn(
-        "flex h-full border border-border-subtle bg-card shadow-md",
+        // Neutral shadow: the theme shadow-md is tinted towards the brand blue.
+        "flex h-full border border-border-subtle bg-card shadow-[0_4px_12px_-2px_rgb(0_0_0/0.08),0_2px_4px_-2px_rgb(0_0_0/0.05)]",
         className,
       )}
     >
