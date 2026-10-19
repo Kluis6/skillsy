@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { HERO_OVERLAY_CLASS } from "@/lib/hero";
 import Form from "next/form";
 import { motion } from "motion/react";
 import { ArrowRight, Search, X } from "lucide-react";
@@ -56,7 +57,7 @@ export function HeroSection({
 
   return (
     <section className="relative isolate w-full min-h-[calc(100svh-5rem)] overflow-hidden bg-surface bg-[url(/bannerhero.png)] bg-cover bg-center md:min-h-[86vh]">
-      <div className="absolute inset-0 z-10 aspect-video bg-black/35" />
+      <div className={`absolute inset-0 z-10 ${HERO_OVERLAY_CLASS}`} />
 
       <motion.div
         initial="hidden"

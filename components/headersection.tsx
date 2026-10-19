@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { HERO_OVERLAY_CLASS } from "@/lib/hero";
 import { motion } from "motion/react";
 
 export type HeaderTextSegment = {
@@ -22,7 +23,7 @@ export default function HeaderSection({
   backgroundImageSrc,
   backgroundImageAlt,
   headlineSegments,
-  overlayClassName = "bg-linear-to-r from-black/70 via-black/40 to-black/10",
+  overlayClassName = HERO_OVERLAY_CLASS,
   headlineClassName = "max-w-xl text-balance font-heading text-3xl font-bold tracking-tight text-white drop-shadow-lg md:text-4xl xl:text-5xl",
   headlineWrapperClassName = "absolute inset-0 z-40 flex items-center",
 }: HeaderSectionProps) {

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { HERO_OVERLAY_CLASS } from "@/lib/hero";
 import Image from "next/image";
 import Link from "next/link";
-import { AlertTriangle, BadgeCheck, QrCode, ShieldCheck, Wallet } from "lucide-react";
+import { AlertTriangle, QrCode, ShieldCheck, Wallet } from "lucide-react";
 import { PixCopyField } from "@/components/donation/pix-copy-field";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { LuHandshake, LuLightbulb } from "react-icons/lu";
@@ -46,12 +47,6 @@ const impactItems = [
   },
 ];
 
-const donationAssurances = [
-  "Doação espontânea, sem assinatura ou cobrança recorrente.",
-  "Sem prioridade em busca, destaque de perfil ou benefício exclusivo.",
-  "Confira o recebedor no app do banco antes de confirmar.",
-];
-
 export default function DonationPage() {
   const hasQrCode = Boolean(PIX_QR_CODE_SRC);
 
@@ -66,7 +61,7 @@ export default function DonationPage() {
           priority
           className="object-cover object-right md:object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#001A41]/85 via-[#001A41]/45 to-[#001A41]/15" />
+        <div className={`absolute inset-0 ${HERO_OVERLAY_CLASS}`} />
         <div className="container relative z-10 mx-auto px-4 pb-16 pt-28">
           <div className="max-w-3xl space-y-5">
             <div className="inline-flex items-center gap-2 border border-white/20 bg-white/10 px-3 py-1 text-sm font-semibold text-white">
@@ -87,29 +82,16 @@ export default function DonationPage() {
 
       <div className="container mx-auto isolate -mt-8 space-y-10 px-4">
         <section className="border border-border-subtle bg-card p-5 md:p-6 lg:p-8 shadow-xs">
-          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-            <div className="space-y-3">
-              <h2 className="text-xl font-bold text-text-main md:text-2xl">
-                Doar é uma forma simples de sustentar a rede.
-              </h2>
-              <p className="max-w-3xl text-base leading-relaxed text-text-muted">
-                O Skillsy é uma iniciativa independente criada para conectar
-                pessoas, talentos e oportunidades dentro de uma rede de
-                confiança. Se você acredita nesse propósito, sua doação pode
-                ajudar a manter e melhorar a plataforma.
-              </p>
-            </div>
-
-            <div className="space-y-3 border border-border-subtle bg-surface p-4">
-              {donationAssurances.map((item) => (
-                <div key={item} className="flex gap-3">
-                  <BadgeCheck className="mt-0.5 size-4 shrink-0 text-primary" />
-                  <p className="text-sm leading-relaxed text-text-main">
-                    {item}
-                  </p>
-                </div>
-              ))}
-            </div>
+          <div className="space-y-3">
+            <h2 className="text-xl font-bold text-text-main md:text-2xl">
+              Doar é uma forma simples de sustentar a rede.
+            </h2>
+            <p className="max-w-3xl text-base leading-relaxed text-text-muted">
+              O Skillsy é uma iniciativa independente criada para conectar
+              pessoas, talentos e oportunidades dentro de uma rede de
+              confiança. Se você acredita nesse propósito, sua doação pode
+              ajudar a manter e melhorar a plataforma.
+            </p>
           </div>
         </section>
 
