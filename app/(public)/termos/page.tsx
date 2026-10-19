@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import { FeatureCard } from "@/components/ui/feature-card";
 import Link from "next/link";
 import Image from "next/image";
 import {
   AlertTriangle,
   FileText,
-  Info,
   Mail,
   RefreshCcw,
-  Scale,
   ShieldCheck,
   UserCheck,
 } from "lucide-react";
@@ -29,27 +26,6 @@ export const metadata: Metadata = createPublicMetadata({
   imageLabel: "Página jurídica",
   heroImage: "termos",
 });
-
-const pillars = [
-  {
-    title: "Conexões",
-    description:
-      "A Skillsy aproxima quem precisa de um serviço e quem deseja oferecê-lo.",
-    icon: Info,
-  },
-  {
-    title: "Sem intermediação",
-    description:
-      "Pagamentos, contratos, valores e combinados são feitos diretamente entre as partes.",
-    icon: AlertTriangle,
-  },
-  {
-    title: "Responsabilidade",
-    description:
-      "A plataforma não emprega, certifica, supervisiona nem garante os serviços anunciados.",
-    icon: ShieldCheck,
-  },
-];
 
 const flow = [
   "Você cria um perfil com suas informações, área de atuação e formas de contato.",
@@ -104,16 +80,6 @@ export default function TermosPage() {
                 não concordar, recomendamos não utilizar a plataforma.
               </p>
             </div>
-
-            {pillars.map((item) => (
-              <FeatureCard
-                key={item.title}
-                icon={item.icon}
-                title={item.title}
-                description={item.description}
-                className="col-span-12 md:col-span-4"
-              />
-            ))}
           </div>
         </div>
       </div>
@@ -128,11 +94,6 @@ export default function TermosPage() {
 
           <div className="col-span-12">
             <div className="border border-border-subtle bg-surface p-4 md:p-6 lg:p-8 space-y-4">
-              <div className="flex items-start gap-4">
-                <div className="flex size-12 shrink-0 items-center justify-center bg-primary/10 text-primary">
-                  <Scale size={22} />
-                </div>
-              </div>
               <div className="space-y-4">
                 <p className="text-base leading-relaxed text-text-muted">
                   A <strong>Skillsy</strong> é uma iniciativa independente,
