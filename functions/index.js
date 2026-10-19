@@ -77,8 +77,8 @@ exports.maintainOpportunities = onSchedule(
       const opportunity = item.data();
       batch.set(notificationRef(opportunity.authorId, item.id, "opportunity_follow_up"), {
         type: "opportunity_follow_up",
-        title: "Seu pedido ainda precisa de ajuda?",
-        message: `Já se passaram 20 dias desde “${opportunity.title}”. Conte se recebeu resposta e encerre o pedido se não precisar mais dele.`,
+        title: "Sua oportunidade ainda precisa de ajuda?",
+        message: `Já se passaram 20 dias desde “${opportunity.title}”. Conte se recebeu resposta e encerre a oportunidade se não precisar mais dela.`,
         opportunityId: item.id,
         read: false,
         createdAt: FieldValue.serverTimestamp(),

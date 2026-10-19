@@ -33,13 +33,14 @@ interface NavbarProps {
   setActiveTab: (tab: "explore" | "contacts") => void;
 }
 
-const primaryNavItems = [
+// Shared with the search page header so both menus use the same labels.
+export const primaryNavItems = [
   { href: "/search", label: "Buscar profissional" },
   { href: "/encontrar-ajuda", label: "O que precisa?" },
   { href: "/oportunidades", label: "Oportunidades" },
 ] as const;
 
-const secondaryNavItems = [
+export const secondaryNavItems = [
   { href: "/", label: "Inicial" },
   { href: "/weareskillsy", label: "O que é Skillsy?" },
   { href: "/artigosevagas", label: "Novidades e vagas" },

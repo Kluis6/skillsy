@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { primaryNavItems, secondaryNavItems } from "@/components/navbar";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { UserProfile } from "@/models/types";
@@ -72,21 +73,6 @@ interface SearchClientProps {
   initialResults: UserProfile[];
   initialSuggestions: UserProfile[];
 }
-
-const primaryNavItems = [
-  { href: "/search", label: "Buscar profissional" },
-  { href: "/encontrar-ajuda", label: "Pedir ajuda" },
-  { href: "/oportunidades", label: "Oportunidades" },
-] as const;
-
-const secondaryNavItems = [
-  { href: "/", label: "Inicial" },
-  { href: "/weareskillsy", label: "O que é Skillsy?" },
-  { href: "/artigosevagas", label: "Novidades e vagas" },
-  { href: "/join", label: "Por que participar?" },
-  { href: "/privacidade", label: "Privacidade" },
-  { href: "/termos", label: "Termos de uso" },
-] as const;
 
 function isActivePath(pathname: string | null, href: string) {
   if (!pathname) return false;
