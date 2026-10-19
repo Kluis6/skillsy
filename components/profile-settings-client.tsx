@@ -728,7 +728,9 @@ export function ProfileSettingsClient() {
             )}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
             {/* Left Column: Avatar & Basic Info */}
-            <div className="space-y-2 lg:sticky lg:top-20 lg:self-start">
+            {/* Sticks exactly where it sits in the flow (57px header + 0.5rem
+                gap), so its top stays level with the right column. */}
+            <div className="space-y-2 lg:sticky lg:top-[calc(57px+0.5rem)] lg:self-start">
               <div className="md:border border-b bg-card overflow-hidden">
                 <div className="relative h-32 bg-gradient-to-r from-primary/10 to-accent/10">
                   {formData.bannerURL && (
