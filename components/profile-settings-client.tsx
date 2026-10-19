@@ -865,20 +865,6 @@ export function ProfileSettingsClient() {
 
             {/* Right Column: Detailed Info */}
             <div className="lg:col-span-2 space-y-2">
-              <SurfacePanel className="rounded-none border-x-0 px-4 py-4 md:border-x md:px-8">
-                <div className="flex items-start gap-3">
-                  <Eye className="mt-0.5 size-4 shrink-0 text-primary" />
-                  <div className="space-y-1">
-                    <p className="font-semibold text-xs md:text-sm text-text-main">
-                      Edite pensando em como visitantes verão seu perfil
-                    </p>
-                    <p className="text-xs text-text-muted">
-                      Campos públicos alimentam sua página, os cards da busca e
-                      as informações de contato.
-                    </p>
-                  </div>
-                </div>
-              </SurfacePanel>
               <div className="bg-card md:p-8 p-4 md:border border-y space-y-6">
                 <div className="space-y-1">
                   <h3 className="md:text-xl text-base font-semibold text-text-main">
