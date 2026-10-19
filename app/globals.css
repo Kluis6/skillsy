@@ -123,8 +123,9 @@
   --input: oklch(0.66 0.012 240);
   --ring: oklch(0.52 0.105 223 / 60%);
 
-  --shadow-color: oklch(0.3 0.04 250 / 12%);
-  --shadow-color-soft: oklch(0.3 0.04 250 / 7%);
+  /* Shadows are always neutral (no brand blue tint), like in dark mode. */
+  --shadow-color: oklch(0 0 0 / 10%);
+  --shadow-color-soft: oklch(0 0 0 / 6%);
 
   --chart-1: oklch(0.52 0.105 223);
   --chart-2: oklch(0.68 0.12 200);
