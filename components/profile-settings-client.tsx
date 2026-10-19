@@ -1628,15 +1628,6 @@ export function ProfileSettingsClient() {
               </div>
 
               <div className="bg-card md:border border-y md:p-8 p-4 space-y-6">
-                <div className="space-y-1">
-                  <h3 className="md:text-xl text-base font-semibold text-text-main">
-                    Zona de perigo
-                  </h3>
-                  <p className="text-xs font-normal text-text-muted">
-                    Cancelar sua conta da plataforma.
-                  </p>
-                </div>
-
                 <div className="flex flex-col gap-4 border border-destructive/30 bg-destructive/5 p-4 md:p-5">
                   <div className="space-y-1">
                     <p className="text-sm font-semibold text-destructive">
