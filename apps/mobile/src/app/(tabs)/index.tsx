@@ -1,24 +1,38 @@
-import { useQuery } from '@tanstack/react-query';
+import type { UserProfile } from '@skillsy/shared/types';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import { Search } from 'lucide-react-native';
 import { useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { FilterSelect } from '@/components/filter-select';
 import { ProviderCard, ProviderCardSkeleton } from '@/components/provider-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
+import { CATEGORY_OPTIONS, STATE_OPTIONS } from '@/lib/filters';
 import { searchProviders } from '@/lib/providers';
 
 export default function BuscarScreen() {
+  const queryClient = useQueryClient();
   const [draft, setDraft] = useState('');
   const [term, setTerm] = useState('');
+  const [category, setCategory] = useState('');
+  const [state, setState] = useState('');
   const { data, isPending, isError, refetch, isRefetching } = useQuery({
-    queryKey: ['providers', term],
-    queryFn: () => searchProviders({ term }),
+    queryKey: ['providers', term, category, state],
+    queryFn: () => searchProviders({ term, category, state }),
   });
 
   const submit = () => setTerm(draft.trim());
+  const filtered = Boolean(term || category || state);
+
+  const openProfile = (provider: UserProfile) => {
+    // The list already has the public profile: no extra read to open it.
+    queryClient.setQueryData(['profile', provider.uid], provider);
+    router.push({ pathname: '/profissional/[id]', params: { id: provider.uid } });
+  };
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-background">
@@ -39,6 +53,22 @@ export default function BuscarScreen() {
           <Button size="icon" onPress={submit} accessibilityLabel="Buscar">
             <Search size={18} className="text-primary-foreground" />
           </Button>
+        </View>
+        <View className="flex-row gap-2">
+          <FilterSelect
+            label="Serviço"
+            allLabel="Todos os serviços"
+            options={CATEGORY_OPTIONS}
+            value={category}
+            onChange={setCategory}
+          />
+          <FilterSelect
+            label="Estado"
+            allLabel="Todos os estados"
+            options={STATE_OPTIONS}
+            value={state}
+            onChange={setState}
+          />
         </View>
       </View>
 
@@ -61,21 +91,21 @@ export default function BuscarScreen() {
         <FlatList
           data={data}
           keyExtractor={(provider) => provider.uid}
-          renderItem={({ item }) => <ProviderCard provider={item} />}
+          renderItem={({ item }) => <ProviderCard provider={item} onPress={() => openProfile(item)} />}
           contentContainerClassName="gap-3 p-4"
           onRefresh={refetch}
           refreshing={isRefetching}
           keyboardShouldPersistTaps="handled"
           ListHeaderComponent={
             <Text className="text-sm text-muted-foreground">
-              {term
-                ? `${data.length} ${data.length === 1 ? 'resultado' : 'resultados'} para “${term}”`
+              {filtered
+                ? `${data.length} ${data.length === 1 ? 'profissional encontrado' : 'profissionais encontrados'}`
                 : 'Profissionais da comunidade'}
             </Text>
           }
           ListEmptyComponent={
             <Text className="p-8 text-center text-muted-foreground">
-              Nenhum profissional encontrado. Tente um termo mais genérico.
+              Nenhum profissional encontrado. Tente um termo mais genérico ou outro filtro.
             </Text>
           }
         />

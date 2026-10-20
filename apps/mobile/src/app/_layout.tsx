@@ -2,12 +2,11 @@ import '../../global.css';
 
 import { PortalHost } from '@rn-primitives/portal';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider } from 'expo-router';
+import { Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { useColorScheme } from 'react-native';
 
-import AppTabs from '@/components/app-tabs';
 import { AuthProvider } from '@/lib/auth';
 import { NAV_THEME } from '@/lib/theme';
 
@@ -24,7 +23,10 @@ export default function RootLayout() {
       <AuthProvider>
         <ThemeProvider value={NAV_THEME[scheme]}>
           <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-          <AppTabs />
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="profissional/[id]" options={{ title: 'Perfil' }} />
+          </Stack>
           <PortalHost />
         </ThemeProvider>
       </AuthProvider>

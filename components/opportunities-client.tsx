@@ -1,6 +1,11 @@
 "use client";
 
-import { whatsappUrl } from "@skillsy/shared/contact";
+import {
+  formatFirestoreDate,
+  OPPORTUNITY_URGENCY,
+  opportunityWhatsappUrl,
+  sortOpportunities,
+} from "@skillsy/shared/opportunities";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -61,41 +66,18 @@ const followUpToggleClass =
 
 const urgencyMeta = {
   normal: {
-    label: "Sem pressa",
-    help: "Pode ser atendido dentro do prazo normal de 30 dias.",
+    ...OPPORTUNITY_URGENCY.normal,
     className: "border-border bg-background text-text-muted",
-    rank: 1,
   },
   soon: {
-    label: "Nos próximos dias",
-    help: "Bom para oportunidades que precisam de retorno ainda esta semana.",
+    ...OPPORTUNITY_URGENCY.soon,
     className: "border-primary/20 bg-primary/10 text-primary",
-    rank: 2,
   },
   urgent: {
-    label: "Urgente",
-    help: "Use quando precisa de contato rápido. Não substitui emergência ou serviço público.",
+    ...OPPORTUNITY_URGENCY.urgent,
     className: "border-destructive/20 bg-destructive/10 text-destructive",
-    rank: 3,
   },
 } as const;
-
-function dateLabel(value: unknown) {
-  if (!value || typeof value !== "object" || !("seconds" in value))
-    return "agora";
-  return new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(
-    new Date(Number(value.seconds) * 1000),
-  );
-}
-
-function opportunityWhatsappUrl(opportunity: Opportunity, professional: UserProfile) {
-  const brief = opportunity.description
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 130);
-  const message = `Olá, eu sou membro ${professional.name}. Vi sua oportunidade de “${brief}” no Skillsy e acredito que posso ajudar.`;
-  return whatsappUrl(opportunity.authorWhatsApp, message) ?? undefined;
-}
 
 function OpportunityCard({
   opportunity,
@@ -138,7 +120,7 @@ function OpportunityCard({
           </h2>
         </div>
         <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-text-muted">
-          <Clock3 className="size-3.5" /> {dateLabel(opportunity.createdAt)}
+          <Clock3 className="size-3.5" /> {formatFirestoreDate(opportunity.createdAt)}
         </span>
       </div>
 
@@ -158,7 +140,7 @@ function OpportunityCard({
           <Button
             render={
               <a
-                href={opportunityWhatsappUrl(opportunity, profile!)}
+                href={opportunityWhatsappUrl(opportunity, profile!.name) ?? undefined}
                 target="_blank"
                 rel="noreferrer"
               />
@@ -330,31 +312,13 @@ export function OpportunitiesClient({
     [opportunities, profile?.uid],
   );
   const visible = useMemo(() => {
-    return [...opportunities]
-      .filter(
+    return sortOpportunities(
+      opportunities.filter(
         (item) =>
           (!category || item.category === category) &&
           (!state || item.state === state),
-      )
-      .sort((a, b) => {
-        const urgencyDiff =
-          urgencyMeta[b.urgency || "normal"].rank -
-          urgencyMeta[a.urgency || "normal"].rank;
-        if (urgencyDiff) return urgencyDiff;
-        const bCreated =
-          b.createdAt &&
-          typeof b.createdAt === "object" &&
-          "seconds" in b.createdAt
-            ? Number(b.createdAt.seconds)
-            : 0;
-        const aCreated =
-          a.createdAt &&
-          typeof a.createdAt === "object" &&
-          "seconds" in a.createdAt
-            ? Number(a.createdAt.seconds)
-            : 0;
-        return bCreated - aCreated;
-      });
+      ),
+    );
   }, [opportunities, category, state]);
 
   const updateStatus = async (id: string, status: "active" | "closed") => {

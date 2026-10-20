@@ -1,7 +1,14 @@
-import { pickSearchResults, planProviderSearch } from '@skillsy/shared/providers';
 import { toPlainValue } from '@skillsy/shared/firestore-plain';
 import {
+  pickSearchResults,
+  planProviderSearch,
+  toPublicProfileModel,
+} from '@skillsy/shared/providers';
+import type { UserProfile } from '@skillsy/shared/types';
+import {
   collection,
+  doc,
+  getDoc,
   getDocs,
   limit,
   query,
@@ -32,4 +39,17 @@ export async function searchProviders({ term, state, category }: ProviderSearch)
     snapshot.docs.map((doc) => toPlainValue(doc.data())),
     plan
   );
+}
+
+export async function getPublicProfile(uid: string) {
+  const snapshot = await getDoc(doc(db, 'public_profiles', uid));
+  return snapshot.exists()
+    ? toPublicProfileModel(toPlainValue(snapshot.data()) as Partial<UserProfile>)
+    : null;
+}
+
+/** The signed-in user's own profile (private document, readable by its owner). */
+export async function getOwnProfile(uid: string) {
+  const snapshot = await getDoc(doc(db, 'users', uid));
+  return snapshot.exists() ? (toPlainValue(snapshot.data()) as UserProfile) : null;
 }

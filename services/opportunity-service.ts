@@ -14,6 +14,13 @@ import {
 import { auth, db } from '@/lib/firebase';
 import { Opportunity, OpportunityStatus, OpportunityUrgency } from '@/models/types';
 import { toPlainValue } from '@/lib/firestore-plain';
+import {
+  getOpportunityStatus,
+  needsOpportunityFollowUp,
+  OPPORTUNITY_URGENCIES,
+} from '@skillsy/shared/opportunities';
+
+export { getOpportunityStatus, needsOpportunityFollowUp };
 
 const OPPORTUNITIES = 'opportunities';
 
@@ -25,8 +32,6 @@ export type OpportunityInput = Pick<
 export type OpportunityFormInput = OpportunityInput & {
   urgency: OpportunityUrgency;
 };
-
-const OPPORTUNITY_URGENCIES: OpportunityUrgency[] = ['normal', 'soon', 'urgent'];
 
 function normalize(value: string) {
   return value.trim();
@@ -56,28 +61,6 @@ function ensureInput(data: OpportunityFormInput) {
 
 function toOpportunity(id: string, value: Record<string, unknown>): Opportunity {
   return { id, ...toPlainValue(value) } as Opportunity;
-}
-
-export function getOpportunityStatus(opportunity: Opportunity): OpportunityStatus {
-  if (opportunity.status !== 'active') return opportunity.status;
-  const expiresAt = opportunity.expiresAt;
-  const expiresAtDate =
-    expiresAt && typeof expiresAt === 'object' && 'seconds' in expiresAt
-      ? new Date(Number(expiresAt.seconds) * 1000)
-      : expiresAt instanceof Date
-        ? expiresAt
-        : null;
-
-  return expiresAtDate && expiresAtDate.getTime() <= Date.now()
-    ? 'expired'
-    : 'active';
-}
-
-export function needsOpportunityFollowUp(opportunity: Opportunity) {
-  if (getOpportunityStatus(opportunity) !== 'active') return false;
-  const createdAt = opportunity.createdAt;
-  if (!createdAt || typeof createdAt !== 'object' || !('seconds' in createdAt)) return false;
-  return Date.now() >= Number(createdAt.seconds) * 1000 + 20 * 24 * 60 * 60 * 1000;
 }
 
 export const OpportunityService = {
