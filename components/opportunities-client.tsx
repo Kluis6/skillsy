@@ -1,5 +1,6 @@
 "use client";
 
+import { whatsappUrl } from "@skillsy/shared/contact";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -87,14 +88,13 @@ function dateLabel(value: unknown) {
   );
 }
 
-function whatsappUrl(opportunity: Opportunity, professional: UserProfile) {
-  const phone = opportunity.authorWhatsApp.replace(/\D/g, "");
+function opportunityWhatsappUrl(opportunity: Opportunity, professional: UserProfile) {
   const brief = opportunity.description
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 130);
   const message = `Olá, eu sou membro ${professional.name}. Vi sua oportunidade de “${brief}” no Skillsy e acredito que posso ajudar.`;
-  return `https://wa.me/${phone.startsWith("55") ? phone : `55${phone}`}?text=${encodeURIComponent(message)}`;
+  return whatsappUrl(opportunity.authorWhatsApp, message) ?? undefined;
 }
 
 function OpportunityCard({
@@ -158,7 +158,7 @@ function OpportunityCard({
           <Button
             render={
               <a
-                href={whatsappUrl(opportunity, profile!)}
+                href={opportunityWhatsappUrl(opportunity, profile!)}
                 target="_blank"
                 rel="noreferrer"
               />

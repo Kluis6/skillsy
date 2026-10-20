@@ -34,10 +34,12 @@ import { NotificationService } from "./notification-service";
 import { deriveMemberVerification } from "@/lib/member-verification";
 import {
   isActiveProvider,
+  pickSearchResults,
+  planProviderSearch,
   sortProvidersByFeaturedRanking,
   toPublicProfileModel,
 } from "@skillsy/shared/providers";
-import { toSearchStems, toSearchTokens } from "@skillsy/shared/search";
+import { toSearchTokens } from "@skillsy/shared/search";
 
 export { isActiveProvider };
 
@@ -1024,47 +1026,24 @@ export const UserService = {
   ): Promise<UserProfile[]> {
     const path = "public_profiles";
     try {
-      const normalizedTerms = toSearchStems(term);
-      const cityTokens = toSearchTokens(location?.city || "").filter(
-        (token) => token.length >= 3,
-      );
-      const searchAnchor = [...normalizedTerms, ...cityTokens].sort(
-        (a, b) => b.length - a.length,
-      )[0];
+      const plan = planProviderSearch(term, location, category);
       const constraints: QueryConstraint[] = [
         where("isProvider", "==", true),
         where("isBlocked", "==", false),
         where("isDeleted", "==", false),
       ];
 
-      if (category) constraints.push(where("category", "==", category));
-      if (location?.state)
-        constraints.push(
-          where("publicState", "==", location.state.trim().toUpperCase()),
-        );
-      if (searchAnchor)
-        constraints.push(where("searchTokens", "array-contains", searchAnchor));
+      if (plan.category) constraints.push(where("category", "==", plan.category));
+      if (plan.state) constraints.push(where("publicState", "==", plan.state));
+      if (plan.anchor)
+        constraints.push(where("searchTokens", "array-contains", plan.anchor));
       constraints.push(limit(60));
 
       const q = query(collection(db, "public_profiles"), ...constraints);
       const querySnapshot = await getDocs(q);
-      const candidates = querySnapshot.docs
-        .map((doc) =>
-          toPublicProfileModel(toPlainValue(doc.data() as UserProfile)),
-        )
-        .filter(isActiveProvider);
-
-      return sortProvidersByFeaturedRanking(
-        candidates.filter((profile) => {
-          const profileTokens = profile.searchTokens || [];
-          const matchesTerms =
-            normalizedTerms.length === 0 ||
-            normalizedTerms.every((token) => profileTokens.includes(token));
-          const matchesCity =
-            cityTokens.length === 0 ||
-            cityTokens.every((token) => profileTokens.includes(token));
-          return matchesTerms && matchesCity;
-        }),
+      return pickSearchResults(
+        querySnapshot.docs.map((doc) => toPlainValue(doc.data())),
+        plan,
       );
     } catch (error) {
       if (isPermissionDeniedError(error)) {

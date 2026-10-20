@@ -29,8 +29,8 @@ Plano B para componentes, se o Reusables não funcionar no SDK 58: **gluestack-u
 ### 0. Monorepo
 - [x] Banco migrado (20/10) e emuladores locais (`npm run dev:local`)
 - [x] App em `apps/mobile`; o site fica na raiz (decidido em 20/10 para não mudar a Vercel) e o TypeScript/ESLint dele ignoram `apps/`
-- [ ] `packages/shared`: tipos, zod, categorias, estados e acesso ao Firebase (recebendo a instância do banco)
-- [ ] Site importando do `shared`; CI e deploy iguais
+- [x] `packages/shared` (alias `@skillsy/shared/*`): tipos, estados, categorias, tokens e plano de busca, regras de listagem, formatação e link de WhatsApp. Sem Firebase: cada lado monta a própria consulta, porque site (SDK 12) e app (SDK 13) têm cópias diferentes do SDK
+- [x] Site importando do `shared`; CI e deploy iguais
 
 ### 1. Imagens no Firebase Storage (site e app)
 - [ ] Regras do Storage: cada usuário grava só as próprias imagens, com limite de tamanho e tipo
@@ -40,16 +40,18 @@ Plano B para componentes, se o Reusables não funcionar no SDK 58: **gluestack-u
 ### 2. Esqueleto do app
 - [x] Expo SDK 58 em `apps/mobile`, Expo Router com abas **Buscar · Oportunidades · Contatos · Perfil**
 - [x] React Native Reusables + NativeWind 4 com os tokens do site (`npm run sync-theme`)
-- [ ] Firebase com sessão persistente + React Query
+- [x] Firebase com sessão persistente (`@firebase/auth` + AsyncStorage) + React Query; `npm run web:local` / `android:local` usam os emuladores
 - [x] Build local de debug (`npx expo run:android`, sem Expo Go nem EAS) — instalar no celular por USB
 
 ### 3. Conta e perfil
-- [ ] Login por e-mail e com Google; recuperar senha
+- [x] Login por e-mail
+- [ ] Login com Google; recuperar senha
 - [ ] Perfil público: foto, nota, indicações, galeria, botão de WhatsApp
 - [ ] Editar o próprio perfil, com upload de foto e checklist de prontidão
 
 ### 4. Comunidade
-- [ ] Busca com filtros de categoria e estado (mesma regra de prestador ativo do site)
+- [x] Busca por termo com a mesma regra e ordenação do site
+- [ ] Filtros de categoria e estado; perfil completo ao tocar no card
 - [ ] Avaliar e indicar (mesmas regras do Firestore)
 - [ ] Contatos salvos
 

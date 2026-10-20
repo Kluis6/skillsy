@@ -8,6 +8,9 @@
       ],
       "@/assets/*": [
         "./assets/*"
+      ],
+      "@skillsy/shared/*": [
+        "../../packages/shared/src/*"
       ]
     }
   },

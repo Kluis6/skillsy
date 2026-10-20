@@ -1,5 +1,6 @@
 "use client";
 
+import { whatsappUrl } from "@skillsy/shared/contact";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { UserService } from "@/services/user-service";
@@ -344,11 +345,7 @@ export function ProfileDetailClient({
       });
       return;
     }
-    const phone = targetProfile.whatsapp.replace(/\D/g, "");
-    window.open(
-      `https://wa.me/${phone.startsWith("55") ? phone : `55${phone}`}`,
-      "_blank",
-    );
+    window.open(whatsappUrl(targetProfile.whatsapp) ?? undefined, "_blank");
   };
 
   const handleCopyLink = async () => {

@@ -1,5 +1,6 @@
 "use client";
 
+import { whatsappUrl } from "@skillsy/shared/contact";
 import { PiShareFat } from "react-icons/pi";
 import {
   Users,
@@ -74,9 +75,8 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
       return;
     }
 
-    const normalizedPhone = phone.startsWith("55") ? phone : `55${phone}`;
     window.open(
-      `https://wa.me/${normalizedPhone}`,
+      whatsappUrl(phone) ?? undefined,
       "_blank",
       "noopener,noreferrer",
     );

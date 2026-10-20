@@ -1,4 +1,5 @@
 import type { UserProfile } from "./types";
+import { toSearchStems, toSearchTokens } from "./search";
 
 const publicProfileDefaults: Pick<UserProfile, "email" | "role" | "contacts"> =
   {
@@ -105,5 +106,56 @@ export function isActiveProvider(
     profile.isProvider === true &&
     profile.isBlocked !== true &&
     profile.isDeleted !== true
+  );
+}
+
+/**
+ * What a professional search asks Firestore for. Firestore can only filter on
+ * one array-contains, so the query uses the longest stem as `anchor` and
+ * `pickSearchResults` checks the remaining terms and the city afterwards.
+ */
+export type ProviderSearchPlan = {
+  terms: string[];
+  cityTokens: string[];
+  anchor?: string;
+  state?: string;
+  category?: string;
+};
+
+export function planProviderSearch(
+  term: string,
+  location?: { city?: string; state?: string },
+  category?: string,
+): ProviderSearchPlan {
+  const terms = toSearchStems(term);
+  const cityTokens = toSearchTokens(location?.city || "").filter(
+    (token) => token.length >= 3,
+  );
+  return {
+    terms,
+    cityTokens,
+    anchor: [...terms, ...cityTokens].sort((a, b) => b.length - a.length)[0],
+    state: location?.state ? location.state.trim().toUpperCase() : undefined,
+    category: category || undefined,
+  };
+}
+
+/** Turns the documents returned for a plan into the ranked result list. */
+export function pickSearchResults(
+  documents: unknown[],
+  plan: ProviderSearchPlan,
+): UserProfile[] {
+  const candidates = documents
+    .map((document) => toPublicProfileModel(document as Partial<UserProfile>))
+    .filter(isActiveProvider);
+
+  return sortProvidersByFeaturedRanking(
+    candidates.filter((profile) => {
+      const profileTokens = profile.searchTokens || [];
+      return (
+        plan.terms.every((token) => profileTokens.includes(token)) &&
+        plan.cityTokens.every((token) => profileTokens.includes(token))
+      );
+    }),
   );
 }

@@ -12,6 +12,12 @@ import {
 } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import {
+  formatRecommendationCount,
+  formatReviewCount,
+} from "@skillsy/shared/format";
+
+export { formatRecommendationCount, formatReviewCount };
 
 export type Recommender = {
   id: string;
@@ -21,14 +27,6 @@ export type Recommender = {
 
 function getInitial(name?: string) {
   return name?.trim().charAt(0).toUpperCase() || "S";
-}
-
-export function formatRecommendationCount(count: number) {
-  return `${count} ${count === 1 ? "indicação" : "indicações"}`;
-}
-
-export function formatReviewCount(count: number) {
-  return `${count} ${count === 1 ? "avaliação" : "avaliações"}`;
 }
 
 interface RecommendationCountProps {
