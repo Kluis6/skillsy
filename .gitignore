@@ -8,3 +8,6 @@ coverage/
 .codex/
 .codex.bak-empty
 *.tsbuildinfo
+
+# Claude Code (configurações pessoais)
+.claude/settings.local.json

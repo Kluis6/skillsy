@@ -2,10 +2,13 @@ const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
+const { onMessagePublished } = require("firebase-functions/v2/pubsub");
 const { logger } = require("firebase-functions");
+const { GoogleAuth } = require("google-auth-library");
 
 initializeApp();
 
+const PROJECT_ID = "gen-lang-client-0463625624";
 const DATABASE_ID = "(default)";
 const REGION = "southamerica-east1";
 const db = getFirestore(DATABASE_ID);
@@ -86,5 +89,31 @@ exports.maintainOpportunities = onSchedule(
       batch.update(item.ref, { followUpNotifiedAt: FieldValue.serverTimestamp() });
     });
     logger.info("Opportunity maintenance complete", { expired: expired.size, reminders: reminders.length });
+  },
+);
+
+// The monthly budget publishes to this topic a few times a day. Once the
+// month's cost reaches the budget, billing is unlinked from the project:
+// paid services stop and the project falls back to the free quotas until
+// the billing account is linked again in the console. Data is kept.
+// The runtime service account needs roles/billing.projectManager.
+exports.stopBillingOverBudget = onMessagePublished(
+  { topic: "billing-budget", region: REGION },
+  async (event) => {
+    const { costAmount, budgetAmount, currencyCode } = event.data.message.json;
+    if (!(costAmount >= budgetAmount)) {
+      logger.info("Budget ok", { costAmount, budgetAmount, currencyCode });
+      return;
+    }
+
+    const client = await new GoogleAuth({
+      scopes: ["https://www.googleapis.com/auth/cloud-billing"],
+    }).getClient();
+    const url = `https://cloudbilling.googleapis.com/v1/projects/${PROJECT_ID}/billingInfo`;
+    const { data } = await client.request({ url });
+    if (!data.billingEnabled) return;
+
+    await client.request({ url, method: "PUT", data: { billingAccountName: "" } });
+    logger.warn("Budget reached: billing disabled", { costAmount, budgetAmount, currencyCode });
   },
 );

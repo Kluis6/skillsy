@@ -51,6 +51,8 @@ As regras em [`firestore.rules`](firestore.rules) são a principal camada de seg
 
 O projeto já está no plano Blaze. O código em [`functions/`](functions/index.js) (alertas de oportunidades para profissionais, expiração e lembrete de 20 dias) roda em `southamerica-east1` (Node 22) no banco `(default)`, publicado em 20/10/2026. Para publicar de novo: `npx firebase deploy --only functions --force`.
 
+`stopBillingOverBudget` recebe os avisos do orçamento mensal (R$ 30, tópico Pub/Sub `billing-budget`) e desliga o faturamento do projeto quando o gasto chega ao limite. Os dados ficam; para voltar, vincule a conta de faturamento de novo no console. O banco tem backup semanal (domingo, 4 semanas de retenção).
+
 ## Cache e headers
 
 - Páginas públicas usam ISR com `revalidate = 3600`: mudanças aparecem em até 1 hora e o Firestore é lido no máximo uma vez por hora por página. As listagens não usam listeners em tempo real.
