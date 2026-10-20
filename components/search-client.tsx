@@ -467,9 +467,9 @@ export function SearchClient({
         </div>
       </nav>
 
-      <main className="container mx-auto w-full flex-1 px-4">
+      <main className="container mx-auto w-full flex-1 px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
-          <aside className="hidden w-full shrink-0 self-start border border-border-subtle bg-card shadow-xs lg:sticky lg:top-20 lg:block lg:w-72">
+          <aside className="hidden w-full shrink-0 self-start border border-border-subtle bg-card shadow-xs lg:sticky lg:top-[calc(57px+2rem)] lg:block lg:w-72">
             <div className="p-4 md:p-4">
               <div className="flex items-center space-x-2 mb-6">
                 <BsSliders2 className="size-4 text-text-main" />
