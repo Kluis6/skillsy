@@ -41,16 +41,18 @@ Os scripts `backfill:*` e `inspect:*` em `scripts/` são manutenções pontuais 
 
 As regras em [`firestore.rules`](firestore.rules) são a principal camada de segurança: toda leitura e escrita vem do cliente.
 
+- **Banco**: `(default)`, edição Standard, em `southamerica-east1` (São Paulo), no plano Blaze. O banco antigo `ai-studio-e9c18d7d-…` (free tier, us-central1) foi copiado para ele em 20/10/2026 com [`scripts/migrate-firestore-database.mjs`](scripts/migrate-firestore-database.mjs) e fica como backup. O `firebase.json` publica regras e índices nos dois.
+
 - **Testes**: [`tests/rules/`](tests/rules/) cobre leitura de dados privados, avaliações e indicações. Para rodar, instale Java (`sudo apt install openjdk-21-jre-headless`) e use `npm run test:rules`. O CI roda os mesmos testes em cada push e PR.
 - **Avaliações**: o perfil público guarda `ratingSum` + `reviewCount` (a média é calculada na leitura). Cada avaliação tem o id `{avaliador}_{prestador}` e as regras conferem que a soma cresce exatamente pela nota. Donos não podem alterar esses números.
 - **Correção de agregados**: o botão **Recalcular avaliações** no painel admin refaz notas e indicações a partir dos documentos de origem.
 
 ### Cloud Functions
 
-O projeto está no plano **Spark**, que não permite publicar Functions. O código em [`functions/`](functions/index.js) (alertas de oportunidades para profissionais, expiração e lembrete de 20 dias) fica em backlog até a migração para o plano Blaze.
+O projeto já está no plano Blaze. O código em [`functions/`](functions/index.js) (alertas de oportunidades para profissionais, expiração e lembrete de 20 dias) já aponta para o banco `(default)`, mas ainda não foi publicado.
 
 ## Cache e headers
 
 - Páginas públicas usam ISR com `revalidate = 3600`: mudanças aparecem em até 1 hora e o Firestore é lido no máximo uma vez por hora por página. As listagens não usam listeners em tempo real.
-- O banco é "free tier": 50 mil unidades de leitura por dia, sem opção de aumentar. Cada unidade equivale a 4 KB lidos, e as imagens ficam dentro dos documentos (um perfil com galeria passa de 1 MB), então evite leituras repetidas de perfis e artigos.
+- As leituras são cobradas por documento no plano Blaze (as primeiras 50 mil por dia são gratuitas). As imagens ainda ficam dentro dos documentos (um perfil com galeria passa de 1 MB), então evite leituras repetidas de perfis e artigos.
 - Headers de segurança ficam em [`next.config.ts`](next.config.ts). A CSP está em modo `Report-Only` até ser validada em produção.

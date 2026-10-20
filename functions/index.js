@@ -6,7 +6,7 @@ const { logger } = require("firebase-functions");
 
 initializeApp();
 
-const DATABASE_ID = "ai-studio-e9c18d7d-4bd5-4d82-861f-0db605e4639a";
+const DATABASE_ID = "(default)";
 const REGION = "southamerica-east1";
 const db = getFirestore(DATABASE_ID);
 
