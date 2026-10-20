@@ -175,7 +175,7 @@ export function ProviderProfileCard({
         className,
       )}
     >
-      <Card className="relative mx-auto w-full border-none pt-0 shadow-none">
+      <Card className="relative mx-auto h-full w-full border-none pt-0 shadow-none">
         <div className="relative w-full">
           {provider.bannerURL ? (
             <Image
@@ -233,7 +233,7 @@ export function ProviderProfileCard({
             {getBioPreview(provider)}
           </CardDescription>
         </CardHeader>
-        <CardFooter className="flex items-center justify-between gap-2">
+        <CardFooter className="mt-auto flex items-center justify-between gap-2">
           <ProviderSignals
             rating={provider.rating}
             reviewCount={reviewCount}
