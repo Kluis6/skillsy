@@ -49,7 +49,7 @@ As regras em [`firestore.rules`](firestore.rules) são a principal camada de seg
 
 ### Cloud Functions
 
-O projeto já está no plano Blaze. O código em [`functions/`](functions/index.js) (alertas de oportunidades para profissionais, expiração e lembrete de 20 dias) já aponta para o banco `(default)`, mas ainda não foi publicado.
+O projeto já está no plano Blaze. O código em [`functions/`](functions/index.js) (alertas de oportunidades para profissionais, expiração e lembrete de 20 dias) roda em `southamerica-east1` (Node 22) no banco `(default)`, publicado em 20/10/2026. Para publicar de novo: `npx firebase deploy --only functions --force`.
 
 ## Cache e headers
 

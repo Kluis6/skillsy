@@ -219,7 +219,7 @@ function getModeCopy(mode: OpportunitiesMode) {
       eyebrow: "Encontrar ajuda",
       title: "O que você precisa resolver?",
       description:
-        "Busque um profissional ou publique uma oportunidade no mural, onde profissionais filtram por serviço e estado.",
+        "Busque um profissional ou publique uma oportunidade — quem atende na sua categoria e estado é avisado.",
       createLabel: "Publicar oportunidade",
     };
   }
@@ -496,7 +496,7 @@ export function OpportunitiesClient({
                 Publicar oportunidade
               </h2>
               <p className="text-sm leading-relaxed text-text-muted">
-                Sua oportunidade entra no mural, visível para profissionais do mesmo serviço e estado.
+                Sua oportunidade entra no mural e avisa profissionais do mesmo serviço e estado.
               </p>
             </div>
             <Button
