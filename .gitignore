@@ -11,3 +11,6 @@ coverage/
 
 # Claude Code (configurações pessoais)
 .claude/settings.local.json
+
+# Cópia local de produção para os emuladores (contém dados pessoais)
+.emulator-data/

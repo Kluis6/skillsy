@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:local": "NEXT_PUBLIC_USE_EMULATORS=1 firebase emulators:exec --only firestore,auth --ui \"node scripts/emulator-seed.mjs && next dev\"",
+    "emulators:refresh": "firebase emulators:exec --only firestore,auth \"node scripts/emulator-seed.mjs --refresh\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

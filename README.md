@@ -20,8 +20,11 @@ Requer Node 22+.
 
 ```bash
 npm install
-npm run dev
+npm run dev:local   # site + emuladores com uma cópia da produção (recomendado)
+npm run dev         # site lendo o banco de produção (gasta cota)
 ```
+
+O `dev:local` (requer Java) sobe os emuladores do Firestore e do Auth com as regras de `firestore.rules`, carrega a cópia guardada em `.emulator-data/` e inicia o Next. A cópia é baixada uma vez com `npm run emulators:refresh` (uma leitura por documento) e fica fora do Git por conter dados pessoais. Cada usuário com e-mail vira uma conta local com a mesma senha, `skillsy123`; o login com Google abre a tela de contas de teste do emulador. Alterações locais somem ao reiniciar. Painel dos emuladores: http://127.0.0.1:4000.
 
 A configuração pública do Firebase fica em `firebase-applet-config.json` (não contém segredos; o acesso é controlado pelas regras do Firestore).
 
@@ -29,7 +32,9 @@ A configuração pública do Firebase fica em `firebase-applet-config.json` (nã
 
 | Comando | O que faz |
 | --- | --- |
-| `npm run dev` | Servidor de desenvolvimento |
+| `npm run dev:local` | Desenvolvimento nos emuladores, sem gastar o banco de produção |
+| `npm run emulators:refresh` | Baixa uma cópia nova da produção para os emuladores |
+| `npm run dev` | Desenvolvimento no banco de produção |
 | `npm run build` / `npm start` | Build e servidor de produção |
 | `npm run lint` | ESLint (as regras de hooks do React são erro) |
 | `npm run test:rules` | Testes das regras do Firestore no emulador (requer Java) |
@@ -41,7 +46,7 @@ Os scripts `backfill:*` e `inspect:*` em `scripts/` são manutenções pontuais 
 
 As regras em [`firestore.rules`](firestore.rules) são a principal camada de segurança: toda leitura e escrita vem do cliente.
 
-- **Banco**: `(default)`, edição Standard, em `southamerica-east1` (São Paulo), no plano Blaze. O banco antigo `ai-studio-e9c18d7d-…` (free tier, us-central1) foi copiado para ele em 20/10/2026 com [`scripts/migrate-firestore-database.mjs`](scripts/migrate-firestore-database.mjs) e fica como backup. O `firebase.json` publica regras e índices nos dois.
+- **Banco**: `(default)`, edição Standard, em `southamerica-east1` (São Paulo), no plano Blaze. O banco antigo `ai-studio-e9c18d7d-…` (free tier, us-central1) foi copiado para ele em 20/10/2026 com [`scripts/migrate-firestore-database.mjs`](scripts/migrate-firestore-database.mjs) e fica como backup. O `firebase.json` publica regras e índices só no `(default)`.
 
 - **Testes**: [`tests/rules/`](tests/rules/) cobre leitura de dados privados, avaliações e indicações. Para rodar, instale Java (`sudo apt install openjdk-21-jre-headless`) e use `npm run test:rules`. O CI roda os mesmos testes em cada push e PR.
 - **Avaliações**: o perfil público guarda `ratingSum` + `reviewCount` (a média é calculada na leitura). Cada avaliação tem o id `{avaliador}_{prestador}` e as regras conferem que a soma cresce exatamente pela nota. Donos não podem alterar esses números.
