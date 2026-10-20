@@ -1,0 +1,5 @@
+{
+  "name": "@skillsy/shared",
+  "private": true,
+  "description": "Plain TypeScript shared by the site (root) and the app (apps/mobile): types, states, categories, search tokens and listing rules. No Firebase or framework imports here."
+}

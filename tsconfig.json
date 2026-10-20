@@ -26,6 +26,9 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@skillsy/shared/*": [
+        "./packages/shared/src/*"
       ]
     }
   },
