@@ -242,7 +242,7 @@ export function Navbar({
                 aria-label="Abrir menu principal"
                 render={
                   <Button
-                    size="icon-lg"
+                    size="icon"
                     variant="ghost"
                     className="md:hidden"
                     aria-label="Abrir menu principal"
@@ -282,7 +282,7 @@ export function Navbar({
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "px-3 py-2 text-sm font-medium transition-colors",
+                      "flex h-10 items-center px-3 text-sm font-medium transition-colors",
                       active
                         ? "bg-primary text-primary-foreground"
                         : "text-text-muted hover:bg-muted hover:text-foreground dark:hover:bg-muted/50",
@@ -305,7 +305,7 @@ export function Navbar({
               <DrawerTrigger
                 render={
                   <Button
-                    size="icon-lg"
+                    size="icon"
                     variant="ghost"
                     className="hidden md:flex"
                     aria-label="Abrir menu principal"
@@ -325,7 +325,7 @@ export function Navbar({
           ) : null}
 
           {user ? (
-            <Avatar className="size-9">
+            <Avatar className="size-10">
               <AvatarImage src={profile?.photoURL || user.photoURL || undefined} />
               <AvatarFallback>
                 <UserIcon className="size-4" />
@@ -335,10 +335,9 @@ export function Navbar({
             <AuthModal>
               <Button
                 variant="default"
-                size="sm"
                 title="Faça login ou crie sua conta"
                 aria-label="Entrar ou criar conta"
-                className="h-9 px-3 normal-case lg:px-6"
+                className="px-3 normal-case lg:px-6"
               >
                 <span className="font-medium">Entrar</span>
               </Button>

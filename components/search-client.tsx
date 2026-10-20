@@ -369,7 +369,7 @@ export function SearchClient({
               <DrawerTrigger
                 render={
                   <Button
-                    size="icon-lg"
+                    size="icon"
                     variant="ghost"
                     aria-label="Abrir menu principal"
                   >
@@ -423,7 +423,7 @@ export function SearchClient({
             <ThemeToggle />
             {user && <OpportunityNotifications />}
             {user ? (
-              <Avatar className="size-9">
+              <Avatar className="size-10">
                 <AvatarImage src={profile?.photoURL || user.photoURL || undefined} />
                 <AvatarFallback>
                   <UserIcon className="size-4" />
@@ -433,10 +433,9 @@ export function SearchClient({
               <AuthModal>
                 <Button
                   variant="default"
-                  size="sm"
                   title="Faça login ou crie sua conta"
                   aria-label="Entrar ou criar conta"
-                  className="h-9 px-3 normal-case lg:px-6"
+                  className="px-3 normal-case lg:px-6"
                 >
                   <span className="font-medium">Entrar</span>
                 </Button>

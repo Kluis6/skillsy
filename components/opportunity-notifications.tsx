@@ -52,7 +52,7 @@ export function OpportunityNotifications() {
     <div ref={panelRef} className="relative ">
       <Button
         variant="ghost"
-        size="icon-lg"
+        size="icon"
         className="relative"
         aria-label="Abrir notificações"
         aria-expanded={open}
