@@ -1,31 +1,32 @@
 import { NativeTabs } from 'expo-router/native-tabs';
 import { useColorScheme } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { THEME } from '@/lib/theme';
 
+// Android bottom navigation (Material). The web version is app-tabs.web.tsx.
 export default function AppTabs() {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'dark' ? 'dark' : 'light'];
+  const colors = THEME[useColorScheme() === 'dark' ? 'dark' : 'light'];
 
   return (
     <NativeTabs
-      backgroundColor={colors.background}
-      indicatorColor={colors.backgroundElement}
-      labelStyle={{ selected: { color: colors.text } }}>
+      backgroundColor={colors.card}
+      indicatorColor={colors.accent}
+      labelStyle={{ selected: { color: colors.primary } }}>
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/home.png')}
-          renderingMode="template"
-        />
+        <NativeTabs.Trigger.Label>Buscar</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon md="search" selectedColor={colors.primary} />
       </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="explore">
-        <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
-        />
+      <NativeTabs.Trigger name="oportunidades">
+        <NativeTabs.Trigger.Label>Oportunidades</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon md="work" selectedColor={colors.primary} />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="contatos">
+        <NativeTabs.Trigger.Label>Contatos</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon md="contacts" selectedColor={colors.primary} />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="perfil">
+        <NativeTabs.Trigger.Label>Perfil</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon md="person" selectedColor={colors.primary} />
       </NativeTabs.Trigger>
     </NativeTabs>
   );

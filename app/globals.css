@@ -2,6 +2,9 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* The mobile app (apps/mobile) has its own Tailwind setup. */
+@source not "../apps";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

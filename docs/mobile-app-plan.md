@@ -7,7 +7,7 @@ Decidido em 19/10/2026. Escopo da primeira versão: **núcleo da comunidade + op
 | Camada | Escolha | Por quê |
 | --- | --- | --- |
 | Base | **Expo SDK 58** (React Native 0.88), **Expo Router**, TypeScript | Telas por arquivo, builds na nuvem (EAS), atualizações sem loja |
-| Monorepo | npm workspaces: `apps/web`, `apps/mobile`, `packages/shared` | Site e app com as mesmas regras de negócio |
+| Monorepo | Site na raiz, app em `apps/mobile` com dependências próprias; `packages/shared` quando houver código para dividir | Não mexe no build da Vercel |
 | Componentes | **React Native Reusables** (equivalente ao shadcn/ui), sobre **rn-primitives** | Mesmos nomes e variantes do `components/ui` do site, copiados para o projeto |
 | Estilo | **NativeWind** (Tailwind) com os tokens do `globals.css` | Mesma marca, cinzas neutros, `--radius: 0`, sombras cinza |
 | Controles nativos | **@expo/ui** (Jetpack Compose no Android) | Seletores, switches, menus e folhas inferiores com cara do sistema |
@@ -26,8 +26,9 @@ Plano B para componentes, se o Reusables não funcionar no SDK 58: **gluestack-u
 
 ## Fases
 
-### 0. Monorepo (depois da migração do banco)
-- [ ] Mover o site para `apps/web`, configurar workspaces, ajustar a Vercel para a pasta
+### 0. Monorepo
+- [x] Banco migrado (20/10) e emuladores locais (`npm run dev:local`)
+- [x] App em `apps/mobile`; o site fica na raiz (decidido em 20/10 para não mudar a Vercel) e o TypeScript/ESLint dele ignoram `apps/`
 - [ ] `packages/shared`: tipos, zod, categorias, estados e acesso ao Firebase (recebendo a instância do banco)
 - [ ] Site importando do `shared`; CI e deploy iguais
 
@@ -37,10 +38,10 @@ Plano B para componentes, se o Reusables não funcionar no SDK 58: **gluestack-u
 - [ ] Script para migrar as imagens em base64 existentes; miniaturas para os cards
 
 ### 2. Esqueleto do app
-- [ ] Expo SDK 58 em `apps/mobile`, Expo Router com abas **Buscar · Oportunidades · Contatos · Perfil**
-- [ ] React Native Reusables + NativeWind com os tokens do site (confirmar compatibilidade com o SDK 58)
+- [x] Expo SDK 58 em `apps/mobile`, Expo Router com abas **Buscar · Oportunidades · Contatos · Perfil**
+- [x] React Native Reusables + NativeWind 4 com os tokens do site (`npm run sync-theme`)
 - [ ] Firebase com sessão persistente + React Query
-- [ ] Conta Expo, `eas init` e primeiro build de desenvolvimento Android
+- [x] Build local de debug (`npx expo run:android`, sem Expo Go nem EAS) — instalar no celular por USB
 
 ### 3. Conta e perfil
 - [ ] Login por e-mail e com Google; recuperar senha
@@ -64,6 +65,6 @@ Plano B para componentes, se o Reusables não funcionar no SDK 58: **gluestack-u
 ## Pendências do responsável pelo projeto
 | Quando | O quê |
 | --- | --- |
-| Antes da fase 2 | Conta gratuita em expo.dev |
+| Antes da fase 6 | Conta gratuita em expo.dev (só para EAS Build/Submit; o desenvolvimento usa build local) |
 | Antes da fase 5 | "Sim" para ativar as Cloud Functions |
 | Antes da fase 6 | Conta no Play Console criada e verificada (US$ 25; contas pessoais novas precisam de 12 testadores por 14 dias antes da produção) |
