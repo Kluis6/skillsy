@@ -371,6 +371,7 @@ export function SearchClient({
                   <Button
                     size="icon"
                     variant="ghost"
+                    className="md:hidden"
                     aria-label="Abrir menu principal"
                   >
                     <BsList className="size-4 text-text-main" />
@@ -422,6 +423,29 @@ export function SearchClient({
           <div className="flex items-center space-x-2">
             <ThemeToggle />
             {user && <OpportunityNotifications />}
+            {/* From md up the menu sits on the right, next to login, like the
+                main navbar; on mobile it stays on the left. */}
+            <Drawer swipeDirection="left">
+              <DrawerTrigger
+                render={
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="hidden md:flex"
+                    aria-label="Abrir menu principal"
+                  >
+                    <BsList className="size-4 text-text-main" />
+                  </Button>
+                }
+              />
+              <DrawerContent className="w-screen sm:max-w-sm">
+                <SearchDrawerNavigation
+                  pathname={pathname}
+                  user={user}
+                  handleLogout={handleLogout}
+                />
+              </DrawerContent>
+            </Drawer>
             {user ? (
               <Avatar className="size-10">
                 <AvatarImage src={profile?.photoURL || user.photoURL || undefined} />
