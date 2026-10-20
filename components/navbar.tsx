@@ -75,7 +75,7 @@ export function DrawerLink({
             "flex min-h-10 w-full items-center px-3 text-sm font-medium transition-colors border-s-4 border-transparent",
             active
               ? "border-primary bg-primary/10 text-primary hover:bg-primary/15"
-              : "text-text-main hover:border-transparent hover:bg-muted",
+              : "text-text-main hover:border-transparent hover:bg-muted dark:hover:bg-muted/50",
           )}
         >
           {label}
@@ -285,7 +285,7 @@ export function Navbar({
                       "px-3 py-2 text-sm font-medium transition-colors",
                       active
                         ? "bg-primary text-primary-foreground"
-                        : "text-text-muted hover:bg-primary/10 hover:text-primary",
+                        : "text-text-muted hover:bg-muted hover:text-foreground dark:hover:bg-muted/50",
                     )}
                   >
                     {item.label}
