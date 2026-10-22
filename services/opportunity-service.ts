@@ -12,52 +12,21 @@ import {
   where,
 } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-import { Opportunity, OpportunityStatus, OpportunityUrgency } from '@/models/types';
+import { Opportunity } from '@/models/types';
 import { toPlainValue } from '@/lib/firestore-plain';
 import {
+  buildOpportunityFields,
   getOpportunityStatus,
   needsOpportunityFollowUp,
-  OPPORTUNITY_URGENCIES,
+  OPPORTUNITY_DURATION_MS,
+  type OpportunityFormInput,
+  type OpportunityInput,
 } from '@skillsy/shared/opportunities';
 
 export { getOpportunityStatus, needsOpportunityFollowUp };
+export type { OpportunityFormInput, OpportunityInput };
 
 const OPPORTUNITIES = 'opportunities';
-
-export type OpportunityInput = Pick<
-  Opportunity,
-  'category' | 'title' | 'description' | 'city' | 'neighborhood' | 'state'
->;
-
-export type OpportunityFormInput = OpportunityInput & {
-  urgency: OpportunityUrgency;
-};
-
-function normalize(value: string) {
-  return value.trim();
-}
-
-function ensureInput(data: OpportunityFormInput) {
-  const fields: Array<[keyof OpportunityInput, number, number]> = [
-    ['category', 1, 100],
-    ['title', 5, 120],
-    ['description', 20, 2000],
-    ['city', 2, 100],
-    ['neighborhood', 2, 100],
-    ['state', 2, 2],
-  ];
-
-  for (const [field, min, max] of fields) {
-    const value = normalize(data[field]);
-    if (value.length < min || value.length > max) {
-      throw new Error(`Preencha ${field} com ${min} a ${max} caracteres.`);
-    }
-  }
-
-  if (!OPPORTUNITY_URGENCIES.includes(data.urgency)) {
-    throw new Error('Escolha a urgência da oportunidade.');
-  }
-}
 
 function toOpportunity(id: string, value: Record<string, unknown>): Opportunity {
   return { id, ...toPlainValue(value) } as Opportunity;
@@ -67,25 +36,11 @@ export const OpportunityService = {
   async createForProfile(data: OpportunityFormInput, author: { name: string; whatsapp?: string }) {
     const user = auth.currentUser;
     if (!user) throw new Error('Faça login para criar uma oportunidade.');
-    ensureInput(data);
-    const phone = author.whatsapp?.replace(/\D/g, '');
-    if (!phone) throw new Error('Cadastre um WhatsApp no seu perfil antes de publicar a oportunidade.');
-
-    const expiresAt = Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000);
     await addDoc(collection(db, OPPORTUNITIES), {
       authorId: user.uid,
-      authorName: normalize(author.name).slice(0, 100),
-      authorWhatsApp: phone,
-      category: normalize(data.category),
-      title: normalize(data.title),
-      description: normalize(data.description),
-      city: normalize(data.city),
-      neighborhood: normalize(data.neighborhood),
-      state: normalize(data.state).toUpperCase(),
-      urgency: data.urgency,
-      status: 'active',
+      ...buildOpportunityFields(data, author),
       createdAt: serverTimestamp(),
-      expiresAt,
+      expiresAt: Timestamp.fromMillis(Date.now() + OPPORTUNITY_DURATION_MS),
     });
   },
 
@@ -113,7 +68,7 @@ export const OpportunityService = {
         ? { closedAt: serverTimestamp() }
         : {
             reactivatedAt: serverTimestamp(),
-            expiresAt: Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            expiresAt: Timestamp.fromMillis(Date.now() + OPPORTUNITY_DURATION_MS),
           }),
     });
   },

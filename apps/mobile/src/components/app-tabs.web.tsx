@@ -9,7 +9,8 @@ import { cn } from '@/lib/utils';
 export default function AppTabs() {
   return (
     <Tabs className="flex-1 bg-background">
-      <TabSlot />
+      {/* flex: 1 keeps lists scrolling inside the screen, above the tab bar. */}
+      <TabSlot style={{ flex: 1 }} />
       <TabList asChild>
         <View className="flex-row border-t border-border bg-card">
           <TabTrigger name="index" href="/" asChild>

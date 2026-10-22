@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { useColorScheme } from 'react-native';
 
+import { SnackbarProvider } from '@/components/snackbar';
 import { AuthProvider } from '@/lib/auth';
 import { useAppFonts } from '@/lib/use-app-fonts';
 import { NAV_THEME } from '@/lib/theme';
@@ -27,11 +28,14 @@ export default function RootLayout() {
       <AuthProvider>
         <ThemeProvider value={NAV_THEME[scheme]}>
           <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="profissional/[id]" options={{ title: 'Perfil' }} />
-          </Stack>
-          <PortalHost />
+          <SnackbarProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="profissional/[id]" options={{ title: 'Perfil' }} />
+              <Stack.Screen name="oportunidade/nova" options={{ title: 'Nova oportunidade' }} />
+            </Stack>
+            <PortalHost />
+          </SnackbarProvider>
         </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>

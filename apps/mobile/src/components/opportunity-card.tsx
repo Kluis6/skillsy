@@ -4,6 +4,7 @@ import {
 } from '@skillsy/shared/opportunities';
 import type { Opportunity } from '@skillsy/shared/types';
 import { AlertTriangle, Clock3, MapPin, MessageCircle } from 'lucide-react-native';
+import type { ReactNode } from 'react';
 import { Linking, View } from 'react-native';
 
 import { Badge } from '@/components/ui/badge';
@@ -16,15 +17,20 @@ type OpportunityCardProps = {
   opportunity: Opportunity;
   /** WhatsApp link to answer, only for signed-in professionals (not the author). */
   contactUrl?: string | null;
+  /** Shown before the category, e.g. the status on "Minhas". */
+  badge?: ReactNode;
+  /** Extra actions at the bottom of the card. */
+  children?: ReactNode;
 };
 
-export function OpportunityCard({ opportunity, contactUrl }: OpportunityCardProps) {
+export function OpportunityCard({ opportunity, contactUrl, badge, children }: OpportunityCardProps) {
   const urgency = opportunity.urgency || 'normal';
   const place = [opportunity.neighborhood, opportunity.city].filter(Boolean).join(', ');
 
   return (
     <View className="gap-3 border border-border-subtle bg-card p-4 shadow-sm shadow-black/5">
       <View className="flex-row flex-wrap items-center gap-2">
+        {badge}
         <Text className="text-xs font-semibold text-primary">{opportunity.category}</Text>
         {urgency !== 'normal' ? (
           <Badge
@@ -75,6 +81,7 @@ export function OpportunityCard({ opportunity, contactUrl }: OpportunityCardProp
           <Text>Tenho interesse</Text>
         </Button>
       ) : null}
+      {children}
     </View>
   );
 }

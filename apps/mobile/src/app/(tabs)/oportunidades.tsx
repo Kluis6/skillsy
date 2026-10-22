@@ -1,22 +1,67 @@
 import { opportunityWhatsappUrl } from '@skillsy/shared/opportunities';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { Plus } from 'lucide-react-native';
 import { useState } from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { FilterSelect } from '@/components/filter-select';
+import { Chip } from '@/components/chip';
+import { Fab } from '@/components/fab';
+import { MyOpportunityCard } from '@/components/my-opportunity-card';
 import { OpportunityCard, OpportunityCardSkeleton } from '@/components/opportunity-card';
+import { OptionSheet } from '@/components/option-sheet';
+import { useSnackbar } from '@/components/snackbar';
+import { TopTabs } from '@/components/top-tabs';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useAuth } from '@/lib/auth';
 import { CATEGORY_OPTIONS, STATE_OPTIONS } from '@/lib/filters';
-import { getActiveOpportunities } from '@/lib/opportunities';
+import {
+  answerFollowUp,
+  getActiveOpportunities,
+  getMyOpportunities,
+  setOpportunityStatus,
+} from '@/lib/opportunities';
 import { getOwnProfile } from '@/lib/providers';
+
+type Tab = 'mural' | 'minhas';
+const TABS = [
+  { value: 'mural', label: 'Mural' },
+  { value: 'minhas', label: 'Minhas oportunidades' },
+] as const;
 
 export default function OportunidadesScreen() {
   const { user } = useAuth();
+  const showSnackbar = useSnackbar();
+  const [tab, setTab] = useState<Tab>('mural');
+
+  const publish = () => {
+    if (!user) {
+      showSnackbar('Entre na sua conta para publicar uma oportunidade.');
+      router.navigate('/perfil');
+      return;
+    }
+    router.push('/oportunidade/nova');
+  };
+
+  return (
+    <SafeAreaView edges={['top']} className="flex-1 bg-background">
+      <View className="bg-card pt-2">
+        <Text className="px-4 pb-2 font-heading text-2xl font-bold text-brand">Oportunidades</Text>
+        <TopTabs tabs={TABS} value={tab} onChange={setTab} />
+      </View>
+      {tab === 'mural' ? <Mural /> : <Minhas />}
+      <Fab icon={Plus} label="Publicar oportunidade" onPress={publish} />
+    </SafeAreaView>
+  );
+}
+
+function Mural() {
+  const { user } = useAuth();
   const [category, setCategory] = useState('');
   const [state, setState] = useState('');
+  const [sheet, setSheet] = useState<'category' | 'state' | null>(null);
   const { data, isPending, isError, refetch, isRefetching } = useQuery({
     queryKey: ['opportunities', category, state],
     queryFn: () => getActiveOpportunities({ category, state }),
@@ -26,31 +71,32 @@ export default function OportunidadesScreen() {
     queryFn: () => getOwnProfile(user!.uid),
     enabled: Boolean(user),
   });
-
   // Same rule as the site: only professionals answer, never on their own post.
   const isProvider = Boolean(user && me?.isProvider);
+  const stateLabel = STATE_OPTIONS.find((option) => option.value === state)?.label;
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
-      <View className="gap-3 border-b border-border-subtle bg-card px-4 pb-4 pt-2">
-        <Text className="text-2xl font-bold text-brand">Oportunidades</Text>
-        <View className="flex-row gap-2">
-          <FilterSelect
-            label="Serviço"
-            allLabel="Todos os serviços"
-            options={CATEGORY_OPTIONS}
-            value={category}
-            onChange={setCategory}
-          />
-          <FilterSelect
-            label="Estado"
-            allLabel="Todos os estados"
-            options={STATE_OPTIONS}
-            value={state}
-            onChange={setState}
-          />
-        </View>
-      </View>
+    <>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="max-h-16 grow-0 border-b border-border-subtle bg-card"
+        contentContainerClassName="items-center gap-2 px-4 py-3">
+        <Chip
+          label={category || 'Serviço'}
+          selected={Boolean(category)}
+          menu
+          onPress={() => setSheet('category')}
+          accessibilityLabel={category ? `Serviço: ${category}` : 'Filtrar por serviço'}
+        />
+        <Chip
+          label={stateLabel || 'Estado'}
+          selected={Boolean(state)}
+          menu
+          onPress={() => setSheet('state')}
+          accessibilityLabel={stateLabel ? `Estado: ${stateLabel}` : 'Filtrar por estado'}
+        />
+      </ScrollView>
 
       {isPending ? (
         <View className="gap-3 p-4">
@@ -58,14 +104,7 @@ export default function OportunidadesScreen() {
           <OpportunityCardSkeleton />
         </View>
       ) : isError ? (
-        <View className="items-center gap-3 p-8">
-          <Text className="text-center text-muted-foreground">
-            Não foi possível carregar as oportunidades. Confira sua conexão.
-          </Text>
-          <Button variant="outline" onPress={() => refetch()}>
-            <Text>Tentar de novo</Text>
-          </Button>
-        </View>
+        <ErrorState onRetry={refetch} />
       ) : (
         <FlatList
           data={data}
@@ -80,7 +119,8 @@ export default function OportunidadesScreen() {
               }
             />
           )}
-          contentContainerClassName="gap-3 p-4"
+          // Room for the FAB over the last card.
+          contentContainerClassName="gap-3 p-4 pb-24"
           onRefresh={refetch}
           refreshing={isRefetching}
           ListHeaderComponent={
@@ -94,11 +134,130 @@ export default function OportunidadesScreen() {
             <Text className="p-8 text-center text-muted-foreground">
               {category || state
                 ? 'Nenhuma oportunidade com esses filtros.'
-                : 'Ainda não há oportunidades abertas.'}
+                : 'Ainda não há oportunidades abertas. Publique a primeira.'}
             </Text>
           }
         />
       )}
-    </SafeAreaView>
+
+      <OptionSheet
+        visible={sheet === 'category'}
+        title="Serviço"
+        options={CATEGORY_OPTIONS}
+        value={category}
+        allLabel="Todos os serviços"
+        onSelect={setCategory}
+        onClose={() => setSheet(null)}
+      />
+      <OptionSheet
+        visible={sheet === 'state'}
+        title="Estado"
+        options={STATE_OPTIONS}
+        value={state}
+        allLabel="Todos os estados"
+        onSelect={setState}
+        onClose={() => setSheet(null)}
+      />
+    </>
+  );
+}
+
+function Minhas() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const showSnackbar = useSnackbar();
+  const { data, isPending, isError, refetch, isRefetching } = useQuery({
+    queryKey: ['my-opportunities', user?.uid],
+    queryFn: () => getMyOpportunities(user!.uid),
+    enabled: Boolean(user),
+  });
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['my-opportunities'] });
+    queryClient.invalidateQueries({ queryKey: ['opportunities'] });
+  };
+  const status = useMutation({
+    mutationFn: ({ id, next }: { id: string; next: 'active' | 'closed' }) =>
+      setOpportunityStatus(id, next),
+    onSuccess: (_, { next }) => {
+      refresh();
+      showSnackbar(
+        next === 'closed'
+          ? 'Oportunidade encerrada. Profissionais não a verão mais.'
+          : 'Oportunidade reativada por mais 30 dias.'
+      );
+    },
+    onError: () => showSnackbar('Não foi possível atualizar a oportunidade.'),
+  });
+  const followUp = useMutation({
+    mutationFn: ({ id, answers }: { id: string; answers: Parameters<typeof answerFollowUp>[1] }) =>
+      answerFollowUp(id, answers),
+    onSuccess: (_, { answers }) => {
+      refresh();
+      showSnackbar(
+        answers.closeRequest
+          ? 'Obrigado. A oportunidade foi encerrada.'
+          : 'Obrigado pelo retorno. A oportunidade continua ativa.'
+      );
+    },
+    onError: () => showSnackbar('Não foi possível registrar sua resposta.'),
+  });
+
+  if (!user) {
+    return (
+      <View className="items-center gap-3 p-8">
+        <Text className="text-center text-muted-foreground">
+          Entre na sua conta para acompanhar as oportunidades que você publicou.
+        </Text>
+        <Button variant="outline" onPress={() => router.navigate('/perfil')}>
+          <Text>Entrar</Text>
+        </Button>
+      </View>
+    );
+  }
+  if (isPending) {
+    return (
+      <View className="gap-3 p-4">
+        <OpportunityCardSkeleton />
+      </View>
+    );
+  }
+  if (isError) return <ErrorState onRetry={refetch} />;
+
+  const busy = status.isPending || followUp.isPending;
+  return (
+    <FlatList
+      data={data}
+      keyExtractor={(opportunity) => opportunity.id!}
+      renderItem={({ item }) => (
+        <MyOpportunityCard
+          opportunity={item}
+          busy={busy}
+          onStatus={(next) => status.mutate({ id: item.id!, next })}
+          onFollowUp={(answers) => followUp.mutate({ id: item.id!, answers })}
+        />
+      )}
+      contentContainerClassName="gap-3 p-4 pb-24"
+      onRefresh={refetch}
+      refreshing={isRefetching}
+      ListEmptyComponent={
+        <Text className="p-8 text-center text-muted-foreground">
+          Você ainda não publicou oportunidades. Conte o que precisa e avise os profissionais do
+          seu estado.
+        </Text>
+      }
+    />
+  );
+}
+
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  return (
+    <View className="items-center gap-3 p-8">
+      <Text className="text-center text-muted-foreground">
+        Não foi possível carregar as oportunidades. Confira sua conexão.
+      </Text>
+      <Button variant="outline" onPress={onRetry}>
+        <Text>Tentar de novo</Text>
+      </Button>
+    </View>
   );
 }
