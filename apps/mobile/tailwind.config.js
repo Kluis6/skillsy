@@ -22,6 +22,11 @@ module.exports = {
       full: '9999px',
     },
     extend: {
+      // Same families as the site (Inter for text, Outfit for headings).
+      fontFamily: {
+        sans: ['Inter'],
+        heading: ['Outfit'],
+      },
       colors: {
         border: color('border'),
         'border-subtle': color('border-subtle'),

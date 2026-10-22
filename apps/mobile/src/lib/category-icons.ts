@@ -1,0 +1,85 @@
+import {
+  BookOpen,
+  Briefcase,
+  Cake,
+  Camera,
+  Car,
+  Coins,
+  Dog,
+  Dumbbell,
+  GraduationCap,
+  HardHat,
+  Hammer,
+  Heart,
+  HouseHeart,
+  Languages,
+  Laptop,
+  LayoutGrid,
+  Megaphone,
+  Music,
+  Palette,
+  PartyPopper,
+  Scale,
+  Scissors,
+  Settings,
+  Shirt,
+  ShoppingBag,
+  Sofa,
+  Sparkles,
+  Stethoscope,
+  Truck,
+  Utensils,
+  Wrench,
+  type LucideIcon,
+} from 'lucide-react-native';
+
+// Same icon per category as the site (components/category-carousel.tsx), so
+// each service keeps one icon across platforms.
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  Idiomas: Languages,
+  Tecnologia: Laptop,
+  Design: Palette,
+  Marketing: Megaphone,
+  Consultoria: Briefcase,
+  Vendas: ShoppingBag,
+  Aulas: BookOpen,
+  Cozinha: Utensils,
+  Doméstico: HouseHeart,
+  Limpeza: Sparkles,
+  Marcenaria: Sofa,
+  Manutenção: Wrench,
+  'Construção Civil': HardHat,
+  Beleza: Scissors,
+  Educação: GraduationCap,
+  Saúde: Stethoscope,
+  Eventos: PartyPopper,
+  Jurídico: Scale,
+  Financeiro: Coins,
+  Assistência: Settings,
+  Reformas: Hammer,
+  Automotivo: Car,
+  Moda: Shirt,
+  'Bem Estar': Heart,
+  'Pet Care': Dog,
+  Fotografia: Camera,
+  Música: Music,
+  Esportes: Dumbbell,
+  Festas: Cake,
+  Transporte: Truck,
+};
+
+export function categoryIcon(category: string): LucideIcon {
+  return CATEGORY_ICONS[category] ?? LayoutGrid;
+}
+
+/** Shortcuts on the search screen: the home services people ask for most
+ * (cleaning, repairs, painting, furniture, construction, moving, beauty). */
+export const POPULAR_CATEGORIES = [
+  'Limpeza',
+  'Manutenção',
+  'Reformas',
+  'Marcenaria',
+  'Construção Civil',
+  'Transporte',
+  'Beleza',
+] as const;
