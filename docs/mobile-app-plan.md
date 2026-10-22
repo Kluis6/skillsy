@@ -24,6 +24,10 @@ Decidido em 19/10/2026. Escopo da primeira versão: **núcleo da comunidade + op
 
 Plano B para componentes, se o Reusables não funcionar no SDK 58: **gluestack-ui** (mesma ideia de copiar e editar).
 
+## Design
+
+Material 3 adaptado à identidade da Skillsy (20/10): Inter/Outfit, cantos quadrados, cores do site, sombras cinza, um ícone por significado. Barra de busca, chips de filtro com painel inferior, FAB, snackbar, abas superiores, áreas de toque de 48dp. Do GetNinjas: atalhos dos serviços mais procurados, publicação em passos e acompanhamento das próprias oportunidades — sem moedas nem contato liberado antes do acordo.
+
 ## Fases
 
 ### 0. Monorepo
@@ -44,21 +48,21 @@ Plano B para componentes, se o Reusables não funcionar no SDK 58: **gluestack-u
 - [x] Build local de debug (`npx expo run:android`, sem Expo Go nem EAS) — instalar no celular por USB
 
 ### 3. Conta e perfil
-- [x] Login por e-mail
-- [ ] Login com Google; recuperar senha
+- [x] Login por e-mail e recuperar senha; criar conta abre o site
+- [ ] Login com Google (precisa do SHA-1 do app no Firebase)
 - [x] Perfil público: foto, capa, nota, indicações, sobre, atendimento, galeria, botão de WhatsApp (abre da lista sem nova leitura)
-- [ ] Avaliações e indicações no perfil
-- [ ] Editar o próprio perfil, com upload de foto e checklist de prontidão
+- [x] Avaliações e indicações no perfil (avaliar, indicar, conectar)
+- [ ] Editar o próprio perfil no app, com upload de foto (hoje abre o site)
 
 ### 4. Comunidade
 - [x] Busca por termo com a mesma regra e ordenação do site
 - [x] Filtros de serviço e estado; perfil completo ao tocar no card
-- [ ] Avaliar e indicar (mesmas regras do Firestore)
-- [ ] Contatos salvos
+- [x] Avaliar e indicar (mesmas regras do Firestore)
+- [x] Contatos salvos (Conectar no perfil, lista na aba Contatos)
 
 ### 5. Oportunidades e push (Cloud Functions já publicadas em 20/10)
 - [x] Listar oportunidades com filtros; profissional logado responde pelo WhatsApp (mesma regra do site)
-- [ ] Publicar e encerrar oportunidades
+- [x] Publicar em passos, encerrar, reativar e responder o lembrete de 20 dias
 - [ ] Token de push em `users/{uid}/devices`, com regras
 - [ ] Functions no banco novo enviando push pelo Expo; tocar na notificação abre a oportunidade
 

@@ -10,10 +10,19 @@ import { formatFirestoreDate } from '@skillsy/shared/opportunities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { Clock, MapPin, MessageCircle, Star, ThumbsUp } from 'lucide-react-native';
+import {
+  Clock,
+  MapPin,
+  MessageCircle,
+  Star,
+  ThumbsUp,
+  UserMinus,
+  UserPlus,
+} from 'lucide-react-native';
 import { useState, type ReactNode } from 'react';
 import { ActivityIndicator, Linking, ScrollView, useColorScheme, View } from 'react-native';
 
+import { ActionButton } from '@/components/action-button';
 import { RatingSheet } from '@/components/rating-sheet';
 import { useSnackbar } from '@/components/snackbar';
 import { Stars } from '@/components/stars';
@@ -21,6 +30,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useAuth } from '@/lib/auth';
+import { setContact } from '@/lib/contacts';
 import { getOwnProfile, getPublicProfile } from '@/lib/providers';
 import {
   getRatings,
@@ -95,6 +105,25 @@ export default function ProfissionalScreen() {
       showSnackbar(
         error instanceof Error ? error.message : 'Não foi possível registrar a indicação.'
       ),
+  });
+  const connected = Boolean(me?.contacts?.includes(id));
+  const connect = useMutation({
+    mutationFn: (next: boolean) => setContact(user!.uid, id, next),
+    onSuccess: (_, next) => {
+      queryClient.setQueryData(['me', user?.uid], (current: typeof me) =>
+        current
+          ? {
+              ...current,
+              contacts: next
+                ? [...(current.contacts || []), id]
+                : (current.contacts || []).filter((contact) => contact !== id),
+            }
+          : current
+      );
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      showSnackbar(next ? 'Adicionado aos contatos.' : 'Removido dos contatos.');
+    },
+    onError: () => showSnackbar('Não foi possível atualizar seus contatos.'),
   });
   const rate = useMutation({
     mutationFn: ({ score, comment }: { score: number; comment: string }) =>
@@ -224,36 +253,43 @@ export default function ProfissionalScreen() {
             Este é o seu perfil. Indicações e avaliações vêm de outros membros.
           </Text>
         ) : (
-          <View className="flex-row gap-3">
-            <Button
-              variant="outline"
-              className={recommended ? 'flex-1 border-primary bg-primary/10' : 'flex-1'}
+          <View className="flex-row">
+            <ActionButton
+              icon={connected ? UserMinus : UserPlus}
+              label={connected ? 'Desconectar' : 'Conectar'}
+              active={connected}
+              disabled={connect.isPending}
+              onPress={() =>
+                requireUser(
+                  () => connect.mutate(!connected),
+                  'Entre na sua conta para salvar contatos.'
+                )
+              }
+            />
+            <ActionButton
+              icon={ThumbsUp}
+              label={recommended ? 'Indicado' : 'Indicar'}
+              active={Boolean(recommended)}
               disabled={recommend.isPending}
-              accessibilityState={{ selected: Boolean(recommended) }}
               onPress={() =>
                 requireUser(
                   () => recommend.mutate(),
                   'Entre na sua conta para indicar profissionais.'
                 )
-              }>
-              <ThumbsUp size={16} className={recommended ? 'text-primary' : 'text-foreground'} />
-              <Text className={recommended ? 'text-primary' : undefined}>
-                {recommended ? 'Indicado' : 'Indicar'}
-              </Text>
-            </Button>
-            <Button
-              variant="outline"
-              className="flex-1"
+              }
+            />
+            <ActionButton
+              icon={Star}
+              label={myRating ? 'Avaliado' : 'Avaliar'}
+              active={Boolean(myRating)}
               disabled={Boolean(myRating)}
               onPress={() =>
                 requireUser(() => {
                   rate.reset();
                   setRatingOpen(true);
                 }, 'Entre na sua conta para avaliar profissionais.')
-              }>
-              <Star size={16} className="text-foreground" />
-              <Text>{myRating ? 'Avaliado' : 'Avaliar'}</Text>
-            </Button>
+              }
+            />
           </View>
         )}
 
