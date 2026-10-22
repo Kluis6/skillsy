@@ -81,7 +81,7 @@ export function BenefitsSection() {
               variants={itemVariants}
               className="flex gap-4 will-change-transform"
             >
-              <div className="flex max-w-3xl flex-col space-y-4">
+              <div className="flex  flex-col space-y-4">
                 <h3 className="text-xl font-heading font-bold text-text-main md:text-2xl lg:text-3xl">
                   Uma rede feita por pessoas
                 </h3>
@@ -98,7 +98,7 @@ export function BenefitsSection() {
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
             variants={contentVariants}
-            className="col-span-12 grid w-full grid-cols-1 gap-4 will-change-transform md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6"
+            className="col-span-12 grid w-full grid-cols-1 gap-4 will-change-transform md:grid-cols-1 md:gap-5 lg:grid-cols-3 lg:gap-6"
           >
             {benefits.map((benefit) => (
               <motion.div key={benefit.title} variants={cardVariants}>

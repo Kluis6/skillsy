@@ -30,10 +30,10 @@ export function FeatureCard({
         className,
       )}
     >
-      <div className="flex w-1/3 max-w-32 shrink-0 items-center justify-center bg-primary/10">
-        <Icon className="size-7 text-primary" aria-hidden />
+      <div className="flex w-12 sm:w-14 md:w-22  shrink-0 items-center justify-center bg-primary/10">
+        <Icon className="size-7 md:size-10 lg:size-12 text-primary" aria-hidden />
       </div>
-      <div className="min-w-0 space-y-2 p-4 md:p-6">
+      <div className="w-auto space-y-2 p-4 md:p-6">
         <Title className="font-heading text-lg font-bold text-text-main md:text-xl">
           {title}
         </Title>
