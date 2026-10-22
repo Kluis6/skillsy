@@ -1,3 +1,4 @@
+import { whatsappUrl } from '@skillsy/shared/contact';
 import {
   formatRating,
   formatRecommendationCount,
@@ -5,25 +6,115 @@ import {
   nameInitial,
   providerRoleLabel,
 } from '@skillsy/shared/format';
-import { whatsappUrl } from '@skillsy/shared/contact';
-import { useQuery } from '@tanstack/react-query';
+import { formatFirestoreDate } from '@skillsy/shared/opportunities';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Clock, MapPin, MessageCircle, Star, ThumbsUp } from 'lucide-react-native';
+import { useState, type ReactNode } from 'react';
 import { ActivityIndicator, Linking, ScrollView, useColorScheme, View } from 'react-native';
 
+import { RatingSheet } from '@/components/rating-sheet';
+import { useSnackbar } from '@/components/snackbar';
+import { Stars } from '@/components/stars';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { getPublicProfile } from '@/lib/providers';
+import { useAuth } from '@/lib/auth';
+import { getOwnProfile, getPublicProfile } from '@/lib/providers';
+import {
+  getRatings,
+  getRecommendations,
+  hasRecommended,
+  submitRating,
+  toggleRecommendation,
+} from '@/lib/reviews';
 import { THEME } from '@/lib/theme';
 
 export default function ProfissionalScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colors = THEME[useColorScheme() === 'dark' ? 'dark' : 'light'];
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const showSnackbar = useSnackbar();
+  const [ratingOpen, setRatingOpen] = useState(false);
+
   const { data: provider, isPending } = useQuery({
     queryKey: ['profile', id],
     queryFn: () => getPublicProfile(id),
+  });
+  const { data: ratings } = useQuery({
+    queryKey: ['ratings', id],
+    queryFn: () => getRatings(id),
+    enabled: Boolean(provider),
+  });
+  const { data: recommendations } = useQuery({
+    queryKey: ['recommendations', id],
+    queryFn: () => getRecommendations(id),
+    enabled: Boolean(provider),
+  });
+  const { data: me } = useQuery({
+    queryKey: ['me', user?.uid],
+    queryFn: () => getOwnProfile(user!.uid),
+    enabled: Boolean(user),
+  });
+  const { data: recommended } = useQuery({
+    queryKey: ['recommended', id, user?.uid],
+    queryFn: () => hasRecommended(id, user!.uid),
+    enabled: Boolean(user && provider),
+  });
+
+  // Counters on the cached profile change right away; the lists reload.
+  const refreshProfile = (patch: (current: typeof provider) => typeof provider) => {
+    queryClient.setQueryData(['profile', id], patch);
+    queryClient.invalidateQueries({ queryKey: ['providers'] });
+  };
+  const recommend = useMutation({
+    mutationFn: () =>
+      toggleRecommendation(user!.uid, id, {
+        name: me?.name || user?.displayName || '',
+        photoURL: me?.photoURL || '',
+      }),
+    onSuccess: (added) => {
+      queryClient.setQueryData(['recommended', id, user?.uid], added);
+      refreshProfile((current) =>
+        current
+          ? {
+              ...current,
+              recommendationCount: Math.max(
+                0,
+                (current.recommendationCount || 0) + (added ? 1 : -1)
+              ),
+            }
+          : current
+      );
+      queryClient.invalidateQueries({ queryKey: ['recommendations', id] });
+      showSnackbar(added ? 'Indicação registrada. Obrigado!' : 'Indicação removida.');
+    },
+    onError: (error) =>
+      showSnackbar(
+        error instanceof Error ? error.message : 'Não foi possível registrar a indicação.'
+      ),
+  });
+  const rate = useMutation({
+    mutationFn: ({ score, comment }: { score: number; comment: string }) =>
+      submitRating(user!.uid, id, score, comment),
+    onSuccess: (_, { score }) => {
+      setRatingOpen(false);
+      refreshProfile((current) => {
+        if (!current) return current;
+        const reviewCount = (current.reviewCount || 0) + 1;
+        const ratingSum = (current.ratingSum || 0) + score;
+        return {
+          ...current,
+          reviewCount,
+          ratingSum,
+          rating: Math.round((ratingSum / reviewCount) * 10) / 10,
+        };
+      });
+      queryClient.invalidateQueries({ queryKey: ['ratings', id] });
+      showSnackbar('Avaliação enviada. Obrigado!');
+    },
   });
 
   if (isPending) {
@@ -43,6 +134,15 @@ export default function ProfissionalScreen() {
   const place = [provider.publicCity, provider.publicState].filter(Boolean).join(' · ');
   const whatsapp = whatsappUrl(provider.whatsapp || '');
   const gallery = (provider.gallery || []).filter((item) => item.url);
+  const isOwn = user?.uid === provider.uid;
+  const myRating = ratings?.find((rating) => rating.fromId === user?.uid);
+
+  // Signed-out members are sent to Perfil to sign in, like the FAB.
+  const requireUser = (action: () => void, message: string) => {
+    if (user) return action();
+    showSnackbar(message);
+    router.navigate('/perfil');
+  };
 
   return (
     <ScrollView className="flex-1 bg-background" contentContainerClassName="pb-8">
@@ -57,7 +157,13 @@ export default function ProfissionalScreen() {
         {provider.photoURL ? (
           <Image
             source={{ uri: provider.photoURL }}
-            style={{ width: 96, height: 96, borderRadius: 48, borderWidth: 4, borderColor: colors.card }}
+            style={{
+              width: 96,
+              height: 96,
+              borderRadius: 48,
+              borderWidth: 4,
+              borderColor: colors.card,
+            }}
             contentFit="cover"
           />
         ) : (
@@ -69,7 +175,7 @@ export default function ProfissionalScreen() {
         )}
 
         <View className="gap-1">
-          <Text className="text-2xl font-bold leading-tight">{title}</Text>
+          <Text className="font-heading text-2xl font-bold leading-tight">{title}</Text>
           {provider.companyName ? (
             <Text className="text-sm text-muted-foreground">{provider.name}</Text>
           ) : null}
@@ -113,6 +219,44 @@ export default function ProfissionalScreen() {
           </Text>
         )}
 
+        {isOwn ? (
+          <Text className="text-sm text-muted-foreground">
+            Este é o seu perfil. Indicações e avaliações vêm de outros membros.
+          </Text>
+        ) : (
+          <View className="flex-row gap-3">
+            <Button
+              variant="outline"
+              className={recommended ? 'flex-1 border-primary bg-primary/10' : 'flex-1'}
+              disabled={recommend.isPending}
+              accessibilityState={{ selected: Boolean(recommended) }}
+              onPress={() =>
+                requireUser(
+                  () => recommend.mutate(),
+                  'Entre na sua conta para indicar profissionais.'
+                )
+              }>
+              <ThumbsUp size={16} className={recommended ? 'text-primary' : 'text-foreground'} />
+              <Text className={recommended ? 'text-primary' : undefined}>
+                {recommended ? 'Indicado' : 'Indicar'}
+              </Text>
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1"
+              disabled={Boolean(myRating)}
+              onPress={() =>
+                requireUser(() => {
+                  rate.reset();
+                  setRatingOpen(true);
+                }, 'Entre na sua conta para avaliar profissionais.')
+              }>
+              <Star size={16} className="text-foreground" />
+              <Text>{myRating ? 'Avaliado' : 'Avaliar'}</Text>
+            </Button>
+          </View>
+        )}
+
         {provider.bio ? (
           <Section title="Sobre">
             <Text className="leading-6 text-muted-foreground">{provider.bio}</Text>
@@ -138,8 +282,8 @@ export default function ProfissionalScreen() {
             ) : null}
             {provider.experienceYears ? (
               <Text className="text-muted-foreground">
-                {provider.experienceYears}{' '}
-                {Number(provider.experienceYears) === 1 ? 'ano' : 'anos'} de experiência
+                {provider.experienceYears} {Number(provider.experienceYears) === 1 ? 'ano' : 'anos'}{' '}
+                de experiência
               </Text>
             ) : null}
           </Section>
@@ -147,10 +291,17 @@ export default function ProfissionalScreen() {
 
         {gallery.length ? (
           <Section title="Galeria">
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-3">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerClassName="gap-3">
               {gallery.map((item, index) => (
                 <View key={`${index}-${item.url.slice(-12)}`} className="w-44 gap-1">
-                  <Image source={{ uri: item.url }} style={{ width: 176, height: 132 }} contentFit="cover" />
+                  <Image
+                    source={{ uri: item.url }}
+                    style={{ width: 176, height: 132 }}
+                    contentFit="cover"
+                  />
                   {item.description ? (
                     <Text className="text-xs text-muted-foreground" numberOfLines={2}>
                       {item.description}
@@ -161,15 +312,84 @@ export default function ProfissionalScreen() {
             </ScrollView>
           </Section>
         ) : null}
+
+        <Section title="Avaliações">
+          {reviewCount > 0 ? (
+            <View className="flex-row items-center gap-3">
+              <Text className="font-heading text-4xl font-bold">
+                {formatRating(provider.rating)}
+              </Text>
+              <View className="gap-1">
+                <Stars value={Math.round(provider.rating || 0)} />
+                <Text className="text-sm text-muted-foreground">
+                  {formatReviewCount(reviewCount)}
+                </Text>
+              </View>
+            </View>
+          ) : null}
+          {ratings?.length ? (
+            ratings.slice(0, 10).map((rating) => (
+              <View key={rating.id} className="gap-1 border-t border-border-subtle pt-3">
+                <View className="flex-row items-center justify-between gap-2">
+                  <Text className="flex-1 font-semibold" numberOfLines={1}>
+                    {rating.authorName}
+                  </Text>
+                  <Text className="text-xs text-muted-foreground">
+                    {formatFirestoreDate(rating.createdAt)}
+                  </Text>
+                </View>
+                <Stars value={rating.score} size={14} />
+                {rating.comment ? (
+                  <Text className="text-sm leading-5 text-muted-foreground">{rating.comment}</Text>
+                ) : null}
+              </View>
+            ))
+          ) : (
+            <Text className="text-sm text-muted-foreground">
+              Ainda sem avaliações. Contratou este profissional? Conte como foi.
+            </Text>
+          )}
+        </Section>
+
+        {recommendations?.length ? (
+          <Section title="Indicado por">
+            {recommendations.map((item) => (
+              <View key={item.recommenderId} className="flex-row items-center gap-3">
+                {item.recommenderPhotoURL ? (
+                  <Image
+                    source={{ uri: item.recommenderPhotoURL }}
+                    style={{ width: 32, height: 32, borderRadius: 16 }}
+                  />
+                ) : (
+                  <View className="size-8 items-center justify-center rounded-full bg-primary/10">
+                    <Text className="text-xs font-bold text-primary">
+                      {nameInitial(item.recommenderName)}
+                    </Text>
+                  </View>
+                )}
+                <Text className="flex-1">{item.recommenderName || 'Membro Skillsy'}</Text>
+              </View>
+            ))}
+          </Section>
+        ) : null}
       </View>
+
+      <RatingSheet
+        visible={ratingOpen}
+        providerName={provider.name.split(' ')[0]}
+        submitting={rate.isPending}
+        error={rate.error instanceof Error ? rate.error.message : undefined}
+        onSubmit={(score, comment) => rate.mutate({ score, comment })}
+        onClose={() => setRatingOpen(false)}
+      />
     </ScrollView>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <View className="gap-3 border border-border-subtle bg-card p-4">
-      <Text className="text-lg font-bold">{title}</Text>
+      <Text className="font-heading text-lg font-bold">{title}</Text>
       {children}
     </View>
   );

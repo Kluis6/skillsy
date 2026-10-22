@@ -4,26 +4,24 @@ import {
   formatReviewCount,
   nameInitial,
   providerRoleLabel,
-} from "@skillsy/shared/format";
-import { whatsappUrl } from "@skillsy/shared/contact";
-import type { UserProfile } from "@skillsy/shared/types";
-import { Image } from "expo-image";
-import { MapPin, MessageCircle, Star, ThumbsUp } from "lucide-react-native";
-import { Linking, Pressable, View } from "react-native";
+} from '@skillsy/shared/format';
+import { whatsappUrl } from '@skillsy/shared/contact';
+import type { UserProfile } from '@skillsy/shared/types';
+import { Image } from 'expo-image';
+import { MapPin, MessageCircle, Star, ThumbsUp } from 'lucide-react-native';
+import { Linking, Pressable, View } from 'react-native';
 
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Text } from "@/components/ui/text";
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Text } from '@/components/ui/text';
 
 type ProviderCardProps = { provider: UserProfile; onPress?: () => void };
 
 export function ProviderCard({ provider, onPress }: ProviderCardProps) {
   const reviewCount = provider.reviewCount || 0;
   const recommendationCount = provider.recommendationCount || 0;
-  const place = [provider.publicCity, provider.publicState]
-    .filter(Boolean)
-    .join(" · ");
-  const whatsapp = whatsappUrl(provider.whatsapp || "");
+  const place = [provider.publicCity, provider.publicState].filter(Boolean).join(' · ');
+  const whatsapp = whatsappUrl(provider.whatsapp || '');
 
   return (
     <View className="border border-border-subtle bg-card shadow-sm shadow-black/5">
@@ -33,8 +31,7 @@ export function ProviderCard({ provider, onPress }: ProviderCardProps) {
         onPress={onPress}
         accessibilityRole="link"
         accessibilityHint="Abre o perfil completo"
-        className="gap-3 p-4 active:bg-accent"
-      >
+        className="gap-3 p-4 active:bg-accent">
         <View className="flex-row items-center gap-3">
           {provider.photoURL ? (
             <Image
@@ -64,9 +61,7 @@ export function ProviderCard({ provider, onPress }: ProviderCardProps) {
           {reviewCount > 0 ? (
             <View className="flex-row items-center gap-1">
               <Star size={14} className="text-highlight" fill="currentColor" />
-              <Text className="text-sm font-semibold">
-                {formatRating(provider.rating)}
-              </Text>
+              <Text className="text-sm font-semibold">{formatRating(provider.rating)}</Text>
               <Text className="text-sm text-muted-foreground">
                 ({formatReviewCount(reviewCount)})
               </Text>
@@ -81,9 +76,7 @@ export function ProviderCard({ provider, onPress }: ProviderCardProps) {
             </View>
           ) : null}
           {reviewCount === 0 && recommendationCount === 0 ? (
-            <Text className="text-sm text-muted-foreground">
-              Novo na comunidade
-            </Text>
+            <Text className="text-sm text-muted-foreground">Novo na comunidade</Text>
           ) : null}
           {place ? (
             <View className="flex-row items-center gap-1">
