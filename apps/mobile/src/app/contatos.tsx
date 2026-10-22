@@ -11,6 +11,7 @@ import { useAuth } from '@/lib/auth';
 import { getContacts } from '@/lib/contacts';
 import { getOwnProfile } from '@/lib/providers';
 
+/** Meus contatos: the professionals the member connected with ("Conectar"). */
 export default function ContatosScreen() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -32,10 +33,7 @@ export default function ContatosScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
-      <View className="border-b border-border-subtle bg-card px-4 pb-3 pt-2">
-        <Text className="font-heading text-2xl font-bold text-brand">Contatos</Text>
-      </View>
+    <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
       {!user ? (
         <View className="items-center gap-3 p-8">
           <Text className="text-center text-muted-foreground">
@@ -69,7 +67,7 @@ export default function ContatosScreen() {
                 Nenhum contato ainda. Toque em Conectar no perfil de um profissional para guardá-lo
                 aqui.
               </Text>
-              <Button variant="outline" onPress={() => router.navigate('/')}>
+              <Button variant="outline" onPress={() => router.navigate('/buscar')}>
                 <Text>Buscar profissionais</Text>
               </Button>
             </View>

@@ -1,11 +1,14 @@
 import { NativeTabs } from 'expo-router/native-tabs';
 import { useColorScheme } from 'react-native';
 
+import { useAuth } from '@/lib/auth';
 import { THEME } from '@/lib/theme';
 
 // Android bottom navigation (Material). The web version is app-tabs.web.tsx.
+// Like GetNinjas, the account tab reads "Entrar" until the member signs in.
 export default function AppTabs() {
   const colors = THEME[useColorScheme() === 'dark' ? 'dark' : 'light'];
+  const { user } = useAuth();
 
   return (
     <NativeTabs
@@ -13,6 +16,10 @@ export default function AppTabs() {
       indicatorColor={colors.accent}
       labelStyle={{ selected: { color: colors.primary } }}>
       <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Início</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon md="home" selectedColor={colors.primary} />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="buscar">
         <NativeTabs.Trigger.Label>Buscar</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon md="search" selectedColor={colors.primary} />
       </NativeTabs.Trigger>
@@ -20,12 +27,8 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Label>Oportunidades</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon md="work" selectedColor={colors.primary} />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="contatos">
-        <NativeTabs.Trigger.Label>Contatos</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon md="contacts" selectedColor={colors.primary} />
-      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="perfil">
-        <NativeTabs.Trigger.Label>Perfil</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>{user ? 'Perfil' : 'Entrar'}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon md="person" selectedColor={colors.primary} />
       </NativeTabs.Trigger>
     </NativeTabs>

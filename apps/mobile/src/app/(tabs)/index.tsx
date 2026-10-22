@@ -1,237 +1,164 @@
 import type { UserProfile } from '@skillsy/shared/types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { LayoutGrid, Search, X } from 'lucide-react-native';
-import { useState } from 'react';
-import { FlatList, Pressable, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Chip } from '@/components/chip';
-import { OptionSheet } from '@/components/option-sheet';
-import { ProviderCard, ProviderCardSkeleton } from '@/components/provider-card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { CategoryTile } from '@/components/home/category-tile';
+import { PromoBanner } from '@/components/home/promo-banner';
+import { ProviderTile } from '@/components/home/provider-tile';
+import { SearchLauncher } from '@/components/home/search-launcher';
+import { SectionHeader } from '@/components/home/section-header';
+import { FeaturedServiceCard, ServiceCard } from '@/components/home/service-card';
+import { useSnackbar } from '@/components/snackbar';
 import { Text } from '@/components/ui/text';
+import { useAuth } from '@/lib/auth';
 import { categoryIcon, POPULAR_CATEGORIES } from '@/lib/category-icons';
-import { CATEGORY_OPTIONS, STATE_OPTIONS } from '@/lib/filters';
-import { searchProviders } from '@/lib/providers';
+import { getOwnProfile, searchProviders } from '@/lib/providers';
+import {
+  BANNER_IMAGES,
+  FEATURED_SERVICE,
+  SERVICE_SECTIONS,
+  type ServiceSection,
+} from '@/lib/service-catalog';
+import { openSite } from '@/lib/site';
 
-type OpenSheet = 'category' | 'state' | null;
-
-export default function BuscarScreen() {
+/** Início, modeled on GetNinjas' home: search, shortcuts, service carousels
+ * and calls to action, in Skillsy's identity and vocabulary. */
+export default function InicioScreen() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [draft, setDraft] = useState('');
-  const [term, setTerm] = useState('');
-  const [category, setCategory] = useState('');
-  const [state, setState] = useState('');
-  const [sheet, setSheet] = useState<OpenSheet>(null);
-  const { data, isPending, isError, refetch, isRefetching } = useQuery({
-    queryKey: ['providers', term, category, state],
-    queryFn: () => searchProviders({ term, category, state }),
+  const showSnackbar = useSnackbar();
+  const { data: me } = useQuery({
+    queryKey: ['me', user?.uid],
+    queryFn: () => getOwnProfile(user!.uid),
+    enabled: Boolean(user),
+  });
+  // Same query as an empty search on Buscar, so the cache is shared.
+  const { data: providers } = useQuery({
+    queryKey: ['providers', '', '', ''],
+    queryFn: () => searchProviders({ term: '' }),
   });
 
-  const filtered = Boolean(term || category || state);
-  const stateLabel = STATE_OPTIONS.find((option) => option.value === state)?.label;
-
-  const submit = () => setTerm(draft.trim());
-  const clearSearch = () => {
-    setDraft('');
-    setTerm('');
-  };
-  const clearAll = () => {
-    clearSearch();
-    setCategory('');
-    setState('');
-  };
-  // Shortcuts search by name instead of filtering by category: many
-  // professionals pick "Outros" and describe the trade only in the profession
-  // or company name, which the search tokens cover.
-  const searchService = (service: string) => {
-    setDraft(service);
-    setTerm(service);
-  };
+  const search = (q: string) => router.navigate({ pathname: '/buscar', params: { q } });
   const openProfile = (provider: UserProfile) => {
-    // The list already has the public profile: no extra read to open it.
     queryClient.setQueryData(['profile', provider.uid], provider);
     router.push({ pathname: '/profissional/[id]', params: { id: provider.uid } });
   };
+  const publish = () => {
+    if (user) return router.push('/oportunidade/nova');
+    showSnackbar('Entre na sua conta para publicar uma oportunidade.');
+    router.navigate('/perfil');
+  };
+  const firstName = (me?.name || user?.displayName || '').trim().split(' ')[0];
+  const [first, second, third, fourth] = SERVICE_SECTIONS;
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-background">
-      <View className="gap-3 border-b border-border-subtle bg-card pb-3 pt-2">
-        <Text className="px-4 font-heading text-2xl font-bold text-brand">Skillsy</Text>
-
-        <View className="justify-center px-4">
-          <Input
-            value={draft}
-            onChangeText={setDraft}
-            onSubmitEditing={submit}
-            placeholder="O que você procura? Pintor, eletricista…"
-            returnKeyType="search"
-            autoCapitalize="none"
-            autoCorrect={false}
-            className="px-11"
-            accessibilityLabel="Buscar profissionais"
-          />
-          <Search size={20} className="absolute left-7 text-muted-foreground" />
-          {draft ? (
-            <Pressable
-              onPress={clearSearch}
-              className="absolute right-4 size-12 items-center justify-center"
-              accessibilityRole="button"
-              accessibilityLabel="Limpar busca">
-              <X size={18} className="text-muted-foreground" />
-            </Pressable>
-          ) : null}
-        </View>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerClassName="gap-2 px-4">
-          <Chip
-            label={category || 'Serviço'}
-            selected={Boolean(category)}
-            menu
-            onPress={() => setSheet('category')}
-            accessibilityLabel={category ? `Serviço: ${category}` : 'Filtrar por serviço'}
-          />
-          <Chip
-            label={stateLabel || 'Estado'}
-            selected={Boolean(state)}
-            menu
-            onPress={() => setSheet('state')}
-            accessibilityLabel={stateLabel ? `Estado: ${stateLabel}` : 'Filtrar por estado'}
-          />
-          {filtered ? <Chip label="Limpar" onPress={clearAll} /> : null}
-        </ScrollView>
-      </View>
-
-      {isError ? (
-        <View className="items-center gap-3 p-8">
-          <Text className="text-center text-muted-foreground">
-            Não foi possível carregar os profissionais. Confira sua conexão.
+      <ScrollView contentContainerClassName="gap-8 pb-8">
+        <View className="gap-5 border-b border-border-subtle bg-card pb-6 pt-4">
+          <Text className="px-4 font-heading text-3xl font-bold">
+            {firstName ? `Olá, ${firstName}` : 'Boas-vindas'}
           </Text>
-          <Button variant="outline" onPress={() => refetch()}>
-            <Text>Tentar de novo</Text>
-          </Button>
+          <SearchLauncher
+            onPress={() => router.navigate({ pathname: '/buscar', params: { focar: '1' } })}
+          />
+          <View className="flex-row gap-3 px-4">
+            {POPULAR_CATEGORIES.slice(0, 4).map((category) => (
+              <CategoryTile
+                key={category}
+                label={category}
+                icon={categoryIcon(category)}
+                onPress={() => search(category)}
+              />
+            ))}
+          </View>
         </View>
-      ) : (
-        <FlatList
-          data={isPending ? [] : data}
-          keyExtractor={(provider) => provider.uid}
-          renderItem={({ item }) => (
-            <ProviderCard provider={item} onPress={() => openProfile(item)} />
-          )}
-          contentContainerClassName="gap-3 p-4"
-          onRefresh={refetch}
-          refreshing={isRefetching}
-          keyboardShouldPersistTaps="handled"
-          ListHeaderComponent={
-            <View className="gap-4">
-              {filtered ? null : (
-                <PopularServices
-                  onSelect={searchService}
-                  onShowAll={() => setSheet('category')}
-                />
-              )}
-              <Text className="font-heading text-lg font-semibold">
-                {!filtered
-                  ? 'Profissionais da comunidade'
-                  : isPending
-                    ? 'Buscando…'
-                    : `${data?.length ?? 0} ${data?.length === 1 ? 'profissional encontrado' : 'profissionais encontrados'}`}
-              </Text>
-            </View>
-          }
-          ListEmptyComponent={
-            isPending ? (
-              <View className="gap-3">
-                <ProviderCardSkeleton />
-                <ProviderCardSkeleton />
-              </View>
-            ) : (
-              <View className="items-center gap-3 py-8">
-                <Text className="text-center text-muted-foreground">
-                  Nenhum profissional encontrado. Tente um termo mais genérico ou outro filtro.
-                </Text>
-                <Button variant="outline" onPress={clearAll}>
-                  <Text>Limpar filtros</Text>
-                </Button>
-              </View>
-            )
-          }
-        />
-      )}
 
-      <OptionSheet
-        visible={sheet === 'category'}
-        title="Serviço"
-        options={CATEGORY_OPTIONS}
-        value={category}
-        allLabel="Todos os serviços"
-        onSelect={setCategory}
-        onClose={() => setSheet(null)}
-      />
-      <OptionSheet
-        visible={sheet === 'state'}
-        title="Estado"
-        options={STATE_OPTIONS}
-        value={state}
-        allLabel="Todos os estados"
-        onSelect={setState}
-        onClose={() => setSheet(null)}
-      />
+        {user ? null : (
+          <PromoBanner
+            title="Acesse agora"
+            description="Entre ou crie sua conta e acompanhe suas oportunidades."
+            onPress={() => router.navigate('/perfil')}
+          />
+        )}
+
+        <Carousel section={first} onSearch={search} />
+        <FeaturedServiceCard
+          title={FEATURED_SERVICE.title}
+          description={FEATURED_SERVICE.description}
+          image={FEATURED_SERVICE.image}
+          onPress={() => search(FEATURED_SERVICE.search)}
+        />
+        <Carousel section={second} onSearch={search} />
+
+        {providers?.length ? (
+          <View className="gap-3">
+            <SectionHeader title="Profissionais da comunidade" />
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerClassName="gap-3 px-4">
+              {providers.slice(0, 10).map((provider) => (
+                <ProviderTile
+                  key={provider.uid}
+                  provider={provider}
+                  onPress={() => openProfile(provider)}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        ) : null}
+
+        {me?.isProvider ? null : (
+          <PromoBanner
+            tone="brand"
+            image={BANNER_IMAGES.comunidade}
+            title="Seja profissional"
+            description="Divulgue seu trabalho para a comunidade e receba avisos de oportunidades. Sem custo."
+            actionLabel="Quero anunciar"
+            onPress={() => (user ? openSite('/profile') : router.navigate('/perfil'))}
+          />
+        )}
+
+        <Carousel section={third} onSearch={search} />
+        <Carousel section={fourth} onSearch={search} />
+
+        <PromoBanner
+          image={BANNER_IMAGES.procurando}
+          title="O que você precisa?"
+          description="Publique uma oportunidade e avise os profissionais do mesmo serviço e estado."
+          actionLabel="Publicar oportunidade"
+          onPress={publish}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-function PopularServices({
-  onSelect,
-  onShowAll,
+function Carousel({
+  section,
+  onSearch,
 }: {
-  onSelect: (category: string) => void;
-  onShowAll: () => void;
+  section: ServiceSection;
+  onSearch: (q: string) => void;
 }) {
   return (
     <View className="gap-3">
-      <Text className="font-heading text-lg font-semibold">Serviços mais procurados</Text>
-      <View className="flex-row flex-wrap">
-        {POPULAR_CATEGORIES.map((category) => (
-          <ServiceTile
-            key={category}
-            label={category}
-            icon={categoryIcon(category)}
-            onPress={() => onSelect(category)}
+      <SectionHeader title={section.title} onAction={() => router.navigate('/buscar')} />
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerClassName="gap-3 px-4">
+        {section.services.map((service) => (
+          <ServiceCard
+            key={service.title}
+            title={service.title}
+            image={service.image}
+            onPress={() => onSearch(service.search)}
           />
         ))}
-        <ServiceTile label="Ver todos" icon={LayoutGrid} onPress={onShowAll} />
-      </View>
+      </ScrollView>
     </View>
-  );
-}
-
-function ServiceTile({
-  label,
-  icon: Icon,
-  onPress,
-}: {
-  label: string;
-  icon: ReturnType<typeof categoryIcon>;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      className="w-1/4 items-center gap-1.5 py-2 active:bg-accent">
-      <View className="size-14 items-center justify-center bg-primary/10">
-        <Icon size={24} className="text-primary" />
-      </View>
-      <Text className="text-center text-xs font-medium" numberOfLines={2}>
-        {label}
-      </Text>
-    </Pressable>
   );
 }

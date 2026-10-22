@@ -5,6 +5,7 @@ import { FirebaseError } from 'firebase/app';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import {
+  BookUser,
   BriefcaseBusiness,
   ChevronRight,
   ExternalLink,
@@ -51,7 +52,7 @@ export default function PerfilScreen() {
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-background">
       <View className="border-b border-border-subtle bg-card px-4 pb-3 pt-2">
-        <Text className="font-heading text-2xl font-bold text-brand">Perfil</Text>
+        <Text className="font-heading text-3xl font-bold">Perfil</Text>
       </View>
       <KeyboardAvoidingView className="flex-1" behavior="padding">
         <ScrollView contentContainerClassName="gap-4 p-4" keyboardShouldPersistTaps="handled">
@@ -131,6 +132,7 @@ function Account({
             onPress={() => router.push({ pathname: '/profissional/[id]', params: { id: uid } })}
           />
         ) : null}
+        <ListRow icon={BookUser} label="Meus contatos" onPress={() => router.push('/contatos')} />
         <ListRow
           icon={BriefcaseBusiness}
           label="Minhas oportunidades"

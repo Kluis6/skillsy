@@ -1,12 +1,13 @@
 import { opportunityWhatsappUrl } from '@skillsy/shared/opportunities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { Plus } from 'lucide-react-native';
+import { BriefcaseBusiness, Plus } from 'lucide-react-native';
 import { useState } from 'react';
 import { FlatList, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Chip } from '@/components/chip';
+import { EmptyState } from '@/components/empty-state';
 import { Fab } from '@/components/fab';
 import { MyOpportunityCard } from '@/components/my-opportunity-card';
 import { OpportunityCard, OpportunityCardSkeleton } from '@/components/opportunity-card';
@@ -48,11 +49,12 @@ export default function OportunidadesScreen() {
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-background">
       <View className="bg-card pt-2">
-        <Text className="px-4 pb-2 font-heading text-2xl font-bold text-brand">Oportunidades</Text>
+        <Text className="px-4 pb-2 font-heading text-3xl font-bold">Oportunidades</Text>
         <TopTabs tabs={TABS} value={tab} onChange={setTab} />
       </View>
-      {tab === 'mural' ? <Mural /> : <Minhas />}
-      <Fab icon={Plus} label="Publicar oportunidade" onPress={publish} />
+      {tab === 'mural' ? <Mural /> : <Minhas onPublish={publish} />}
+      {/* Minhas has its own "Publicar" in the empty state; one call per screen. */}
+      {tab === 'mural' ? <Fab icon={Plus} label="Publicar oportunidade" onPress={publish} /> : null}
     </SafeAreaView>
   );
 }
@@ -162,7 +164,7 @@ function Mural() {
   );
 }
 
-function Minhas() {
+function Minhas({ onPublish }: { onPublish: () => void }) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const showSnackbar = useSnackbar();
@@ -204,14 +206,13 @@ function Minhas() {
 
   if (!user) {
     return (
-      <View className="items-center gap-3 p-8">
-        <Text className="text-center text-muted-foreground">
-          Entre na sua conta para acompanhar as oportunidades que você publicou.
-        </Text>
-        <Button variant="outline" onPress={() => router.navigate('/perfil')}>
-          <Text>Entrar</Text>
-        </Button>
-      </View>
+      <EmptyState
+        icon={BriefcaseBusiness}
+        title="Acompanhe suas oportunidades"
+        description="Entre na sua conta para publicar e acompanhar o que você precisa."
+        primary={{ label: 'Publicar oportunidade', onPress: onPublish }}
+        secondary={{ label: 'Entrar na sua conta', onPress: () => router.navigate('/perfil') }}
+      />
     );
   }
   if (isPending) {
@@ -239,11 +240,14 @@ function Minhas() {
       contentContainerClassName="gap-3 p-4 pb-24"
       onRefresh={refetch}
       refreshing={isRefetching}
+      contentContainerStyle={data?.length ? undefined : { flexGrow: 1 }}
       ListEmptyComponent={
-        <Text className="p-8 text-center text-muted-foreground">
-          Você ainda não publicou oportunidades. Conte o que precisa e avise os profissionais do
-          seu estado.
-        </Text>
+        <EmptyState
+          icon={BriefcaseBusiness}
+          title="Você ainda não publicou oportunidades"
+          description="Conte o que precisa e os profissionais do mesmo serviço e estado são avisados."
+          primary={{ label: 'Publicar oportunidade', onPress: onPublish }}
+        />
       }
     />
   );
