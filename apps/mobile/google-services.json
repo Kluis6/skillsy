@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "781735734604",
+    "project_id": "gen-lang-client-0463625624",
+    "storage_bucket": "gen-lang-client-0463625624.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781735734604:android:1d685672d2682ea02e33e9",
+        "android_client_info": {
+          "package_name": "br.com.skillsy.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781735734604-nlcjd22nhno09m6em0fejigspja19i7c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.skillsy.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "781735734604-s7icsdkj1qhjgl7mu6m8lb3gs60fsr6o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBnFkpwcnW2hSVs_tLHb8xOv4POC4qElY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781735734604-s7icsdkj1qhjgl7mu6m8lb3gs60fsr6o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

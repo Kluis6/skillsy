@@ -18,6 +18,7 @@ import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { GoogleButton } from '@/components/google-button';
 import { useSnackbar } from '@/components/snackbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,6 +27,7 @@ import { Label } from '@/components/ui/label';
 import { Text } from '@/components/ui/text';
 import { useAuth } from '@/lib/auth';
 import { auth, usingEmulators } from '@/lib/firebase';
+import { signInWithGoogle, signOutOfGoogle } from '@/lib/google-sign-in';
 import { getOwnProfile } from '@/lib/providers';
 import { openSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
@@ -52,7 +54,7 @@ export default function PerfilScreen() {
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-background">
       <View className="border-b border-border-subtle bg-card px-4 pb-3 pt-2">
-        <Text className="font-heading text-3xl font-bold">Perfil</Text>
+        <Text className="font-heading text-3xl font-bold">{user ? 'Perfil' : 'Entrar'}</Text>
       </View>
       <KeyboardAvoidingView className="flex-1" behavior="padding">
         <ScrollView contentContainerClassName="gap-4 p-4" keyboardShouldPersistTaps="handled">
@@ -87,7 +89,7 @@ function Account({
   const name = me?.name || fallbackName || 'Sua conta';
 
   const signOutAndClear = async () => {
-    await signOut(auth);
+    await Promise.all([signOut(auth), signOutOfGoogle()]);
     // Drop everything tied to the account (own profile, contacts, own posts).
     queryClient.removeQueries({ queryKey: ['me'] });
     queryClient.removeQueries({ queryKey: ['contacts'] });
@@ -209,6 +211,18 @@ function SignInForm() {
     }
   };
 
+  const google = async () => {
+    setError('');
+    setSubmitting(true);
+    try {
+      await signInWithGoogle();
+    } catch {
+      setError('Não foi possível entrar com o Google. Tente de novo.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const resetPassword = async () => {
     if (!email.trim()) {
       setError('Digite seu e-mail para receber o link de nova senha.');
@@ -230,9 +244,15 @@ function SignInForm() {
       <Card>
         <CardHeader>
           <CardTitle className="font-heading text-xl">Entrar</CardTitle>
-          <CardDescription>Use o mesmo e-mail e senha da sua conta no site.</CardDescription>
+          <CardDescription>Use a mesma conta do site.</CardDescription>
         </CardHeader>
         <CardContent className="gap-4">
+          <GoogleButton onPress={google} disabled={submitting} />
+          <View className="flex-row items-center gap-3">
+            <View className="h-px flex-1 bg-border" />
+            <Text className="text-sm text-muted-foreground">ou</Text>
+            <View className="h-px flex-1 bg-border" />
+          </View>
           <View className="gap-1.5">
             <Label nativeID="email">E-mail</Label>
             <Input
@@ -277,11 +297,11 @@ function SignInForm() {
       <View className="gap-3 border border-border-subtle bg-card p-4">
         <Text className="font-semibold">Ainda não tem conta?</Text>
         <Text className="text-sm text-muted-foreground">
-          Crie sua conta no site em menos de um minuto e depois entre aqui com o mesmo e-mail.
+          Use Continuar com Google para criar sua conta na hora, ou crie com e-mail e senha no site.
         </Text>
         <Button variant="outline" onPress={() => openSite('/signin')}>
           <ExternalLink size={16} className="text-foreground" />
-          <Text>Criar conta no site</Text>
+          <Text>Criar conta com e-mail no site</Text>
         </Button>
       </View>
     </>
