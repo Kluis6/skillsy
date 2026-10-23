@@ -50,6 +50,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '*.googleusercontent.com',
       },
+      {
+        // Profile and article images in Cloud Storage for Firebase.
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+      },
     ],
   },
   ...(process.env.VERCEL ? {} : { output: 'standalone' as const }),

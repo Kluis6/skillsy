@@ -1,0 +1,22 @@
+rules_version = '2';
+
+// Images of profiles and articles. Documents in Firestore keep only the
+// download URL; uploads go to users/{uid}/{kind}/{random name}.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /users/{userId}/{kind}/{fileName} {
+      // Public profiles and articles are public; the URLs carry a token anyway.
+      allow read: if true;
+
+      // Only the owner writes their own folder: images up to 2 MB in the
+      // folders the site and app use (lib/image-upload.ts).
+      allow create, update: if request.auth != null &&
+                               request.auth.uid == userId &&
+                               kind in ['avatar', 'banner', 'gallery', 'posts'] &&
+                               request.resource.size < 2 * 1024 * 1024 &&
+                               request.resource.contentType.matches('image/(jpeg|png|webp)');
+
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

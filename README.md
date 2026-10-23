@@ -37,7 +37,7 @@ A configuração pública do Firebase fica em `firebase-applet-config.json` (nã
 | `npm run dev` | Desenvolvimento no banco de produção |
 | `npm run build` / `npm start` | Build e servidor de produção |
 | `npm run lint` | ESLint (as regras de hooks do React são erro) |
-| `npm run test:rules` | Testes das regras do Firestore no emulador (requer Java) |
+| `npm run test:rules` | Testes das regras do Firestore e do Storage nos emuladores (requer Java) |
 | `npm run deploy:firestore-rules` | Publica `firestore.rules` e os índices |
 
 Os scripts `backfill:*` e `inspect:*` em `scripts/` são manutenções pontuais de dados via API REST do Firestore (usam o token do `gcloud`).
@@ -57,6 +57,12 @@ As regras em [`firestore.rules`](firestore.rules) são a principal camada de seg
 O projeto já está no plano Blaze. O código em [`functions/`](functions/index.js) (alertas de oportunidades para profissionais, expiração e lembrete de 20 dias) roda em `southamerica-east1` (Node 22) no banco `(default)`, publicado em 20/10/2026. Para publicar de novo: `npx firebase deploy --only functions --force`.
 
 `stopBillingOverBudget` recebe os avisos do orçamento mensal (R$ 30, tópico Pub/Sub `billing-budget`) e desliga o faturamento do projeto quando o gasto chega ao limite. Os dados ficam; para voltar, vincule a conta de faturamento de novo no console. O banco tem backup semanal (domingo, 4 semanas de retenção).
+
+## Imagens (Cloud Storage)
+
+Fotos de perfil, capas, galeria e capas de artigo ficam no Cloud Storage (bucket `gen-lang-client-0463625624.firebasestorage.app`, us-east1, dentro da cota grátis); os documentos guardam só a URL. O envio passa por [`lib/image-upload.ts`](lib/image-upload.ts), que comprime para WebP e grava em `users/{uid}/{avatar|banner|gallery|posts}/`. As regras em [`storage.rules`](storage.rules) deixam cada membro gravar só na própria pasta (imagens JPG, PNG ou WEBP de até 2 MB) e têm testes em `tests/rules/`. Publicar regras: `npx firebase deploy --only storage`.
+
+Imagens antigas em base64 dentro dos documentos são migradas por [`scripts/migrate-images-to-storage.mjs`](scripts/migrate-images-to-storage.mjs) (use `--dry-run` antes).
 
 ## Cache e headers
 

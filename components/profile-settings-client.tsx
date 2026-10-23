@@ -41,9 +41,9 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
-import imageCompression from "browser-image-compression";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { uploadImage } from "@/lib/image-upload";
 import { profileSchema, type ProfileFormData } from "@/lib/validations";
 import {
   AVAILABILITY_OPTIONS,
@@ -59,7 +59,6 @@ import { LocationService } from "@/services/location-service";
 import { Footer } from "./footer";
 
 const MAX_IMAGE_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
-const MAX_INLINE_IMAGE_SIZE_BYTES = 100 * 1024;
 const SUPPORTED_IMAGE_TYPES = new Set([
   "image/jpeg",
   "image/png",
@@ -140,15 +139,6 @@ const MEMBERSHIP_OPTIONS: Array<{
     iconClassName: "text-success",
   },
 ];
-
-const readFileAsDataURL = (file: Blob) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () =>
-      reject(new Error("Não foi possível ler a imagem selecionada."));
-  });
 
 const getCompressionErrorMessage = (error: unknown) => {
   if (error instanceof Error && error.message) {
@@ -385,42 +375,6 @@ export function ProfileSettingsClient() {
     }, 50);
   };
 
-  const compressAndGetBase64 = async (file: File) => {
-    const options = {
-      maxSizeMB: 0.1, // 100KB to keep Firestore docs small
-      maxWidthOrHeight: 1024,
-      useWebWorker: true,
-    };
-
-    try {
-      const compressedFile = await imageCompression(file, options);
-      return await readFileAsDataURL(compressedFile);
-    } catch (error) {
-      try {
-        const compressedFile = await imageCompression(file, {
-          ...options,
-          useWebWorker: false,
-        });
-        return await readFileAsDataURL(compressedFile);
-      } catch (retryError) {
-        console.warn("Compression failed:", {
-          message: getCompressionErrorMessage(retryError ?? error),
-          fileName: file.name,
-          fileType: file.type,
-          fileSize: file.size,
-        });
-
-        if (file.size <= MAX_INLINE_IMAGE_SIZE_BYTES) {
-          return await readFileAsDataURL(file);
-        }
-
-        throw new Error(
-          "Não foi possível comprimir a imagem. Tente uma foto JPG, PNG ou WEBP menor.",
-        );
-      }
-    }
-  };
-
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     type: "avatar" | "banner" | "gallery",
@@ -454,23 +408,23 @@ export function ProfileSettingsClient() {
 
     setUploading(type);
     try {
-      const base64 = await compressAndGetBase64(file);
+      if (type === "gallery" && formData.gallery.length >= 5) {
+        toast.error("Limite atingido", {
+          description: "Você pode enviar no máximo 5 fotos para a galeria.",
+        });
+        return;
+      }
+      const url = await uploadImage(file, type);
       if (type === "avatar") {
-        setValue("photoURL", base64, { shouldDirty: true });
+        setValue("photoURL", url, { shouldDirty: true });
         toast.success("Foto de perfil carregada!");
       } else if (type === "banner") {
-        setValue("bannerURL", base64, { shouldDirty: true });
+        setValue("bannerURL", url, { shouldDirty: true });
         toast.success("Banner carregado!");
       } else if (type === "gallery") {
-        if (formData.gallery.length >= 5) {
-          toast.error("Limite atingido", {
-            description: "Você pode enviar no máximo 5 fotos para a galeria.",
-          });
-          return;
-        }
         setValue(
           "gallery",
-          [...formData.gallery, { url: base64, description: "" }],
+          [...formData.gallery, { url, description: "" }],
           {
             shouldDirty: true,
             shouldValidate: true,

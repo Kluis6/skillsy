@@ -5,10 +5,10 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import imageCompression from "browser-image-compression";
 import { ImagePlus, Loader2, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
+import { uploadImage } from "@/lib/image-upload";
 import { postEditorSchema, type PostEditorFormData } from "@/lib/validations";
 import {
   normalizePostTags,
@@ -33,21 +33,11 @@ import { toast } from "sonner";
 import Link from "next/link";
 
 const MAX_IMAGE_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
-const MAX_INLINE_IMAGE_SIZE_BYTES = 100 * 1024;
 const SUPPORTED_IMAGE_TYPES = new Set([
   "image/jpeg",
   "image/png",
   "image/webp",
 ]);
-
-const readFileAsDataURL = (file: Blob) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () =>
-      reject(new Error("Não foi possível ler a imagem selecionada."));
-  });
 
 const getCompressionErrorMessage = (error: unknown) => {
   if (error instanceof Error && error.message) {
@@ -107,32 +97,6 @@ export function PostEditorClient({
     }
   }, [autoSlugEdited, titleValue, form]);
 
-  const compressAndGetBase64 = async (file: File) => {
-    if (file.size <= MAX_INLINE_IMAGE_SIZE_BYTES) {
-      return await readFileAsDataURL(file);
-    }
-
-    const compressionOptions = {
-      maxSizeMB: 0.6,
-      maxWidthOrHeight: 1600,
-      useWebWorker: true,
-      initialQuality: 0.82,
-      fileType:
-        file.type === "image/png" ? "image/png" : "image/jpeg",
-    } as const;
-
-    try {
-      const compressed = await imageCompression(file, compressionOptions);
-      return await readFileAsDataURL(compressed);
-    } catch (error) {
-      if (file.size <= MAX_INLINE_IMAGE_SIZE_BYTES) {
-        return await readFileAsDataURL(file);
-      }
-
-      throw new Error(getCompressionErrorMessage(error));
-    }
-  };
-
   const handleCoverFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -165,8 +129,8 @@ export function PostEditorClient({
 
     setUploadingCover(true);
     try {
-      const base64 = await compressAndGetBase64(file);
-      form.setValue("coverImageUrl", base64, {
+      const url = await uploadImage(file, "posts");
+      form.setValue("coverImageUrl", url, {
         shouldDirty: true,
         shouldValidate: true,
       });
