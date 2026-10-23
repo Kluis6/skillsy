@@ -15,19 +15,19 @@ export default function AppTabs() {
       backgroundColor={colors.card}
       indicatorColor={colors.accent}
       labelStyle={{ selected: { color: colors.primary } }}>
-      <NativeTabs.Trigger name="index">
+      <NativeTabs.Trigger name="(inicio)">
         <NativeTabs.Trigger.Label>Início</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon md="home" selectedColor={colors.primary} />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="buscar">
+      <NativeTabs.Trigger name="(buscar)">
         <NativeTabs.Trigger.Label>Buscar</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon md="search" selectedColor={colors.primary} />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="oportunidades">
+      <NativeTabs.Trigger name="(oportunidades)">
         <NativeTabs.Trigger.Label>Oportunidades</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon md="work" selectedColor={colors.primary} />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="perfil">
+      <NativeTabs.Trigger name="(perfil)">
         <NativeTabs.Trigger.Label>{user ? 'Perfil' : 'Entrar'}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon md="person" selectedColor={colors.primary} />
       </NativeTabs.Trigger>

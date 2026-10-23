@@ -15,16 +15,16 @@ export default function AppTabs() {
       <TabSlot style={{ flex: 1 }} />
       <TabList asChild>
         <View className="flex-row border-t border-border bg-card">
-          <TabTrigger name="index" href="/" asChild>
+          <TabTrigger name="(inicio)" href="/" asChild>
             <TabButton icon={House} label="Início" />
           </TabTrigger>
-          <TabTrigger name="buscar" href="/buscar" asChild>
+          <TabTrigger name="(buscar)" href="/buscar" asChild>
             <TabButton icon={Search} label="Buscar" />
           </TabTrigger>
-          <TabTrigger name="oportunidades" href="/oportunidades" asChild>
+          <TabTrigger name="(oportunidades)" href="/oportunidades" asChild>
             <TabButton icon={BriefcaseBusiness} label="Oportunidades" />
           </TabTrigger>
-          <TabTrigger name="perfil" href="/perfil" asChild>
+          <TabTrigger name="(perfil)" href="/perfil" asChild>
             <TabButton icon={User} label={user ? 'Perfil' : 'Entrar'} />
           </TabTrigger>
         </View>
