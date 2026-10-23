@@ -178,7 +178,7 @@ function SearchField({
         className="h-14 px-11"
         accessibilityLabel="Buscar profissionais"
       />
-      <Search size={20} className="absolute left-7 text-muted-foreground" />
+      <Search size={20} className="absolute left-[29px] text-muted-foreground" />
       {draft ? (
         <Pressable
           onPress={() => {
