@@ -8,12 +8,12 @@ import {
 import { whatsappUrl } from '@skillsy/shared/contact';
 import type { UserProfile } from '@skillsy/shared/types';
 import { Image } from 'expo-image';
-import { MapPin, MessageCircle, Star, ThumbsUp } from 'lucide-react-native';
-import { Linking, Pressable, View } from 'react-native';
+import { MapPin, Star, ThumbsUp } from 'lucide-react-native';
+import { Pressable, View } from 'react-native';
 
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
+import { WhatsAppButton } from '@/components/whatsapp-button';
 
 type ProviderCardProps = { provider: UserProfile; onPress?: () => void };
 
@@ -89,10 +89,7 @@ export function ProviderCard({ provider, onPress }: ProviderCardProps) {
 
       {whatsapp ? (
         <View className="px-4 pb-4">
-          <Button variant="outline" onPress={() => Linking.openURL(whatsapp)}>
-            <MessageCircle size={16} className="text-foreground" />
-            <Text>Falar no WhatsApp</Text>
-          </Button>
+          <WhatsAppButton url={whatsapp} />
         </View>
       ) : null}
     </View>

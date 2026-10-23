@@ -10,25 +10,17 @@ import { formatFirestoreDate } from '@skillsy/shared/opportunities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import {
-  Clock,
-  MapPin,
-  MessageCircle,
-  Star,
-  ThumbsUp,
-  UserMinus,
-  UserPlus,
-} from 'lucide-react-native';
+import { Clock, MapPin, Star, ThumbsUp, UserMinus, UserPlus } from 'lucide-react-native';
 import { useState, type ReactNode } from 'react';
-import { ActivityIndicator, Linking, ScrollView, useColorScheme, View } from 'react-native';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
 
 import { ActionButton } from '@/components/action-button';
 import { RatingSheet } from '@/components/rating-sheet';
 import { useSnackbar } from '@/components/snackbar';
 import { Stars } from '@/components/stars';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { WhatsAppButton } from '@/components/whatsapp-button';
 import { useAuth } from '@/lib/auth';
 import { setContact } from '@/lib/contacts';
 import { getOwnProfile, getPublicProfile } from '@/lib/providers';
@@ -39,11 +31,12 @@ import {
   submitRating,
   toggleRecommendation,
 } from '@/lib/reviews';
+import { useAppearance } from '@/lib/appearance';
 import { THEME } from '@/lib/theme';
 
 export default function ProfissionalScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const colors = THEME[useColorScheme() === 'dark' ? 'dark' : 'light'];
+  const colors = THEME[useAppearance().scheme];
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const showSnackbar = useSnackbar();
@@ -238,10 +231,7 @@ export default function ProfissionalScreen() {
         </View>
 
         {whatsapp ? (
-          <Button size="lg" onPress={() => Linking.openURL(whatsapp)}>
-            <MessageCircle size={18} className="text-primary-foreground" />
-            <Text>Falar no WhatsApp</Text>
-          </Button>
+          <WhatsAppButton url={whatsapp} size="lg" />
         ) : (
           <Text className="text-sm text-muted-foreground">
             Este profissional ainda não informou um WhatsApp.

@@ -5,15 +5,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { useColorScheme } from 'react-native';
 
 import { SnackbarProvider } from '@/components/snackbar';
+import { AppearanceProvider, useAppearance } from '@/lib/appearance';
 import { AuthProvider } from '@/lib/auth';
 import { useAppFonts } from '@/lib/use-app-fonts';
 import { NAV_THEME } from '@/lib/theme';
 
 export default function RootLayout() {
-  const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const fontsReady = useAppFonts();
   // Cached lists are reused for 5 minutes, so switching tabs does not read
   // Firestore again.
@@ -26,21 +25,30 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ThemeProvider value={NAV_THEME[scheme]}>
-          <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-          <SnackbarProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="profissional/[id]" options={{ title: 'Perfil' }} />
-              <Stack.Screen name="oportunidade/nova" options={{ title: 'Nova oportunidade' }} />
-              <Stack.Screen name="contatos" options={{ title: 'Meus contatos' }} />
-              <Stack.Screen name="artigos" options={{ title: 'Novidades e vagas' }} />
-              <Stack.Screen name="artigo/[slug]" options={{ title: '' }} />
-            </Stack>
-            <PortalHost />
-          </SnackbarProvider>
-        </ThemeProvider>
+        <AppearanceProvider>
+          <Navigation />
+        </AppearanceProvider>
       </AuthProvider>
     </QueryClientProvider>
+  );
+}
+
+function Navigation() {
+  const { scheme } = useAppearance();
+  return (
+    <ThemeProvider value={NAV_THEME[scheme]}>
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      <SnackbarProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="profissional/[id]" options={{ title: 'Perfil' }} />
+          <Stack.Screen name="oportunidade/nova" options={{ title: 'Nova oportunidade' }} />
+          <Stack.Screen name="contatos" options={{ title: 'Meus contatos' }} />
+          <Stack.Screen name="artigos" options={{ title: 'Novidades e vagas' }} />
+          <Stack.Screen name="artigo/[slug]" options={{ title: '' }} />
+        </Stack>
+        <PortalHost />
+      </SnackbarProvider>
+    </ThemeProvider>
   );
 }

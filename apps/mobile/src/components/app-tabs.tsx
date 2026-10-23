@@ -1,13 +1,13 @@
 import { NativeTabs } from 'expo-router/native-tabs';
-import { useColorScheme } from 'react-native';
 
 import { useAuth } from '@/lib/auth';
+import { useAppearance } from '@/lib/appearance';
 import { THEME } from '@/lib/theme';
 
 // Android bottom navigation (Material). The web version is app-tabs.web.tsx.
 // Like GetNinjas, the account tab reads "Entrar" until the member signs in.
 export default function AppTabs() {
-  const colors = THEME[useColorScheme() === 'dark' ? 'dark' : 'light'];
+  const colors = THEME[useAppearance().scheme];
   const { user } = useAuth();
 
   return (

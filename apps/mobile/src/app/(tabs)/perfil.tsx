@@ -18,6 +18,7 @@ import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppearancePicker } from '@/components/appearance-picker';
 import { GoogleButton } from '@/components/google-button';
 import { useSnackbar } from '@/components/snackbar';
 import { Button } from '@/components/ui/button';
@@ -69,6 +70,7 @@ export default function PerfilScreen() {
           ) : (
             <SignInForm />
           )}
+          {loading ? null : <AppearancePicker />}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

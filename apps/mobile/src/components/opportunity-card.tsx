@@ -1,16 +1,13 @@
-import {
-  formatFirestoreDate,
-  OPPORTUNITY_URGENCY,
-} from '@skillsy/shared/opportunities';
+import { formatFirestoreDate, OPPORTUNITY_URGENCY } from '@skillsy/shared/opportunities';
 import type { Opportunity } from '@skillsy/shared/types';
-import { AlertTriangle, Clock3, MapPin, MessageCircle } from 'lucide-react-native';
+import { AlertTriangle, Clock3, MapPin } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
+import { WhatsAppButton } from '@/components/whatsapp-button';
 import { cn } from '@/lib/utils';
 
 type OpportunityCardProps = {
@@ -23,7 +20,12 @@ type OpportunityCardProps = {
   children?: ReactNode;
 };
 
-export function OpportunityCard({ opportunity, contactUrl, badge, children }: OpportunityCardProps) {
+export function OpportunityCard({
+  opportunity,
+  contactUrl,
+  badge,
+  children,
+}: OpportunityCardProps) {
   const urgency = opportunity.urgency || 'normal';
   const place = [opportunity.neighborhood, opportunity.city].filter(Boolean).join(', ');
 
@@ -75,12 +77,7 @@ export function OpportunityCard({ opportunity, contactUrl, badge, children }: Op
         </View>
       </View>
 
-      {contactUrl ? (
-        <Button variant="outline" onPress={() => Linking.openURL(contactUrl)}>
-          <MessageCircle size={16} className="text-foreground" />
-          <Text>Tenho interesse</Text>
-        </Button>
-      ) : null}
+      {contactUrl ? <WhatsAppButton url={contactUrl} label="Tenho interesse" /> : null}
       {children}
     </View>
   );
