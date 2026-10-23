@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryTile } from '@/components/home/category-tile';
 import { PromoBanner } from '@/components/home/promo-banner';
+import { PostTile } from '@/components/home/post-tile';
 import { ProviderTile } from '@/components/home/provider-tile';
 import { SearchLauncher } from '@/components/home/search-launcher';
 import { SectionHeader } from '@/components/home/section-header';
@@ -14,6 +15,7 @@ import { useSnackbar } from '@/components/snackbar';
 import { Text } from '@/components/ui/text';
 import { useAuth } from '@/lib/auth';
 import { categoryIcon, POPULAR_CATEGORIES } from '@/lib/category-icons';
+import { getPublishedPosts } from '@/lib/posts';
 import { getOwnProfile, searchProviders } from '@/lib/providers';
 import {
   BANNER_IMAGES,
@@ -39,6 +41,8 @@ export default function InicioScreen() {
     queryKey: ['providers', '', '', ''],
     queryFn: () => searchProviders({ term: '' }),
   });
+
+  const { data: posts } = useQuery({ queryKey: ['posts'], queryFn: getPublishedPosts });
 
   const search = (q: string) => router.navigate({ pathname: '/buscar', params: { q } });
   const openProfile = (provider: UserProfile) => {
@@ -104,6 +108,27 @@ export default function InicioScreen() {
                   key={provider.uid}
                   provider={provider}
                   onPress={() => openProfile(provider)}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        ) : null}
+
+        {posts?.length ? (
+          <View className="gap-3">
+            <SectionHeader title="Novidades e vagas" onAction={() => router.push('/artigos')} />
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerClassName="gap-3 px-4">
+              {posts.slice(0, 10).map((post) => (
+                <PostTile
+                  key={post.id ?? post.slug}
+                  post={post}
+                  onPress={() => {
+                    queryClient.setQueryData(['post', post.slug], post);
+                    router.push({ pathname: '/artigo/[slug]', params: { slug: post.slug } });
+                  }}
                 />
               ))}
             </ScrollView>

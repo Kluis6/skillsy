@@ -11,11 +11,19 @@ type ChipProps = {
   menu?: boolean;
   onPress: () => void;
   accessibilityLabel?: string;
+  className?: string;
 };
 
 /** Material 3 filter chip in the platform's shape (square corners). 40px tall
  * with hitSlop for a 48dp touch target. */
-export function Chip({ label, selected = false, menu = false, onPress, accessibilityLabel }: ChipProps) {
+export function Chip({
+  label,
+  selected = false,
+  menu = false,
+  onPress,
+  accessibilityLabel,
+  className,
+}: ChipProps) {
   return (
     <Pressable
       onPress={onPress}
@@ -25,12 +33,19 @@ export function Chip({ label, selected = false, menu = false, onPress, accessibi
       accessibilityLabel={accessibilityLabel ?? label}
       className={cn(
         'h-10 flex-row items-center gap-1.5 border px-3',
-        selected ? 'border-primary bg-primary/10 active:bg-primary/20' : 'border-border bg-card active:bg-accent'
+        selected
+          ? 'border-primary bg-primary/10 active:bg-primary/20'
+          : 'border-border bg-card active:bg-accent',
+        className
       )}>
       {selected ? <Check size={16} className="text-primary" /> : null}
       <Text
         numberOfLines={1}
-        className={cn('text-sm font-medium', selected ? 'text-primary' : 'text-foreground')}>
+        className={cn(
+          'shrink text-sm font-medium',
+          menu && 'flex-1',
+          selected ? 'text-primary' : 'text-foreground'
+        )}>
         {label}
       </Text>
       {menu ? (

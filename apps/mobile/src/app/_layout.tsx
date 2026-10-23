@@ -34,6 +34,8 @@ export default function RootLayout() {
               <Stack.Screen name="profissional/[id]" options={{ title: 'Perfil' }} />
               <Stack.Screen name="oportunidade/nova" options={{ title: 'Nova oportunidade' }} />
               <Stack.Screen name="contatos" options={{ title: 'Meus contatos' }} />
+              <Stack.Screen name="artigos" options={{ title: 'Novidades e vagas' }} />
+              <Stack.Screen name="artigo/[slug]" options={{ title: '' }} />
             </Stack>
             <PortalHost />
           </SnackbarProvider>

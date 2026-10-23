@@ -97,7 +97,7 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
             <div className="flex gap-2">
               <Badge
                 variant="secondary"
-                className={` ${POST_CATEGORY_LABELS[post.category] === "Vagas" ? "bg-success/15 text-success" : "bg-warning/15 text-warning-foreground"} `}
+                className={` ${post.category === "job" ? "bg-success/15 text-success" : "bg-warning/15 text-warning-foreground"} `}
               >
                 {POST_CATEGORY_LABELS[post.category]}
               </Badge>

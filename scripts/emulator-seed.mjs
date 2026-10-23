@@ -97,16 +97,21 @@ for (const doc of docs) {
   const [collection, uid, ...rest] = doc.path.split("/");
   const email = doc.fields.email?.stringValue;
   if (collection !== "users" || rest.length || !email) continue;
-  await call(`${authEmulator}/accounts`, {
-    token: "owner",
-    body: {
-      localId: uid,
-      email,
-      password: LOCAL_PASSWORD,
-      emailVerified: true,
-      displayName: doc.fields.displayName?.stringValue || doc.fields.name?.stringValue,
-    },
-  });
+  try {
+    await call(`${authEmulator}/accounts`, {
+      token: "owner",
+      body: {
+        localId: uid,
+        email,
+        password: LOCAL_PASSWORD,
+        emailVerified: true,
+        displayName: doc.fields.displayName?.stringValue || doc.fields.name?.stringValue,
+      },
+    });
+  } catch (error) {
+    // Re-seeding emulators that are already running: the account exists.
+    if (!String(error.message).includes("DUPLICATE_LOCAL_ID")) throw error;
+  }
   accounts += 1;
 }
 

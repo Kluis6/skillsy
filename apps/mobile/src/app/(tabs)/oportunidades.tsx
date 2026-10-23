@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { BriefcaseBusiness, Plus } from 'lucide-react-native';
 import { useState } from 'react';
-import { FlatList, ScrollView, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Chip } from '@/components/chip';
@@ -79,12 +79,9 @@ function Mural() {
 
   return (
     <>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        className="max-h-16 grow-0 border-b border-border-subtle bg-card"
-        contentContainerClassName="items-center gap-2 px-4 py-3">
+      <View className="flex-row gap-2 border-b border-border-subtle bg-card px-4 py-3">
         <Chip
+          className="flex-1"
           label={category || 'Serviço'}
           selected={Boolean(category)}
           menu
@@ -92,13 +89,14 @@ function Mural() {
           accessibilityLabel={category ? `Serviço: ${category}` : 'Filtrar por serviço'}
         />
         <Chip
+          className="flex-1"
           label={stateLabel || 'Estado'}
           selected={Boolean(state)}
           menu
           onPress={() => setSheet('state')}
           accessibilityLabel={stateLabel ? `Estado: ${stateLabel}` : 'Filtrar por estado'}
         />
-      </ScrollView>
+      </View>
 
       {isPending ? (
         <View className="gap-3 p-4">

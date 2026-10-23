@@ -59,11 +59,10 @@ export default function BuscarScreen() {
           autoFocus={params.focar === '1'}
           onSubmit={(q) => setFilters({ q })}
         />
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerClassName="gap-2 px-4">
+        {/* Serviço and Estado split the width; "Limpar" takes only what it needs. */}
+        <View className="flex-row gap-2 px-4">
           <Chip
+            className="flex-1"
             label={category || 'Serviço'}
             selected={Boolean(category)}
             menu
@@ -71,6 +70,7 @@ export default function BuscarScreen() {
             accessibilityLabel={category ? `Serviço: ${category}` : 'Filtrar por serviço'}
           />
           <Chip
+            className="flex-1"
             label={stateLabel || 'Estado'}
             selected={Boolean(state)}
             menu
@@ -78,7 +78,7 @@ export default function BuscarScreen() {
             accessibilityLabel={stateLabel ? `Estado: ${stateLabel}` : 'Filtrar por estado'}
           />
           {filtered ? <Chip label="Limpar" onPress={clearAll} /> : null}
-        </ScrollView>
+        </View>
       </View>
 
       {!filtered ? (
