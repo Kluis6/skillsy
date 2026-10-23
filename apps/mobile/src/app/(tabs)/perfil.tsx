@@ -16,8 +16,8 @@ import {
 } from 'lucide-react-native';
 import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppHeader } from '@/components/app-header';
 import { AppearancePicker } from '@/components/appearance-picker';
 import { GoogleButton } from '@/components/google-button';
 import { useSnackbar } from '@/components/snackbar';
@@ -53,10 +53,8 @@ export default function PerfilScreen() {
   const { user, loading } = useAuth();
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
-      <View className="border-b border-border-subtle bg-card px-4 pb-3 pt-2">
-        <Text className="font-heading text-3xl font-bold">{user ? 'Perfil' : 'Entrar'}</Text>
-      </View>
+    <View className="flex-1 bg-background">
+      <AppHeader title={user ? 'Perfil' : 'Entrar'} />
       <KeyboardAvoidingView className="flex-1" behavior="padding">
         <ScrollView contentContainerClassName="gap-4 p-4" keyboardShouldPersistTaps="handled">
           {loading ? (
@@ -73,7 +71,7 @@ export default function PerfilScreen() {
           {loading ? null : <AppearancePicker />}
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -245,7 +243,7 @@ function SignInForm() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading text-xl">Entrar</CardTitle>
+          <CardTitle className="font-heading text-xl">Acesse sua conta</CardTitle>
           <CardDescription>Use a mesma conta do site.</CardDescription>
         </CardHeader>
         <CardContent className="gap-4">

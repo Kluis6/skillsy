@@ -5,8 +5,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Search, X } from 'lucide-react-native';
 import { useState } from 'react';
 import { FlatList, Pressable, ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppHeader } from '@/components/app-header';
 import { Chip } from '@/components/chip';
 import { CategoryGridCard } from '@/components/home/category-tile';
 import { SectionHeader } from '@/components/home/section-header';
@@ -50,36 +50,37 @@ export default function BuscarScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
-      <View className="gap-3 border-b border-border-subtle bg-card pb-3 pt-2">
-        <Text className="px-4 font-heading text-3xl font-bold">Buscar</Text>
-        <SearchField
-          key={term}
-          initial={term}
-          autoFocus={params.focar === '1'}
-          onSubmit={(q) => setFilters({ q })}
-        />
-        {/* Serviço and Estado split the width; "Limpar" takes only what it needs. */}
-        <View className="flex-row gap-2 px-4">
-          <Chip
-            className="flex-1"
-            label={category || 'Serviço'}
-            selected={Boolean(category)}
-            menu
-            onPress={() => setSheet('category')}
-            accessibilityLabel={category ? `Serviço: ${category}` : 'Filtrar por serviço'}
+    <View className="flex-1 bg-background">
+      <AppHeader title="Buscar">
+        <View className="gap-3 pb-3">
+          <SearchField
+            key={term}
+            initial={term}
+            autoFocus={params.focar === '1'}
+            onSubmit={(q) => setFilters({ q })}
           />
-          <Chip
-            className="flex-1"
-            label={stateLabel || 'Estado'}
-            selected={Boolean(state)}
-            menu
-            onPress={() => setSheet('state')}
-            accessibilityLabel={stateLabel ? `Estado: ${stateLabel}` : 'Filtrar por estado'}
-          />
-          {filtered ? <Chip label="Limpar" onPress={clearAll} /> : null}
+          {/* Serviço and Estado split the width; "Limpar" takes only what it needs. */}
+          <View className="flex-row gap-2 px-4">
+            <Chip
+              className="flex-1"
+              label={category || 'Serviço'}
+              selected={Boolean(category)}
+              menu
+              onPress={() => setSheet('category')}
+              accessibilityLabel={category ? `Serviço: ${category}` : 'Filtrar por serviço'}
+            />
+            <Chip
+              className="flex-1"
+              label={stateLabel || 'Estado'}
+              selected={Boolean(state)}
+              menu
+              onPress={() => setSheet('state')}
+              accessibilityLabel={stateLabel ? `Estado: ${stateLabel}` : 'Filtrar por estado'}
+            />
+            {filtered ? <Chip label="Limpar" onPress={clearAll} /> : null}
+          </View>
         </View>
-      </View>
+      </AppHeader>
 
       {!filtered ? (
         <Discover onSearch={(q) => setFilters({ q })} />
@@ -149,7 +150,7 @@ export default function BuscarScreen() {
         onSelect={(estado) => setFilters({ estado })}
         onClose={() => setSheet(null)}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 

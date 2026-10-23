@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { FlatList, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppHeader } from '@/components/app-header';
 import { ProviderCard, ProviderCardSkeleton } from '@/components/provider-card';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
@@ -34,6 +35,7 @@ export default function ContatosScreen() {
 
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
+      <AppHeader title="Meus contatos" back />
       {!user ? (
         <View className="items-center gap-3 p-8">
           <Text className="text-center text-muted-foreground">

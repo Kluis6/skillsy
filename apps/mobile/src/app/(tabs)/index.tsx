@@ -2,8 +2,8 @@ import type { UserProfile } from '@skillsy/shared/types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppHeader } from '@/components/app-header';
 import { CategoryTile } from '@/components/home/category-tile';
 import { PromoBanner } from '@/components/home/promo-banner';
 import { PostTile } from '@/components/home/post-tile';
@@ -12,7 +12,6 @@ import { SearchLauncher } from '@/components/home/search-launcher';
 import { SectionHeader } from '@/components/home/section-header';
 import { FeaturedServiceCard, ServiceCard } from '@/components/home/service-card';
 import { useSnackbar } from '@/components/snackbar';
-import { Text } from '@/components/ui/text';
 import { useAuth } from '@/lib/auth';
 import { categoryIcon, POPULAR_CATEGORIES } from '@/lib/category-icons';
 import { getPublishedPosts } from '@/lib/posts';
@@ -58,12 +57,10 @@ export default function InicioScreen() {
   const [first, second, third, fourth] = SERVICE_SECTIONS;
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
+    <View className="flex-1 bg-background">
+      <AppHeader title={firstName ? `Olá, ${firstName}` : 'Boas-vindas'} />
       <ScrollView contentContainerClassName="gap-8 pb-8">
         <View className="gap-5 border-b border-border-subtle bg-card pb-6 pt-4">
-          <Text className="px-4 font-heading text-3xl font-bold">
-            {firstName ? `Olá, ${firstName}` : 'Boas-vindas'}
-          </Text>
           <SearchLauncher
             onPress={() => router.navigate({ pathname: '/buscar', params: { focar: '1' } })}
           />
@@ -157,7 +154,7 @@ export default function InicioScreen() {
           onPress={publish}
         />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppHeader } from '@/components/app-header';
 import { EmptyState } from '@/components/empty-state';
 import { PostTile } from '@/components/home/post-tile';
 import { TopTabs } from '@/components/top-tabs';
@@ -34,9 +35,9 @@ export default function ArtigosScreen() {
 
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
-      <View className="bg-card">
+      <AppHeader title="Novidades e vagas" back>
         <TopTabs tabs={TABS} value={filter} onChange={setFilter} />
-      </View>
+      </AppHeader>
       <FlatList
         data={isPending ? [] : posts}
         keyExtractor={(post) => post.id ?? post.slug}

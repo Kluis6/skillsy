@@ -12,7 +12,7 @@ type TopTabsProps<T extends string> = {
 /** Material 3 primary tabs: equal-width labels with an underline indicator. */
 export function TopTabs<T extends string>({ tabs, value, onChange }: TopTabsProps<T>) {
   return (
-    <View className="flex-row border-b border-border-subtle" accessibilityRole="tablist">
+    <View className="flex-row" accessibilityRole="tablist">
       {tabs.map((tab) => {
         const selected = tab.value === value;
         return (

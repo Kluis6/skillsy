@@ -9,13 +9,25 @@ import {
 import { formatFirestoreDate } from '@skillsy/shared/opportunities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { Clock, MapPin, Star, ThumbsUp, UserMinus, UserPlus } from 'lucide-react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import type { ReportReason } from '@skillsy/shared/reporting';
+import {
+  Clock,
+  Flag,
+  MapPin,
+  Share2,
+  Star,
+  ThumbsUp,
+  UserMinus,
+  UserPlus,
+} from 'lucide-react-native';
 import { useState, type ReactNode } from 'react';
-import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Share, View } from 'react-native';
 
+import { AppHeader, HeaderAction } from '@/components/app-header';
 import { ActionButton } from '@/components/action-button';
 import { RatingSheet } from '@/components/rating-sheet';
+import { ReportSheet } from '@/components/report-sheet';
 import { useSnackbar } from '@/components/snackbar';
 import { Stars } from '@/components/stars';
 import { Badge } from '@/components/ui/badge';
@@ -32,6 +44,8 @@ import {
   toggleRecommendation,
 } from '@/lib/reviews';
 import { useAppearance } from '@/lib/appearance';
+import { submitProfileReport } from '@/lib/reports';
+import { SITE_URL } from '@/lib/site';
 import { THEME } from '@/lib/theme';
 
 export default function ProfissionalScreen() {
@@ -41,6 +55,7 @@ export default function ProfissionalScreen() {
   const queryClient = useQueryClient();
   const showSnackbar = useSnackbar();
   const [ratingOpen, setRatingOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const { data: provider, isPending } = useQuery({
     queryKey: ['profile', id],
@@ -139,14 +154,32 @@ export default function ProfissionalScreen() {
     },
   });
 
-  if (isPending) {
-    return <ActivityIndicator className="mt-12" />;
-  }
-  if (!provider) {
+  const report = useMutation({
+    mutationFn: ({ reason, details }: { reason: ReportReason; details: string }) =>
+      submitProfileReport({
+        reportedUserId: id,
+        reportedUserName: provider?.name ?? '',
+        reason,
+        details,
+      }),
+    onSuccess: () => {
+      setReportOpen(false);
+      showSnackbar('Denúncia enviada. A equipe da Skillsy vai analisar.');
+    },
+  });
+
+  if (isPending || !provider) {
     return (
-      <Text className="p-8 text-center text-muted-foreground">
-        Este perfil não está disponível.
-      </Text>
+      <View className="flex-1 bg-background">
+        <AppHeader title="Perfil" back />
+        {isPending ? (
+          <ActivityIndicator className="mt-12" />
+        ) : (
+          <Text className="p-8 text-center text-muted-foreground">
+            Este perfil não está disponível.
+          </Text>
+        )}
+      </View>
     );
   }
 
@@ -167,248 +200,289 @@ export default function ProfissionalScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-background" contentContainerClassName="pb-8">
-      <Stack.Screen options={{ title }} />
-      {provider.bannerURL ? (
-        <Image source={{ uri: provider.bannerURL }} style={{ height: 128 }} contentFit="cover" />
-      ) : (
-        <View className="h-32 bg-primary" />
-      )}
-
-      <View className="-mt-12 gap-4 px-4">
-        {provider.photoURL ? (
-          <Image
-            source={{ uri: provider.photoURL }}
-            style={{
-              width: 96,
-              height: 96,
-              borderRadius: 48,
-              borderWidth: 4,
-              borderColor: colors.card,
-            }}
-            contentFit="cover"
+    <View className="flex-1 bg-background">
+      <AppHeader
+        title={title}
+        back
+        actions={
+          <HeaderAction
+            icon={Share2}
+            label="Compartilhar perfil"
+            onPress={() =>
+              Share.share({
+                message: `${title} na Skillsy: ${SITE_URL}/profile/${provider.uid}`,
+              })
+            }
           />
+        }
+      />
+      <ScrollView className="flex-1" contentContainerClassName="pb-8">
+        {provider.bannerURL ? (
+          <Image source={{ uri: provider.bannerURL }} style={{ height: 128 }} contentFit="cover" />
         ) : (
-          <View className="size-24 items-center justify-center rounded-full border-4 border-card bg-primary">
-            <Text className="text-3xl font-bold text-primary-foreground">
-              {nameInitial(provider.name)}
-            </Text>
-          </View>
+          <View className="h-32 bg-primary" />
         )}
 
-        <View className="gap-1">
-          <Text className="font-heading text-2xl font-bold leading-tight">{title}</Text>
-          {provider.companyName ? (
-            <Text className="text-sm text-muted-foreground">{provider.name}</Text>
-          ) : null}
-          <Text className="text-base text-muted-foreground">{providerRoleLabel(provider)}</Text>
-        </View>
-
-        <View className="flex-row flex-wrap items-center gap-x-4 gap-y-2">
-          {reviewCount > 0 ? (
-            <View className="flex-row items-center gap-1">
-              <Star size={16} className="text-highlight" fill="currentColor" />
-              <Text className="font-semibold">{formatRating(provider.rating)}</Text>
-              <Text className="text-muted-foreground">({formatReviewCount(reviewCount)})</Text>
-            </View>
+        <View className="-mt-12 gap-4 px-4">
+          {provider.photoURL ? (
+            <Image
+              source={{ uri: provider.photoURL }}
+              style={{
+                width: 96,
+                height: 96,
+                borderRadius: 48,
+                borderWidth: 4,
+                borderColor: colors.card,
+              }}
+              contentFit="cover"
+            />
           ) : (
-            <Text className="text-muted-foreground">Novo na comunidade</Text>
+            <View className="size-24 items-center justify-center rounded-full border-4 border-card bg-primary">
+              <Text className="text-3xl font-bold text-primary-foreground">
+                {nameInitial(provider.name)}
+              </Text>
+            </View>
           )}
-          {recommendationCount > 0 ? (
-            <View className="flex-row items-center gap-1.5">
-              <ThumbsUp size={16} className="text-primary" />
-              <Text className="font-semibold text-primary">
-                {formatRecommendationCount(recommendationCount)}
-              </Text>
-            </View>
-          ) : null}
-          {place ? (
-            <View className="flex-row items-center gap-1">
-              <MapPin size={16} className="text-muted-foreground" />
-              <Text className="text-muted-foreground">{place}</Text>
-            </View>
-          ) : null}
-        </View>
 
-        {whatsapp ? (
-          <WhatsAppButton url={whatsapp} size="lg" />
-        ) : (
-          <Text className="text-sm text-muted-foreground">
-            Este profissional ainda não informou um WhatsApp.
-          </Text>
-        )}
-
-        {isOwn ? (
-          <Text className="text-sm text-muted-foreground">
-            Este é o seu perfil. Indicações e avaliações vêm de outros membros.
-          </Text>
-        ) : (
-          <View className="flex-row">
-            <ActionButton
-              icon={connected ? UserMinus : UserPlus}
-              label={connected ? 'Desconectar' : 'Conectar'}
-              active={connected}
-              disabled={connect.isPending}
-              onPress={() =>
-                requireUser(
-                  () => connect.mutate(!connected),
-                  'Entre na sua conta para salvar contatos.'
-                )
-              }
-            />
-            <ActionButton
-              icon={ThumbsUp}
-              label={recommended ? 'Indicado' : 'Indicar'}
-              active={Boolean(recommended)}
-              disabled={recommend.isPending}
-              onPress={() =>
-                requireUser(
-                  () => recommend.mutate(),
-                  'Entre na sua conta para indicar profissionais.'
-                )
-              }
-            />
-            <ActionButton
-              icon={Star}
-              label={myRating ? 'Avaliado' : 'Avaliar'}
-              active={Boolean(myRating)}
-              disabled={Boolean(myRating)}
-              onPress={() =>
-                requireUser(() => {
-                  rate.reset();
-                  setRatingOpen(true);
-                }, 'Entre na sua conta para avaliar profissionais.')
-              }
-            />
+          <View className="gap-1">
+            <Text className="font-heading text-2xl font-bold leading-tight">{title}</Text>
+            {provider.companyName ? (
+              <Text className="text-sm text-muted-foreground">{provider.name}</Text>
+            ) : null}
+            <Text className="text-base text-muted-foreground">{providerRoleLabel(provider)}</Text>
           </View>
-        )}
 
-        {provider.bio ? (
-          <Section title="Sobre">
-            <Text className="leading-6 text-muted-foreground">{provider.bio}</Text>
-          </Section>
-        ) : null}
+          <View className="flex-row flex-wrap items-center gap-x-4 gap-y-2">
+            {reviewCount > 0 ? (
+              <View className="flex-row items-center gap-1">
+                <Star size={16} className="text-highlight" fill="currentColor" />
+                <Text className="font-semibold">{formatRating(provider.rating)}</Text>
+                <Text className="text-muted-foreground">({formatReviewCount(reviewCount)})</Text>
+              </View>
+            ) : (
+              <Text className="text-muted-foreground">Novo na comunidade</Text>
+            )}
+            {recommendationCount > 0 ? (
+              <View className="flex-row items-center gap-1.5">
+                <ThumbsUp size={16} className="text-primary" />
+                <Text className="font-semibold text-primary">
+                  {formatRecommendationCount(recommendationCount)}
+                </Text>
+              </View>
+            ) : null}
+            {place ? (
+              <View className="flex-row items-center gap-1">
+                <MapPin size={16} className="text-muted-foreground" />
+                <Text className="text-muted-foreground">{place}</Text>
+              </View>
+            ) : null}
+          </View>
 
-        {provider.serviceHours || provider.availability?.length || provider.experienceYears ? (
-          <Section title="Atendimento">
-            {provider.availability?.length ? (
-              <View className="flex-row flex-wrap gap-2">
-                {provider.availability.map((day) => (
-                  <Badge key={day} variant="secondary">
-                    <Text>{day}</Text>
-                  </Badge>
+          {whatsapp ? (
+            <WhatsAppButton url={whatsapp} size="lg" />
+          ) : (
+            <Text className="text-sm text-muted-foreground">
+              Este profissional ainda não informou um WhatsApp.
+            </Text>
+          )}
+
+          {isOwn ? (
+            <Text className="text-sm text-muted-foreground">
+              Este é o seu perfil. Indicações e avaliações vêm de outros membros.
+            </Text>
+          ) : (
+            <View className="flex-row">
+              <ActionButton
+                icon={connected ? UserMinus : UserPlus}
+                label={connected ? 'Desconectar' : 'Conectar'}
+                active={connected}
+                disabled={connect.isPending}
+                onPress={() =>
+                  requireUser(
+                    () => connect.mutate(!connected),
+                    'Entre na sua conta para salvar contatos.'
+                  )
+                }
+              />
+              <ActionButton
+                icon={ThumbsUp}
+                label={recommended ? 'Indicado' : 'Indicar'}
+                active={Boolean(recommended)}
+                disabled={recommend.isPending}
+                onPress={() =>
+                  requireUser(
+                    () => recommend.mutate(),
+                    'Entre na sua conta para indicar profissionais.'
+                  )
+                }
+              />
+              <ActionButton
+                icon={Star}
+                label={myRating ? 'Avaliado' : 'Avaliar'}
+                active={Boolean(myRating)}
+                disabled={Boolean(myRating)}
+                onPress={() =>
+                  requireUser(() => {
+                    rate.reset();
+                    setRatingOpen(true);
+                  }, 'Entre na sua conta para avaliar profissionais.')
+                }
+              />
+            </View>
+          )}
+
+          {provider.bio ? (
+            <Section title="Sobre">
+              <Text className="leading-6 text-muted-foreground">{provider.bio}</Text>
+            </Section>
+          ) : null}
+
+          {provider.serviceHours || provider.availability?.length || provider.experienceYears ? (
+            <Section title="Atendimento">
+              {provider.availability?.length ? (
+                <View className="flex-row flex-wrap gap-2">
+                  {provider.availability.map((day) => (
+                    <Badge key={day} variant="secondary">
+                      <Text>{day}</Text>
+                    </Badge>
+                  ))}
+                </View>
+              ) : null}
+              {provider.serviceHours ? (
+                <View className="flex-row items-center gap-2">
+                  <Clock size={16} className="text-muted-foreground" />
+                  <Text className="text-muted-foreground">{provider.serviceHours}</Text>
+                </View>
+              ) : null}
+              {provider.experienceYears ? (
+                <Text className="text-muted-foreground">
+                  {provider.experienceYears}{' '}
+                  {Number(provider.experienceYears) === 1 ? 'ano' : 'anos'} de experiência
+                </Text>
+              ) : null}
+            </Section>
+          ) : null}
+
+          {gallery.length ? (
+            <Section title="Galeria">
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerClassName="gap-3">
+                {gallery.map((item, index) => (
+                  <View key={`${index}-${item.url.slice(-12)}`} className="w-44 gap-1">
+                    <Image
+                      source={{ uri: item.url }}
+                      style={{ width: 176, height: 132 }}
+                      contentFit="cover"
+                    />
+                    {item.description ? (
+                      <Text className="text-xs text-muted-foreground" numberOfLines={2}>
+                        {item.description}
+                      </Text>
+                    ) : null}
+                  </View>
                 ))}
-              </View>
-            ) : null}
-            {provider.serviceHours ? (
-              <View className="flex-row items-center gap-2">
-                <Clock size={16} className="text-muted-foreground" />
-                <Text className="text-muted-foreground">{provider.serviceHours}</Text>
-              </View>
-            ) : null}
-            {provider.experienceYears ? (
-              <Text className="text-muted-foreground">
-                {provider.experienceYears} {Number(provider.experienceYears) === 1 ? 'ano' : 'anos'}{' '}
-                de experiência
-              </Text>
-            ) : null}
-          </Section>
-        ) : null}
+              </ScrollView>
+            </Section>
+          ) : null}
 
-        {gallery.length ? (
-          <Section title="Galeria">
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerClassName="gap-3">
-              {gallery.map((item, index) => (
-                <View key={`${index}-${item.url.slice(-12)}`} className="w-44 gap-1">
-                  <Image
-                    source={{ uri: item.url }}
-                    style={{ width: 176, height: 132 }}
-                    contentFit="cover"
-                  />
-                  {item.description ? (
-                    <Text className="text-xs text-muted-foreground" numberOfLines={2}>
-                      {item.description}
+          <Section title="Avaliações">
+            {reviewCount > 0 ? (
+              <View className="flex-row items-center gap-3">
+                <Text className="font-heading text-4xl font-bold">
+                  {formatRating(provider.rating)}
+                </Text>
+                <View className="gap-1">
+                  <Stars value={Math.round(provider.rating || 0)} />
+                  <Text className="text-sm text-muted-foreground">
+                    {formatReviewCount(reviewCount)}
+                  </Text>
+                </View>
+              </View>
+            ) : null}
+            {ratings?.length ? (
+              ratings.slice(0, 10).map((rating) => (
+                <View key={rating.id} className="gap-1 border-t border-border-subtle pt-3">
+                  <View className="flex-row items-center justify-between gap-2">
+                    <Text className="flex-1 font-semibold" numberOfLines={1}>
+                      {rating.authorName}
+                    </Text>
+                    <Text className="text-xs text-muted-foreground">
+                      {formatFirestoreDate(rating.createdAt)}
+                    </Text>
+                  </View>
+                  <Stars value={rating.score} size={14} />
+                  {rating.comment ? (
+                    <Text className="text-sm leading-5 text-muted-foreground">
+                      {rating.comment}
                     </Text>
                   ) : null}
                 </View>
-              ))}
-            </ScrollView>
-          </Section>
-        ) : null}
-
-        <Section title="Avaliações">
-          {reviewCount > 0 ? (
-            <View className="flex-row items-center gap-3">
-              <Text className="font-heading text-4xl font-bold">
-                {formatRating(provider.rating)}
+              ))
+            ) : (
+              <Text className="text-sm text-muted-foreground">
+                Ainda sem avaliações. Contratou este profissional? Conte como foi.
               </Text>
-              <View className="gap-1">
-                <Stars value={Math.round(provider.rating || 0)} />
-                <Text className="text-sm text-muted-foreground">
-                  {formatReviewCount(reviewCount)}
-                </Text>
-              </View>
-            </View>
-          ) : null}
-          {ratings?.length ? (
-            ratings.slice(0, 10).map((rating) => (
-              <View key={rating.id} className="gap-1 border-t border-border-subtle pt-3">
-                <View className="flex-row items-center justify-between gap-2">
-                  <Text className="flex-1 font-semibold" numberOfLines={1}>
-                    {rating.authorName}
-                  </Text>
-                  <Text className="text-xs text-muted-foreground">
-                    {formatFirestoreDate(rating.createdAt)}
-                  </Text>
-                </View>
-                <Stars value={rating.score} size={14} />
-                {rating.comment ? (
-                  <Text className="text-sm leading-5 text-muted-foreground">{rating.comment}</Text>
-                ) : null}
-              </View>
-            ))
-          ) : (
-            <Text className="text-sm text-muted-foreground">
-              Ainda sem avaliações. Contratou este profissional? Conte como foi.
-            </Text>
-          )}
-        </Section>
-
-        {recommendations?.length ? (
-          <Section title="Indicado por">
-            {recommendations.map((item) => (
-              <View key={item.recommenderId} className="flex-row items-center gap-3">
-                {item.recommenderPhotoURL ? (
-                  <Image
-                    source={{ uri: item.recommenderPhotoURL }}
-                    style={{ width: 32, height: 32, borderRadius: 16 }}
-                  />
-                ) : (
-                  <View className="size-8 items-center justify-center rounded-full bg-primary/10">
-                    <Text className="text-xs font-bold text-primary">
-                      {nameInitial(item.recommenderName)}
-                    </Text>
-                  </View>
-                )}
-                <Text className="flex-1">{item.recommenderName || 'Membro Skillsy'}</Text>
-              </View>
-            ))}
+            )}
           </Section>
-        ) : null}
-      </View>
 
-      <RatingSheet
-        visible={ratingOpen}
-        providerName={provider.name.split(' ')[0]}
-        submitting={rate.isPending}
-        error={rate.error instanceof Error ? rate.error.message : undefined}
-        onSubmit={(score, comment) => rate.mutate({ score, comment })}
-        onClose={() => setRatingOpen(false)}
-      />
-    </ScrollView>
+          {recommendations?.length ? (
+            <Section title="Indicado por">
+              {recommendations.map((item) => (
+                <View key={item.recommenderId} className="flex-row items-center gap-3">
+                  {item.recommenderPhotoURL ? (
+                    <Image
+                      source={{ uri: item.recommenderPhotoURL }}
+                      style={{ width: 32, height: 32, borderRadius: 16 }}
+                    />
+                  ) : (
+                    <View className="size-8 items-center justify-center rounded-full bg-primary/10">
+                      <Text className="text-xs font-bold text-primary">
+                        {nameInitial(item.recommenderName)}
+                      </Text>
+                    </View>
+                  )}
+                  <Text className="flex-1">{item.recommenderName || 'Membro Skillsy'}</Text>
+                </View>
+              ))}
+            </Section>
+          ) : null}
+        </View>
+
+        {isOwn ? null : (
+          <Pressable
+            onPress={() =>
+              requireUser(() => {
+                report.reset();
+                setReportOpen(true);
+              }, 'Entre na sua conta para denunciar um perfil.')
+            }
+            accessibilityRole="button"
+            className="mx-4 mt-6 min-h-12 flex-row items-center justify-center gap-2 active:bg-accent">
+            <Flag size={16} className="text-muted-foreground" />
+            <Text className="text-sm text-muted-foreground">Denunciar perfil</Text>
+          </Pressable>
+        )}
+
+        <ReportSheet
+          visible={reportOpen}
+          name={provider.name.split(' ')[0]}
+          submitting={report.isPending}
+          error={report.error instanceof Error ? report.error.message : undefined}
+          onSubmit={(reason, details) => report.mutate({ reason, details })}
+          onClose={() => setReportOpen(false)}
+        />
+        <RatingSheet
+          visible={ratingOpen}
+          providerName={provider.name.split(' ')[0]}
+          submitting={rate.isPending}
+          error={rate.error instanceof Error ? rate.error.message : undefined}
+          onSubmit={(score, comment) => rate.mutate({ score, comment })}
+          onClose={() => setRatingOpen(false)}
+        />
+      </ScrollView>
+    </View>
   );
 }
 

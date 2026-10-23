@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppHeader } from '@/components/app-header';
 import { Chip } from '@/components/chip';
 import { OptionSheet } from '@/components/option-sheet';
 import { useSnackbar } from '@/components/snackbar';
@@ -94,6 +95,7 @@ export default function NovaOportunidadeScreen() {
 
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
+      <AppHeader title="Nova oportunidade" back />
       <View className="gap-2 bg-card px-4 pb-3 pt-3">
         <Text className="text-sm text-muted-foreground">
           Passo {step + 1} de {STEPS.length} · {STEPS[step]}

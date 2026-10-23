@@ -4,8 +4,8 @@ import { router } from 'expo-router';
 import { BriefcaseBusiness, Plus } from 'lucide-react-native';
 import { useState } from 'react';
 import { FlatList, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppHeader } from '@/components/app-header';
 import { Chip } from '@/components/chip';
 import { EmptyState } from '@/components/empty-state';
 import { Fab } from '@/components/fab';
@@ -47,15 +47,14 @@ export default function OportunidadesScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
-      <View className="bg-card pt-2">
-        <Text className="px-4 pb-2 font-heading text-3xl font-bold">Oportunidades</Text>
+    <View className="flex-1 bg-background">
+      <AppHeader title="Oportunidades">
         <TopTabs tabs={TABS} value={tab} onChange={setTab} />
-      </View>
+      </AppHeader>
       {tab === 'mural' ? <Mural /> : <Minhas onPublish={publish} />}
       {/* Minhas has its own "Publicar" in the empty state; one call per screen. */}
       {tab === 'mural' ? <Fab icon={Plus} label="Publicar oportunidade" onPress={publish} /> : null}
-    </SafeAreaView>
+    </View>
   );
 }
 

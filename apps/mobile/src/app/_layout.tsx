@@ -39,14 +39,9 @@ function Navigation() {
     <ThemeProvider value={NAV_THEME[scheme]}>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <SnackbarProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="profissional/[id]" options={{ title: 'Perfil' }} />
-          <Stack.Screen name="oportunidade/nova" options={{ title: 'Nova oportunidade' }} />
-          <Stack.Screen name="contatos" options={{ title: 'Meus contatos' }} />
-          <Stack.Screen name="artigos" options={{ title: 'Novidades e vagas' }} />
-          <Stack.Screen name="artigo/[slug]" options={{ title: '' }} />
-        </Stack>
+        {/* Every screen draws its own AppHeader, so tabs and stacked screens
+            share the same bar, title size and back arrow. */}
+        <Stack screenOptions={{ headerShown: false }} />
         <PortalHost />
       </SnackbarProvider>
     </ThemeProvider>
