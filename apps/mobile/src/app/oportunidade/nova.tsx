@@ -267,7 +267,7 @@ export default function NovaOportunidadeScreen() {
                 </Text>
               ) : (
                 <Text className="text-sm leading-5 text-destructive">
-                  Cadastre um WhatsApp no seu perfil (pelo site) para os profissionais poderem
+                  Cadastre um WhatsApp em Perfil → Editar perfil para os profissionais poderem
                   responder. Sem ele, não é possível publicar.
                 </Text>
               )}

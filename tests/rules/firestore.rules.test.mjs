@@ -319,3 +319,59 @@ describe("indicações", () => {
     await assertFails(deleteDoc(doc(dbAs(RATER), "public_profiles", PROVIDER, "recommendations", RATER)));
   });
 });
+
+describe("users: edição do próprio perfil", () => {
+  // A filled-in profile: before the update rule checked only changed keys,
+  // re-validating every stored field went over Firestore's limit of 1000
+  // expressions per rule and complete profiles could not be saved at all.
+  const COMPLETE = "completo";
+  const completeProfile = userDoc(COMPLETE, {
+    photoURL: "https://example.com/foto.webp",
+    bannerURL: "https://example.com/capa.webp",
+    bio: "Marceneiro há 16 anos.",
+    category: "Marcenaria",
+    isProvider: true,
+    hasPublicProfile: true,
+    contacts: ["a", "b", "c", "d", "e", "f"],
+    whatsapp: "21999990000",
+    phone: "2133330000",
+    instagram: "@marcenaria",
+    facebook: "fb.com/marcenaria",
+    linkedin: "linkedin.com/in/marcenaria",
+    website: "https://marcenaria.example.com",
+    serviceType: "Marceneiro",
+    location: "Belford Roxo, RJ",
+    ward: "Ala Centro",
+    companyName: "Marcenaria Exemplo",
+    gallery: [1, 2, 3, 4, 5].map((n) => ({ url: `https://example.com/${n}.webp`, description: `Foto ${n}` })),
+    rating: 0,
+    reviewCount: 0,
+    experienceYears: 16,
+    baptismYear: 2008,
+    memberVerified: true,
+    membershipYears: 18,
+    communityFriend: false,
+    availability: ["Seg", "Ter", "Qua", "Qui", "Sex"],
+    serviceHours: "8h às 18h",
+    businessState: "RJ",
+    showPublicLocation: true,
+  });
+
+  beforeEach(async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "users", COMPLETE), completeProfile);
+    });
+  });
+
+  test("perfil completo pode ser salvo pelo dono", async () => {
+    await assertSucceeds(updateDoc(doc(dbAs(COMPLETE), "users", COMPLETE), { bio: "Nova bio" }));
+  });
+
+  test("os limites continuam valendo para o que muda", async () => {
+    const db = dbAs(COMPLETE);
+    await assertFails(updateDoc(doc(db, "users", COMPLETE), { bio: "x".repeat(2100) }));
+    await assertFails(updateDoc(doc(db, "users", COMPLETE), { category: "Inventada" }));
+    await assertFails(updateDoc(doc(db, "users", COMPLETE), { role: "admin" }));
+    await assertFails(updateDoc(doc(db, "users", COMPLETE), { campoDesconhecido: 1 }));
+  });
+});

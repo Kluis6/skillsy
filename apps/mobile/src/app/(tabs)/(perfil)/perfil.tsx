@@ -142,10 +142,9 @@ function Account({
         />
         <ListRow
           icon={Pencil}
-          label="Editar perfil no site"
+          label="Editar perfil"
           description="Foto, serviço, WhatsApp e galeria"
-          external
-          onPress={() => openSite('/profile')}
+          onPress={() => router.push('/editar-perfil')}
         />
         <ListRow icon={LogOut} label="Sair" destructive last onPress={signOutAndClear} />
       </View>

@@ -4,6 +4,7 @@ import { initializeApp } from 'firebase/app';
 // every auth function from there so the app uses a single copy.
 import { connectAuthEmulator } from '@firebase/auth';
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { connectStorageEmulator, getStorage } from 'firebase/storage';
 
 import { createAuth } from './firebase-auth';
 
@@ -21,6 +22,7 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, '(default)');
 export const auth = createAuth(app);
+export const storage = getStorage(app);
 
 // The *:local scripts point the app at the emulators from `npm run dev:local`
 // at the repo root. On a phone, `adb reverse` makes 127.0.0.1 reach this computer.
@@ -29,4 +31,5 @@ if (usingEmulators) {
   const host = process.env.EXPO_PUBLIC_EMULATOR_HOST || '127.0.0.1';
   connectFirestoreEmulator(db, host, 8080);
   connectAuthEmulator(auth, `http://${host}:9099`, { disableWarnings: true });
+  connectStorageEmulator(storage, host, 9199);
 }

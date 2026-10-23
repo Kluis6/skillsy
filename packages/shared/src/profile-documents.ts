@@ -295,14 +295,27 @@ export function assertRuleCompatibleProfile(
     throw new Error(`${label}: category vazia nao e aceita pelas regras.`);
   }
 
+  // Only users/{uid} must keep memberVerified consistent with ward and
+  // baptismYear (firestore.rules: hasConsistentMemberVerified in isValidUser).
+  // The public profile never stores baptismYear, and isValidPublicProfile only
+  // requires a bool; checking it here blocked every verified member with a
+  // public profile from saving.
   const hasValidVerification = hasValidVerificationShape(source);
-  if (hasValidVerification && source.memberVerified !== true) {
+  if (
+    mode === "private" &&
+    hasValidVerification &&
+    source.memberVerified !== true
+  ) {
     throw new Error(
       `${label}: memberVerified precisa ser true quando ward e baptismYear sao validos.`,
     );
   }
 
-  if (!hasValidVerification && source.memberVerified === true) {
+  if (
+    mode === "private" &&
+    !hasValidVerification &&
+    source.memberVerified === true
+  ) {
     throw new Error(
       `${label}: memberVerified nao pode ser true sem ward e baptismYear validos.`,
     );
