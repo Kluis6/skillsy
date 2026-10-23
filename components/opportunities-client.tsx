@@ -16,7 +16,6 @@ import {
   Clock3,
   LayoutList,
   MapPin,
-  MessageCircle,
   Plus,
   Search,
   Send,
@@ -32,6 +31,7 @@ import {
 import { PROVIDER_CATEGORIES } from "@/lib/profile-form";
 import { BRAZIL_STATES } from "@/lib/brazil-states";
 import { useAuth } from "@/hooks/use-auth";
+import { FaWhatsapp } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -146,9 +146,10 @@ function OpportunityCard({
               />
             }
             nativeButton={false}
-            className="w-full sm:w-auto"
+            // Same green WhatsApp button as the profile page.
+            className="w-full bg-success font-bold text-success-foreground hover:bg-success/90 active:bg-success/80 sm:w-auto"
           >
-            <MessageCircle className="size-4" /> Falar com{" "}
+            <FaWhatsapp className="size-4" /> Falar com{" "}
             {opportunity.authorName.split(" ")[0]}
           </Button>
         ) : null}
