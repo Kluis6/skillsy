@@ -2,15 +2,14 @@ import {
   formatRating,
   formatRecommendationCount,
   formatReviewCount,
-  nameInitial,
   providerRoleLabel,
 } from '@skillsy/shared/format';
 import { whatsappUrl } from '@skillsy/shared/contact';
 import type { UserProfile } from '@skillsy/shared/types';
-import { Image } from 'expo-image';
 import { MapPin, Star, ThumbsUp } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
+import { ProfileAvatar } from '@/components/profile-avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { WhatsAppButton } from '@/components/whatsapp-button';
@@ -33,20 +32,12 @@ export function ProviderCard({ provider, onPress }: ProviderCardProps) {
         accessibilityHint="Abre o perfil completo"
         className="gap-3 p-4 active:bg-accent">
         <View className="flex-row items-center gap-3">
-          {provider.photoURL ? (
-            <Image
-              source={{ uri: provider.photoURL }}
-              style={{ width: 48, height: 48, borderRadius: 24 }}
-              contentFit="cover"
-              accessibilityIgnoresInvertColors
-            />
-          ) : (
-            <View className="size-12 items-center justify-center rounded-full bg-primary">
-              <Text className="text-base font-bold text-primary-foreground">
-                {nameInitial(provider.name)}
-              </Text>
-            </View>
-          )}
+          <ProfileAvatar
+            uri={provider.photoURL}
+            name={provider.name}
+            className="size-12"
+            iconSize={24}
+          />
           <View className="flex-1">
             <Text className="text-lg font-bold leading-tight" numberOfLines={1}>
               {provider.companyName || provider.name}

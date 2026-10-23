@@ -224,13 +224,16 @@ function Discover({ onSearch }: { onSearch: (q: string) => void }) {
       <View className="gap-3 px-4">
         {rows.map((row) => (
           <View key={row[0]} className="flex-row gap-3">
+            {/* Equal columns without padding, so a lone last card keeps the
+                width of the others. */}
             {row.map((category) => (
-              <CategoryGridCard
-                key={category}
-                label={category}
-                icon={categoryIcon(category)}
-                onPress={() => onSearch(category)}
-              />
+              <View key={category} className="flex-1">
+                <CategoryGridCard
+                  label={category}
+                  icon={categoryIcon(category)}
+                  onPress={() => onSearch(category)}
+                />
+              </View>
             ))}
             {row.length === 1 ? <View className="flex-1" /> : null}
           </View>

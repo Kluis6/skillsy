@@ -1,4 +1,3 @@
-import { nameInitial } from '@skillsy/shared/format';
 import {
   AVAILABILITY_OPTIONS,
   profileToFormValues,
@@ -15,6 +14,7 @@ import { useState, type ReactNode } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ProfileAvatar } from '@/components/profile-avatar';
 import { AppHeader } from '@/components/app-header';
 import { Chip } from '@/components/chip';
 import { OptionSheet } from '@/components/option-sheet';
@@ -169,19 +169,12 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
               onPress={() => changeImage('avatar')}
               accessibilityRole="button"
               accessibilityLabel="Trocar foto de perfil">
-              {values.photoURL ? (
-                <Image
-                  source={{ uri: values.photoURL }}
-                  style={{ width: 80, height: 80, borderRadius: 40 }}
-                  contentFit="cover"
-                />
-              ) : (
-                <View className="size-20 items-center justify-center rounded-full bg-primary">
-                  <Text className="text-2xl font-bold text-primary-foreground">
-                    {nameInitial(values.name)}
-                  </Text>
-                </View>
-              )}
+              <ProfileAvatar
+                uri={values.photoURL}
+                name={values.name}
+                className="size-20"
+                iconSize={32}
+              />
             </Pressable>
             <Button
               variant="outline"

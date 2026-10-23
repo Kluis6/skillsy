@@ -1,8 +1,7 @@
 import { sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from '@firebase/auth';
-import { nameInitial, providerRoleLabel } from '@skillsy/shared/format';
+import { providerRoleLabel } from '@skillsy/shared/format';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FirebaseError } from 'firebase/app';
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import {
   BookUser,
@@ -17,6 +16,7 @@ import {
 import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, View } from 'react-native';
 
+import { ProfileAvatar } from '@/components/profile-avatar';
 import { AppHeader } from '@/components/app-header';
 import { AppearancePicker } from '@/components/appearance-picker';
 import { GoogleButton } from '@/components/google-button';
@@ -103,17 +103,7 @@ function Account({
   return (
     <>
       <View className="flex-row items-center gap-4 border border-border-subtle bg-card p-4">
-        {me?.photoURL ? (
-          <Image
-            source={{ uri: me.photoURL }}
-            style={{ width: 64, height: 64, borderRadius: 32 }}
-            contentFit="cover"
-          />
-        ) : (
-          <View className="size-16 items-center justify-center rounded-full bg-primary">
-            <Text className="text-2xl font-bold text-primary-foreground">{nameInitial(name)}</Text>
-          </View>
-        )}
+        <ProfileAvatar uri={me?.photoURL} name={name} className="size-16" iconSize={28} />
         <View className="flex-1 gap-0.5">
           <Text className="font-heading text-xl font-bold" numberOfLines={1}>
             {name}

@@ -3,7 +3,6 @@ import {
   formatRating,
   formatRecommendationCount,
   formatReviewCount,
-  nameInitial,
   providerRoleLabel,
 } from '@skillsy/shared/format';
 import { formatFirestoreDate } from '@skillsy/shared/opportunities';
@@ -15,6 +14,7 @@ import {
   Clock,
   Flag,
   MapPin,
+  Pencil,
   Share2,
   Star,
   ThumbsUp,
@@ -24,9 +24,10 @@ import {
 import { useState, type ReactNode } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Share, View } from 'react-native';
 
-import { AppHeader, HeaderAction } from '@/components/app-header';
+import { AppHeader } from '@/components/app-header';
 import { ActionButton } from '@/components/action-button';
 import { RatingSheet } from '@/components/rating-sheet';
+import { ProfileAvatar } from '@/components/profile-avatar';
 import { ReportSheet } from '@/components/report-sheet';
 import { useSnackbar } from '@/components/snackbar';
 import { Stars } from '@/components/stars';
@@ -43,14 +44,11 @@ import {
   submitRating,
   toggleRecommendation,
 } from '@/lib/reviews';
-import { useAppearance } from '@/lib/appearance';
 import { submitProfileReport } from '@/lib/reports';
 import { SITE_URL } from '@/lib/site';
-import { THEME } from '@/lib/theme';
 
 export default function ProfissionalScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const colors = THEME[useAppearance().scheme];
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const showSnackbar = useSnackbar();
@@ -193,6 +191,9 @@ export default function ProfissionalScreen() {
   const myRating = ratings?.find((rating) => rating.fromId === user?.uid);
 
   // Signed-out members are sent to Perfil to sign in, like the FAB.
+  const shareProfile = () =>
+    Share.share({ message: `${title} na Skillsy: ${SITE_URL}/profile/${provider.uid}` });
+
   const requireUser = (action: () => void, message: string) => {
     if (user) return action();
     showSnackbar(message);
@@ -201,21 +202,7 @@ export default function ProfissionalScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <AppHeader
-        title={title}
-        back
-        actions={
-          <HeaderAction
-            icon={Share2}
-            label="Compartilhar perfil"
-            onPress={() =>
-              Share.share({
-                message: `${title} na Skillsy: ${SITE_URL}/profile/${provider.uid}`,
-              })
-            }
-          />
-        }
-      />
+      <AppHeader title={title} back />
       <ScrollView className="flex-1" contentContainerClassName="pb-8">
         {provider.bannerURL ? (
           <Image source={{ uri: provider.bannerURL }} style={{ height: 128 }} contentFit="cover" />
@@ -224,25 +211,12 @@ export default function ProfissionalScreen() {
         )}
 
         <View className="-mt-12 gap-4 px-4">
-          {provider.photoURL ? (
-            <Image
-              source={{ uri: provider.photoURL }}
-              style={{
-                width: 96,
-                height: 96,
-                borderRadius: 48,
-                borderWidth: 4,
-                borderColor: colors.card,
-              }}
-              contentFit="cover"
-            />
-          ) : (
-            <View className="size-24 items-center justify-center rounded-full border-4 border-card bg-primary">
-              <Text className="text-3xl font-bold text-primary-foreground">
-                {nameInitial(provider.name)}
-              </Text>
-            </View>
-          )}
+          <ProfileAvatar
+            uri={provider.photoURL}
+            name={provider.name}
+            className="size-24 border-4 border-card"
+            iconSize={40}
+          />
 
           <View className="gap-1">
             <Text className="font-heading text-2xl font-bold leading-tight">{title}</Text>
@@ -286,50 +260,60 @@ export default function ProfissionalScreen() {
             </Text>
           )}
 
+          <View className="flex-row">
+            {isOwn ? (
+              <ActionButton
+                icon={Pencil}
+                label="Editar perfil"
+                onPress={() => router.push('/editar-perfil')}
+              />
+            ) : (
+              <>
+                <ActionButton
+                  icon={connected ? UserMinus : UserPlus}
+                  label={connected ? 'Desconectar' : 'Conectar'}
+                  active={connected}
+                  disabled={connect.isPending}
+                  onPress={() =>
+                    requireUser(
+                      () => connect.mutate(!connected),
+                      'Entre na sua conta para salvar contatos.'
+                    )
+                  }
+                />
+                <ActionButton
+                  icon={ThumbsUp}
+                  label={recommended ? 'Indicado' : 'Indicar'}
+                  active={Boolean(recommended)}
+                  disabled={recommend.isPending}
+                  onPress={() =>
+                    requireUser(
+                      () => recommend.mutate(),
+                      'Entre na sua conta para indicar profissionais.'
+                    )
+                  }
+                />
+                <ActionButton
+                  icon={Star}
+                  label={myRating ? 'Avaliado' : 'Avaliar'}
+                  active={Boolean(myRating)}
+                  disabled={Boolean(myRating)}
+                  onPress={() =>
+                    requireUser(() => {
+                      rate.reset();
+                      setRatingOpen(true);
+                    }, 'Entre na sua conta para avaliar profissionais.')
+                  }
+                />
+              </>
+            )}
+            <ActionButton icon={Share2} label="Compartilhar" onPress={shareProfile} />
+          </View>
           {isOwn ? (
             <Text className="text-sm text-muted-foreground">
               Este é o seu perfil. Indicações e avaliações vêm de outros membros.
             </Text>
-          ) : (
-            <View className="flex-row">
-              <ActionButton
-                icon={connected ? UserMinus : UserPlus}
-                label={connected ? 'Desconectar' : 'Conectar'}
-                active={connected}
-                disabled={connect.isPending}
-                onPress={() =>
-                  requireUser(
-                    () => connect.mutate(!connected),
-                    'Entre na sua conta para salvar contatos.'
-                  )
-                }
-              />
-              <ActionButton
-                icon={ThumbsUp}
-                label={recommended ? 'Indicado' : 'Indicar'}
-                active={Boolean(recommended)}
-                disabled={recommend.isPending}
-                onPress={() =>
-                  requireUser(
-                    () => recommend.mutate(),
-                    'Entre na sua conta para indicar profissionais.'
-                  )
-                }
-              />
-              <ActionButton
-                icon={Star}
-                label={myRating ? 'Avaliado' : 'Avaliar'}
-                active={Boolean(myRating)}
-                disabled={Boolean(myRating)}
-                onPress={() =>
-                  requireUser(() => {
-                    rate.reset();
-                    setRatingOpen(true);
-                  }, 'Entre na sua conta para avaliar profissionais.')
-                }
-              />
-            </View>
-          )}
+          ) : null}
 
           {provider.bio ? (
             <Section title="Sobre">
@@ -431,18 +415,12 @@ export default function ProfissionalScreen() {
             <Section title="Indicado por">
               {recommendations.map((item) => (
                 <View key={item.recommenderId} className="flex-row items-center gap-3">
-                  {item.recommenderPhotoURL ? (
-                    <Image
-                      source={{ uri: item.recommenderPhotoURL }}
-                      style={{ width: 32, height: 32, borderRadius: 16 }}
-                    />
-                  ) : (
-                    <View className="size-8 items-center justify-center rounded-full bg-primary/10">
-                      <Text className="text-xs font-bold text-primary">
-                        {nameInitial(item.recommenderName)}
-                      </Text>
-                    </View>
-                  )}
+                  <ProfileAvatar
+                    uri={item.recommenderPhotoURL}
+                    name={item.recommenderName}
+                    className="size-8"
+                    iconSize={16}
+                  />
                   <Text className="flex-1">{item.recommenderName || 'Membro Skillsy'}</Text>
                 </View>
               ))}
@@ -460,8 +438,8 @@ export default function ProfissionalScreen() {
             }
             accessibilityRole="button"
             className="mx-4 mt-6 min-h-12 flex-row items-center justify-center gap-2 active:bg-accent">
-            <Flag size={16} className="text-muted-foreground" />
-            <Text className="text-sm text-muted-foreground">Denunciar perfil</Text>
+            <Flag size={16} className="text-destructive" />
+            <Text className="text-sm font-medium text-destructive">Denunciar perfil</Text>
           </Pressable>
         )}
 
