@@ -250,7 +250,7 @@ export const UserService = {
         message: `${profile.name || "Um novo membro"} acabou de se juntar à plataforma Skillsy.`,
         type: "new_user",
         read: false,
-        link: "/admin/users",
+        link: "/admin/usuarios",
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);

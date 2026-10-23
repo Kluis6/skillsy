@@ -33,6 +33,6 @@ export function newMemberNotification(name: string) {
     message: `${name || "Um novo membro"} acabou de se juntar à plataforma Skillsy.`,
     type: "new_user" as const,
     read: false,
-    link: "/admin/users",
+    link: "/admin/usuarios",
   };
 }

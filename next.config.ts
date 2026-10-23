@@ -40,6 +40,11 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
   },
+  async redirects() {
+    // Admin notifications for new users used to link to /admin/users; old
+    // ones are still stored with that link.
+    return [{ source: '/admin/users', destination: '/admin/usuarios', permanent: true }];
+  },
   typescript: {
     ignoreBuildErrors: false,
   },
