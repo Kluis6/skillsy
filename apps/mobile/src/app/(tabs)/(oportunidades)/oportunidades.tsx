@@ -1,6 +1,6 @@
 import { opportunityWhatsappUrl } from '@skillsy/shared/opportunities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { BriefcaseBusiness, Plus } from 'lucide-react-native';
 import { useState } from 'react';
 import { FlatList, View } from 'react-native';
@@ -35,7 +35,15 @@ const TABS = [
 export default function OportunidadesScreen() {
   const { user } = useAuth();
   const showSnackbar = useSnackbar();
-  const [tab, setTab] = useState<Tab>('mural');
+  // A tapped notification links here with ?tab=, also when the screen is
+  // already open, so the tab follows the link whenever it changes.
+  const { tab: linkedTab } = useLocalSearchParams<{ tab?: Tab }>();
+  const [tab, setTab] = useState<Tab>(linkedTab === 'minhas' ? 'minhas' : 'mural');
+  const [lastLinkedTab, setLastLinkedTab] = useState(linkedTab);
+  if (linkedTab !== lastLinkedTab) {
+    setLastLinkedTab(linkedTab);
+    if (linkedTab === 'minhas' || linkedTab === 'mural') setTab(linkedTab);
+  }
 
   const publish = () => {
     if (!user) {

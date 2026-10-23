@@ -1,5 +1,6 @@
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
+const { getMessaging } = require("firebase-admin/messaging");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { onMessagePublished } = require("firebase-functions/v2/pubsub");
@@ -54,6 +55,49 @@ exports.notifyMatchingProfessionals = onDocumentCreated(
       }, { merge: true });
     });
     logger.info("Opportunity alerts created", { opportunityId: event.params.opportunityId, recipients: recipients.length });
+  },
+);
+
+// Tokens FCM rejects for good: the app was uninstalled or the token rotated.
+const DEAD_TOKEN_ERRORS = new Set([
+  "messaging/registration-token-not-registered",
+  "messaging/invalid-registration-token",
+]);
+
+// Every notification the functions above create also goes to the user's
+// phones (users/{uid}/devices, registered by the app). Tapping it opens the
+// Oportunidades tab; the app reads `type` to pick Mural or Minhas.
+exports.sendPushNotification = onDocumentCreated(
+  { document: "users/{userId}/notifications/{notificationId}", database: DATABASE_ID, region: REGION },
+  async (event) => {
+    const notification = event.data?.data();
+    if (!notification) return;
+
+    const devices = await db.collection(`users/${event.params.userId}/devices`).get();
+    if (devices.empty) return;
+
+    const response = await getMessaging().sendEachForMulticast({
+      tokens: devices.docs.map((device) => device.id),
+      notification: { title: notification.title, body: notification.message },
+      data: {
+        type: String(notification.type ?? ""),
+        opportunityId: String(notification.opportunityId ?? ""),
+      },
+      android: {
+        priority: "high",
+        notification: { channelId: "oportunidades", color: "#007594" },
+      },
+    });
+
+    const dead = devices.docs.filter((_, index) =>
+      DEAD_TOKEN_ERRORS.has(response.responses[index].error?.code));
+    await Promise.all(dead.map((device) => device.ref.delete()));
+    logger.info("Push sent", {
+      notificationId: event.params.notificationId,
+      sent: response.successCount,
+      failed: response.failureCount,
+      removed: dead.length,
+    });
   },
 );
 

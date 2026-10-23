@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { SnackbarProvider } from '@/components/snackbar';
 import { AppearanceProvider, useAppearance } from '@/lib/appearance';
 import { AuthProvider } from '@/lib/auth';
+import { usePushNotifications } from '@/lib/push';
 import { useAppFonts } from '@/lib/use-app-fonts';
 import { NAV_THEME } from '@/lib/theme';
 
@@ -35,6 +36,7 @@ export default function RootLayout() {
 
 function Navigation() {
   const { scheme } = useAppearance();
+  usePushNotifications();
   return (
     <ThemeProvider value={NAV_THEME[scheme]}>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />

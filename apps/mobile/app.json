@@ -89,7 +89,15 @@
           }
         }
       ],
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/android-icon-monochrome.png",
+          "color": "#007594",
+          "defaultChannel": "oportunidades"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

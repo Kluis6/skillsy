@@ -858,6 +858,18 @@ service cloud.firestore {
                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']) &&
                       request.resource.data.read is bool;
       }
+
+      // Push tokens of the owner's phones, keyed by the FCM token itself.
+      // Functions read them to deliver users/{uid}/notifications.
+      match /devices/{token} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId) &&
+                              request.resource.data.keys().hasOnly(['token', 'platform', 'updatedAt']) &&
+                              request.resource.data.token == token &&
+                              token.size() <= 4096 &&
+                              request.resource.data.platform in ['android', 'ios'] &&
+                              request.resource.data.updatedAt == request.time;
+      }
     }
 
     match /public_profiles/{userId} {

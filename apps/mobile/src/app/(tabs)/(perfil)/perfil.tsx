@@ -29,6 +29,7 @@ import { Text } from '@/components/ui/text';
 import { useAuth } from '@/lib/auth';
 import { auth, usingEmulators } from '@/lib/firebase';
 import { signInWithGoogle, signOutOfGoogle } from '@/lib/google-sign-in';
+import { unregisterDevice } from '@/lib/push';
 import { getOwnProfile } from '@/lib/providers';
 import { openSite } from '@/lib/site';
 import { cn } from '@/lib/utils';
@@ -89,6 +90,8 @@ function Account({
   const name = me?.name || fallbackName || 'Sua conta';
 
   const signOutAndClear = async () => {
+    // This phone stops getting the account's notifications.
+    await unregisterDevice();
     await Promise.all([signOut(auth), signOutOfGoogle()]);
     // Drop everything tied to the account (own profile, contacts, own posts).
     queryClient.removeQueries({ queryKey: ['me'] });

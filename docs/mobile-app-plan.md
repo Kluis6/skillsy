@@ -18,7 +18,7 @@ Decidido em 19/10/2026. Escopo da primeira versão: **núcleo da comunidade + op
 | Imagens | **expo-image**, **expo-image-picker**, **expo-image-manipulator** | Cache, escolha e redução antes do upload |
 | Listas | **@shopify/flash-list** | Listas longas de profissionais e oportunidades |
 | Animação | **react-native-reanimated** | Gestos e transições suaves |
-| Push | **expo-notifications** + Expo Push Service, disparado pelas Cloud Functions | Avisos de oportunidade |
+| Push | **expo-notifications** + FCM direto, disparado pelas Cloud Functions | Avisos de oportunidade, sem conta no expo.dev |
 | Distribuição | **EAS Build** (`.aab`) + **EAS Submit** para a trilha de teste interno; **EAS Update** | Teste interno pelo Play, correções sem nova versão |
 | Desenvolvimento | **Firestore Emulator** | Não gastar o banco de produção ao desenvolver |
 
@@ -37,9 +37,9 @@ Material 3 adaptado à identidade da Skillsy (20/10): Inter/Outfit, cantos quadr
 - [x] Site importando do `shared`; CI e deploy iguais
 
 ### 1. Imagens no Firebase Storage (site e app)
-- [ ] Regras do Storage: cada usuário grava só as próprias imagens, com limite de tamanho e tipo
-- [ ] Uploads (foto, capa, galeria, capa de artigo) indo para o Storage; documento guarda só a URL
-- [ ] Script para migrar as imagens em base64 existentes; miniaturas para os cards
+- [x] Regras do Storage: cada usuário grava só as próprias imagens, com limite de tamanho e tipo
+- [x] Uploads (foto, capa, galeria, capa de artigo) indo para o Storage; documento guarda só a URL
+- [x] Script para migrar as imagens em base64 existentes (rodado em 23/10: 2,6 MB → 330 KB, já em WebP reduzido)
 
 ### 2. Esqueleto do app
 - [x] Expo SDK 58 em `apps/mobile`, Expo Router com abas **Buscar · Oportunidades · Contatos · Perfil**
@@ -49,10 +49,10 @@ Material 3 adaptado à identidade da Skillsy (20/10): Inter/Outfit, cantos quadr
 
 ### 3. Conta e perfil
 - [x] Login por e-mail e recuperar senha; criar conta abre o site
-- [ ] Login com Google (precisa do SHA-1 do app no Firebase)
+- [x] Login com Google
 - [x] Perfil público: foto, capa, nota, indicações, sobre, atendimento, galeria, botão de WhatsApp (abre da lista sem nova leitura)
 - [x] Avaliações e indicações no perfil (avaliar, indicar, conectar)
-- [ ] Editar o próprio perfil no app, com upload de foto (hoje abre o site)
+- [x] Editar o próprio perfil no app, com upload de foto (mesma gravação do site, em `packages/shared`)
 
 ### 4. Comunidade
 - [x] Busca por termo com a mesma regra e ordenação do site
@@ -63,8 +63,9 @@ Material 3 adaptado à identidade da Skillsy (20/10): Inter/Outfit, cantos quadr
 ### 5. Oportunidades e push (Cloud Functions já publicadas em 20/10)
 - [x] Listar oportunidades com filtros; profissional logado responde pelo WhatsApp (mesma regra do site)
 - [x] Publicar em passos, encerrar, reativar e responder o lembrete de 20 dias
-- [ ] Token de push em `users/{uid}/devices`, com regras
-- [ ] Functions no banco novo enviando push pelo Expo; tocar na notificação abre a oportunidade
+- [x] Token FCM em `users/{uid}/devices/{token}`, com regras; removido ao sair da conta
+- [x] `sendPushNotification` envia pelo FCM cada `users/{uid}/notifications` criada (sem conta no expo.dev) e apaga tokens mortos; tocar abre Oportunidades (Mural ou Minhas)
+- [ ] Testar o push num APK real (o navegador não recebe push)
 
 ### 6. Teste interno
 - [ ] Play Console criado e verificado; app e trilha de teste interno

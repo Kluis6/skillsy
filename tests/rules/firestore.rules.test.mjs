@@ -375,3 +375,31 @@ describe("users: edição do próprio perfil", () => {
     await assertFails(updateDoc(doc(db, "users", COMPLETE), { campoDesconhecido: 1 }));
   });
 });
+
+describe("users: aparelhos para push", () => {
+  const TOKEN = "fcm-token:abc_123";
+  const device = (overrides = {}) => ({ token: TOKEN, platform: "android", updatedAt: serverTimestamp(), ...overrides });
+
+  test("dono registra, lê e remove o próprio aparelho", async () => {
+    const ref = doc(dbAs(PROVIDER), "users", PROVIDER, "devices", TOKEN);
+    await assertSucceeds(setDoc(ref, device()));
+    await assertSucceeds(setDoc(ref, device()));
+    await assertSucceeds(getDoc(ref));
+    await assertSucceeds(deleteDoc(ref));
+  });
+
+  test("ninguém registra ou lê aparelho de outra pessoa", async () => {
+    const ref = doc(dbAs(RATER), "users", PROVIDER, "devices", TOKEN);
+    await assertFails(setDoc(ref, device()));
+    await assertFails(getDoc(ref));
+  });
+
+  test("o documento só guarda o próprio token, a plataforma e a data", async () => {
+    const db = dbAs(PROVIDER);
+    const ref = doc(db, "users", PROVIDER, "devices", TOKEN);
+    await assertFails(setDoc(ref, device({ token: "outro" })));
+    await assertFails(setDoc(ref, device({ platform: "web" })));
+    await assertFails(setDoc(ref, device({ updatedAt: Timestamp.now() })));
+    await assertFails(setDoc(ref, device({ extra: true })));
+  });
+});
