@@ -77,7 +77,7 @@ export function OptionSheet({
             <Pressable
               onPress={() => choose(item.value)}
               accessibilityRole="button"
-              accessibilityState={{ selected }}
+              aria-selected={selected}
               className={cn(
                 'min-h-12 flex-row items-center justify-between px-4 active:bg-accent',
                 selected && 'bg-primary/10'

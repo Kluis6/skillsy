@@ -20,7 +20,7 @@ export function TopTabs<T extends string>({ tabs, value, onChange }: TopTabsProp
             key={tab.value}
             onPress={() => onChange(tab.value)}
             accessibilityRole="tab"
-            accessibilityState={{ selected }}
+            aria-selected={selected}
             className="h-12 flex-1 items-center justify-end active:bg-accent">
             <Text
               className={cn(

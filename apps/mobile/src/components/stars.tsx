@@ -30,7 +30,7 @@ export function Stars({ value, size = 16, onChange }: StarsProps) {
             key={score}
             onPress={() => onChange(score)}
             accessibilityRole="radio"
-            accessibilityState={{ checked: score === value }}
+            aria-checked={score === value}
             accessibilityLabel={`${score} ${score === 1 ? 'estrela' : 'estrelas'}`}
             className={cn('size-12 items-center justify-center active:bg-accent')}>
             {icon}

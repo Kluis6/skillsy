@@ -20,7 +20,8 @@ export function ActionButton({ icon: Icon, label, active, disabled, onPress }: A
       onPress={onPress}
       disabled={disabled}
       accessibilityRole="button"
-      accessibilityState={{ selected: Boolean(active), disabled: Boolean(disabled) }}
+      aria-selected={Boolean(active)}
+      aria-disabled={Boolean(disabled)}
       // A done action (e.g. "Avaliado") stays solid; only unavailable ones fade.
       className={cn(
         'flex-1 items-center gap-1.5 py-1 active:bg-accent',

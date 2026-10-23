@@ -29,7 +29,7 @@ export function Chip({
       onPress={onPress}
       hitSlop={4}
       accessibilityRole="button"
-      accessibilityState={{ selected }}
+      aria-selected={selected}
       accessibilityLabel={accessibilityLabel ?? label}
       className={cn(
         'h-10 flex-row items-center gap-1.5 border px-3',

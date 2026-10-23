@@ -67,13 +67,18 @@ export default function NovaOportunidadeScreen() {
 
   const publish = useMutation({
     mutationFn: () =>
-      createOpportunity(user!.uid, form, { name: me?.name ?? user?.displayName ?? '', whatsapp: me?.whatsapp }),
+      createOpportunity(user!.uid, form, {
+        name: me?.name ?? user?.displayName ?? '',
+        whatsapp: me?.whatsapp,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['opportunities'] });
       queryClient.invalidateQueries({ queryKey: ['my-opportunities'] });
       if (router.canGoBack()) router.back();
       else router.replace('/oportunidades');
-      showSnackbar('Oportunidade publicada. Profissionais do mesmo serviço e estado serão avisados.');
+      showSnackbar(
+        'Oportunidade publicada. Profissionais do mesmo serviço e estado serão avisados.'
+      );
     },
   });
 
@@ -94,7 +99,10 @@ export default function NovaOportunidadeScreen() {
           Passo {step + 1} de {STEPS.length} · {STEPS[step]}
         </Text>
         <View className="h-1 bg-muted" accessibilityRole="progressbar">
-          <View className="h-1 bg-primary" style={{ width: `${((step + 1) / STEPS.length) * 100}%` }} />
+          <View
+            className="h-1 bg-primary"
+            style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
+          />
         </View>
       </View>
 
@@ -120,7 +128,9 @@ export default function NovaOportunidadeScreen() {
                       : 'Outros serviços'
                   }
                   icon={LayoutGrid}
-                  selected={Boolean(form.category) && !POPULAR_CATEGORIES.includes(form.category as never)}
+                  selected={
+                    Boolean(form.category) && !POPULAR_CATEGORIES.includes(form.category as never)
+                  }
                   onPress={() => setSheet('category')}
                 />
               </View>
@@ -176,7 +186,11 @@ export default function NovaOportunidadeScreen() {
                 </View>
               </Field>
               <Field label="Cidade">
-                <Input value={form.city} onChangeText={(city) => update({ city })} maxLength={100} />
+                <Input
+                  value={form.city}
+                  onChangeText={(city) => update({ city })}
+                  maxLength={100}
+                />
               </Field>
               <Field label="Bairro">
                 <Input
@@ -198,10 +212,12 @@ export default function NovaOportunidadeScreen() {
                     key={urgency}
                     onPress={() => update({ urgency })}
                     accessibilityRole="radio"
-                    accessibilityState={{ checked: selected }}
+                    aria-checked={selected}
                     className={cn(
                       'flex-row items-start gap-3 border p-4',
-                      selected ? 'border-primary bg-primary/10' : 'border-border bg-card active:bg-accent'
+                      selected
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border bg-card active:bg-accent'
                     )}>
                     <View
                       className={cn(
@@ -244,8 +260,8 @@ export default function NovaOportunidadeScreen() {
               </View>
               {me?.whatsapp ? (
                 <Text className="text-sm leading-5 text-muted-foreground">
-                  Seu WhatsApp aparece só como contato desta oportunidade. Ela fica ativa por 30 dias e
-                  você pode encerrar antes. Não substitui canais de emergência.
+                  Seu WhatsApp aparece só como contato desta oportunidade. Ela fica ativa por 30
+                  dias e você pode encerrar antes. Não substitui canais de emergência.
                 </Text>
               ) : (
                 <Text className="text-sm leading-5 text-destructive">
@@ -310,7 +326,15 @@ function Heading({ title, description }: { title: string; description?: string }
   );
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <View className="gap-1.5">
       <Label>{label}</Label>
@@ -349,7 +373,7 @@ function ServiceOption({
     <Pressable
       onPress={onPress}
       accessibilityRole="radio"
-      accessibilityState={{ checked: selected }}
+      aria-checked={selected}
       accessibilityLabel={label}
       className="w-1/4 items-center gap-1.5 py-2 active:bg-accent">
       <View

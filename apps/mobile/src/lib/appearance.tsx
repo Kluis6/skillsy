@@ -15,20 +15,23 @@ type AppearanceState = {
   setPreference: (preference: AppearancePreference) => void;
 };
 
+// Light is the default; dark and "follow the phone" are opt-in in Perfil.
+const DEFAULT_PREFERENCE: AppearancePreference = 'light';
+
 const AppearanceContext = createContext<AppearanceState>({
-  preference: 'system',
+  preference: DEFAULT_PREFERENCE,
   scheme: 'light',
   setPreference: () => {},
 });
 
 /**
- * Light, dark or the phone's setting, saved on the device. Navigation
+ * Light (default), dark or the phone's setting, saved on the device. Navigation
  * (headers, tab bar) and the NativeWind classes both follow `scheme`, so they
  * never disagree.
  */
 export function AppearanceProvider({ children }: { children: ReactNode }) {
   const system: Scheme = useSystemScheme() === 'dark' ? 'dark' : 'light';
-  const [preference, setPreferenceState] = useState<AppearancePreference>('system');
+  const [preference, setPreferenceState] = useState<AppearancePreference>(DEFAULT_PREFERENCE);
   const scheme = preference === 'system' ? system : preference;
 
   useEffect(() => {

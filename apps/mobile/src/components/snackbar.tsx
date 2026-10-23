@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { View } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -33,7 +41,12 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
           entering={FadeInDown.duration(180)}
           exiting={FadeOutDown.duration(150)}
           pointerEvents="none"
-          style={{ position: 'absolute', left: 16, right: 16, bottom: insets.bottom + BOTTOM_OFFSET }}>
+          style={{
+            position: 'absolute',
+            left: 16,
+            right: 16,
+            bottom: insets.bottom + BOTTOM_OFFSET,
+          }}>
           <View
             className="min-h-12 justify-center bg-foreground px-4 py-3 shadow-lg shadow-black/20"
             accessibilityLiveRegion="polite"

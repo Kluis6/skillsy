@@ -15,12 +15,21 @@ type MyOpportunityCardProps = {
   opportunity: Opportunity;
   busy: boolean;
   onStatus: (status: 'active' | 'closed') => void;
-  onFollowUp: (answers: { receivedResponse: boolean; platformSatisfied: boolean; closeRequest: boolean }) => void;
+  onFollowUp: (answers: {
+    receivedResponse: boolean;
+    platformSatisfied: boolean;
+    closeRequest: boolean;
+  }) => void;
 };
 
 /** The author's view of an opportunity: status, close/reactivate and the
  * 20-day follow-up, like "Minhas oportunidades" on the site. */
-export function MyOpportunityCard({ opportunity, busy, onStatus, onFollowUp }: MyOpportunityCardProps) {
+export function MyOpportunityCard({
+  opportunity,
+  busy,
+  onStatus,
+  onFollowUp,
+}: MyOpportunityCardProps) {
   const status = getOpportunityStatus(opportunity);
   const [receivedResponse, setReceivedResponse] = useState(true);
   const [platformSatisfied, setPlatformSatisfied] = useState(true);
@@ -31,7 +40,9 @@ export function MyOpportunityCard({ opportunity, busy, onStatus, onFollowUp }: M
       badge={
         <Badge
           variant="outline"
-          className={status === 'active' ? 'border-success/30 bg-success/10' : 'border-border bg-muted'}>
+          className={
+            status === 'active' ? 'border-success/30 bg-success/10' : 'border-border bg-muted'
+          }>
           <Text className={status === 'active' ? 'text-success' : 'text-muted-foreground'}>
             {STATUS_LABEL[status]}
           </Text>
@@ -42,12 +53,26 @@ export function MyOpportunityCard({ opportunity, busy, onStatus, onFollowUp }: M
           <Text className="font-semibold">Já se passaram 20 dias. Como foi?</Text>
           <Text className="text-sm text-muted-foreground">Algum profissional respondeu?</Text>
           <View className="flex-row gap-2">
-            <Chip label="Sim" selected={receivedResponse} onPress={() => setReceivedResponse(true)} />
-            <Chip label="Ainda não" selected={!receivedResponse} onPress={() => setReceivedResponse(false)} />
+            <Chip
+              label="Sim"
+              selected={receivedResponse}
+              onPress={() => setReceivedResponse(true)}
+            />
+            <Chip
+              label="Ainda não"
+              selected={!receivedResponse}
+              onPress={() => setReceivedResponse(false)}
+            />
           </View>
-          <Text className="text-sm text-muted-foreground">Você ficou satisfeito com o Skillsy?</Text>
+          <Text className="text-sm text-muted-foreground">
+            Você ficou satisfeito com o Skillsy?
+          </Text>
           <View className="flex-row gap-2">
-            <Chip label="Sim" selected={platformSatisfied} onPress={() => setPlatformSatisfied(true)} />
+            <Chip
+              label="Sim"
+              selected={platformSatisfied}
+              onPress={() => setPlatformSatisfied(true)}
+            />
             <Chip
               label="Pode melhorar"
               selected={!platformSatisfied}
@@ -59,13 +84,17 @@ export function MyOpportunityCard({ opportunity, busy, onStatus, onFollowUp }: M
               variant="outline"
               className="flex-1"
               disabled={busy}
-              onPress={() => onFollowUp({ receivedResponse, platformSatisfied, closeRequest: false })}>
+              onPress={() =>
+                onFollowUp({ receivedResponse, platformSatisfied, closeRequest: false })
+              }>
               <Text>Manter visível</Text>
             </Button>
             <Button
               className="flex-1"
               disabled={busy}
-              onPress={() => onFollowUp({ receivedResponse, platformSatisfied, closeRequest: true })}>
+              onPress={() =>
+                onFollowUp({ receivedResponse, platformSatisfied, closeRequest: true })
+              }>
               <Text>Encerrar</Text>
             </Button>
           </View>

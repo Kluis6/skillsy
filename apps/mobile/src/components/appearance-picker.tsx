@@ -6,9 +6,9 @@ import { useAppearance, type AppearancePreference } from '@/lib/appearance';
 import { cn } from '@/lib/utils';
 
 const OPTIONS: { value: AppearancePreference; label: string; icon: LucideIcon }[] = [
-  { value: 'system', label: 'Automático (igual ao celular)', icon: Smartphone },
   { value: 'light', label: 'Claro', icon: Sun },
   { value: 'dark', label: 'Escuro', icon: Moon },
+  { value: 'system', label: 'Automático (igual ao celular)', icon: Smartphone },
 ];
 
 /** Aparência: light, dark or the phone's setting, like the site's theme toggle. */
@@ -24,7 +24,7 @@ export function AppearancePicker() {
             key={value}
             onPress={() => setPreference(value)}
             accessibilityRole="radio"
-            accessibilityState={{ checked: selected }}
+            aria-checked={selected}
             className={cn(
               'min-h-14 flex-row items-center gap-4 px-4 py-3 active:bg-accent',
               index < OPTIONS.length - 1 && 'border-b border-border-subtle'
