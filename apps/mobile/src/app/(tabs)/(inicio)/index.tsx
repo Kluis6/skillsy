@@ -60,7 +60,7 @@ export default function InicioScreen() {
     <View className="flex-1 bg-background">
       <AppHeader title={firstName ? `Olá, ${firstName}` : 'Boas-vindas'} />
       <ScrollView contentContainerClassName="gap-8 pb-8">
-        <View className="gap-5 border-b border-border-subtle bg-card pb-6 pt-4">
+        <View className="gap-5 border-b border-border bg-card pb-6 pt-4">
           <SearchLauncher
             onPress={() => router.navigate({ pathname: '/buscar', params: { focar: '1' } })}
           />

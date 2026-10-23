@@ -52,7 +52,7 @@ export default function BuscarScreen() {
   return (
     <View className="flex-1 bg-background">
       <AppHeader title="Buscar">
-        <View className="gap-3 pb-3">
+        <View className="gap-5 pb-6 pt-4">
           <SearchField
             key={term}
             initial={term}

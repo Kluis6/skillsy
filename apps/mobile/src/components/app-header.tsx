@@ -27,10 +27,14 @@ export function AppHeader({ title, back = false, actions, children }: AppHeaderP
   const goBack = () => (router.canGoBack() ? router.back() : router.navigate('/'));
 
   return (
-    <View style={{ paddingTop: insets.top }} className="border-b border-border-subtle bg-card">
+    // The title row always ends in a line (same color as the bottom tab bar's);
+    // extra rows below it close the header with a second line.
+    <View
+      style={{ paddingTop: insets.top }}
+      className={cn('bg-card', children ? 'border-b border-border' : null)}>
       <View
         className={cn(
-          'h-16 flex-row items-center',
+          'h-16 flex-row items-center border-b border-border',
           back ? 'pl-1' : 'pl-4',
           actions ? 'pr-1' : 'pr-4'
         )}>
