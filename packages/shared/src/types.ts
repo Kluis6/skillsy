@@ -103,6 +103,16 @@ export interface UserReport {
   resolvedAt?: any;
 }
 
+/** "Fale conosco" message from the home page (support_messages). */
+export interface SupportMessage {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  read: boolean;
+  createdAt: any;
+}
+
 export type PostCategory = "article" | "job";
 export type PostStatus = "draft" | "pending_review" | "published" | "rejected";
 

@@ -403,3 +403,32 @@ describe("users: aparelhos para push", () => {
     await assertFails(setDoc(ref, device({ extra: true })));
   });
 });
+
+describe("support_messages: Fale conosco", () => {
+  const MESSAGE = { name: "Visitante", email: "visitante@example.com", message: "Olá!", read: false };
+
+  beforeEach(async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "support_messages", "m1"), { ...MESSAGE, createdAt: Timestamp.now() });
+    });
+  });
+
+  test("visitante sem conta envia mensagem, mas não lê", async () => {
+    const db = env.unauthenticatedContext().firestore();
+    await assertSucceeds(setDoc(doc(db, "support_messages", "m2"), { ...MESSAGE, createdAt: serverTimestamp() }));
+    await assertFails(getDoc(doc(db, "support_messages", "m1")));
+  });
+
+  test("só admin lê e marca como lida ou não lida", async () => {
+    await assertFails(getDocs(collection(dbAs(RATER), "support_messages")));
+    await assertFails(updateDoc(doc(dbAs(RATER), "support_messages", "m1"), { read: true }));
+    const admin = dbAs(ADMIN);
+    await assertSucceeds(getDocs(collection(admin, "support_messages")));
+    await assertSucceeds(updateDoc(doc(admin, "support_messages", "m1"), { read: true }));
+    await assertSucceeds(updateDoc(doc(admin, "support_messages", "m1"), { read: false }));
+  });
+
+  test("admin não altera o conteúdo da mensagem", async () => {
+    await assertFails(updateDoc(doc(dbAs(ADMIN), "support_messages", "m1"), { message: "outra" }));
+  });
+});

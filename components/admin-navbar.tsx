@@ -16,6 +16,7 @@ import {
   Flag,
   LayoutDashboard,
   LogOut,
+  Mail,
   Settings,
   ShieldAlert,
   Users,
@@ -92,6 +93,8 @@ export function AdminNavbar() {
         return <Users size={14} className="text-primary" />;
       case "report":
         return <Flag size={14} className="text-destructive" />;
+      case "support":
+        return <Mail size={14} className="text-primary" />;
       default:
         return <Bell size={14} className="text-primary" />;
     }
@@ -145,6 +148,15 @@ export function AdminNavbar() {
               className={`gap-2 font-bold text-xs h-9 px-4 ${pathname.startsWith("/admin/moderacao") ? "bg-card text-text-main" : "text-text-muted hover:text-primary"}`}
             >
               <ShieldAlert size={14} /> Moderação
+            </Button>
+            <Button
+              render={<Link href="/admin/mensagens" />}
+              nativeButton={false}
+              variant="ghost"
+              size="sm"
+              className={`gap-2 font-bold text-xs h-9 px-4 ${pathname.startsWith("/admin/mensagens") ? "bg-card text-text-main" : "text-text-muted hover:text-primary"}`}
+            >
+              <Mail size={14} /> Mensagens
             </Button>
             <Button
               render={<Link href="/admin/artigos" />}

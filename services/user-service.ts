@@ -26,6 +26,7 @@ import { toPlainValue } from "@/lib/firestore-plain";
 import {
   CommunityRecommendation,
   Rating,
+  SupportMessage,
   UserProfile,
   UserReport,
 } from "@/models/types";
@@ -887,6 +888,33 @@ export const UserService = {
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  },
+
+  async getSupportMessages(): Promise<SupportMessage[]> {
+    const path = "support_messages";
+    try {
+      const q = query(collection(db, path), orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map((messageDoc) =>
+        toPlainValue({
+          id: messageDoc.id,
+          read: false,
+          ...messageDoc.data(),
+        } as SupportMessage),
+      );
+    } catch (error) {
+      handleFirestoreError(error, OperationType.LIST, path);
+      return [];
+    }
+  },
+
+  async setSupportMessageRead(messageId: string, read: boolean): Promise<void> {
+    const path = `support_messages/${messageId}`;
+    try {
+      await updateDoc(doc(db, "support_messages", messageId), { read });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, path);
     }
   },
 

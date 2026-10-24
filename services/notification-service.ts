@@ -19,7 +19,8 @@ export interface AdminNotification {
   id: string;
   title: string;
   message: string;
-  type: 'new_user' | 'system' | 'report';
+  // 'support' is created only by the onSupportMessage Function.
+  type: 'new_user' | 'system' | 'report' | 'support';
   read: boolean;
   createdAt: any;
   link?: string;

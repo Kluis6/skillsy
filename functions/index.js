@@ -101,6 +101,25 @@ exports.sendPushNotification = onDocumentCreated(
   },
 );
 
+// "Fale conosco" messages can come from visitors without an account, who
+// cannot write admin_notifications, so the bell notification is created here.
+exports.notifyAdminsOfSupportMessage = onDocumentCreated(
+  { document: "support_messages/{messageId}", database: DATABASE_ID, region: REGION },
+  async (event) => {
+    const message = event.data?.data();
+    if (!message) return;
+    const text = String(message.message || "");
+    await db.collection("admin_notifications").add({
+      title: "Nova mensagem de contato",
+      message: `${message.name || "Visitante"}: ${text.length > 140 ? `${text.slice(0, 140)}…` : text}`,
+      type: "support",
+      read: false,
+      link: "/admin/mensagens",
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  },
+);
+
 exports.maintainOpportunities = onSchedule(
   { schedule: "every day 09:00", timeZone: "America/Sao_Paulo", region: REGION },
   async () => {

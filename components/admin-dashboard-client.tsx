@@ -13,6 +13,7 @@ import {
   FileText,
   AlertTriangle,
   RefreshCw,
+  Mail,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "motion/react";
@@ -172,7 +173,7 @@ export function AdminDashboardClient() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -249,6 +250,32 @@ export function AdminDashboardClient() {
                 <p className="text-text-muted text-sm leading-relaxed">
                   Revise conteúdos enviados por usuários, publique notícias e
                   destaque artigos na área pública.
+                </p>
+              </Card>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
+            <Link href="/admin/mensagens">
+              <Card className="group bg-card border border-border-subtle hover:border-primary/50 transition-all p-8 cursor-pointer h-full shadow-xs">
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-14 h-14 bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <Mail size={28} />
+                  </div>
+                  <ArrowRight
+                    size={24}
+                    className="text-text-muted group-hover:translate-x-1 transition-transform"
+                  />
+                </div>
+                <h3 className="text-xl font-bold mb-2 font-heading">
+                  Mensagens de contato
+                </h3>
+                <p className="text-text-muted text-sm leading-relaxed">
+                  Leia o que chega pelo Fale conosco e responda por e-mail.
                 </p>
               </Card>
             </Link>

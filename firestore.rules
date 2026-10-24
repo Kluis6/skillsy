@@ -734,7 +734,11 @@ service cloud.firestore {
 
     match /support_messages/{messageId} {
       allow create: if isValidSupportMessage(request.resource.data);
-      allow read, update, delete: if isAdmin();
+      allow read, delete: if isAdmin();
+      // The admin inbox only marks messages as read or unread.
+      allow update: if isAdmin() &&
+                    request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']) &&
+                    request.resource.data.read is bool;
     }
 
     match /admin_notifications/{notificationId} {
