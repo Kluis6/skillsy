@@ -100,7 +100,7 @@ export default function BuscarScreen() {
           renderItem={({ item }) => (
             <ProviderCard provider={item} onPress={() => openProfile(item)} />
           )}
-          contentContainerClassName="gap-3 p-4"
+          contentContainerClassName="gap-4 p-4"
           onRefresh={refetch}
           refreshing={isRefetching}
           keyboardShouldPersistTaps="handled"
@@ -175,7 +175,7 @@ function SearchField({
         autoCapitalize="none"
         autoCorrect={false}
         autoFocus={autoFocus}
-        className="h-10 px-11"
+        className="h-12 px-11"
         accessibilityLabel="Buscar profissionais"
       />
       <Search size={20} className="absolute left-[29px] text-muted-foreground" />
@@ -208,7 +208,7 @@ function Discover({ onSearch }: { onSearch: (q: string) => void }) {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerClassName="gap-3 px-4">
+        contentContainerClassName="gap-4 px-4">
         {RECOMMENDED_SERVICES.map((service) => (
           <ServiceCard
             key={service.title}
@@ -221,9 +221,9 @@ function Discover({ onSearch }: { onSearch: (q: string) => void }) {
       <View className="pt-2">
         <SectionHeader title="Todas as categorias" />
       </View>
-      <View className="gap-3 px-4">
+      <View className="gap-4 px-4">
         {rows.map((row) => (
-          <View key={row[0]} className="flex-row gap-3">
+          <View key={row[0]} className="flex-row gap-4">
             {/* Equal columns without padding, so a lone last card keeps the
                 width of the others. */}
             {row.map((category) => (

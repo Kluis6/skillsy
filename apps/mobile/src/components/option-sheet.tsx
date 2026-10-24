@@ -59,7 +59,7 @@ export function OptionSheet({
               value={query}
               onChangeText={setQuery}
               placeholder="Buscar"
-              className="h-10 pl-10"
+              className="h-12 pl-10"
               autoCorrect={false}
               accessibilityLabel={`Buscar em ${title}`}
             />
