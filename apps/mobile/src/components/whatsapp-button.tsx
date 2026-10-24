@@ -3,6 +3,8 @@ import Svg, { Path } from 'react-native-svg';
 
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { useAppearance } from '@/lib/appearance';
+import { THEME } from '@/lib/theme';
 import { cn } from '@/lib/utils';
 
 // WhatsApp logo, the same glyph the site uses (Font Awesome "whatsapp",
@@ -34,13 +36,15 @@ export function WhatsAppButton({
   size = 'default',
   className,
 }: WhatsAppButtonProps) {
+  // Same color as the label (white on light, dark green on dark).
+  const iconColor = THEME[useAppearance().scheme].successForeground;
   return (
     <Button
       size={size}
       className={cn('bg-success active:bg-success/80', className)}
       onPress={() => Linking.openURL(url)}
       accessibilityLabel={label}>
-      <WhatsAppIcon />
+      <WhatsAppIcon color={iconColor} />
       <Text className="font-bold text-success-foreground">{label}</Text>
     </Button>
   );
