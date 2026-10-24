@@ -31,7 +31,7 @@ import {
   Utensils,
   Wrench,
   type LucideIcon,
-} from 'lucide-react-native';
+} from '@/lib/icons';
 
 // Same icon per category as the site (components/category-carousel.tsx), so
 // each service keeps one icon across platforms.

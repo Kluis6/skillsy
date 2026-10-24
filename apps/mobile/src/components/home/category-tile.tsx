@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react-native';
+import type { LucideIcon } from '@/lib/icons';
 import { Pressable, View } from 'react-native';
 
 import { Text } from '@/components/ui/text';
@@ -16,7 +16,13 @@ export function CategoryTile({ label, icon: Icon, onPress }: CategoryTileProps) 
       <View className="aspect-square w-full items-center justify-center border border-border bg-card">
         <Icon size={28} className="text-primary" />
       </View>
-      <Text className="text-center text-sm" numberOfLines={2}>
+      {/* One word per shortcut: with a larger system font it shrinks to fit
+          instead of breaking mid-word ("Manutençã / o"). */}
+      <Text
+        className="text-center text-sm"
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.8}>
         {label}
       </Text>
     </Pressable>

@@ -12,7 +12,7 @@ import {
   Pencil,
   User,
   type LucideIcon,
-} from 'lucide-react-native';
+} from '@/lib/icons';
 import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, View } from 'react-native';
 

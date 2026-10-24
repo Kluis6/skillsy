@@ -1,7 +1,7 @@
 import { opportunityWhatsappUrl } from '@skillsy/shared/opportunities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
-import { BriefcaseBusiness, Plus } from 'lucide-react-native';
+import { BriefcaseBusiness, Plus } from '@/lib/icons';
 import { useState } from 'react';
 import { FlatList, View } from 'react-native';
 

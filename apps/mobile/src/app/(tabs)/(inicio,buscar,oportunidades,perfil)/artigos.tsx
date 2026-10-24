@@ -1,7 +1,7 @@
 import type { Post } from '@skillsy/shared/types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { Newspaper } from 'lucide-react-native';
+import { Newspaper } from '@/lib/icons';
 import { useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

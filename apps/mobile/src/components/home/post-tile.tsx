@@ -1,6 +1,6 @@
 import type { Post } from '@skillsy/shared/types';
 import { Image } from 'expo-image';
-import { Newspaper, UserSearch } from 'lucide-react-native';
+import { Newspaper, UserSearch } from '@/lib/icons';
 import { Pressable, View } from 'react-native';
 
 import { PostCategoryBadge } from '@/components/post-category-badge';

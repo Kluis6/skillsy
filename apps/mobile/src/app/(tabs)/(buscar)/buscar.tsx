@@ -2,7 +2,7 @@ import { PROVIDER_CATEGORIES } from '@skillsy/shared/profile-options';
 import type { UserProfile } from '@skillsy/shared/types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Search, X } from 'lucide-react-native';
+import { Search, X } from '@/lib/icons';
 import { useState } from 'react';
 import { FlatList, Pressable, ScrollView, View } from 'react-native';
 

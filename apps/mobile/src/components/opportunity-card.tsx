@@ -1,6 +1,6 @@
 import { formatFirestoreDate, OPPORTUNITY_URGENCY } from '@skillsy/shared/opportunities';
 import type { Opportunity } from '@skillsy/shared/types';
-import { AlertTriangle, Clock3, MapPin } from 'lucide-react-native';
+import { AlertTriangle, Clock3, MapPin } from '@/lib/icons';
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 

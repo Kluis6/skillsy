@@ -1,4 +1,4 @@
-import { X } from 'lucide-react-native';
+import { X } from '@/lib/icons';
 import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, Modal, Pressable, View } from 'react-native';
 import Animated, { SlideInDown } from 'react-native-reanimated';

@@ -6,7 +6,7 @@ import {
 } from '@skillsy/shared/format';
 import { whatsappUrl } from '@skillsy/shared/contact';
 import type { UserProfile } from '@skillsy/shared/types';
-import { MapPin, Star, ThumbsUp } from 'lucide-react-native';
+import { MapPin, Star, ThumbsUp } from '@/lib/icons';
 import { Pressable, View } from 'react-native';
 
 import { ProfileAvatar } from '@/components/profile-avatar';

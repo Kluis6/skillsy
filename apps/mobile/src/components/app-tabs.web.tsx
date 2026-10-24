@@ -1,5 +1,5 @@
 import { TabList, TabSlot, TabTrigger, Tabs, type TabTriggerSlotProps } from 'expo-router/ui';
-import { BriefcaseBusiness, House, Search, User, type LucideIcon } from 'lucide-react-native';
+import { BriefcaseBusiness, House, Search, User, type LucideIcon } from '@/lib/icons';
 import { Pressable, View } from 'react-native';
 
 import { Text } from '@/components/ui/text';

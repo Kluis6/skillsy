@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { ArrowRight } from 'lucide-react-native';
+import { ArrowRight } from '@/lib/icons';
 import { Pressable, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';

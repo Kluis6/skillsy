@@ -9,7 +9,7 @@ import { profileSchema } from '@skillsy/shared/validations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { Camera, ImagePlus, Trash2 } from 'lucide-react-native';
+import { Camera, ImagePlus, Trash2 } from '@/lib/icons';
 import { useState, type ReactNode } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

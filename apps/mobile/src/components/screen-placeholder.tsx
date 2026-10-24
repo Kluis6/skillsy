@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react-native';
+import type { LucideIcon } from '@/lib/icons';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

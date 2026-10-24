@@ -3,7 +3,7 @@ import { getPostExcerpt } from '@skillsy/shared/post-utils';
 import { useQuery } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
-import { Share2 } from 'lucide-react-native';
+import { Share2 } from '@/lib/icons';
 import { ActivityIndicator, ScrollView, Share, View } from 'react-native';
 
 import { AppHeader } from '@/components/app-header';

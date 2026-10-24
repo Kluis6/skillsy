@@ -20,7 +20,7 @@ import {
   ThumbsUp,
   UserMinus,
   UserPlus,
-} from 'lucide-react-native';
+} from '@/lib/icons';
 import { useState, type ReactNode } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Share, View } from 'react-native';
 

@@ -1,4 +1,4 @@
-import { Check, Search } from 'lucide-react-native';
+import { Check, Search } from '@/lib/icons';
 import { useMemo, useState } from 'react';
 import { FlatList, Pressable, View } from 'react-native';
 

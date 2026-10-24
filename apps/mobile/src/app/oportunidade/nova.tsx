@@ -6,7 +6,7 @@ import {
 } from '@skillsy/shared/opportunities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { Check, LayoutGrid } from 'lucide-react-native';
+import { Check, LayoutGrid } from '@/lib/icons';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

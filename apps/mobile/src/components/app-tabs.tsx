@@ -14,7 +14,13 @@ export default function AppTabs() {
     <NativeTabs
       backgroundColor={colors.card}
       indicatorColor={colors.accent}
-      labelStyle={{ selected: { color: colors.primary } }}>
+      // Material 3: every tab shows its label, not only the selected one.
+      labelVisibilityMode="labeled"
+      iconColor={{ default: colors.mutedForeground, selected: colors.primary }}
+      labelStyle={{
+        default: { color: colors.mutedForeground },
+        selected: { color: colors.primary },
+      }}>
       <NativeTabs.Trigger name="(inicio)">
         <NativeTabs.Trigger.Label>Início</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon md="home" selectedColor={colors.primary} />

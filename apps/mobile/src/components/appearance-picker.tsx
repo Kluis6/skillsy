@@ -1,4 +1,4 @@
-import { Moon, Smartphone, Sun, type LucideIcon } from 'lucide-react-native';
+import { Moon, Smartphone, Sun, type LucideIcon } from '@/lib/icons';
 import { Pressable, View } from 'react-native';
 
 import { Text } from '@/components/ui/text';

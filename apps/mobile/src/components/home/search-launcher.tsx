@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react-native';
+import { Search } from '@/lib/icons';
 import { Pressable } from 'react-native';
 
 import { Text } from '@/components/ui/text';

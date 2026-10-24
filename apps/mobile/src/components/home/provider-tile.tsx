@@ -1,7 +1,7 @@
 import { nameInitial, providerRoleLabel } from '@skillsy/shared/format';
 import type { UserProfile } from '@skillsy/shared/types';
 import { Image } from 'expo-image';
-import { ThumbsUp } from 'lucide-react-native';
+import { ThumbsUp } from '@/lib/icons';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 

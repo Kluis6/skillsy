@@ -1,4 +1,4 @@
-import { Check, ChevronDown } from 'lucide-react-native';
+import { Check, ChevronDown } from '@/lib/icons';
 import { Pressable } from 'react-native';
 
 import { Text } from '@/components/ui/text';

@@ -1,4 +1,4 @@
-import { User } from 'lucide-react-native';
+import { User } from '@/lib/icons';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
