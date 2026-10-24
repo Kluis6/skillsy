@@ -9,7 +9,9 @@ import {
   ChevronRight,
   ExternalLink,
   LogOut,
+  Newspaper,
   Pencil,
+  ShieldCheck,
   User,
   type LucideIcon,
 } from '@/lib/icons';
@@ -98,6 +100,8 @@ function Account({
     queryClient.removeQueries({ queryKey: ['contacts'] });
     queryClient.removeQueries({ queryKey: ['my-opportunities'] });
     queryClient.removeQueries({ queryKey: ['recommended'] });
+    queryClient.removeQueries({ queryKey: ['my-posts'] });
+    queryClient.removeQueries({ queryKey: ['admin-posts'] });
   };
 
   return (
@@ -133,6 +137,20 @@ function Account({
           label="Minhas oportunidades"
           onPress={() => router.navigate('/oportunidades')}
         />
+        <ListRow
+          icon={Newspaper}
+          label="Meus artigos e vagas"
+          description="Escrever, publicar e acompanhar"
+          onPress={() => router.push('/meus-artigos')}
+        />
+        {me?.role === 'admin' ? (
+          <ListRow
+            icon={ShieldCheck}
+            label="Moderar artigos"
+            description="Publicar, rejeitar e destacar"
+            onPress={() => router.push('/moderar-artigos')}
+          />
+        ) : null}
         <ListRow
           icon={Pencil}
           label="Editar perfil"

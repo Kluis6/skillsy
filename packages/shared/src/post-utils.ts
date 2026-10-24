@@ -1,4 +1,4 @@
-import type { PostCategory } from "./types";
+import type { PostCategory, PostStatus } from "./types";
 
 export function slugifyPostTitle(value: string) {
   return value
@@ -25,6 +25,13 @@ export const POST_CATEGORY_OPTIONS = ["article", "job"] as const;
 export const POST_CATEGORY_LABELS: Record<PostCategory, string> = {
   article: "Artigo",
   job: "Vaga",
+};
+
+export const POST_STATUS_LABELS: Record<PostStatus, string> = {
+  draft: "Rascunho",
+  pending_review: "Em revisão",
+  published: "Publicado",
+  rejected: "Rejeitado",
 };
 
 export function getPostExcerpt(post: { excerpt?: string; content?: string }) {
