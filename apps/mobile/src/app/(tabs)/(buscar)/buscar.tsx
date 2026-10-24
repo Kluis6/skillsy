@@ -175,7 +175,7 @@ function SearchField({
         autoCapitalize="none"
         autoCorrect={false}
         autoFocus={autoFocus}
-        className="h-14 px-11"
+        className="h-10 px-11"
         accessibilityLabel="Buscar profissionais"
       />
       <Search size={20} className="absolute left-[29px] text-muted-foreground" />

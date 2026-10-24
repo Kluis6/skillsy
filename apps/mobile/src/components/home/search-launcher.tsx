@@ -11,7 +11,7 @@ export function SearchLauncher({ onPress }: { onPress: () => void }) {
       onPress={onPress}
       accessibilityRole="search"
       accessibilityLabel="Buscar profissionais"
-      className="mx-4 h-14 flex-row items-center gap-3 border border-input bg-background px-3 shadow-sm shadow-black/5 active:bg-accent dark:bg-input/30">
+      className="mx-4 h-10 flex-row items-center gap-3 border border-input bg-background px-3 shadow-sm shadow-black/5 active:bg-accent dark:bg-input/30">
       <Search size={20} className="text-muted-foreground" />
       <Text className="text-base text-muted-foreground">O que você procura?</Text>
     </Pressable>
