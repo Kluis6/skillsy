@@ -60,7 +60,7 @@ export default function BuscarScreen() {
             onSubmit={(q) => setFilters({ q })}
           />
           {/* Serviço and Estado split the width; "Limpar" takes only what it needs. */}
-          <View className="flex-row gap-2 px-4">
+          <View className="flex-row gap-card px-4">
             <Chip
               className="flex-1"
               label={category || 'Serviço'}

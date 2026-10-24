@@ -86,7 +86,7 @@ function Mural() {
 
   return (
     <>
-      <View className="flex-row gap-2 border-b border-border bg-card px-4 pb-6 pt-4">
+      <View className="flex-row gap-card border-b border-border bg-card px-4 pb-6 pt-4">
         <Chip
           className="flex-1"
           label={category || 'Serviço'}
