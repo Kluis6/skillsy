@@ -67,9 +67,10 @@ export default function ArtigoScreen() {
             {post.publishedAt ? ` · ${formatFirestoreDate(post.publishedAt)}` : ''}
           </Text>
           <Text className="text-lg leading-7 text-muted-foreground">{getPostExcerpt(post)}</Text>
-          <Button variant="outline" onPress={share}>
-            <Share2 size={16} className="text-foreground" />
-            <Text>Compartilhar</Text>
+          {/* Same tonal blue as Compartilhar on the profile (ActionButton). */}
+          <Button variant="ghost" className="bg-primary/10 active:bg-primary/20" onPress={share}>
+            <Share2 size={18} className="text-primary" />
+            <Text className="text-primary">Compartilhar</Text>
           </Button>
         </View>
         <View className="p-4">

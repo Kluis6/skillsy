@@ -6,9 +6,10 @@ import { Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 
+import { BrandSplash } from '@/components/brand-splash';
 import { SnackbarProvider } from '@/components/snackbar';
 import { AppearanceProvider, useAppearance } from '@/lib/appearance';
-import { AuthProvider } from '@/lib/auth';
+import { AuthProvider, useAuth } from '@/lib/auth';
 import { usePushNotifications } from '@/lib/push';
 import { useAppFonts } from '@/lib/use-app-fonts';
 import { NAV_THEME } from '@/lib/theme';
@@ -36,6 +37,7 @@ export default function RootLayout() {
 
 function Navigation() {
   const { scheme } = useAppearance();
+  const { loading } = useAuth();
   usePushNotifications();
   return (
     <ThemeProvider value={NAV_THEME[scheme]}>
@@ -46,6 +48,9 @@ function Navigation() {
         <Stack screenOptions={{ headerShown: false }} />
         <PortalHost />
       </SnackbarProvider>
+      {/* Until the saved session is restored, so the first screen already
+          knows whether someone is signed in. */}
+      <BrandSplash ready={!loading} />
     </ThemeProvider>
   );
 }
