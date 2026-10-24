@@ -182,10 +182,14 @@ export interface Opportunity {
 
 export interface UserNotification {
   id: string;
-  type: "opportunity_match" | "opportunity_follow_up";
+  type: "opportunity_match" | "opportunity_follow_up" | "post_published";
   title: string;
   message: string;
-  opportunityId: string;
+  /** Opportunity alerts. */
+  opportunityId?: string;
+  /** New article or job alerts (post_published). */
+  postId?: string;
+  postSlug?: string;
   read: boolean;
   createdAt: any;
 }

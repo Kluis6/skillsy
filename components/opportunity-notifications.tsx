@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { BriefcaseBusiness, Clock3 } from "lucide-react";
+import { BriefcaseBusiness, Clock3, Newspaper } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useAuth } from "@/hooks/use-auth";
@@ -19,6 +19,15 @@ function timeAgo(value: unknown) {
     addSuffix: true,
     locale: ptBR,
   });
+}
+
+function notificationHref(item: UserNotification) {
+  if (item.type === "post_published" && item.postSlug) {
+    return `/artigosevagas/${item.postSlug}`;
+  }
+  return item.type === "opportunity_match"
+    ? "/oportunidades/para-voce"
+    : "/oportunidades";
 }
 
 export function OpportunityNotifications() {
@@ -68,13 +77,13 @@ export function OpportunityNotifications() {
       {open ? (
         <div className="absolute transition-discrete duration-500 md:right-0 -right-14 top-12 z-50 w-sm md:w-[min(22rem,calc(100vw-2rem))] overflow-hidden  border border-border-subtle bg-popover shadow-lg">
           <div className="flex items-center justify-between border-b border-border-subtle bg-surface px-4 py-3">
-            <p className="text-sm font-semibold text-text-main">Oportunidades</p>
+            <p className="text-sm font-semibold text-text-main">Notificações</p>
             <Link
               href="/oportunidades/para-voce"
               onClick={() => setOpen(false)}
               className="text-xs font-semibold text-primary"
             >
-              Ver todas
+              Oportunidades para você
             </Link>
           </div>
           <ScrollArea className="max-h-80">
@@ -82,11 +91,7 @@ export function OpportunityNotifications() {
               items.map((item) => (
                 <Link
                   key={item.id}
-                  href={
-                    item.type === "opportunity_match"
-                      ? "/oportunidades/para-voce"
-                      : "/oportunidades"
-                  }
+                  href={notificationHref(item)}
                   onClick={() => {
                     if (!item.read)
                       void UserNotificationService.markAsRead(
@@ -97,7 +102,11 @@ export function OpportunityNotifications() {
                   }}
                   className={`flex gap-3 border-b border-border-subtle p-4 transition-colors hover:bg-surface ${item.read ? "" : "bg-primary/5"}`}
                 >
-                  <BriefcaseBusiness className="mt-0.5 size-4 shrink-0 text-primary" />
+                  {item.type === "post_published" ? (
+                    <Newspaper className="mt-0.5 size-4 shrink-0 text-primary" />
+                  ) : (
+                    <BriefcaseBusiness className="mt-0.5 size-4 shrink-0 text-primary" />
+                  )}
                   <span className="min-w-0">
                     <span className="block text-sm font-medium text-text-main">
                       {item.title}
@@ -116,7 +125,7 @@ export function OpportunityNotifications() {
               <div className="p-8 text-center">
                 <BsCheckAll  className="mx-auto mb-2 size-6 text-primary" />
                 <p className="text-sm text-text-muted">
-                  Nenhuma oportunidade nova.
+                  Nenhuma notificação nova.
                 </p>
               </div>
             )}

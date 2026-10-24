@@ -1,7 +1,7 @@
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
 const { getMessaging } = require("firebase-admin/messaging");
-const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onDocumentCreated, onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { onMessagePublished } = require("firebase-functions/v2/pubsub");
 const { logger } = require("firebase-functions");
@@ -14,8 +14,9 @@ const DATABASE_ID = "(default)";
 const REGION = "southamerica-east1";
 const db = getFirestore(DATABASE_ID);
 
-function notificationRef(userId, opportunityId, type) {
-  return db.doc(`users/${userId}/notifications/${type}_${opportunityId}`);
+// One notification per user, type and item (opportunity or post).
+function notificationRef(userId, itemId, type) {
+  return db.doc(`users/${userId}/notifications/${type}_${itemId}`);
 }
 
 async function commitInChunks(items, write) {
@@ -58,6 +59,40 @@ exports.notifyMatchingProfessionals = onDocumentCreated(
   },
 );
 
+// Every member hears about a new article or job once, when an admin first
+// publishes it. The id is fixed per post, so publishing it again after an
+// edit or unpublish never repeats the alert (create fails on the existing doc).
+exports.notifyMembersOfNewPost = onDocumentWritten(
+  { document: "posts/{postId}", database: DATABASE_ID, region: REGION },
+  async (event) => {
+    const before = event.data?.before?.data();
+    const post = event.data?.after?.data();
+    if (!post || post.status !== "published" || before?.status === "published") return;
+
+    const users = await db.collection("users").get();
+    const isJob = post.category === "job";
+    const writer = db.bulkWriter();
+    writer.onWriteError((error) => error.code !== 6 /* ALREADY_EXISTS */ && error.failedAttempts < 3);
+    let recipients = 0;
+    for (const user of users.docs) {
+      const data = user.data();
+      if (user.id === post.authorId || data.isBlocked === true || data.isDeleted === true) continue;
+      recipients += 1;
+      writer.create(notificationRef(user.id, event.params.postId, "post_published"), {
+        type: "post_published",
+        title: isJob ? "Nova vaga publicada" : "Novo artigo publicado",
+        message: post.title,
+        postId: event.params.postId,
+        postSlug: post.slug,
+        read: false,
+        createdAt: FieldValue.serverTimestamp(),
+      }).catch(() => {});
+    }
+    await writer.close();
+    logger.info("Post alerts created", { postId: event.params.postId, recipients });
+  },
+);
+
 // Tokens FCM rejects for good: the app was uninstalled or the token rotated.
 const DEAD_TOKEN_ERRORS = new Set([
   "messaging/registration-token-not-registered",
@@ -65,8 +100,8 @@ const DEAD_TOKEN_ERRORS = new Set([
 ]);
 
 // Every notification the functions above create also goes to the user's
-// phones (users/{uid}/devices, registered by the app). Tapping it opens the
-// Oportunidades tab; the app reads `type` to pick Mural or Minhas.
+// phones (users/{uid}/devices, registered by the app). The app reads `type`
+// to open Oportunidades (Mural or Minhas) or the article.
 exports.sendPushNotification = onDocumentCreated(
   { document: "users/{userId}/notifications/{notificationId}", database: DATABASE_ID, region: REGION },
   async (event) => {
@@ -82,6 +117,7 @@ exports.sendPushNotification = onDocumentCreated(
       data: {
         type: String(notification.type ?? ""),
         opportunityId: String(notification.opportunityId ?? ""),
+        postSlug: String(notification.postSlug ?? ""),
       },
       android: {
         priority: "high",

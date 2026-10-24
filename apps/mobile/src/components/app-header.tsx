@@ -1,10 +1,12 @@
 import { router } from 'expo-router';
-import { ArrowLeft } from '@/lib/icons';
+import { ArrowLeft, Bell } from '@/lib/icons';
 import type { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui/text';
+import { useAuth } from '@/lib/auth';
+import { useNotifications } from '@/lib/notifications';
 import { cn } from '@/lib/utils';
 
 type AppHeaderProps = {
@@ -24,6 +26,9 @@ type AppHeaderProps = {
  */
 export function AppHeader({ title, back = false, actions, children }: AppHeaderProps) {
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
+  // The tab screens (no back arrow) end with the notifications bell.
+  const bell = !back && user ? <NotificationBell /> : null;
   const goBack = () => (router.canGoBack() ? router.back() : router.navigate('/'));
 
   return (
@@ -36,7 +41,7 @@ export function AppHeader({ title, back = false, actions, children }: AppHeaderP
         className={cn(
           'h-16 flex-row items-center border-b border-border',
           back ? 'pl-1' : 'pl-4',
-          actions ? 'pr-1' : 'pr-4'
+          actions || bell ? 'pr-1' : 'pr-4'
         )}>
         {back ? (
           <Pressable
@@ -51,6 +56,7 @@ export function AppHeader({ title, back = false, actions, children }: AppHeaderP
           {title}
         </Text>
         {actions}
+        {bell}
       </View>
       {children}
     </View>
@@ -74,6 +80,27 @@ export function HeaderAction({
       accessibilityLabel={label}
       className="size-12 items-center justify-center active:bg-accent">
       <Icon size={22} className="text-foreground" />
+    </Pressable>
+  );
+}
+
+/** Bell with the unread count; opens Notificações in the current tab. */
+function NotificationBell() {
+  const { unread } = useNotifications();
+  return (
+    <Pressable
+      onPress={() => router.push('/notificacoes')}
+      accessibilityRole="button"
+      accessibilityLabel={unread ? `Notificações, ${unread} não lidas` : 'Notificações'}
+      className="size-12 items-center justify-center active:bg-accent">
+      <Bell size={22} className="text-foreground" />
+      {unread ? (
+        <View className="absolute right-2 top-2 h-[18px] min-w-[18px] items-center justify-center rounded-full bg-destructive px-1">
+          <Text className="text-[11px] font-bold leading-[14px] text-white">
+            {unread > 9 ? '9+' : unread}
+          </Text>
+        </View>
+      ) : null}
     </Pressable>
   );
 }

@@ -7,6 +7,7 @@ import { Platform } from 'react-native';
 
 import { useAuth } from './auth';
 import { db } from './firebase';
+import { notificationRoute } from './notifications';
 
 // Same channel id the Functions put in every message (functions/index.js).
 const CHANNEL_ID = 'oportunidades';
@@ -29,7 +30,11 @@ function deviceRef(uid: string, token: string) {
 
 async function saveToken(uid: string, token: string) {
   registeredToken = { uid, token };
-  await setDoc(deviceRef(uid, token), { token, platform: Platform.OS, updatedAt: serverTimestamp() });
+  await setDoc(deviceRef(uid, token), {
+    token,
+    platform: Platform.OS,
+    updatedAt: serverTimestamp(),
+  });
 }
 
 async function registerDevice(uid: string) {
@@ -50,14 +55,12 @@ export async function unregisterDevice() {
   if (current) await deleteDoc(deviceRef(current.uid, current.token)).catch(() => {});
 }
 
-// A new opportunity opens the mural; the 20-day reminder is about one of the
-// user's own, so it opens "Minhas oportunidades".
+// Same destinations as the Notificações screen: the opportunities tab (Mural
+// or Minhas) or the published article.
 function openNotification(response: Notifications.NotificationResponse | null) {
   if (response?.actionIdentifier !== Notifications.DEFAULT_ACTION_IDENTIFIER) return;
-  const { type } = response.notification.request.content.data ?? {};
-  router.navigate(
-    type === 'opportunity_follow_up' ? '/oportunidades?tab=minhas' : '/oportunidades?tab=mural'
-  );
+  const { type, postSlug } = response.notification.request.content.data ?? {};
+  router.navigate(notificationRoute(type, postSlug));
   Notifications.clearLastNotificationResponse();
 }
 

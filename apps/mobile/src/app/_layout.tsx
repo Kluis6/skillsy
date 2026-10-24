@@ -10,6 +10,7 @@ import { BrandSplash } from '@/components/brand-splash';
 import { SnackbarProvider } from '@/components/snackbar';
 import { AppearanceProvider, useAppearance } from '@/lib/appearance';
 import { AuthProvider, useAuth } from '@/lib/auth';
+import { NotificationsProvider } from '@/lib/notifications';
 import { usePushNotifications } from '@/lib/push';
 import { useAppFonts } from '@/lib/use-app-fonts';
 import { NAV_THEME } from '@/lib/theme';
@@ -27,9 +28,11 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppearanceProvider>
-          <Navigation />
-        </AppearanceProvider>
+        <NotificationsProvider>
+          <AppearanceProvider>
+            <Navigation />
+          </AppearanceProvider>
+        </NotificationsProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
