@@ -62,7 +62,7 @@ export default function BuscarScreen() {
           {/* Serviço and Estado split the width; "Limpar" takes only what it needs. */}
           <View className="flex-row gap-card px-4">
             <Chip
-              className="flex-1"
+              className="h-12 flex-1"
               label={category || 'Serviço'}
               selected={Boolean(category)}
               menu
@@ -70,14 +70,14 @@ export default function BuscarScreen() {
               accessibilityLabel={category ? `Serviço: ${category}` : 'Filtrar por serviço'}
             />
             <Chip
-              className="flex-1"
+              className="h-12 flex-1"
               label={stateLabel || 'Estado'}
               selected={Boolean(state)}
               menu
               onPress={() => setSheet('state')}
               accessibilityLabel={stateLabel ? `Estado: ${stateLabel}` : 'Filtrar por estado'}
             />
-            {filtered ? <Chip label="Limpar" onPress={clearAll} /> : null}
+            {filtered ? <Chip className="h-12" label="Limpar" onPress={clearAll} /> : null}
           </View>
         </View>
       </AppHeader>

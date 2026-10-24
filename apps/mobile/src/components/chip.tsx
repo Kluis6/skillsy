@@ -15,6 +15,7 @@ type ChipProps = {
 };
 
 /** Material 3 filter chip in the platform's shape (square corners). 40px tall
+ * by default; filter rows next to a search field pass h-12 to match it,
  * with hitSlop for a 48dp touch target. */
 export function Chip({
   label,

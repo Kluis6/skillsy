@@ -88,7 +88,7 @@ function Mural() {
     <>
       <View className="flex-row gap-card border-b border-border bg-card px-4 pb-6 pt-4">
         <Chip
-          className="flex-1"
+          className="h-12 flex-1"
           label={category || 'Serviço'}
           selected={Boolean(category)}
           menu
@@ -96,7 +96,7 @@ function Mural() {
           accessibilityLabel={category ? `Serviço: ${category}` : 'Filtrar por serviço'}
         />
         <Chip
-          className="flex-1"
+          className="h-12 flex-1"
           label={stateLabel || 'Estado'}
           selected={Boolean(state)}
           menu
