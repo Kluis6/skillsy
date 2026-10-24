@@ -210,12 +210,12 @@ export default function ProfissionalScreen() {
           <View className="h-32 bg-primary" />
         )}
 
-        <View className="-mt-12 gap-4 px-4">
+        <View className="-mt-16 gap-4 px-4">
           <ProfileAvatar
             uri={provider.photoURL}
             name={provider.name}
-            className="size-24 border-4 border-card"
-            iconSize={40}
+            className="size-32 border-4 border-card"
+            iconSize={56}
           />
 
           <View className="gap-1">
