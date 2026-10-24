@@ -106,7 +106,7 @@ function Mural() {
       </View>
 
       {isPending ? (
-        <View className="gap-3 p-4">
+        <View className="gap-card p-4">
           <OpportunityCardSkeleton />
           <OpportunityCardSkeleton />
         </View>
@@ -127,7 +127,7 @@ function Mural() {
             />
           )}
           // Room for the FAB over the last card.
-          contentContainerClassName="gap-3 p-4 pb-24"
+          contentContainerClassName="gap-card p-4 pb-24"
           onRefresh={refetch}
           refreshing={isRefetching}
           ListHeaderComponent={
@@ -222,7 +222,7 @@ function Minhas({ onPublish }: { onPublish: () => void }) {
   }
   if (isPending) {
     return (
-      <View className="gap-3 p-4">
+      <View className="gap-card p-4">
         <OpportunityCardSkeleton />
       </View>
     );
@@ -242,7 +242,7 @@ function Minhas({ onPublish }: { onPublish: () => void }) {
           onFollowUp={(answers) => followUp.mutate({ id: item.id!, answers })}
         />
       )}
-      contentContainerClassName="gap-3 p-4 pb-24"
+      contentContainerClassName="gap-card p-4 pb-24"
       onRefresh={refetch}
       refreshing={isRefetching}
       contentContainerStyle={data?.length ? undefined : { flexGrow: 1 }}

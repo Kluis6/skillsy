@@ -22,6 +22,11 @@ module.exports = {
       full: '9999px',
     },
     extend: {
+      // The app's one gap between cards (lists, grids, carousels, stacked
+      // sections): `gap-card`.
+      spacing: {
+        card: '16px',
+      },
       // Same families as the site (Inter for text, Outfit for headings).
       fontFamily: {
         sans: ['Inter'],

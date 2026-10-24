@@ -47,7 +47,7 @@ export default function ArtigosScreen() {
             <PostTile post={item} onPress={() => open(item)} wide />
           </View>
         )}
-        contentContainerClassName="gap-3 p-4"
+        contentContainerClassName="gap-card p-4"
         contentContainerStyle={posts.length ? undefined : { flexGrow: 1 }}
         onRefresh={refetch}
         refreshing={isRefetching}

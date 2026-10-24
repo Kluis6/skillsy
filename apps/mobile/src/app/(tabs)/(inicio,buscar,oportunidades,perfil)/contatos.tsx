@@ -46,7 +46,7 @@ export default function ContatosScreen() {
           </Button>
         </View>
       ) : isPending ? (
-        <View className="gap-3 p-4">
+        <View className="gap-card p-4">
           <ProviderCardSkeleton />
           <ProviderCardSkeleton />
         </View>
@@ -57,7 +57,7 @@ export default function ContatosScreen() {
           renderItem={({ item }) => (
             <ProviderCard provider={item} onPress={() => openProfile(item)} />
           )}
-          contentContainerClassName="gap-3 p-4"
+          contentContainerClassName="gap-card p-4"
           onRefresh={() => {
             queryClient.invalidateQueries({ queryKey: ['me', user.uid] });
             refetch();

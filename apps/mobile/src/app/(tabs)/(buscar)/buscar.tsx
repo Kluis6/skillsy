@@ -100,7 +100,7 @@ export default function BuscarScreen() {
           renderItem={({ item }) => (
             <ProviderCard provider={item} onPress={() => openProfile(item)} />
           )}
-          contentContainerClassName="gap-4 p-4"
+          contentContainerClassName="gap-card p-4"
           onRefresh={refetch}
           refreshing={isRefetching}
           keyboardShouldPersistTaps="handled"
@@ -113,7 +113,7 @@ export default function BuscarScreen() {
           }
           ListEmptyComponent={
             isPending ? (
-              <View className="gap-3">
+              <View className="gap-card">
                 <ProviderCardSkeleton />
                 <ProviderCardSkeleton />
               </View>
@@ -208,7 +208,7 @@ function Discover({ onSearch }: { onSearch: (q: string) => void }) {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerClassName="gap-4 px-4">
+        contentContainerClassName="gap-card px-4">
         {RECOMMENDED_SERVICES.map((service) => (
           <ServiceCard
             key={service.title}
@@ -221,9 +221,9 @@ function Discover({ onSearch }: { onSearch: (q: string) => void }) {
       <View className="pt-2">
         <SectionHeader title="Todas as categorias" />
       </View>
-      <View className="gap-4 px-4">
+      <View className="gap-card px-4">
         {rows.map((row) => (
-          <View key={row[0]} className="flex-row gap-4">
+          <View key={row[0]} className="flex-row gap-card">
             {/* Equal columns without padding, so a lone last card keeps the
                 width of the others. */}
             {row.map((category) => (

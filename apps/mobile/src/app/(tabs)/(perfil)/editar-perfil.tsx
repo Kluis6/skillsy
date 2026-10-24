@@ -144,7 +144,7 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
 
   return (
     <KeyboardAvoidingView behavior="padding" className="flex-1">
-      <ScrollView contentContainerClassName="gap-4 p-4 pb-8" keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerClassName="gap-card p-4 pb-8" keyboardShouldPersistTaps="handled">
         <Section title="Fotos">
           <Pressable
             onPress={() => changeImage('banner')}

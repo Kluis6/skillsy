@@ -210,7 +210,7 @@ export default function ProfissionalScreen() {
           <View className="h-32 bg-primary" />
         )}
 
-        <View className="-mt-16 gap-4 px-4">
+        <View className="-mt-16 gap-card px-4">
           <ProfileAvatar
             uri={provider.photoURL}
             name={provider.name}
@@ -352,7 +352,7 @@ export default function ProfissionalScreen() {
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerClassName="gap-3">
+                contentContainerClassName="gap-card">
                 {gallery.map((item, index) => (
                   <View key={`${index}-${item.url.slice(-12)}`} className="w-44 gap-1">
                     <Image

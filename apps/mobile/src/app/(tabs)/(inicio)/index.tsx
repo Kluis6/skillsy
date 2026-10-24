@@ -64,7 +64,7 @@ export default function InicioScreen() {
           <SearchLauncher
             onPress={() => router.navigate({ pathname: '/buscar', params: { focar: '1' } })}
           />
-          <View className="flex-row gap-3 px-4">
+          <View className="flex-row gap-card px-4">
             {POPULAR_CATEGORIES.slice(0, 4).map((category) => (
               <CategoryTile
                 key={category}
@@ -99,7 +99,7 @@ export default function InicioScreen() {
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerClassName="gap-3 px-4">
+              contentContainerClassName="gap-card px-4">
               {providers.slice(0, 10).map((provider) => (
                 <ProviderTile
                   key={provider.uid}
@@ -117,7 +117,7 @@ export default function InicioScreen() {
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerClassName="gap-3 px-4">
+              contentContainerClassName="gap-card px-4">
               {posts.slice(0, 10).map((post) => (
                 <PostTile
                   key={post.id ?? post.slug}
@@ -171,7 +171,7 @@ function Carousel({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerClassName="gap-3 px-4">
+        contentContainerClassName="gap-card px-4">
         {section.services.map((service) => (
           <ServiceCard
             key={service.title}

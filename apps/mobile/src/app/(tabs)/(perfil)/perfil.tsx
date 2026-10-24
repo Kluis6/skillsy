@@ -57,7 +57,7 @@ export default function PerfilScreen() {
     <View className="flex-1 bg-background">
       <AppHeader title={user ? 'Perfil' : 'Entrar'} />
       <KeyboardAvoidingView className="flex-1" behavior="padding">
-        <ScrollView contentContainerClassName="gap-4 p-4" keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerClassName="gap-card p-4" keyboardShouldPersistTaps="handled">
           {loading ? (
             <ActivityIndicator className="mt-8" />
           ) : user ? (

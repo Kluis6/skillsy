@@ -26,7 +26,7 @@ Plano B para componentes, se o Reusables não funcionar no SDK 58: **gluestack-u
 
 ## Design
 
-Material 3 adaptado à identidade da Skillsy (20/10): Inter/Outfit, cantos quadrados, cores do site, sombras cinza, um ícone por significado. Barra de busca, chips de filtro com painel inferior, FAB, snackbar, abas superiores, áreas de toque de 48dp. Estrutura do GetNinjas (22/10): abas Início · Buscar · Oportunidades · Perfil ("Entrar" sem conta), Início com busca, atalhos, carrosséis de serviços com fotos da Skillsy, card em destaque, profissionais da comunidade e banners; Buscar com Recomendados e Todas as categorias; estados vazios com duas ações; publicação em passos — sem moedas nem contato liberado antes do acordo. Contatos ficam em Perfil → Meus contatos.
+Material 3 adaptado à identidade da Skillsy (20/10): Inter/Outfit, cantos quadrados, cores do site, sombras cinza, um ícone por significado. Espaço entre cards sempre 16dp (`gap-card` no `tailwind.config.js`), margem lateral 16dp; campos de busca com 48dp. Barra de busca, chips de filtro com painel inferior, FAB, snackbar, abas superiores, áreas de toque de 48dp. Estrutura do GetNinjas (22/10): abas Início · Buscar · Oportunidades · Perfil ("Entrar" sem conta), Início com busca, atalhos, carrosséis de serviços com fotos da Skillsy, card em destaque, profissionais da comunidade e banners; Buscar com Recomendados e Todas as categorias; estados vazios com duas ações; publicação em passos — sem moedas nem contato liberado antes do acordo. Contatos ficam em Perfil → Meus contatos.
 
 ## Fases
 
