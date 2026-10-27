@@ -62,6 +62,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -653,10 +654,13 @@ export function AdminUsersClient() {
                               <MoreVertical size={18} />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="border-border-subtle shadow-sm p-2 w-48">
-                              <DropdownMenuLabel className="text-xs font-bold text-text-muted px-3 py-2">Gerenciar</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => handleEditClick(u)} className="cursor-pointer focus:bg-primary/5 focus:text-primary">
-                                <Edit3 size={16} className="mr-2" /> Editar Perfil
-                              </DropdownMenuItem>
+                              {/* Base UI: a group label must sit inside a group. */}
+                              <DropdownMenuGroup>
+                                <DropdownMenuLabel className="text-xs font-bold text-text-muted px-3 py-2">Gerenciar</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => handleEditClick(u)} className="cursor-pointer focus:bg-primary/5 focus:text-primary">
+                                  <Edit3 size={16} className="mr-2" /> Editar Perfil
+                                </DropdownMenuItem>
+                              </DropdownMenuGroup>
                               <DropdownMenuSeparator className="bg-border-subtle my-1" />
                               <DropdownMenuItem 
                                 onClick={() => handleToggleBlock(u)} 

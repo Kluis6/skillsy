@@ -9,6 +9,7 @@ import {
 } from "@firebase/rules-unit-testing";
 import {
   deleteDoc,
+  deleteField,
   doc,
   collection,
   getDoc,
@@ -365,6 +366,27 @@ describe("users: edição do próprio perfil", () => {
 
   test("perfil completo pode ser salvo pelo dono", async () => {
     await assertSucceeds(updateDoc(doc(dbAs(COMPLETE), "users", COMPLETE), { bio: "Nova bio" }));
+  });
+
+  test("dono cancela a própria conta completa", async () => {
+    // Mirrors UserService.cancelOwnAccount: flags + deleted personal data.
+    const removed = Object.fromEntries(
+      ["photoURL", "bannerURL", "bio", "category", "contacts", "location", "whatsapp", "instagram",
+        "facebook", "linkedin", "website", "serviceType", "phone", "ward", "companyName", "gallery",
+        "availability", "serviceHours", "membershipYears", "businessState"].map((key) => [key, deleteField()]),
+    );
+    await assertSucceeds(
+      updateDoc(doc(dbAs(COMPLETE), "users", COMPLETE), {
+        name: "Conta desativada",
+        isProvider: false,
+        hasPublicProfile: false,
+        memberVerified: false,
+        isDeleted: true,
+        deletedByUser: true,
+        deletedAt: serverTimestamp(),
+        ...removed,
+      }),
+    );
   });
 
   test("os limites continuam valendo para o que muda", async () => {

@@ -125,6 +125,16 @@ function handleFirestoreError(
   throw new Error(JSON.stringify(errInfo));
 }
 
+/** Personal data a member's own cancellation erases from users/{uid}. */
+const CANCELLED_ACCOUNT_REMOVED_FIELDS = [
+  "photoURL", "bannerURL", "bio", "category", "contacts", "location",
+  "whatsapp", "instagram", "facebook", "linkedin", "website", "serviceType",
+  "phone", "phones", "ward", "companyName", "businessAddress",
+  "businessAddressNumber", "businessNeighborhood", "businessState",
+  "businessComplement", "gallery", "availability", "serviceHours",
+  "membershipYears", "socialLinks",
+] as const;
+
 function syncPublicProfileBatch(
   batch: ReturnType<typeof writeBatch>,
   uid: string,
@@ -668,7 +678,10 @@ export const UserService = {
         );
       }
 
-      const currentData = toPlainValue(currentSnapshot.data() as UserProfile);
+      // The stored data as is: toPlainValue would turn its Timestamps
+      // (createdAt, termsAcceptedAt…) into plain maps, and writing those back
+      // changes their type (firestore.rules keepsSafeCreatedAt rejects it).
+      const currentData = currentSnapshot.data() as UserProfile;
       const { id, ...updateData } = data as any;
       const nextPrivateProfile = applyDerivedVerificationFields(
         removeUndefinedDeep({
@@ -740,55 +753,33 @@ export const UserService = {
         throw new Error("Perfil não encontrado para cancelamento");
       }
 
-      const currentData = toPlainValue(currentSnapshot.data() as UserProfile);
+      const currentData = currentSnapshot.data() as UserProfile;
       const placeholderName =
         currentData.role === "admin"
           ? "Conta administrativa desativada"
           : "Conta desativada";
 
-      const nextData = applyDerivedVerificationFields(
-        removeUndefinedDeep({
-          ...currentData,
-          uid,
-          email,
-          name: placeholderName,
-          photoURL: "",
-          bannerURL: "",
-          bio: "",
-          category: "",
-          isProvider: false,
-          hasPublicProfile: false,
-          contacts: [],
-          location: "",
-          whatsapp: "",
-          instagram: "",
-          facebook: "",
-          linkedin: "",
-          website: "",
-          serviceType: "",
-          phone: "",
-          phones: [],
-          ward: "",
-          companyName: "",
-          businessAddress: "",
-          businessAddressNumber: "",
-          businessNeighborhood: "",
-          businessState: "",
-          businessComplement: "",
-          gallery: [],
-          availability: [],
-          serviceHours: "",
-          memberVerified: false,
-          membershipYears: undefined,
-          isDeleted: true,
-          deletedByUser: true,
-          deletedAt: serverTimestamp(),
-        }),
-      );
+      // Only the deactivation flags are written; personal data is deleted
+      // rather than blanked. Rewriting ~30 fields as "" went over the 1000
+      // expressions firestore.rules may evaluate, so cancelling always failed.
+      const patch: Record<string, unknown> = {
+        name: placeholderName,
+        email,
+        isProvider: false,
+        hasPublicProfile: false,
+        memberVerified: false,
+        isDeleted: true,
+        deletedByUser: true,
+        deletedAt: serverTimestamp(),
+      };
+      for (const key of CANCELLED_ACCOUNT_REMOVED_FIELDS) {
+        if (key in currentData) patch[key] = deleteField();
+      }
 
       const batch = writeBatch(db);
-      batch.set(docRef, nextData);
-      syncPublicProfileBatch(batch, uid, nextData as Partial<UserProfile>);
+      batch.update(docRef, patch);
+      // isDeleted: the public profile is removed (syncPublicProfileBatch).
+      syncPublicProfileBatch(batch, uid, { ...currentData, isDeleted: true });
       await batch.commit();
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
