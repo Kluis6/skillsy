@@ -79,6 +79,8 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { BLOCK_APPEAL_DAYS } from '@skillsy/shared/terms';
 import {
   Select,
   SelectContent,
@@ -133,6 +135,9 @@ export function AdminUsersClient() {
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddAdminDialogOpen, setIsAddAdminDialogOpen] = useState(false);
+  const [blockTarget, setBlockTarget] = useState<UserProfile | null>(null);
+  const [blockReason, setBlockReason] = useState('');
+  const [blocking, setBlocking] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -356,13 +361,35 @@ export function AdminUsersClient() {
     }
   };
 
+  // Blocking asks for the reason: the member sees it on /blocked, with the
+  // deadline to ask for a review (Termos de uso). Unblocking clears it.
   const handleToggleBlock = async (user: UserProfile) => {
+    if (!user.isBlocked) {
+      setBlockReason('');
+      setBlockTarget(user);
+      return;
+    }
     try {
-      await UserService.adminUpdateUser(user.uid, { isBlocked: !user.isBlocked });
-      toast.success(user.isBlocked ? 'Usuário desbloqueado' : 'Usuário bloqueado');
+      await UserService.adminSetBlocked(user.uid, false);
+      toast.success('Usuário desbloqueado');
       fetchUsers();
     } catch (error) {
       toast.error('Erro ao alterar status do usuário');
+    }
+  };
+
+  const confirmBlock = async () => {
+    if (!blockTarget) return;
+    setBlocking(true);
+    try {
+      await UserService.adminSetBlocked(blockTarget.uid, true, blockReason);
+      toast.success('Usuário bloqueado');
+      setBlockTarget(null);
+      fetchUsers();
+    } catch (error) {
+      toast.error('Erro ao alterar status do usuário');
+    } finally {
+      setBlocking(false);
     }
   };
 
@@ -1050,6 +1077,44 @@ export function AdminUsersClient() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Block User Dialog */}
+      <Dialog open={Boolean(blockTarget)} onOpenChange={(open) => !open && setBlockTarget(null)}>
+        <DialogContent className="border border-border-subtle shadow-sm p-8 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold font-heading">Bloquear {blockTarget?.name}</DialogTitle>
+            <DialogDescription>
+              A pessoa perde o acesso e o perfil sai das buscas. Ela verá o motivo e poderá
+              pedir revisão em até {BLOCK_APPEAL_DAYS} dias.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-6">
+            <Label htmlFor="block-reason">Motivo</Label>
+            <Textarea
+              id="block-reason"
+              value={blockReason}
+              onChange={(event) => setBlockReason(event.target.value)}
+              maxLength={500}
+              placeholder="Ex.: perfil com dados falsos (Termos de uso, item 2)."
+              className="min-h-28"
+            />
+          </div>
+          <DialogFooter className="gap-3">
+            <Button type="button" variant="ghost" onClick={() => setBlockTarget(null)} className="h-12 px-8 font-bold">
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={!blockReason.trim() || blocking}
+              onClick={confirmBlock}
+              className="h-12 px-8 font-bold"
+            >
+              {blocking ? 'Bloqueando...' : 'Bloquear'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       </div>

@@ -432,3 +432,52 @@ describe("support_messages: Fale conosco", () => {
     await assertFails(updateDoc(doc(dbAs(ADMIN), "support_messages", "m1"), { message: "outra" }));
   });
 });
+
+describe("users: termos de uso e bloqueio", () => {
+  test("cadastro registra a versão e a data do aceite dos termos", async () => {
+    const db = dbAs("novo");
+    await assertSucceeds(
+      setDoc(doc(db, "users", "novo"), {
+        ...userDoc("novo", { createdAt: serverTimestamp() }),
+        termsVersion: "2026-10-27",
+        termsAcceptedAt: serverTimestamp(),
+      }),
+    );
+  });
+
+  test("ninguém se cadastra com data de aceite inventada nem com motivo de bloqueio", async () => {
+    const db = dbAs("novo");
+    await assertFails(setDoc(doc(db, "users", "novo"), { ...userDoc("novo"), termsAcceptedAt: Timestamp.fromMillis(0) }));
+    await assertFails(setDoc(doc(db, "users", "novo"), { ...userDoc("novo"), blockedReason: "x" }));
+  });
+
+  test("dono aceita uma versão nova dos termos", async () => {
+    await assertSucceeds(
+      updateDoc(doc(dbAs(RATER), "users", RATER), { termsVersion: "2027-01-01", termsAcceptedAt: serverTimestamp() }),
+    );
+    await assertFails(
+      updateDoc(doc(dbAs(RATER), "users", RATER), { termsAcceptedAt: Timestamp.fromMillis(0) }),
+    );
+  });
+
+  test("só o admin registra o motivo do bloqueio", async () => {
+    const block = { isBlocked: true, blockedReason: "Perfil falso", blockedAt: serverTimestamp() };
+    await assertFails(updateDoc(doc(dbAs(RATER), "users", RATER), { blockedReason: "x" }));
+    await assertSucceeds(updateDoc(doc(dbAs(ADMIN), "users", RATER), block));
+    // The blocked owner can still read the reason, but not erase it.
+    await assertSucceeds(getDoc(doc(dbAs(RATER), "users", RATER)));
+    await assertFails(updateDoc(doc(dbAs(RATER), "users", RATER), { blockedReason: "" }));
+  });
+
+  test("perfil com aceite e motivo gravados continua editável pelo dono", async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      await updateDoc(doc(context.firestore(), "users", RATER), {
+        termsVersion: "2026-10-27",
+        termsAcceptedAt: Timestamp.now(),
+        blockedReason: "Revisado",
+        blockedAt: Timestamp.now(),
+      });
+    });
+    await assertSucceeds(updateDoc(doc(dbAs(RATER), "users", RATER), { name: "Nome novo" }));
+  });
+});

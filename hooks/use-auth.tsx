@@ -17,6 +17,8 @@ import { UserService } from '@/services/user-service';
 import { UserProfile } from '@/models/types';
 import { toast } from 'sonner';
 
+const BLOCKED_ALLOWED_PATHS = new Set(['/blocked', '/termos', '/privacidade']);
+
 interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
@@ -94,8 +96,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return;
           }
 
-          // Blocked user redirection
-          if (userProfile?.isBlocked && pathname !== '/blocked') {
+          // Blocked user redirection (the terms and privacy pages stay
+          // readable: the blocked page links to them).
+          if (userProfile?.isBlocked && !BLOCKED_ALLOWED_PATHS.has(pathname)) {
             router.push('/blocked');
           }
 

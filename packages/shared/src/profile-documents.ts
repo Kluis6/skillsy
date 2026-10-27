@@ -63,6 +63,10 @@ export const USER_PROFILE_FIELDS: ReadonlySet<string> = new Set([
   "businessState",
   "showPublicLocation",
   "businessComplement",
+  "termsVersion",
+  "termsAcceptedAt",
+  "blockedReason",
+  "blockedAt",
 ]);
 
 /** Fields an owner can never change through a profile update. */
@@ -74,6 +78,11 @@ export const IMMUTABLE_PROFILE_FIELDS: ReadonlySet<string> = new Set([
   "isBlocked",
   "rating",
   "reviewCount",
+  // Set at sign-up / by admins (firestore.rules); a profile save keeps them.
+  "termsVersion",
+  "termsAcceptedAt",
+  "blockedReason",
+  "blockedAt",
 ]);
 
 export function removeUndefinedDeep<T>(value: T): T {

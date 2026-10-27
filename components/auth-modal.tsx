@@ -19,6 +19,8 @@ import {
   type SignUpFormData,
 } from "@/lib/validations";
 import Image from "next/image";
+import Link from "next/link";
+import { MINIMUM_AGE } from "@skillsy/shared/terms";
 
 const profileLimits = {
   avatarAndBannerMaxSizeMb: 10,
@@ -511,6 +513,18 @@ export function AuthModal({
                 )}
                 Continuar com Google
               </Button>
+              <p className="text-center text-xs leading-relaxed text-text-muted">
+                Ao continuar, você declara ter {MINIMUM_AGE} anos ou mais e
+                concorda com os{" "}
+                <Link href="/termos" className="font-semibold text-primary hover:underline">
+                  Termos de uso
+                </Link>{" "}
+                e a{" "}
+                <Link href="/privacidade" className="font-semibold text-primary hover:underline">
+                  Política de privacidade
+                </Link>
+                .
+              </p>
             </div>
           </div>
         </div>

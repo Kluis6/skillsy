@@ -31,6 +31,7 @@ import {
   UserReport,
 } from "@/models/types";
 import { NotificationService } from "./notification-service";
+import { TERMS_VERSION } from "@skillsy/shared/terms";
 import {
   isActiveProvider,
   pickSearchResults,
@@ -229,6 +230,9 @@ export const UserService = {
       const createdAt = serverTimestamp();
       const privateDocRef = doc(db, "users", profile.uid);
       const batch = writeBatch(db);
+      // Signing up accepts the current Terms of Use (the sign-up screens say
+      // so). Admins creating someone else's account don't accept for them.
+      const acceptsTerms = auth.currentUser?.uid === profile.uid;
       const nextPrivateProfile = applyDerivedVerificationFields({
         ...profile,
         hasPublicProfile:
@@ -236,6 +240,9 @@ export const UserService = {
             ? profile.hasPublicProfile
             : profile.isProvider === true,
         createdAt,
+        ...(acceptsTerms
+          ? { termsVersion: TERMS_VERSION, termsAcceptedAt: createdAt }
+          : {}),
       });
 
       batch.set(privateDocRef, nextPrivateProfile);
@@ -683,6 +690,40 @@ export const UserService = {
         uid,
         nextPrivateProfile as Partial<UserProfile>,
       );
+      await batch.commit();
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, path);
+    }
+  },
+
+  /** Blocks (with the reason shown to the member on /blocked) or unblocks an
+   * account. Writes only these fields, and hides or shows the public profile. */
+  async adminSetBlocked(
+    uid: string,
+    blocked: boolean,
+    reason = "",
+  ): Promise<void> {
+    const path = `users/${uid}`;
+    try {
+      const batch = writeBatch(db);
+      batch.update(
+        doc(db, "users", uid),
+        blocked
+          ? {
+              isBlocked: true,
+              blockedReason: reason.trim().slice(0, 500),
+              blockedAt: serverTimestamp(),
+            }
+          : {
+              isBlocked: false,
+              blockedReason: deleteField(),
+              blockedAt: deleteField(),
+            },
+      );
+      const publicRef = doc(db, "public_profiles", uid);
+      if ((await getDoc(publicRef)).exists()) {
+        batch.update(publicRef, { isBlocked: blocked });
+      }
       await batch.commit();
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);

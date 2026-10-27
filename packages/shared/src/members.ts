@@ -1,10 +1,13 @@
 import { deriveMemberVerification } from "./member-verification";
+import { TERMS_VERSION } from "./terms";
 
 /**
  * users/{uid} for a member signing in for the first time, minus createdAt
  * (each SDK writes its own server timestamp). Same document the site's
  * UserService.createProfile writes for a new member: role "user", empty
  * stats (startsWithEmptyStats in firestore.rules) and no public profile.
+ * Signing up accepts the current Terms of Use; termsAcceptedAt is also a
+ * server timestamp the caller adds.
  */
 export function newMemberProfile(user: {
   uid: string;
@@ -23,6 +26,7 @@ export function newMemberProfile(user: {
     role: "user" as const,
     contacts: [] as string[],
     memberVerified: verification.memberVerified,
+    termsVersion: TERMS_VERSION,
   };
 }
 

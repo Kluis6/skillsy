@@ -52,7 +52,7 @@ export function ContactCTA() {
   };
 
   return (
-    <section className="my-16 bg-primary p-4 shadow-md dark:bg-accent lg:p-6 xl:p-8">
+    <section id="fale-conosco" className="my-16 scroll-mt-24 bg-primary p-4 shadow-md dark:bg-accent lg:p-6 xl:p-8">
       <div className="grid grid-cols-12 gap-y-12 md:gap-8">
         <div className="col-span-12 lg:col-span-6 xl:col-span-7 w-full h-full">
           <div className="space-y-4 justify-center pt-4 lg:pt-0 items-center md:items-start flex flex-col w-full h-full">

@@ -19,7 +19,7 @@ export async function ensureMemberProfile(user: User) {
     email: user.email,
     photoURL: user.photoURL,
   });
-  await setDoc(ref, { ...profile, createdAt: serverTimestamp() });
+  await setDoc(ref, { ...profile, createdAt: serverTimestamp(), termsAcceptedAt: serverTimestamp() });
   try {
     await addDoc(collection(db, 'admin_notifications'), {
       ...newMemberNotification(profile.name),

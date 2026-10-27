@@ -51,6 +51,12 @@ export interface UserProfile {
   availability?: string[];
   serviceHours?: string;
   isBlocked?: boolean;
+  /** Admin's reason, shown on the blocked page; with blockedAt for the appeal window. */
+  blockedReason?: string;
+  blockedAt?: any;
+  /** Terms of Use version (TERMS_VERSION) the account accepted, and when. */
+  termsVersion?: string;
+  termsAcceptedAt?: any;
   isDeleted?: boolean;
   deletedByUser?: boolean;
   deletedAt?: any;

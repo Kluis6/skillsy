@@ -8,6 +8,7 @@ import {
   BriefcaseBusiness,
   ChevronRight,
   ExternalLink,
+  FileText,
   LogOut,
   Newspaper,
   Pencil,
@@ -34,6 +35,7 @@ import { signInWithGoogle, signOutOfGoogle } from '@/lib/google-sign-in';
 import { unregisterDevice } from '@/lib/push';
 import { getOwnProfile } from '@/lib/providers';
 import { openSite } from '@/lib/site';
+import { MINIMUM_AGE } from '@skillsy/shared/terms';
 import { cn } from '@/lib/utils';
 
 function signInErrorMessage(error: unknown) {
@@ -72,6 +74,7 @@ export default function PerfilScreen() {
             <SignInForm />
           )}
           {loading ? null : <AppearancePicker />}
+          {loading ? null : <LegalLinks />}
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -160,6 +163,22 @@ function Account({
         <ListRow icon={LogOut} label="Sair" destructive last onPress={signOutAndClear} />
       </View>
     </>
+  );
+}
+
+/** Terms and privacy, on the site (signed in or not). */
+function LegalLinks() {
+  return (
+    <View className="border border-border-subtle bg-card">
+      <ListRow icon={FileText} label="Termos de uso" external onPress={() => openSite('/termos')} />
+      <ListRow
+        icon={ShieldCheck}
+        label="Política de privacidade"
+        external
+        last
+        onPress={() => openSite('/privacidade')}
+      />
+    </View>
   );
 }
 
@@ -258,6 +277,21 @@ function SignInForm() {
         </CardHeader>
         <CardContent className="gap-4">
           <GoogleButton onPress={google} disabled={submitting} />
+          <Text className="text-xs leading-5 text-muted-foreground">
+            Ao continuar, você declara ter {MINIMUM_AGE} anos ou mais e concorda com os{' '}
+            <Text
+              className="text-xs font-semibold text-primary"
+              onPress={() => openSite('/termos')}>
+              Termos de uso
+            </Text>{' '}
+            e a{' '}
+            <Text
+              className="text-xs font-semibold text-primary"
+              onPress={() => openSite('/privacidade')}>
+              Política de privacidade
+            </Text>
+            .
+          </Text>
           <View className="flex-row items-center gap-3">
             <View className="h-px flex-1 bg-border" />
             <Text className="text-sm text-muted-foreground">ou</Text>

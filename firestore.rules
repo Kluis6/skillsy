@@ -203,7 +203,8 @@ service cloud.firestore {
         'rating', 'reviewCount', 'experienceYears', 'baptismYear',
         'memberVerified', 'membershipYears', 'communityFriend',
         'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
-        'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'showPublicLocation', 'businessComplement'
+        'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'showPublicLocation', 'businessComplement',
+        'termsVersion', 'termsAcceptedAt', 'blockedReason', 'blockedAt'
       ];
       
       return data.keys().hasAll(['uid', 'name', 'email', 'isProvider', 'role', 'createdAt']) &&
@@ -252,7 +253,11 @@ service cloud.firestore {
              (!('isBlocked' in data) || data.isBlocked is bool) &&
              (!('isDeleted' in data) || data.isDeleted is bool) &&
              (!('deletedByUser' in data) || data.deletedByUser is bool) &&
-             (!('deletedAt' in data) || data.deletedAt is timestamp);
+             (!('deletedAt' in data) || data.deletedAt is timestamp) &&
+             (!('termsVersion' in data) || (data.termsVersion is string && data.termsVersion.size() <= 20)) &&
+             (!('termsAcceptedAt' in data) || data.termsAcceptedAt == request.time) &&
+             !('blockedReason' in data) &&
+             !('blockedAt' in data);
     }
 
     function isValidUserUpdate(data) {
@@ -264,7 +269,8 @@ service cloud.firestore {
         'rating', 'reviewCount', 'experienceYears', 'baptismYear',
         'memberVerified', 'membershipYears', 'communityFriend',
         'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
-        'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'showPublicLocation', 'businessComplement'
+        'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'showPublicLocation', 'businessComplement',
+        'termsVersion', 'termsAcceptedAt', 'blockedReason', 'blockedAt'
       ];
       
       // Only the keys this write adds, changes or removes are checked: the
@@ -318,7 +324,13 @@ service cloud.firestore {
              (!('isBlocked' in changed) || !('isBlocked' in data) || data.isBlocked is bool) &&
              (!('isDeleted' in changed) || !('isDeleted' in data) || data.isDeleted is bool) &&
              (!('deletedByUser' in changed) || !('deletedByUser' in data) || data.deletedByUser is bool) &&
-             (!('deletedAt' in changed) || !('deletedAt' in data) || data.deletedAt is timestamp);
+             (!('deletedAt' in changed) || !('deletedAt' in data) || data.deletedAt is timestamp) &&
+             // Accepting a new version of the Terms of Use stamps the time now.
+             (!('termsVersion' in changed) || (data.termsVersion is string && data.termsVersion.size() <= 20)) &&
+             (!('termsAcceptedAt' in changed) || data.termsAcceptedAt == request.time) &&
+             // Why and when an account was blocked are written by admins only.
+             !('blockedReason' in changed) &&
+             !('blockedAt' in changed);
     }
 
     function isValidPublicProfile(data, userId) {

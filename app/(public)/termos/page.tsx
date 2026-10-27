@@ -7,6 +7,12 @@ import {
 } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { createPublicMetadata } from "@/lib/public-metadata";
+import {
+  BLOCK_APPEAL_DAYS,
+  MINIMUM_AGE,
+  REPORT_REVIEW_HOURS,
+  TERMS_UPDATED_LABEL,
+} from "@skillsy/shared/terms";
 import HeaderSection, {
   HeaderTextSegment,
 } from "@/components/headersection";
@@ -29,18 +35,58 @@ const flow = [
   "Serviço, valores, prazos e demais condições são acertados exclusivamente entre cliente e prestador.",
 ];
 
-const responsibilities = [
-  "A Skillsy não emprega, representa, seleciona, supervisiona ou certifica tecnicamente os profissionais anunciados.",
-  "A Skillsy não intermedeia pagamentos, não participa dos contratos privados e não cobra comissão sobre negociações feitas entre usuários.",
-  "A decisão de contratar, pagar, aceitar orçamento ou iniciar qualquer prestação de serviço é de inteira responsabilidade das partes envolvidas.",
-  "Avaliações, descrições de perfil e informações comerciais são fornecidas pelos próprios usuários e podem ser revistas ou removidas quando violarem estas regras.",
+const eligibility = [
+  `Ter ${MINIMUM_AGE} anos ou mais e informar dados verdadeiros.`,
+  "Uma conta por pessoa. A conta é pessoal e não pode ser transferida.",
+  "O selo de membro verificado confirma apenas os dados informados pelo próprio usuário (ala e ano de batismo). Não é certificação de competência, idoneidade ou qualidade do serviço.",
 ];
 
-const conduct = [
-  "Mantenha perfil, preços, portfólio e formas de contato corretos e atualizados.",
-  "Use a plataforma com respeito, sem assédio, discriminação, spam ou linguagem ofensiva.",
-  "Não anuncie atividades ilícitas, enganosas, fraudulentas ou incompatíveis com a proposta da Skillsy.",
-  "Perfis, avaliações ou contas podem ser limitados, suspensos ou removidos em caso de abuso, fraude ou descumprimento destes termos.",
+const prohibited = [
+  { title: "Perfil falso ou enganoso", text: "Usar nome, foto ou dados de outra pessoa, ou prometer formação, registro ou experiência que não tem." },
+  { title: "Avaliações e indicações falsas", text: "Avaliar ou indicar a si mesmo, combinar avaliações, oferecer vantagem em troca de nota ou criar contas para isso." },
+  { title: "Atividades ilegais", text: "Serviços ilícitos, produtos proibidos, pirâmides financeiras e “investimentos” com promessa de retorno." },
+  { title: "Golpes e fraude", text: "Cobrar sem prestar o serviço, pedir pagamento adiantado de má-fé ou usar a plataforma para obter dados ou dinheiro de terceiros." },
+  { title: "Desrespeito", text: "Assédio, ameaça, discriminação ou linguagem ofensiva, inclusive em conversas iniciadas pela Skillsy, como no WhatsApp." },
+  { title: "Spam", text: "Publicações repetidas, propaganda sem relação com a proposta da plataforma e mensagens em massa." },
+  { title: "Dados de terceiros", text: "Publicar telefone, endereço, fotos ou informações de outras pessoas sem autorização." },
+  { title: "Uso indevido de nomes e marcas", text: "Dar a entender que a Skillsy, um anúncio ou um perfil é oficial ou endossado por qualquer instituição, inclusive a Igreja e suas unidades." },
+  { title: "Conteúdo impróprio", text: "Conteúdo sexual, violento, que incentive ódio ou que viole direitos autorais." },
+  { title: "Prejudicar a plataforma", text: "Tentar invadir, copiar dados em massa, burlar bloqueios ou criar outra conta depois de uma remoção." },
+];
+
+const sanctions = [
+  { level: "1", title: "Ajuste", when: "Informação incorreta ou conteúdo fora da proposta.", action: "Aviso e pedido de correção. O conteúdo pode ficar oculto até ser corrigido." },
+  { level: "2", title: "Remoção de conteúdo", when: "Avaliação, indicação, artigo, vaga ou oportunidade que viole as regras.", action: "O conteúdo é removido ou rejeitado, com o motivo informado." },
+  { level: "3", title: "Suspensão", when: "Repetição de infrações ou infração moderada.", action: "A conta é bloqueada e o perfil sai das buscas." },
+  { level: "4", title: "Remoção da conta", when: "Fraude, golpe, ameaça, assédio grave, perfil falso, atividade ilegal ou reincidência após suspensão.", action: "A conta é encerrada e não é permitido criar outra." },
+];
+
+const enforcementNotes = [
+  "Infrações graves, como golpe, ameaça ou risco à segurança de alguém, levam ao bloqueio imediato, sem aviso prévio. Quando necessário, as informações são preservadas e encaminhadas às autoridades.",
+  `Denúncias são analisadas em até ${REPORT_REVIEW_HOURS} horas, sempre que possível. Quem denuncia não é identificado para a pessoa denunciada. Denúncia falsa, feita de má-fé, também é infração.`,
+  `Quem tiver a conta bloqueada vê o motivo ao entrar e pode pedir revisão em até ${BLOCK_APPEAL_DAYS} dias, pela própria tela de conta bloqueada. A decisão da revisão é final.`,
+  "Avaliações e indicações não são removidas por serem negativas, apenas quando violam estas regras.",
+];
+
+const platformLimits = [
+  "Não emprega, seleciona, supervisiona nem certifica os profissionais anunciados.",
+  "Não intermedeia pagamentos, não cobra comissão e não participa dos acordos entre usuários.",
+  "Não garante a qualidade, o prazo, o preço ou o resultado dos serviços, nem que alguém vá contratar ou ser contratado.",
+  "Não responde por danos, prejuízos, atrasos, acidentes ou desentendimentos decorrentes de serviços, pagamentos ou contatos entre usuários, inclusive os que aconteçam fora da plataforma (WhatsApp, telefone ou pessoalmente).",
+  "Não confere as informações publicadas pelos usuários (perfis, avaliações, indicações, vagas, artigos e oportunidades), que são de responsabilidade de quem as publicou.",
+];
+
+const platformCommitments = [
+  "Manter a plataforma funcionando com cuidado e segurança. Ela pode ficar indisponível durante manutenções ou por falhas técnicas.",
+  "Proteger os dados pessoais conforme a Política de Privacidade.",
+  "Analisar as denúncias recebidas e agir conforme estas regras.",
+];
+
+const safetyTips = [
+  "Combine por escrito o serviço, o preço e o prazo antes de começar.",
+  "Desconfie de pedidos de pagamento total adiantado.",
+  "Não compartilhe senhas nem códigos recebidos por SMS.",
+  "Avalie depois do serviço e use o botão Denunciar diante de qualquer comportamento suspeito.",
 ];
 
 const headerHeadlineSegments: HeaderTextSegment[] = [
@@ -163,55 +209,149 @@ export default function TermosPage() {
           <div className="col-span-12 lg:col-span-4">
             <div className="space-y-4">
               <h2 className="text-xl lg:text-2xl font-bold text-text-main">
-                Responsabilidades e conduta esperada
+                Quem pode usar
               </h2>
               <p className="text-base font-normal text-text-muted">
-                O uso saudável da plataforma depende de clareza nas informações,
-                respeito nas relações e responsabilidade nas decisões tomadas
-                fora dela.
+                A Skillsy é uma rede de confiança. Por isso, cada conta
+                representa uma pessoa real e responsável pelo que publica.
               </p>
             </div>
           </div>
-
           <div className="col-span-12 lg:col-span-8">
-            <div className="grid grid-cols-12 gap-4 gap-y-8">
-              <div className="col-span-12 lg:col-span-6">
-                <div className="h-full border border-border-subtle bg-surface p-4 space-y-4">
-                  <h3 className="text-lg font-bold text-text-main">
-                    Limites da plataforma
-                  </h3>
-                  <div className="space-y-3">
-                    {responsibilities.map((item) => (
-                      <p
-                        key={item}
-                        className="text-sm leading-relaxed text-text-muted"
-                      >
-                        {item}
-                      </p>
-                    ))}
-                  </div>
+            <div className="grid grid-cols-1 gap-4">
+              {eligibility.map((item) => (
+                <p
+                  key={item}
+                  className="border border-border-subtle bg-surface p-4 text-sm leading-relaxed text-text-muted"
+                >
+                  {item}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="my-24 bg-surface">
+        <div className="container mx-auto px-4 py-18 space-y-8">
+          <div className="space-y-2">
+            <h2 className="text-xl lg:text-2xl font-bold text-text-main">
+              O que não é permitido
+            </h2>
+            <p className="text-base text-text-muted">
+              Estas condutas levam às medidas descritas na seção seguinte.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {prohibited.map((item, index) => (
+              <div key={item.title} className="flex gap-3 border border-border-subtle bg-card p-4">
+                <div className="flex size-10 shrink-0 items-center justify-center bg-destructive/10 text-sm font-bold text-destructive">
+                  {index + 1}
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-bold text-text-main">{item.title}</h3>
+                  <p className="text-sm leading-relaxed text-text-muted">{item.text}</p>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-              <div className="col-span-12 lg:col-span-6">
-                <div className="h-full border border-border-subtle bg-surface p-4 space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-bold text-text-main">
-                      Conduta dos usuários
-                    </h3>
-                    {conduct.map((item) => (
-                      <p
-                        key={item}
-                        className="text-sm leading-relaxed text-text-muted"
-                      >
-                        {item}
-                      </p>
-                    ))}
-                  </div>
+      <section className="container mx-auto my-24 px-4 space-y-8">
+        <div className="space-y-2">
+          <h2 className="text-xl lg:text-2xl font-bold text-text-main">
+            Bloqueio e remoção de perfis
+          </h2>
+          <p className="text-base text-text-muted">
+            As medidas são proporcionais à gravidade da infração e ao histórico
+            de quem a cometeu.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {sanctions.map((item) => (
+            <div key={item.level} className="space-y-3 border border-border-subtle bg-surface p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 shrink-0 items-center justify-center bg-primary text-sm font-bold text-primary-foreground">
+                  {item.level}
+                </div>
+                <h3 className="font-bold text-text-main">{item.title}</h3>
+              </div>
+              <p className="text-sm text-text-muted">
+                <strong className="text-text-main">Quando:</strong> {item.when}
+              </p>
+              <p className="text-sm text-text-muted">
+                <strong className="text-text-main">Medida:</strong> {item.action}
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="space-y-3 border border-warning-border bg-warning-surface p-5 text-sm leading-relaxed text-warning-foreground">
+          {enforcementNotes.map((item) => (
+            <p key={item}>{item}</p>
+          ))}
+        </div>
+      </section>
+
+      <section className="my-24 bg-surface">
+        <div className="container mx-auto px-4 py-18">
+          <div className="grid grid-cols-12 gap-4 lg:gap-8">
+            <div className="col-span-12 lg:col-span-4">
+              <div className="space-y-4">
+                <h2 className="text-xl lg:text-2xl font-bold text-text-main">
+                  Responsabilidades
+                </h2>
+                <p className="text-base font-normal text-text-muted">
+                  A Skillsy é um espaço de conexão: ajuda as pessoas a se
+                  encontrarem, mas não faz parte das negociações entre elas.
+                </p>
+              </div>
+            </div>
+            <div className="col-span-12 lg:col-span-8 grid grid-cols-12 gap-4">
+              <div className="col-span-12 lg:col-span-6 h-full space-y-3 border border-border-subtle bg-card p-4">
+                <h3 className="text-lg font-bold text-text-main">A Skillsy</h3>
+                {platformLimits.map((item) => (
+                  <p key={item} className="text-sm leading-relaxed text-text-muted">
+                    {item}
+                  </p>
+                ))}
+              </div>
+              <div className="col-span-12 lg:col-span-6 flex flex-col gap-4">
+                <div className="space-y-3 border border-border-subtle bg-card p-4">
+                  <h3 className="text-lg font-bold text-text-main">Cada usuário</h3>
+                  <p className="text-sm leading-relaxed text-text-muted">
+                    É responsável pelo que publica, pelo que combina com outros
+                    usuários e pelas consequências legais dos seus atos, incluindo
+                    impostos, licenças e registros profissionais exigidos para a
+                    sua atividade.
+                  </p>
+                </div>
+                <div className="space-y-3 border border-border-subtle bg-card p-4">
+                  <h3 className="text-lg font-bold text-text-main">
+                    A Skillsy se compromete a
+                  </h3>
+                  {platformCommitments.map((item) => (
+                    <p key={item} className="text-sm leading-relaxed text-text-muted">
+                      {item}
+                    </p>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="container mx-auto my-24 px-4 space-y-6">
+        <h2 className="text-xl lg:text-2xl font-bold text-text-main">
+          Dicas de segurança
+        </h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {safetyTips.map((item) => (
+            <p key={item} className="border border-border-subtle bg-surface p-4 text-sm leading-relaxed text-text-muted">
+              {item}
+            </p>
+          ))}
         </div>
       </section>
 
@@ -252,10 +392,12 @@ export default function TermosPage() {
                 tomou conhecimento do texto atualizado.
               </p>
               <p>
-                Se você tiver dúvidas sobre estes termos, utilize os canais
-                oficiais divulgados pela Skillsy. Em caso de denúncia, conteúdo
-                impróprio ou suspeita de fraude, entre em contato assim que
-                possível para análise.
+                Dúvidas sobre estes termos podem ser enviadas pelo{" "}
+                <Link href="/#fale-conosco" className="font-semibold text-primary hover:underline">
+                  Fale conosco
+                </Link>{" "}
+                da página inicial. Para denunciar um perfil ou uma publicação,
+                use o botão Denunciar na própria página.
               </p>
             </div>
 
@@ -270,7 +412,7 @@ export default function TermosPage() {
                       Última atualização:
                     </strong>{" "}
                     <br />
-                    17 de abril de 2026.
+                    {TERMS_UPDATED_LABEL}.
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -278,8 +420,8 @@ export default function TermosPage() {
                     <Mail size={18} />
                   </div>
                   <div>
-                    Use os canais oficiais da Skillsy para dúvidas,{" "}
-                    <br className="hidden md:flex" /> denúncias e solicitações.
+                    Dúvidas e solicitações pelo Fale conosco; denúncias pelo
+                    botão Denunciar.
                   </div>
                 </div>
               </div>
