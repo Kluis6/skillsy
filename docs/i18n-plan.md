@@ -2,7 +2,9 @@
 
 Registrado em 29/10/2026. **Status: planejado, não iniciado.** Glossário para os revisores: [`i18n-glossario.md`](./i18n-glossario.md).
 
-Objetivo: site e app em **português do Brasil (padrão), inglês e espanhol da América Latina**, usando os recursos nativos do Next.js 16 no site e os mesmos dicionários no app. Revisores nativos de inglês e espanhol já estão definidos.
+Objetivo: site e app em **português do Brasil (padrão), inglês e espanhol da América Latina**, usando os recursos nativos do Next.js 16 no site e os mesmos dicionários no app.
+
+**Processo de tradução (29/10/2026):** a tradução segue o glossário e as referências de dicionário e estilo pesquisadas (RAE/Fundéu, guias de estilo de interface, termos oficiais da Igreja); os revisores nativos, já definidos, revisam **depois** (E8).
 
 > Fonte técnica: `node_modules/next/dist/docs/01-app/02-guides/internationalization.md`, `…/04-functions/next-root-params.md` e `…/03-file-conventions/proxy.md` (Next.js 16.3). Esta versão tem mudanças em relação a versões anteriores: `middleware` virou **`proxy`**, e o idioma é lido com **`next/root-params`**. Releia esses guias antes de começar, pois podem ter mudado.
 
@@ -42,7 +44,7 @@ Objetivo: site e app em **português do Brasil (padrão), inglês e espanhol da 
 | Dados no Firestore | Categorias e dias continuam gravados em português e funcionam como **chaves**; só o rótulo exibido é traduzido |
 | Idioma da pessoa | Campo `preferredLanguage` em `users/{uid}`, usado por Functions, push e e-mails do Firebase Auth |
 | Lançamento | Variável `NEXT_PUBLIC_ENABLED_LOCALES` (`pt` → `pt,en,es`); idiomas desligados respondem 404 |
-| Espanhol | América Latina: tratamento por **tú** (a confirmar com os revisores), vocabulário latino-americano |
+| Espanhol | América Latina, **tú** (padrão de produtos para o público geral), plural *ustedes*, vocabulário neutro (ver glossário) |
 
 ---
 
@@ -183,7 +185,7 @@ Páginas com componentes cliente pesados envolvem o conteúdo num `I18nProvider`
 | 13 | **E-mails do Firebase Auth** (recuperar senha) saem no idioma do console | `auth.languageCode = locale` antes de `sendPasswordResetEmail` (site e app) e modelos traduzidos no console do Firebase |
 | 14 | **SEO**: conteúdo duplicado e canonical | `alternates.canonical` por idioma, `alternates.languages` (`pt-BR`, `en`, `es-419`, `x-default` = pt) em `createPublicMetadata`; sitemap com as 3 versões de cada URL; OG com `locale` e texto no idioma |
 | 15 | **Textos mais longos** em inglês e espanhol (+15–30%) quebram botões, chips, abas e cards | Etapa de revisão visual em larguras de 360, 412 e 1280 px; textos de botão curtos no glossário; `numberOfLines`/`truncate` onde fizer sentido |
-| 16 | **Termos da comunidade** ("ala", "estaca", "membro verificado", "Indicar", "Conectar") sem tradução óbvia | Glossário (`i18n-glossario.md`) aprovado pelos revisores **antes** de traduzir. Termos da Igreja seguem o uso oficial em cada idioma (ex.: ala → *ward* / *barrio*) |
+| 16 | **Termos da comunidade** ("ala", "estaca", "membro verificado", "Indicar", "Conectar") sem tradução óbvia | Glossário (`i18n-glossario.md`) baseado em dicionários, guias de estilo e no uso oficial da Igreja em cada idioma (ala → *ward* / *barrio*); revisores ajustam depois e as correções voltam ao glossário |
 | 17 | **Páginas legais** traduzidas podem gerar divergência jurídica | Tradução revisada e aviso "Em caso de divergência, prevalece a versão em português". Aceite (`termsVersion`) continua único |
 | 18 | **Tradução feita fora do código** (revisores não programam) | `npm run i18n:export` gera uma planilha (chave, pt, en, es, contexto); `i18n:import` traz de volta. `i18n:check` no CI garante as mesmas chaves e variáveis nos 3 idiomas |
 | 19 | **Cache e geração estática**: páginas com ISR (`revalidate`) e `generateStaticParams` em 6 rotas | Incluir `lang` nos params. Com `next/root-params`, o idioma entra sozinho na chave de cache de funções com `'use cache'`. Ativando Cache Components no futuro, o layout precisa de `generateStaticParams` (o guia exige) |
@@ -198,11 +200,11 @@ Cada etapa termina com o site em produção **sem mudança visível em portuguê
 
 ### E0 — Preparação (½ dia)
 
-- [ ] Revisores aprovam o glossário (`i18n-glossario.md`) e o tratamento em espanhol (tú/usted)
+- [x] Glossário e tom de voz com base em dicionários, guias de estilo e termos oficiais da Igreja (29/10/2026)
 - [ ] Branch `i18n` com merges curtos na `main` por etapa; avisar sobre o congelamento da E2
 - [ ] Definir as 3 telas de referência para a revisão visual (Início, Perfil do profissional, Publicar oportunidade)
 
-**Pronto quando:** glossário aprovado.
+**Pronto quando:** branch criada e telas de referência definidas (o glossário não depende mais de aprovação prévia).
 
 ### E1 — Base compartilhada (1–2 dias)
 
@@ -271,7 +273,7 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
 
 ### E8 — Tradução e revisão (prazo dos revisores)
 
-- [ ] Primeira versão de `en.json`/`es.json` gerada com IA seguindo o glossário
+- [ ] Primeira versão de `en.json`/`es.json` seguindo o glossário e as referências (RAE/Fundéu, guias de estilo de interface)
 - [ ] `i18n:export` → planilha para cada revisor → `i18n:import`
 - [ ] Revisão dos Termos e da Privacidade (com o aviso de prevalência do português)
 - [ ] Revisão visual das telas de referência (dificuldade 15)
@@ -321,6 +323,6 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
 
 - [x] Espanhol da América Latina (29/10/2026)
 - [x] Revisores nativos de inglês e espanhol (29/10/2026)
-- [ ] Aprovar o glossário e o tratamento em espanhol (tú ou usted)
+- [x] Tradução pelo padrão de dicionários e pesquisa, com revisão depois (29/10/2026)
 - [ ] Rodar em produção o script de reindexação da busca (E4)
 - [ ] Traduzir os modelos de e-mail no console do Firebase (E6)
