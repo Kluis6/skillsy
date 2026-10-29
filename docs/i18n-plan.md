@@ -1,12 +1,13 @@
 # Multi-idioma (pt-BR, en, es) — backlog
 
-Registrado em 29/10/2026. **Status: backlog, não iniciado.** Objetivo: site e app em **português (padrão), inglês e espanhol**, com os recursos nativos do Next.js 16 no site e o mesmo dicionário no app.
+Registrado em 29/10/2026. **Status: backlog, não iniciado.** Objetivo: site e app em **português (padrão), inglês e espanhol da América Latina**, com os recursos nativos do Next.js 16 no site e o mesmo dicionário no app.
 
 ## Decisões
 
 | Tema | Decisão | Por quê |
 | --- | --- | --- |
 | Rotas do site | `app/[lang]/…` com `proxy.ts`, sem prefixo para português: `/artigosevagas` (pt), `/en/artigosevagas`, `/es/artigosevagas` | Guia oficial (`node_modules/next/dist/docs/01-app/02-guides/internationalization.md`). Sem prefixo no pt, os links já compartilhados e os das notificações continuam valendo: o `proxy` faz **rewrite** (não redirect) de `/x` para `/pt/x` |
+| Espanhol | **América Latina** (`es-419`): vocabulário latino-americano (ex.: "celular", "computadora", "ustedes"), URL `/es`, `<html lang="es-419">`, `openGraph.locale` `es_LA`; o navegador em qualquer `es-*` (es-MX, es-AR, es-CO, es-ES…) cai nele | Decidido em 29/10/2026 pelo responsável do projeto |
 | Escolha do idioma | 1º o prefixo da URL; 2º um cookie `lang` (escolha manual); 3º o `Accept-Language` do navegador (`@formatjs/intl-localematcher` + `negotiator`); padrão `pt` | Mesma ordem do guia; o cookie evita trocar de idioma sozinho a cada visita |
 | Textos | Dicionários JSON em `packages/shared/src/i18n/{pt,en,es}.json`, uma árvore por área (`common`, `nav`, `profile`, `opportunities`, `posts`, `admin`, `legal`…) | O app usa os mesmos arquivos; tipos gerados a partir do `pt.json` (fonte da verdade) acusam chave faltando no build |
 | Server Components | `getDictionary()` lendo o idioma com `next/root-params` (`import { lang } from 'next/root-params'`) | Sem passar `lang` por props; o dicionário não vai para o bundle do cliente |
@@ -38,7 +39,7 @@ Registrado em 29/10/2026. **Status: backlog, não iniciado.** Objetivo: site e a
 - [ ] Páginas legais (`/termos`, `/privacidade`): tradução revisada por humano, com aviso de que a versão em português prevalece
 
 ### 3. SEO
-- [ ] `lib/public-metadata.ts`: título/descrição por idioma, `openGraph.locale` (`pt_BR`, `en_US`, `es_ES`) e `alternates.languages` (hreflang) com `x-default` = pt
+- [ ] `lib/public-metadata.ts`: título/descrição por idioma, `openGraph.locale` (`pt_BR`, `en_US`, `es_LA`) e `alternates.languages` (hreflang) com `x-default` = pt
 - [ ] `sitemap.ts` com as URLs dos três idiomas; imagens OG (`opengraph-image.tsx`) com o texto no idioma
 
 ### 4. Notificações e e-mails
@@ -69,6 +70,5 @@ Registrado em 29/10/2026. **Status: backlog, não iniciado.** Objetivo: site e a
 | Revisão de tradução e testes (fase 6) | 3 idiomas | depende dos revisores |
 
 ## Pendências do responsável pelo projeto
-- Definir se espanhol é da Espanha ou da América Latina (vocabulário e `es-419` vs `es-ES`)
-- Revisores nativos para inglês e espanhol
+- Revisores nativos para inglês e espanhol latino-americano
 - Se haverá domínios por país no futuro (o guia também suporta domínio por idioma; hoje a decisão é por subcaminho)
