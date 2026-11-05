@@ -1,4 +1,4 @@
-import type { GalleryItem, UserProfile } from './types';
+import type { ContentLanguage, GalleryItem, UserProfile } from './types';
 
 import {
   AVAILABILITY_OPTIONS,
@@ -19,6 +19,9 @@ type OptionalString = string | undefined;
 export type MembershipType = '' | 'member' | 'friend';
 
 export interface ProfileFormValues {
+  /** Language of the profile's texts; optional so forms without it (the app)
+   * leave the saved value alone. */
+  language?: ContentLanguage;
   name: string;
   bio: string;
   location: string;
@@ -179,6 +182,7 @@ export const profileToFormValues = (profile: UserProfile | null): ProfileFormVal
     businessNeighborhood: profile.businessNeighborhood || '',
     businessState: profile.businessState || '',
     businessComplement: profile.businessComplement || '',
+    language: profile.language || 'pt',
   };
 };
 
@@ -228,6 +232,7 @@ export const toProfileUpdatePayload = (values: ProfileFormValues): Partial<UserP
     businessNeighborhood: normalizeOptionalText(providerValues.businessNeighborhood),
     businessState: normalizeOptionalText(providerValues.businessState),
     businessComplement: normalizeOptionalText(providerValues.businessComplement),
+    language: values.language,
     baptismYear: baptismYear ? Number.parseInt(baptismYear, 10) : undefined,
   };
 };

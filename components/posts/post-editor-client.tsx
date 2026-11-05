@@ -30,7 +30,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Link from "@/lib/i18n/navigation";
-import { useT, useValidationMessage } from "@/lib/i18n/provider";
+import { useLocale, useT, useValidationMessage } from "@/lib/i18n/provider";
+import { ContentLanguageSelect } from "@/components/content-language-select";
 
 const MAX_IMAGE_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
 const SUPPORTED_IMAGE_TYPES = new Set([
@@ -63,6 +64,7 @@ export function PostEditorClient({
   const router = useRouter();
   const { user, profile, loading } = useAuth();
   const t = useT();
+  const locale = useLocale();
   const tv = useValidationMessage();
   const [isPublishing, startPublishing] = useTransition();
   const [autoSlugEdited, setAutoSlugEdited] = useState(Boolean(initialPost));
@@ -76,6 +78,8 @@ export function PostEditorClient({
     mode: "onBlur",
     defaultValues: {
       category: initialPost?.category || "article",
+      // New posts start in the page's language; old ones without it are Portuguese.
+      language: initialPost ? initialPost.language || "pt" : locale,
       title: initialPost?.title || "",
       slug: initialPost?.slug || "",
       excerpt: initialPost?.excerpt || "",
@@ -169,6 +173,7 @@ export function PostEditorClient({
         content: data.content.trim(),
         coverImageUrl: data.coverImageUrl.trim(),
         tags: normalizePostTags(data.tags),
+        language: data.language,
       };
 
       if (mode === "create") {
@@ -209,6 +214,7 @@ export function PostEditorClient({
           content: data.content.trim(),
           coverImageUrl: data.coverImageUrl.trim(),
           tags: normalizePostTags(data.tags),
+          language: data.language,
         };
 
         await PostService.updateOwnPost(postId, payload);
@@ -303,6 +309,22 @@ export function PostEditorClient({
               {tv(form.formState.errors.category.message)}
             </p>
           ) : null}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="post-language">{t("posts.language")}</Label>
+          <Controller
+            control={form.control}
+            name="language"
+            render={({ field }) => (
+              <ContentLanguageSelect
+                id="post-language"
+                value={field.value || "pt"}
+                onChange={field.onChange}
+              />
+            )}
+          />
+          <p className="text-xs text-text-muted">{t("posts.languageHint")}</p>
         </div>
 
         <div className="space-y-2">

@@ -59,6 +59,8 @@ import { LocationService } from "@/services/location-service";
 import { Footer } from "./footer";
 import { useT, useValidationMessage } from "@/lib/i18n/provider";
 import { rich } from "@/lib/i18n/rich";
+import { useLabels } from "@/lib/i18n/labels";
+import { ContentLanguageSelect } from "@/components/content-language-select";
 import type { MessageKey } from "@skillsy/shared/i18n/keys";
 
 const MAX_IMAGE_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
@@ -163,6 +165,7 @@ export function ProfileSettingsClient() {
   } = useAuth();
   const t = useT();
   const tv = useValidationMessage();
+  const labels = useLabels();
   const [loading, setLoading] = useState(false);
   const [cancelingAccount, setCancelingAccount] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
@@ -1061,6 +1064,24 @@ export function ProfileSettingsClient() {
                       </p>
                     )}
                   </div>
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="profile-language"
+                      className="text-xs md:text-sm font-medium text-text-muted"
+                    >
+                      {t("settings.language")}
+                    </Label>
+                    <ContentLanguageSelect
+                      id="profile-language"
+                      value={formData.language || "pt"}
+                      onChange={(language) =>
+                        setValue("language", language, { shouldDirty: true })
+                      }
+                    />
+                    <p className="text-xs text-text-muted ml-1">
+                      {t("settings.languageHint")}
+                    </p>
+                  </div>
                 </section>
               </div>
               <div
@@ -1149,7 +1170,7 @@ export function ProfileSettingsClient() {
                               <SelectContent>
                                 {PROVIDER_CATEGORIES.map((category) => (
                                   <SelectItem key={category} value={category}>
-                                    {category}
+                                    {labels.category(category)}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -1233,7 +1254,7 @@ export function ProfileSettingsClient() {
                                     : "bg-primary/10 text-primary hover:bg-primary/15"
                                 }`}
                               >
-                                {day}
+                                {labels.day(day)}
                               </Button>
                             );
                           })}

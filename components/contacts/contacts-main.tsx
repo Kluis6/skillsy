@@ -36,6 +36,7 @@ import { LuChurch, LuUserRound } from "react-icons/lu";
 import { FaTelegramPlane } from "react-icons/fa";
 import { useT } from "@/lib/i18n/provider";
 import { rich } from "@/lib/i18n/rich";
+import { useLabels } from "@/lib/i18n/labels";
 
 interface ContactsMainProps {
   contacts: UserProfile[];
@@ -45,6 +46,7 @@ interface ContactsMainProps {
 export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
   const { selectedContactId, setSelectedContactId } = useContactsStore();
   const t = useT();
+  const labels = useLabels();
 
   const selectedContact =
     contacts.find((c) => c.uid === selectedContactId) ||
@@ -342,7 +344,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                     <div className="flex flex-col space-y-1">
                       <p className="text-base font-medium text-text-main">
                         {selectedContact.serviceType ||
-                          selectedContact.category ||
+                          labels.category(selectedContact.category) ||
                           t("contacts.communityMember")}
                       </p>
                     </div>

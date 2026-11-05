@@ -204,7 +204,8 @@ service cloud.firestore {
         'memberVerified', 'membershipYears', 'communityFriend',
         'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
         'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'showPublicLocation', 'businessComplement',
-        'termsVersion', 'termsAcceptedAt', 'blockedReason', 'blockedAt'
+        'termsVersion', 'termsAcceptedAt', 'blockedReason', 'blockedAt',
+        'language', 'country'
       ];
       
       return data.keys().hasAll(['uid', 'name', 'email', 'isProvider', 'role', 'createdAt']) &&
@@ -213,6 +214,8 @@ service cloud.firestore {
              data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
              isValidEmail(data.email) &&
              data.isProvider is bool &&
+             (!('language' in data) || data.language in ['pt', 'en', 'es']) &&
+             (!('country' in data) || (data.country is string && data.country.matches('^[A-Z]{2}$'))) &&
              (!('hasPublicProfile' in data) || data.hasPublicProfile is bool) &&
              data.role in ['admin', 'user'] &&
              data.createdAt is timestamp &&
@@ -270,7 +273,8 @@ service cloud.firestore {
         'memberVerified', 'membershipYears', 'communityFriend',
         'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
         'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'showPublicLocation', 'businessComplement',
-        'termsVersion', 'termsAcceptedAt', 'blockedReason', 'blockedAt'
+        'termsVersion', 'termsAcceptedAt', 'blockedReason', 'blockedAt',
+        'language', 'country'
       ];
       
       // Only the keys this write adds, changes or removes are checked: the
@@ -287,6 +291,8 @@ service cloud.firestore {
              (!('email' in changed) || !('email' in data) || (isValidEmail(data.email))) &&
              (!('isProvider' in changed) || !('isProvider' in data) || (data.isProvider is bool)) &&
              (!('role' in changed) || !('role' in data) || (data.role in ['admin', 'user'])) &&
+             (!('language' in changed) || !('language' in data) || data.language in ['pt', 'en', 'es']) &&
+             (!('country' in changed) || !('country' in data) || (data.country is string && data.country.matches('^[A-Z]{2}$'))) &&
              (!('createdAt' in changed) || !('createdAt' in data) || (data.createdAt is timestamp)) &&
              (!('hasPublicProfile' in changed) || !('hasPublicProfile' in data) || data.hasPublicProfile is bool) &&
              (!('photoURL' in changed) || !('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 1000000)) &&
@@ -339,7 +345,8 @@ service cloud.firestore {
         'isProvider', 'serviceType', 'publicCity', 'publicState', 'ward', 'memberVerified', 'communityFriend', 'searchTokens', 'companyName', 'gallery',
         'rating', 'ratingSum', 'reviewCount', 'recommendationCount', 'experienceYears', 'availability',
         'serviceHours', 'whatsapp', 'instagram', 'facebook', 'linkedin',
-        'website', 'phone', 'phones', 'isBlocked', 'isDeleted', 'createdAt'
+        'website', 'phone', 'phones', 'isBlocked', 'isDeleted', 'createdAt',
+        'language', 'country'
       ];
 
       return data.keys().hasAll(['uid', 'name', 'isProvider']) &&
@@ -349,6 +356,8 @@ service cloud.firestore {
              data.name.size() > 0 &&
              data.name.size() <= 100 &&
              data.isProvider is bool &&
+             (!('language' in data) || data.language in ['pt', 'en', 'es']) &&
+             (!('country' in data) || (data.country is string && data.country.matches('^[A-Z]{2}$'))) &&
              (!('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 1000000)) &&
              (!('bannerURL' in data) || data.bannerURL == null || (data.bannerURL is string && data.bannerURL.size() <= 1000000)) &&
              (!('bio' in data) || data.bio == null || (data.bio is string && data.bio.size() <= 2000)) &&
@@ -609,7 +618,8 @@ service cloud.firestore {
       let allowed = [
         'authorId', 'authorName', 'authorEmail', 'category', 'title', 'slug', 'excerpt', 'content',
         'coverImageUrl', 'tags', 'status', 'createdAt', 'updatedAt', 'publishedAt',
-        'reviewedAt', 'reviewedBy', 'rejectionReason', 'isFeatured'
+        'reviewedAt', 'reviewedBy', 'rejectionReason', 'isFeatured',
+        'language', 'country'
       ];
 
       return data.keys().hasAll(['authorId', 'authorName', 'authorEmail', 'category', 'title', 'slug', 'excerpt', 'content', 'status']) &&
@@ -620,6 +630,8 @@ service cloud.firestore {
              data.authorName.size() > 0 &&
              data.authorName.size() <= 100 &&
              isValidEmail(data.authorEmail) &&
+             (!('language' in data) || data.language in ['pt', 'en', 'es']) &&
+             (!('country' in data) || (data.country is string && data.country.matches('^[A-Z]{2}$'))) &&
              isValidPostCategory(data.category) &&
              data.title is string &&
              data.title.size() >= 5 &&
@@ -696,7 +708,8 @@ service cloud.firestore {
         'authorId', 'authorName', 'authorWhatsApp', 'category', 'title',
         'description', 'city', 'neighborhood', 'state', 'urgency', 'status',
         'createdAt', 'expiresAt', 'closedAt', 'reactivatedAt',
-        'receivedResponse', 'platformSatisfied', 'followUpAnsweredAt', 'followUpNotifiedAt'
+        'receivedResponse', 'platformSatisfied', 'followUpAnsweredAt', 'followUpNotifiedAt',
+        'language', 'country'
       ];
 
       return data.keys().hasAll([
@@ -715,6 +728,8 @@ service cloud.firestore {
              data.neighborhood is string && data.neighborhood.size() >= 2 && data.neighborhood.size() <= 100 &&
              data.state is string && data.state.matches('^[A-Z]{2}$') &&
              (!('urgency' in data) || data.urgency in ['normal', 'soon', 'urgent']) &&
+             (!('language' in data) || data.language in ['pt', 'en', 'es']) &&
+             (!('country' in data) || (data.country is string && data.country.matches('^[A-Z]{2}$'))) &&
              data.status in ['active', 'closed', 'expired'] &&
              data.createdAt is timestamp &&
              data.expiresAt is timestamp &&

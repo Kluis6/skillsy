@@ -503,3 +503,68 @@ describe("users: termos de uso e bloqueio", () => {
     await assertSucceeds(updateDoc(doc(dbAs(RATER), "users", RATER), { name: "Nome novo" }));
   });
 });
+
+describe("idioma e país do conteúdo", () => {
+  const VERIFIED = "verified";
+  const opportunity = (overrides = {}) => ({
+    authorId: RATER,
+    authorName: "Nome rater",
+    authorWhatsApp: "21999999999",
+    category: "Limpeza",
+    title: "Preciso de limpeza",
+    description: "Limpeza completa de um apartamento de dois quartos.",
+    city: "Rio de Janeiro",
+    neighborhood: "Centro",
+    state: "RJ",
+    urgency: "normal",
+    status: "active",
+    createdAt: Timestamp.now(),
+    expiresAt: Timestamp.fromMillis(Date.now() + 86_400_000),
+    ...overrides,
+  });
+  const post = (overrides = {}) => ({
+    authorId: VERIFIED,
+    authorName: "Nome verified",
+    authorEmail: `${VERIFIED}@example.com`,
+    category: "article",
+    title: "Um artigo de teste",
+    slug: "um-artigo-de-teste",
+    excerpt: "",
+    content: "Conteúdo de teste com mais de quarenta caracteres para valer.",
+    status: "draft",
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
+    ...overrides,
+  });
+
+  beforeEach(async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      await setDoc(
+        doc(context.firestore(), "users", VERIFIED),
+        userDoc(VERIFIED, { memberVerified: true, ward: "Ala Centro", baptismYear: 2010 }),
+      );
+    });
+  });
+
+  test("oportunidade aceita idioma e país válidos, ou nenhum", async () => {
+    const db = dbAs(RATER);
+    await assertSucceeds(setDoc(doc(db, "opportunities", "o1"), opportunity()));
+    await assertSucceeds(setDoc(doc(db, "opportunities", "o2"), opportunity({ language: "en", country: "US" })));
+    await assertFails(setDoc(doc(db, "opportunities", "o3"), opportunity({ language: "fr" })));
+    await assertFails(setDoc(doc(db, "opportunities", "o4"), opportunity({ country: "Brasil" })));
+  });
+
+  test("artigo aceita idioma válido", async () => {
+    const db = dbAs(VERIFIED);
+    await assertSucceeds(setDoc(doc(db, "posts", "p1"), post({ language: "es" })));
+    await assertFails(setDoc(doc(db, "posts", "p2"), post({ slug: "outro-artigo", language: "de" })));
+  });
+
+  test("perfil (users e público) aceita idioma válido", async () => {
+    const db = dbAs(PROVIDER);
+    await assertSucceeds(updateDoc(doc(db, "users", PROVIDER), { language: "en" }));
+    await assertFails(updateDoc(doc(db, "users", PROVIDER), { language: "xx" }));
+    await assertSucceeds(updateDoc(doc(db, "public_profiles", PROVIDER), { language: "es" }));
+    await assertFails(updateDoc(doc(db, "public_profiles", PROVIDER), { country: "brasil" }));
+  });
+});

@@ -43,3 +43,30 @@ export function toSearchStems(value: string) {
     ),
   ];
 }
+
+/**
+ * Like toSearchStems, but each query word becomes a group of alternatives:
+ * its own stem plus the stems of its Portuguese equivalent from `synonyms`
+ * (normalized word → Portuguese word), so "electrician" also finds
+ * "eletricista". A profile matches a group when it has any of its stems.
+ * Without synonyms every group has one stem, the same as toSearchStems.
+ */
+export function toSearchStemGroups(value: string, synonyms: Record<string, string> = {}) {
+  const words = value
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((word) => word.length >= 3);
+
+  const groups: string[][] = [];
+  const seen = new Set<string>();
+  for (const word of words) {
+    const own = toSearchStems(word)[0];
+    if (!own || seen.has(own)) continue;
+    seen.add(own);
+    const translated = synonyms[word] ? toSearchStems(synonyms[word]) : [];
+    groups.push([...new Set([own, ...translated])]);
+  }
+  return groups;
+}

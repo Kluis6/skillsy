@@ -10,6 +10,7 @@ import { getMessages, getT } from "@/lib/i18n/server";
 import { I18nProvider } from "@/lib/i18n/provider";
 import { rich } from "@/lib/i18n/rich";
 import { PostPublicActions } from "@/components/posts/post-public-actions";
+import { LanguageBadge } from "@/components/language-badge";
 import { PostService } from "@/services/post-service";
 import Link from "@/lib/i18n/navigation";
 import { LuArrowLeft } from "react-icons/lu";
@@ -103,6 +104,7 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
               {rich(t("posts.by"), { name: <strong>{post.authorName}</strong> })}
             </p>
             <div className="flex gap-2">
+              <LanguageBadge item={post} />
               <Badge
                 variant="secondary"
                 className={` ${post.category === "job" ? "bg-success/15 text-success" : "bg-warning/15 text-warning-foreground"} `}

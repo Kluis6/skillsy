@@ -252,11 +252,11 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
 
 ### E4 — Dados e busca (1–2 dias)
 
-- [ ] Rótulos de categorias, dias, status e motivos de denúncia por `labels.ts` em selects, filtros, cards e perfis
-- [ ] `toSearchTokens` com os rótulos da categoria nos 3 idiomas; sinônimos de serviços nos radicais da busca
-- [ ] Script `scripts/reindex-search-tokens.mjs` (o responsável roda em produção)
-- [ ] Campo `language` em `posts` (regras: `isValidPost` aceita `language in ['pt','en','es']`) + selo no card
-- [ ] Busca e filtros ligados ao idioma e ao local de quem busca (decisão do responsável, 05/11/2026): perfis, oportunidades, artigos e vagas guardam `country` e `language` (padrão `BR`/`pt`, sem migração); a busca de profissionais, o mural de oportunidades e a lista de artigos e vagas mostram por padrão o país e o idioma da página (`/en` → conteúdo em inglês do país da pessoa), e o filtro de estado lista as divisões do país escolhido
+- [x] Rótulos de categorias, dias e motivos de denúncia (`packages/shared/src/i18n/labels.ts` + `useLabels()`) em selects, filtros, cards, perfis, oportunidades e carrosséis da Início. O valor gravado continua em português e é a chave
+- [x] Busca entre idiomas **sem reindexar**: a consulta é traduzida em vez dos perfis. Cada palavra vira um grupo de alternativas (`toSearchStemGroups`): a própria e a portuguesa (`buildSearchSynonyms`: rótulos de categoria traduzidos + ~70 profissões em inglês e espanhol); a consulta usa `array-contains-any` quando preciso, com os mesmos índices. Em português nada muda. Conferido com dados reais: "woodworking", "carpenter" e "carpintero" acham o marceneiro
+- [x] ~~Script de reindexação~~: dispensado, a tradução é feita na consulta
+- [x] `language` e `country` opcionais em `users`, `public_profiles`, `posts` e `opportunities` (regras + testes; publicadas em 05/11/2026). Seletor de idioma no editor de artigos, no formulário de oportunidade (padrão: idioma da página) e no perfil (padrão: português); selo do idioma (`LanguageBadge`) quando difere do idioma da página
+- [x] Busca e listas ligadas à origem (decisão do responsável, 05/11/2026): **o país filtra, o idioma ordena** (`byOrigin`): Início, busca, sugestões, mural, para você, encontrar ajuda e artigos mostram só o país de quem navega (Brasil por padrão; documento sem campo = BR) e põem primeiro o conteúdo no idioma da página. O seletor de país e as divisões de outros países ficam para quando abrir outro país
 
 **Pronto quando:** "electrician"/"electricista" encontram eletricistas nos emuladores; testes de regras passam.
 
@@ -291,7 +291,7 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
 ### E8 — Tradução e revisão (prazo dos revisores)
 
 - [ ] Primeira versão de `en.json`/`es.json` seguindo o glossário e as referências (RAE/Fundéu, guias de estilo de interface)
-- [ ] `i18n:export` → planilha para cada revisor → `i18n:import`
+- [ ] `i18n:export` → planilha para cada revisor → `i18n:import`. Planilhas geradas em 05/11/2026 (`interface.csv`, `termos-e-privacidade.csv` com `npm run i18n:export-legal`, instruções e glossário); correções dos documentos jurídicos voltam à mão para `lib/legal/*.ts`
 - [ ] Revisão dos Termos e da Privacidade (com o aviso de prevalência do português)
 - [ ] Revisão visual das telas de referência (dificuldade 15)
 
@@ -341,5 +341,5 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
 - [x] Espanhol da América Latina (29/10/2026)
 - [x] Revisores nativos de inglês e espanhol (29/10/2026)
 - [x] Tradução pelo padrão de dicionários e pesquisa, com revisão depois (29/10/2026)
-- [ ] Rodar em produção o script de reindexação da busca (E4)
+- [x] ~~Rodar em produção o script de reindexação da busca (E4)~~: não é mais necessário
 - [ ] Traduzir os modelos de e-mail no console do Firebase (E6)

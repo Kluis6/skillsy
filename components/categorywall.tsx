@@ -38,6 +38,7 @@ import {
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n/provider";
+import { useLabels } from "@/lib/i18n/labels";
 
 const categories = [
   {
@@ -180,6 +181,10 @@ const categories = [
 
 export function Categorywall() {
   const t = useT();
+  const labels = useLabels();
+  // The wall's short "Construção" has its own label; the rest are categories.
+  const label = (name: string) =>
+    name === "Construção" ? t("labels.categoryShort.constructionShort") : labels.category(name);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -212,7 +217,7 @@ export function Categorywall() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.05 }}
-                onClick={() => handleCategoryClick(cat.name)}
+                onClick={() => handleCategoryClick(label(cat.name))}
                 className={`${idx >= mobileVisibleCount && !showAllCategories ? "hidden lg:flex" : "flex"} flex-col items-center justify-center space-y-2 size-22 md:size-26 lg:size-32 p-2 md:p-4 bg-card border  hover:shadow-md transition-all duration-300 group/card`}
               >
                 <div
@@ -222,7 +227,7 @@ export function Categorywall() {
                 </div>
 
                 <p className="text-xs font-medium text-text-main group-hover/card:text-primary transition-colors">
-                  {cat.name}
+                  {label(cat.name)}
                 </p>
               </motion.button>
             ))}

@@ -1,5 +1,5 @@
 import type { UserProfile } from "./types";
-import { toSearchStems, toSearchTokens } from "./search";
+import { toSearchStemGroups, toSearchStems, toSearchTokens } from "./search";
 
 const publicProfileDefaults: Pick<UserProfile, "email" | "role" | "contacts"> =
   {
@@ -113,11 +113,16 @@ export function isActiveProvider(
  * What a professional search asks Firestore for. Firestore can only filter on
  * one array-contains, so the query uses the longest stem as `anchor` and
  * `pickSearchResults` checks the remaining terms and the city afterwards.
+ * With `synonyms` (other languages → Portuguese), a word with alternatives is
+ * a group in `termGroups`; when the anchor has to be one of those groups,
+ * `anchorAny` lists its stems for an array-contains-any query instead.
  */
 export type ProviderSearchPlan = {
   terms: string[];
+  termGroups?: string[][];
   cityTokens: string[];
   anchor?: string;
+  anchorAny?: string[];
   state?: string;
   category?: string;
 };
@@ -126,18 +131,36 @@ export function planProviderSearch(
   term: string,
   location?: { city?: string; state?: string },
   category?: string,
+  synonyms?: Record<string, string>,
 ): ProviderSearchPlan {
-  const terms = toSearchStems(term);
   const cityTokens = toSearchTokens(location?.city || "").filter(
     (token) => token.length >= 3,
   );
-  return {
-    terms,
+  const base = {
     cityTokens,
-    anchor: [...terms, ...cityTokens].sort((a, b) => b.length - a.length)[0],
     state: location?.state ? location.state.trim().toUpperCase() : undefined,
     category: category || undefined,
   };
+  const groups = toSearchStemGroups(term, synonyms);
+
+  if (!groups.some((group) => group.length > 1)) {
+    // Same plan as before synonyms existed (the app and Portuguese pages).
+    const terms = toSearchStems(term);
+    return {
+      ...base,
+      terms,
+      anchor: [...terms, ...cityTokens].sort((a, b) => b.length - a.length)[0],
+    };
+  }
+
+  // Anchor on a single stem when there is one; otherwise on the group with
+  // the longest stem, through array-contains-any.
+  const singles = [...groups.filter((group) => group.length === 1).map((group) => group[0]), ...cityTokens];
+  const anchor = singles.sort((a, b) => b.length - a.length)[0];
+  const anchorAny = anchor
+    ? undefined
+    : [...groups].sort((a, b) => Math.max(...b.map((x) => x.length)) - Math.max(...a.map((x) => x.length)))[0];
+  return { ...base, terms: [], termGroups: groups, anchor, anchorAny };
 }
 
 /** Turns the documents returned for a plan into the ranked result list. */
@@ -154,6 +177,7 @@ export function pickSearchResults(
       const profileTokens = profile.searchTokens || [];
       return (
         plan.terms.every((token) => profileTokens.includes(token)) &&
+        (plan.termGroups ?? []).every((group) => group.some((token) => profileTokens.includes(token))) &&
         plan.cityTokens.every((token) => profileTokens.includes(token))
       );
     }),

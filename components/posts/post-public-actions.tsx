@@ -7,7 +7,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Flag, Pencil, Share2, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { REPORT_REASON_LABELS, REPORT_REASON_OPTIONS } from "@/lib/reporting";
+import { REPORT_REASON_OPTIONS } from "@/lib/reporting";
 import { reportPostSchema, type ReportPostFormData } from "@/lib/validations";
 import { Post } from "@/models/types";
 import { PostService } from "@/services/post-service";
@@ -32,6 +32,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useT, useValidationMessage } from "@/lib/i18n/provider";
+import { useLabels } from "@/lib/i18n/labels";
 
 type PostPublicActionsProps = {
   post: Post;
@@ -47,6 +48,7 @@ export function PostPublicActions({
   const router = useRouter();
   const { user } = useAuth();
   const t = useT();
+  const labels = useLabels();
   const tv = useValidationMessage();
   const [isDeleting, startDeleting] = useTransition();
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
@@ -144,9 +146,9 @@ export function PostPublicActions({
     () =>
       REPORT_REASON_OPTIONS.map((reason) => ({
         value: reason,
-        label: REPORT_REASON_LABELS[reason],
+        label: labels.reason(reason),
       })),
-    [],
+    [labels],
   );
 
   const handleCopyLink = async () => {

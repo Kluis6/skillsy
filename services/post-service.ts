@@ -203,6 +203,7 @@ export const PostService = {
     content: string;
     coverImageUrl?: string;
     tags?: string[];
+    language?: Post['language'];
   }): Promise<string> {
     const user = requireAuthenticatedUser();
     await requireVerifiedProfile();
@@ -219,6 +220,7 @@ export const PostService = {
       content: input.content,
       coverImageUrl: input.coverImageUrl || '',
       tags: input.tags || [],
+      ...(input.language ? { language: input.language } : {}),
       status: 'draft',
       isFeatured: false,
       createdAt: serverTimestamp(),
@@ -238,6 +240,7 @@ export const PostService = {
       content: string;
       coverImageUrl?: string;
       tags?: string[];
+      language?: Post['language'];
     },
   ): Promise<void> {
     await requireVerifiedProfile();
@@ -251,6 +254,7 @@ export const PostService = {
       content: input.content,
       coverImageUrl: input.coverImageUrl || '',
       tags: input.tags || [],
+      ...(input.language ? { language: input.language } : {}),
       updatedAt: serverTimestamp(),
     });
   },

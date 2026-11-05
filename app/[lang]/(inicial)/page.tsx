@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { HomeClient } from "@/components/home-client";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { UserService } from "@/services/user-service";
-import { getMessages, getT } from "@/lib/i18n/server";
+import { getLocale, getMessages, getT } from "@/lib/i18n/server";
+import { byOrigin } from "@skillsy/shared/i18n/origin";
 import { I18nProvider } from "@/lib/i18n/provider";
 
 // Public data, regenerated at most once an hour (ISR) instead of querying
@@ -51,10 +52,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [initialProviders, messages] = await Promise.all([
+  const [providers, messages, locale] = await Promise.all([
     UserService.getProviders(6),
     getMessages("home", "contact"),
+    getLocale(),
   ]);
+  // Professionals from the visitor's country, in the page's language first.
+  const initialProviders = byOrigin(providers, { language: locale });
 
   return (
     <I18nProvider messages={messages}>

@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n/provider";
 import { rich } from "@/lib/i18n/rich";
 import { Badge } from "@/components/ui/badge";
 import { PostPublicActions } from "@/components/posts/post-public-actions";
+import { LanguageBadge } from "@/components/language-badge";
 import {
   Card,
   CardAction,
@@ -44,6 +45,7 @@ export function PostCard({ post }: { post: Post }) {
               </h3>
             </div>
             <CardAction>
+              <LanguageBadge item={post} />
               <Badge
                 variant="secondary"
                 className={` ${post.category === "job" ? "bg-success/15 text-success" : "bg-warning/15 text-warning-foreground"} `}

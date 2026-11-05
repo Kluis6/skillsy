@@ -14,6 +14,7 @@ import {
 } from "@/components/profile/recommendation-summary";
 import { useLocale, useT, useValidationMessage } from "@/lib/i18n/provider";
 import { rich } from "@/lib/i18n/rich";
+import { useLabels } from "@/lib/i18n/labels";
 import { DATE_FNS_LOCALE } from "@/lib/i18n/date-fns";
 import { formatRating } from "@skillsy/shared/i18n/format";
 import { INTL_LOCALE } from "@skillsy/shared/i18n/locales";
@@ -47,6 +48,7 @@ import {
 } from "@/components/ui/select";
 import { ProfilePublicPageLoading } from "@/components/loading/route-loaders";
 import { MembershipMark } from "@/components/ui/trust-signals";
+import { LanguageBadge } from "@/components/language-badge";
 import {
   Dialog,
   DialogContent,
@@ -84,7 +86,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
 import { reportUserSchema, type ReportUserFormData } from "@/lib/validations";
-import { REPORT_REASON_LABELS, REPORT_REASON_OPTIONS } from "@/lib/reporting";
+import { REPORT_REASON_OPTIONS } from "@/lib/reporting";
 
 interface ProfileDetailClientProps {
   id: string;
@@ -105,6 +107,7 @@ export function ProfileDetailClient({
   const t = useT();
   const tv = useValidationMessage();
   const locale = useLocale();
+  const labels = useLabels();
   const [targetProfile, setTargetProfile] = useState<UserProfile | null>(
     initialProfile,
   );
@@ -606,7 +609,7 @@ export function ProfileDetailClient({
                 name="reason"
                 render={({ field }) => (
                   <Select
-                    items={REPORT_REASON_LABELS}
+                    items={Object.fromEntries(REPORT_REASON_OPTIONS.map((reason) => [reason, labels.reason(reason)]))}
                     name={field.name}
                     value={field.value}
                     onValueChange={(value) => value && field.onChange(value)}
@@ -623,7 +626,7 @@ export function ProfileDetailClient({
                     <SelectContent>
                       {REPORT_REASON_OPTIONS.map((reason) => (
                         <SelectItem key={reason} value={reason}>
-                          {REPORT_REASON_LABELS[reason]}
+                          {labels.reason(reason)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -840,7 +843,7 @@ export function ProfileDetailClient({
 
   const profileRoleLabel =
     targetProfile.serviceType ||
-    targetProfile.category ||
+    labels.category(targetProfile.category) ||
     t("profile.communityMember");
   return (
     <>
@@ -966,6 +969,7 @@ export function ProfileDetailClient({
                         {targetProfile.name}
                       </h2>
                       <MembershipMark profile={targetProfile} size={20} />
+                      <LanguageBadge item={targetProfile} />
                     </div>
 
                     <p className="text-base text-text-muted font-normal">
@@ -991,7 +995,7 @@ export function ProfileDetailClient({
                             variant="secondary"
                             className="bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
                           >
-                            {targetProfile.category}
+                            {labels.category(targetProfile.category)}
                           </Badge>
                         )}
                       </div>
@@ -1176,7 +1180,7 @@ export function ProfileDetailClient({
                           availabilityDays.includes(day),
                         ).map((day) => (
                           <Badge key={day} variant="outline" className="">
-                            {day}
+                            {labels.day(day)}
                           </Badge>
                         ))}
                       </div>

@@ -40,6 +40,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
 import { useT } from "@/lib/i18n/provider";
+import { useLabels } from "@/lib/i18n/labels";
 
 
 const categories = [
@@ -183,6 +184,10 @@ const categories = [
 
 export function CategoryCarousel() {
   const t = useT();
+  const labels = useLabels();
+  // The wall's short "Construção" has its own label; the rest are categories.
+  const label = (name: string) =>
+    name === "Construção" ? t("labels.categoryShort.constructionShort") : labels.category(name);
   const router = useRouter();
   const searchParams = useSearchParams();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -227,7 +232,7 @@ export function CategoryCarousel() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
-                  onClick={() => handleCategoryClick(cat.name)}
+                  onClick={() => handleCategoryClick(label(cat.name))}
                   className="group/card flex min-w-[100px] shrink-0 flex-col items-center justify-between space-y-6 border bg-card p-4 transition-all duration-300  hover:shadow-md md:min-w-[140px]"
                 >
                   <div
@@ -237,7 +242,7 @@ export function CategoryCarousel() {
                   </div>
 
                   <span className="text-xs md:text-sm font-medium group-hover/card:text-primary transition-colors">
-                    {cat.name}
+                    {label(cat.name)}
                   </span>
                 </motion.button>
               ))}

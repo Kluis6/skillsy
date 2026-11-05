@@ -39,6 +39,7 @@ export const profileSchema = z.object({
   bio: optionalTextField(500, 'Bio deve ter no máximo 500 caracteres'),
   location: optionalTextField(100, 'Localização deve ter no máximo 100 caracteres'),
   membershipType: z.union([z.literal(''), z.literal('member'), z.literal('friend')]),
+  language: z.enum(['pt', 'en', 'es']).optional(),
   ward: optionalTextField(100, 'Ala/Ramo deve ter no máximo 100 caracteres'),
   serviceType: optionalTextField(100, 'Serviço deve ter no máximo 100 caracteres'),
   category: z.union([z.literal(''), z.enum(PROVIDER_CATEGORIES)]),
@@ -214,6 +215,7 @@ export const reportUserSchema = z.object({
 export type ReportUserFormData = z.infer<typeof reportUserSchema>;
 
 export const postEditorSchema = z.object({
+  language: z.enum(['pt', 'en', 'es']).optional(),
   category: z.enum(POST_CATEGORY_OPTIONS, {
     message: 'Selecione a categoria da publicação',
   }),

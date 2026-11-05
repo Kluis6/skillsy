@@ -1,6 +1,10 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { UserService } from "@/services/user-service";
 import { UserProfile } from "@/models/types";
+import { useLocale } from "@/lib/i18n/provider";
+import { useLabels } from "@/lib/i18n/labels";
+import { buildSearchSynonyms } from "@skillsy/shared/i18n/search-synonyms";
+import { byOrigin } from "@skillsy/shared/i18n/origin";
 
 export function useSearchController(initialProviders: UserProfile[] = []) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,15 +15,24 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
   const [providers, setProviders] = useState<UserProfile[]>(initialProviders);
   const [searching, setSearching] = useState(false);
   const searchRequestId = useRef(0);
+  const locale = useLocale();
+  const labels = useLabels();
+  // Results from the visitor's country, in the page's language first; other
+  // languages' words also search the Portuguese ones.
+  const synonyms = useMemo(() => buildSearchSynonyms(locale, labels.category), [locale, labels]);
+  const arrange = useCallback(
+    (items: UserProfile[]) => byOrigin(items, { language: locale }),
+    [locale],
+  );
 
   const fetchInitialProviders = useCallback(async () => {
     try {
       const data = await UserService.getProviders(6);
-      setProviders(data);
+      setProviders(arrange(data));
     } catch (error) {
       console.error("Error fetching initial providers:", error);
     }
-  }, []);
+  }, [arrange]);
 
   const handleSearch = useCallback(
     async (e?: React.FormEvent) => {
@@ -30,15 +43,17 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
         const filtered = await UserService.searchProviders(
           searchTerm,
           locationFilter || undefined,
+          undefined,
+          synonyms,
         );
-        setProviders(filtered);
+        setProviders(arrange(filtered));
       } catch (error) {
         console.error("Error searching:", error);
       } finally {
         setSearching(false);
       }
     },
-    [searchTerm, locationFilter],
+    [searchTerm, locationFilter, synonyms, arrange],
   );
 
   useEffect(() => {
@@ -56,7 +71,7 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
         try {
           const featuredProviders = await UserService.getProviders(6);
           if (isMounted && requestId === searchRequestId.current) {
-            setProviders(featuredProviders);
+            setProviders(arrange(featuredProviders));
           }
         } catch (error) {
           console.error("Error fetching featured providers:", error);
@@ -74,9 +89,11 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
           const filtered = await UserService.searchProviders(
             searchTerm,
             locationFilter || undefined,
+            undefined,
+            synonyms,
           );
           if (isMounted && requestId === searchRequestId.current) {
-            setProviders(filtered);
+            setProviders(arrange(filtered));
           }
         } catch (error) {
           console.error("Error searching:", error);
@@ -94,7 +111,7 @@ export function useSearchController(initialProviders: UserProfile[] = []) {
       isMounted = false;
       window.clearTimeout(debounceTimer);
     };
-  }, [locationFilter, searchTerm, initialProviders.length]);
+  }, [locationFilter, searchTerm, initialProviders.length, synonyms, arrange]);
 
   return {
     searchTerm,

@@ -67,6 +67,8 @@ export const USER_PROFILE_FIELDS: ReadonlySet<string> = new Set([
   "termsAcceptedAt",
   "blockedReason",
   "blockedAt",
+  "language",
+  "country",
 ]);
 
 /** Fields an owner can never change through a profile update. */
@@ -386,6 +388,9 @@ export function buildPublicProfileData(source: Partial<UserProfile>) {
     isBlocked: source.isBlocked ?? false,
     isDeleted: source.isDeleted ?? false,
     createdAt: source.createdAt,
+    // Missing means Portuguese / Brazil (removeUndefinedDeep drops them).
+    language: source.language,
+    country: source.country,
   });
 }
 

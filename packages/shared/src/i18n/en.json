@@ -360,7 +360,8 @@
     "allStates": "All states",
     "emptyTitle": "No opportunities found",
     "emptyFiltered": "Adjust the filters or create the first opportunity for this need in the community.",
-    "empty": "There are no open opportunities yet. Post the first one and it will show up here on the board."
+    "empty": "There are no open opportunities yet. Post the first one and it will show up here on the board.",
+    "language": "Opportunity language"
   },
   "posts": {
     "metaTitle": "News, articles and jobs",
@@ -480,7 +481,9 @@
     "saveDraft": "Save draft",
     "publishing": "Publishing...",
     "updatePost": "Update post",
-    "publishNow": "Publish now"
+    "publishNow": "Publish now",
+    "language": "Post language",
+    "languageHint": "The language the text is written in. Readers browsing in another language see a badge showing it."
   },
   "auth": {
     "signInMetaTitle": "Sign in or sign up",
@@ -762,7 +765,9 @@
     "cancelText": "All your data will be deleted from the platform. Do you want to continue?",
     "canceling": "Canceling account...",
     "cancelAccount": "Cancel account",
-    "website": "Website"
+    "website": "Website",
+    "language": "Profile language",
+    "languageHint": "The language your profile texts are written in."
   },
   "join": {
     "step1Title": "Build your presence",
@@ -1040,8 +1045,69 @@
     "opportunityUrgency": "Choose the opportunity's urgency.",
     "whatsappBeforeOpportunity": "Add a WhatsApp number to your profile before posting the opportunity."
   },
+  "labels": {
+    "category": {
+      "technology": "Technology",
+      "design": "Design",
+      "marketing": "Marketing",
+      "consulting": "Consulting",
+      "sales": "Sales",
+      "lessons": "Lessons",
+      "cooking": "Cooking",
+      "household": "Household services",
+      "cleaning": "Cleaning",
+      "woodworking": "Woodworking",
+      "maintenance": "Maintenance",
+      "construction": "Construction",
+      "beauty": "Beauty",
+      "education": "Education",
+      "health": "Health",
+      "events": "Events",
+      "legal": "Legal",
+      "finance": "Finance",
+      "repairs": "Technical support",
+      "renovations": "Renovations",
+      "automotive": "Automotive",
+      "fashion": "Fashion",
+      "wellness": "Wellness",
+      "petCare": "Pet care",
+      "photography": "Photography",
+      "music": "Music",
+      "languages": "Languages",
+      "sports": "Sports",
+      "parties": "Parties",
+      "transport": "Transportation",
+      "other": "Other"
+    },
+    "categoryShort": {
+      "constructionShort": "Construction"
+    },
+    "day": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "reason": {
+      "informacao_falsa": "False or misleading information",
+      "conteudo_ofensivo": "Offensive content",
+      "spam": "Spam or improper promotion",
+      "golpe_ou_fraude": "Suspected scam or fraud",
+      "conduta_inadequada": "Inappropriate conduct",
+      "outro": "Other reason"
+    }
+  },
   "language": {
     "label": "Language",
-    "choose": "Choose the language"
+    "choose": "Choose the language",
+    "names": {
+      "pt": "Portuguese",
+      "en": "English",
+      "es": "Spanish"
+    },
+    "writtenIn": "Written in {language}"
   }
 }

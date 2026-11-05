@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import Link from "@/lib/i18n/navigation";
 import { LuArrowLeft } from "react-icons/lu";
 import { useT } from "@/lib/i18n/provider";
+import { useLabels } from "@/lib/i18n/labels";
 
 interface ContactsAsideProps {
   contacts: UserProfile[];
@@ -26,6 +27,7 @@ export function ContactsAside({
   onContactToggle,
 }: ContactsAsideProps) {
   const t = useT();
+  const labels = useLabels();
   const {
     selectedContactId,
     setSelectedContactId,
@@ -135,7 +137,7 @@ export function ContactsAside({
                     </div> */}
                   </div>
                   <p className="text-xs text-text-muted truncate font-medium">
-                    {c.companyName || c.category || t("contacts.member")}
+                    {c.companyName || labels.category(c.category) || t("contacts.member")}
                   </p>
                 </div>
               </button>

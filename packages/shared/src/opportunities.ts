@@ -78,7 +78,11 @@ export type OpportunityInput = Pick<
   "category" | "title" | "description" | "city" | "neighborhood" | "state"
 >;
 
-export type OpportunityFormInput = OpportunityInput & { urgency: OpportunityUrgency };
+export type OpportunityFormInput = OpportunityInput & {
+  urgency: OpportunityUrgency;
+  /** Language of the opportunity; missing (the app, for now) = Portuguese. */
+  language?: Opportunity["language"];
+};
 
 /** Length limits checked by firestore.rules (isValidOpportunity). */
 export const OPPORTUNITY_FIELDS: Record<keyof OpportunityInput, { label: string; min: number; max: number }> = {
@@ -128,6 +132,7 @@ export function buildOpportunityFields(
     neighborhood: data.neighborhood.trim(),
     state: data.state.trim().toUpperCase(),
     urgency: data.urgency,
+    ...(data.language ? { language: data.language } : {}),
     status: "active" as const,
   };
 }

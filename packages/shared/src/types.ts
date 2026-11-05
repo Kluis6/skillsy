@@ -3,7 +3,14 @@ export interface GalleryItem {
   description?: string;
 }
 
+/** Languages content can be written in (same codes as the site). */
+export type ContentLanguage = "pt" | "en" | "es";
+
 export interface UserProfile {
+  /** Language the content is written in (docs/i18n-plan.md). Missing = "pt". */
+  language?: ContentLanguage;
+  /** ISO country of origin. Missing = "BR". */
+  country?: string;
   uid: string;
   name: string;
   email: string;
@@ -123,6 +130,10 @@ export type PostCategory = "article" | "job";
 export type PostStatus = "draft" | "pending_review" | "published" | "rejected";
 
 export interface Post {
+  /** Language the content is written in (docs/i18n-plan.md). Missing = "pt". */
+  language?: ContentLanguage;
+  /** ISO country of origin. Missing = "BR". */
+  country?: string;
   id?: string;
   authorId: string;
   authorName: string;
@@ -164,6 +175,10 @@ export type OpportunityUrgency = "normal" | "soon" | "urgent";
 /** Public request for help. Contact details are intentionally limited to the
  * WhatsApp number the author chose to publish with this opportunity. */
 export interface Opportunity {
+  /** Language the content is written in (docs/i18n-plan.md). Missing = "pt". */
+  language?: ContentLanguage;
+  /** ISO country of origin. Missing = "BR". */
+  country?: string;
   id?: string;
   authorId: string;
   authorName: string;

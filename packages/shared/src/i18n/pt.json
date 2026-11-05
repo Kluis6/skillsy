@@ -360,7 +360,8 @@
     "allStates": "Todos os estados",
     "emptyTitle": "Nenhuma oportunidade encontrada",
     "emptyFiltered": "Ajuste os filtros ou crie a primeira oportunidade desta necessidade na comunidade.",
-    "empty": "Ainda não há oportunidades abertas. Publique a primeira e ela aparece aqui no mural."
+    "empty": "Ainda não há oportunidades abertas. Publique a primeira e ela aparece aqui no mural.",
+    "language": "Idioma da oportunidade"
   },
   "posts": {
     "metaTitle": "Notícias, Artigos e Vagas",
@@ -480,7 +481,9 @@
     "saveDraft": "Salvar rascunho",
     "publishing": "Publicando...",
     "updatePost": "Atualizar publicação",
-    "publishNow": "Publicar agora"
+    "publishNow": "Publicar agora",
+    "language": "Idioma da publicação",
+    "languageHint": "O idioma em que o texto está escrito. Quem lê em outro idioma vê um selo indicando o idioma."
   },
   "auth": {
     "signInMetaTitle": "Entrar ou Cadastrar",
@@ -762,7 +765,9 @@
     "cancelText": "Todos os seus dados serão apagados da plataforma. Deseja continuar?",
     "canceling": "Cancelando conta...",
     "cancelAccount": "Cancelar conta",
-    "website": "Website"
+    "website": "Website",
+    "language": "Idioma do perfil",
+    "languageHint": "O idioma em que os textos do seu perfil estão escritos."
   },
   "join": {
     "step1Title": "Monte sua presença",
@@ -1040,8 +1045,69 @@
     "opportunityUrgency": "Escolha a urgência da oportunidade.",
     "whatsappBeforeOpportunity": "Cadastre um WhatsApp no seu perfil antes de publicar a oportunidade."
   },
+  "labels": {
+    "category": {
+      "technology": "Tecnologia",
+      "design": "Design",
+      "marketing": "Marketing",
+      "consulting": "Consultoria",
+      "sales": "Vendas",
+      "lessons": "Aulas",
+      "cooking": "Cozinha",
+      "household": "Doméstico",
+      "cleaning": "Limpeza",
+      "woodworking": "Marcenaria",
+      "maintenance": "Manutenção",
+      "construction": "Construção Civil",
+      "beauty": "Beleza",
+      "education": "Educação",
+      "health": "Saúde",
+      "events": "Eventos",
+      "legal": "Jurídico",
+      "finance": "Financeiro",
+      "repairs": "Assistência",
+      "renovations": "Reformas",
+      "automotive": "Automotivo",
+      "fashion": "Moda",
+      "wellness": "Bem Estar",
+      "petCare": "Pet Care",
+      "photography": "Fotografia",
+      "music": "Música",
+      "languages": "Idiomas",
+      "sports": "Esportes",
+      "parties": "Festas",
+      "transport": "Transporte",
+      "other": "Outros"
+    },
+    "categoryShort": {
+      "constructionShort": "Construção"
+    },
+    "day": {
+      "mon": "Seg",
+      "tue": "Ter",
+      "wed": "Qua",
+      "thu": "Qui",
+      "fri": "Sex",
+      "sat": "Sáb",
+      "sun": "Dom"
+    },
+    "reason": {
+      "informacao_falsa": "Informação falsa ou enganosa",
+      "conteudo_ofensivo": "Conteúdo ofensivo",
+      "spam": "Spam ou divulgação indevida",
+      "golpe_ou_fraude": "Suspeita de golpe ou fraude",
+      "conduta_inadequada": "Conduta inadequada",
+      "outro": "Outro motivo"
+    }
+  },
   "language": {
     "label": "Idioma",
-    "choose": "Escolha o idioma"
+    "choose": "Escolha o idioma",
+    "names": {
+      "pt": "Português",
+      "en": "Inglês",
+      "es": "Espanhol"
+    },
+    "writtenIn": "Escrito em {language}"
   }
 }

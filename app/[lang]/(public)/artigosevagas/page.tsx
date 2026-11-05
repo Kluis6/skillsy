@@ -3,7 +3,8 @@ import HeaderSection from "@/components/headersection";
 import { PostListClient } from "@/components/posts/post-list-client";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { PostService } from "@/services/post-service";
-import { getMessages, getT } from "@/lib/i18n/server";
+import { getLocale, getMessages, getT } from "@/lib/i18n/server";
+import { byOrigin } from "@skillsy/shared/i18n/origin";
 import { I18nProvider } from "@/lib/i18n/provider";
 
 // Public data, regenerated at most once an hour (ISR) instead of querying
@@ -24,11 +25,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function NoticiasPage() {
-  const [posts, messages, t] = await Promise.all([
+  const [published, messages, t, locale] = await Promise.all([
     PostService.getPublishedPosts(),
     getMessages("posts"),
     getT(),
+    getLocale(),
   ]);
+  // From the visitor's country, in the page's language first.
+  const posts = byOrigin(published, { language: locale });
 
   return (
     <div className="min-h-screen bg-surface">

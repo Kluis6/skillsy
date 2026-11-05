@@ -9,6 +9,10 @@ import { formatDate } from "@skillsy/shared/i18n/format";
 import { INTL_LOCALE } from "@skillsy/shared/i18n/locales";
 import type { MessageKey, TranslateFn } from "@skillsy/shared/i18n/keys";
 import { useLocale, useT, useValidationMessage } from "@/lib/i18n/provider";
+import { useLabels } from "@/lib/i18n/labels";
+import { byOrigin } from "@skillsy/shared/i18n/origin";
+import { ContentLanguageSelect } from "@/components/content-language-select";
+import { LanguageBadge } from "@/components/language-badge";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "@/lib/i18n/navigation";
 import { useRouter } from "@/lib/i18n/navigation";
@@ -96,6 +100,7 @@ function OpportunityCard({
 }) {
   const t = useT();
   const locale = useLocale();
+  const labels = useLabels();
   const isOwner = profile?.uid === opportunity.authorId;
   const status = getOpportunityStatus(opportunity);
   const canContact = Boolean(
@@ -110,8 +115,9 @@ function OpportunityCard({
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-xs font-semibold text-primary">
-              {opportunity.category}
+              {labels.category(opportunity.category)}
             </p>
+            <LanguageBadge item={opportunity} />
             {urgency !== "normal" ? (
               <Badge variant="outline" className={urgencyInfo.className}>
                 {urgency === "urgent" ? (
@@ -233,9 +239,12 @@ export function OpportunitiesClient({
   const { profile, user } = useAuth();
   const t = useT();
   const tv = useValidationMessage();
+  const labels = useLabels();
+  const locale = useLocale();
   const [opportunities, setOpportunities] = useState(initialOpportunities);
   const [form, setForm] = useState<OpportunityFormInput>(() => ({
     ...emptyForm,
+    language: locale,
     city: profile?.location || "",
     state: profile?.businessState || "",
   }));
@@ -294,7 +303,7 @@ export function OpportunitiesClient({
       state: profile.businessState,
     })
       .then((items) => {
-        if (active) setOpportunities(items);
+        if (active) setOpportunities(byOrigin(items, { language: locale }));
       })
       .catch(() => {
         if (active)
@@ -310,6 +319,7 @@ export function OpportunitiesClient({
     profile?.category,
     profile?.businessState,
     t,
+    locale,
   ]);
   const myFollowUps = useMemo(
     () =>
@@ -365,7 +375,7 @@ export function OpportunitiesClient({
       });
       toast.success(t("opportunities.published"));
       setShowForm(false);
-      setForm(emptyForm);
+      setForm({ ...emptyForm, language: locale });
       router.refresh();
     } catch (error) {
       toast.error(
@@ -544,16 +554,29 @@ export function OpportunitiesClient({
                   id="opportunity-category"
                   className="h-10 w-full px-3 text-sm"
                 >
-                  <SelectValue>{form.category || t("opportunities.select")}</SelectValue>
+                  <SelectValue>{form.category ? labels.category(form.category) : t("opportunities.select")}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {PROVIDER_CATEGORIES.map((item) => (
                     <SelectItem key={item} value={item}>
-                      {item}
+                      {labels.category(item)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label
+                htmlFor="opportunity-language"
+                className="text-sm font-medium"
+              >
+                {t("opportunities.language")}
+              </Label>
+              <ContentLanguageSelect
+                id="opportunity-language"
+                value={form.language || "pt"}
+                onChange={(language) => setForm({ ...form, language })}
+              />
             </div>
             <div className="space-y-1.5">
               <Label
@@ -801,13 +824,13 @@ export function OpportunitiesClient({
                 id="filter-category"
                 className="h-10 w-full px-3 text-sm"
               >
-                <SelectValue>{category || t("opportunities.allServices")}</SelectValue>
+                <SelectValue>{category ? labels.category(category) : t("opportunities.allServices")}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t("opportunities.allServices")}</SelectItem>
                 {PROVIDER_CATEGORIES.map((item) => (
                   <SelectItem key={item} value={item}>
-                    {item}
+                    {labels.category(item)}
                   </SelectItem>
                 ))}
               </SelectContent>

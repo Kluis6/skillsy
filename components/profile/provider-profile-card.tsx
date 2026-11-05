@@ -9,7 +9,9 @@ import { useLocale, useT } from "@/lib/i18n/provider";
 import { formatRating } from "@skillsy/shared/i18n/format";
 import { INTL_LOCALE } from "@skillsy/shared/i18n/locales";
 import type { TranslateFn } from "@skillsy/shared/i18n/keys";
+import { useLabels } from "@/lib/i18n/labels";
 import { MembershipMark } from "@/components/ui/trust-signals";
+import { LanguageBadge } from "@/components/language-badge";
 import { UserProfile } from "@/models/types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -32,10 +34,10 @@ function getInitial(name: string) {
   return name.trim().charAt(0).toUpperCase() || "S";
 }
 
-function getRoleLabel(provider: UserProfile, t: TranslateFn) {
+function getRoleLabel(provider: UserProfile, t: TranslateFn, category: (value?: string) => string) {
   return (
     provider.serviceType ||
-    provider.category ||
+    category(provider.category) ||
     (provider.isProvider ? t("card.roleProvider") : t("card.roleMember"))
   );
 }
@@ -90,8 +92,9 @@ export function ProviderProfileCard({
   className,
 }: ProviderProfileCardProps) {
   const t = useT();
+  const labels = useLabels();
   const location = provider.publicState;
-  const roleLabel = getRoleLabel(provider, t);
+  const roleLabel = getRoleLabel(provider, t, labels.category);
   const reviewCount = provider.reviewCount || 0;
   const recommendationCount = provider.recommendationCount || 0;
   const initial = getInitial(provider.name);
@@ -121,6 +124,7 @@ export function ProviderProfileCard({
                       {provider.name}
                     </h3>
                     <MembershipMark profile={provider} />
+                    <LanguageBadge item={provider} />
                   </div>
 
                   <p className="line-clamp-1 text-sm font-normal text-text-muted">
@@ -150,7 +154,7 @@ export function ProviderProfileCard({
                 ) : null}
                 {provider.category ? (
                   <span className="px-3 py-1 text-xs font-medium">
-                    {provider.category}
+                    {labels.category(provider.category)}
                   </span>
                 ) : null}
               </div>
@@ -227,6 +231,7 @@ export function ProviderProfileCard({
             <span className="flex items-center gap-1.5">
               {provider.name}
               <MembershipMark profile={provider} />
+              <LanguageBadge item={provider} />
             </span>
             <p className="text-sm font-normal text-text-muted">{roleLabel}</p>
           </CardTitle>

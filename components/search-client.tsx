@@ -60,6 +60,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { OpportunityNotifications } from "./opportunity-notifications";
 import { useT } from "@/lib/i18n/provider";
 import { rich } from "@/lib/i18n/rich";
+import { useLabels } from "@/lib/i18n/labels";
 
 interface SearchClientProps {
   initialQuery: string;
@@ -83,6 +84,7 @@ export function SearchClient({
   const router = useRouter();
   const pathname = usePathname();
   const t = useT();
+  const labels = useLabels();
 
   const query = initialQuery;
   const city = initialCity;
@@ -217,13 +219,13 @@ export function SearchClient({
       }
     >
       <SelectTrigger id={id} className="h-12 w-full  px-3 text-sm">
-        <SelectValue>{selectedCategory || t("search.allCategories")}</SelectValue>
+        <SelectValue>{selectedCategory ? labels.category(selectedCategory) : t("search.allCategories")}</SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="all">{t("search.allCategories")}</SelectItem>
         {PROVIDER_CATEGORIES.map((cat) => (
           <SelectItem key={cat} value={cat}>
-            {cat}
+            {labels.category(cat)}
           </SelectItem>
         ))}
       </SelectContent>
@@ -547,7 +549,7 @@ export function SearchClient({
                       onClick={() => handleCategoryChange(null)}
                       className="hover:text-primary"
                     >
-                      {t("search.categoryChip", { category: selectedCategory })}
+                      {t("search.categoryChip", { category: labels.category(selectedCategory) })}
                     </Button>
                   ) : null}
                   <Button

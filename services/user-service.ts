@@ -370,10 +370,12 @@ export const UserService = {
     term: string,
     location?: { city?: string; state?: string },
     category?: string,
+    /** Other languages → Portuguese words (searchSynonyms of the page). */
+    synonyms?: Record<string, string>,
   ): Promise<UserProfile[]> {
     const path = "public_profiles";
     try {
-      const plan = planProviderSearch(term, location, category);
+      const plan = planProviderSearch(term, location, category, synonyms);
       const constraints: QueryConstraint[] = [
         where("isProvider", "==", true),
         where("isBlocked", "==", false),
@@ -384,6 +386,8 @@ export const UserService = {
       if (plan.state) constraints.push(where("publicState", "==", plan.state));
       if (plan.anchor)
         constraints.push(where("searchTokens", "array-contains", plan.anchor));
+      else if (plan.anchorAny)
+        constraints.push(where("searchTokens", "array-contains-any", plan.anchorAny));
       constraints.push(limit(60));
 
       const q = query(collection(db, "public_profiles"), ...constraints);
