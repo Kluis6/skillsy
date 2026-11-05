@@ -1,39 +1,51 @@
 import type { Metadata } from "next";
 import { LegalDocument } from "@/components/legal-document";
-import { TERMS } from "@/lib/legal/terms";
+import { getTerms } from "@/lib/legal";
+import { getLocale, getT } from "@/lib/i18n/server";
+import type { TranslateFn } from "@skillsy/shared/i18n/keys";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import HeaderSection, { HeaderTextSegment } from "@/components/headersection";
 
-export const metadata: Metadata = createPublicMetadata({
-  title: "Termos de Uso",
-  description:
-    "Entenda como a Skillsy funciona, os limites da plataforma e as responsabilidades de quem usa o serviço.",
-  path: "/termos",
-  imageTitle: "Termos de Uso da Skillsy",
-  imageDescription:
-    "Entenda as regras da plataforma, os limites do serviço e as responsabilidades de quem usa a Skillsy.",
-  imageLabel: "Página jurídica",
-  heroImage: "termos",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return createPublicMetadata({
+    title: t("legal.termsTitle"),
+    description: t("legal.termsDescription"),
+    path: "/termos",
+    imageTitle: t("legal.termsImageTitle"),
+    imageDescription: t("legal.termsImageDescription"),
+    imageLabel: t("legal.imageLabel"),
+    heroImage: "termos",
+  });
+}
 
-const headerHeadlineSegments: HeaderTextSegment[] = [
-  { text: "Regras para usar a Skillsy com" },
-  { text: " respeito", className: "text-white" },
-  { text: " e " },
-  { text: "responsabilidade", className: "text-white" },
-];
+// The headline with its highlighted words, in the page's language.
+function headlineSegments(t: TranslateFn): HeaderTextSegment[] {
+  const words: Record<string, string> = {
+    a: t("legal.termsHeadlineA"),
+    b: t("legal.termsHeadlineB"),
+  };
+  return t("legal.termsHeadline")
+    .split(/(\{\w+\})/)
+    .filter(Boolean)
+    .map((part) => {
+      const name = /^\{(\w+)\}$/.exec(part)?.[1];
+      return name && name in words ? { text: words[name], className: "text-white" } : { text: part };
+    });
+}
 
-export default function TermosPage() {
+export default async function TermosPage() {
+  const [t, locale] = await Promise.all([getT(), getLocale()]);
   return (
     <main className="min-h-screen w-full">
       <HeaderSection
         backgroundImageSrc="/Gemini_Generated_Image_sneeobsneeobsnee.png"
-        backgroundImageAlt="Pessoas e serviços em contexto comunitário"
-        headlineSegments={headerHeadlineSegments}
+        backgroundImageAlt={t("legal.heroAlt")}
+        headlineSegments={headlineSegments(t)}
       />
       <LegalDocument
-        content={TERMS}
-        related={{ href: "/privacidade", label: "Ler a Política de Privacidade" }}
+        content={getTerms(locale)}
+        related={{ href: "/privacidade", label: t("legal.termsRelated") }}
       />
     </main>
   );

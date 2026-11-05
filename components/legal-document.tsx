@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AlertTriangle, CheckCircle2, Info, RefreshCcw } from "lucide-react";
 import type { LegalBlock, LegalDocumentContent } from "@/lib/legal/types";
+import { getLocale, getT } from "@/lib/i18n/server";
 
 type LegalDocumentProps = {
   content: LegalDocumentContent;
@@ -10,12 +11,18 @@ type LegalDocumentProps = {
 
 /** /termos and /privacidade: summary first, then an index and numbered
  * sections, so the points that matter are easy to find. */
-export function LegalDocument({ content, related }: LegalDocumentProps) {
+export async function LegalDocument({ content, related }: LegalDocumentProps) {
+  const [t, locale] = await Promise.all([getT(), getLocale()]);
   return (
     <div className="container mx-auto isolate -mt-8 mb-24 w-full px-4">
       <div className="space-y-6 border border-border-subtle bg-card p-4 shadow-sm md:p-8">
         <div className="space-y-4">
           <h1 className="text-2xl font-bold text-text-main lg:text-3xl">{content.title}</h1>
+          {locale !== "pt" ? (
+            <p className="max-w-3xl border border-warning-border bg-warning-surface px-4 py-3 text-sm text-warning-foreground">
+              {t("legal.translationNotice")}
+            </p>
+          ) : null}
           {content.intro.map((text) => (
             <p key={text} className="max-w-3xl text-base leading-relaxed text-text-muted">
               {text}
@@ -41,9 +48,9 @@ export function LegalDocument({ content, related }: LegalDocumentProps) {
       </div>
 
       <div className="mt-10 grid grid-cols-12 gap-8">
-        <nav aria-label="Índice" className="col-span-12 lg:col-span-4 xl:col-span-3">
+        <nav aria-label={t("legal.index")} className="col-span-12 lg:col-span-4 xl:col-span-3">
           <div className="border border-border-subtle bg-surface p-4 lg:sticky lg:top-24">
-            <p className="mb-3 text-sm font-bold uppercase text-text-muted">Índice</p>
+            <p className="mb-3 text-sm font-bold uppercase text-text-muted">{t("legal.index")}</p>
             <ol className="space-y-2 text-sm">
               {content.sections.map((section, index) => (
                 <li key={section.id}>
@@ -73,7 +80,7 @@ export function LegalDocument({ content, related }: LegalDocumentProps) {
           <footer className="flex flex-col gap-4 border-t border-border-subtle pt-6 text-sm text-text-muted sm:flex-row sm:items-center sm:justify-between">
             <span className="flex items-center gap-2">
               <RefreshCcw className="size-4 text-primary" />
-              Última atualização: {content.updatedAt}.
+              {t("legal.updated", { date: content.updatedAt })}
             </span>
             <Link href={related.href} className="font-semibold text-primary hover:underline">
               {related.label}

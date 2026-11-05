@@ -917,6 +917,29 @@
     "myPostsText": "Houve uma falha temporária ao buscar seus artigos. Tente novamente em instantes.",
     "myPostsBack": "Voltar aos meus artigos"
   },
+  "legal": {
+    "translationNotice": "Esta é uma tradução. Em caso de divergência, prevalece a versão em português.",
+    "index": "Índice",
+    "updated": "Última atualização: {date}.",
+    "termsTitle": "Termos de Uso",
+    "termsDescription": "Entenda como a Skillsy funciona, os limites da plataforma e as responsabilidades de quem usa o serviço.",
+    "termsImageTitle": "Termos de Uso da Skillsy",
+    "termsImageDescription": "Entenda as regras da plataforma, os limites do serviço e as responsabilidades de quem usa a Skillsy.",
+    "imageLabel": "Página jurídica",
+    "termsHeadline": "Regras para usar a Skillsy com {a} e {b}",
+    "termsHeadlineA": "respeito",
+    "termsHeadlineB": "responsabilidade",
+    "heroAlt": "Pessoas e serviços em contexto comunitário",
+    "termsRelated": "Ler a Política de Privacidade",
+    "privacyTitle": "Política de Privacidade",
+    "privacyDescription": "Entenda quais dados a Skillsy trata, como eles são usados e quais direitos você pode exercer em relação à sua privacidade.",
+    "privacyImageTitle": "Política de Privacidade",
+    "privacyImageDescription": "Veja como a Skillsy trata dados, protege informações e apresenta os direitos do titular com mais clareza.",
+    "privacyHeadline": "Privacidade com {a}, cuidado e {b}",
+    "privacyHeadlineA": "clareza",
+    "privacyHeadlineB": "responsabilidade",
+    "privacyRelated": "Ler os Termos de Uso"
+  },
   "language": {
     "label": "Idioma",
     "choose": "Escolha o idioma"

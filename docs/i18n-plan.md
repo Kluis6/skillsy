@@ -240,7 +240,10 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
   - [x] (5a) Login e cadastro (modal, /signin, /recovery), bloqueio, contatos, aviso de cookies e diálogo de novos termos. E-mail de redefinição de senha no idioma da página (`auth.languageCode`). Descrições das imagens do login ganharam acentos
   - [x] (5b) Perfil/configurações (identidade, vínculo com a comunidade e consentimento da ala, serviço, endereço, contatos, galeria, cancelar conta). Conferência das telas com login: cada mensagem do `pt.json` precisa existir idêntica no código anterior à E3 (variáveis como coringa); `i18n:check` passou a recusar mensagens com espaço nas pontas
   - [x] (6) Páginas institucionais (Participe, O que é Skillsy, Doação, seção "como funciona"), páginas de erro e 404. O 404 de endereços inexistentes (`global-not-found`, fora de `app/[lang]`) fica em português; a página de doação perdeu um trecho que nunca aparecia (QR Code ausente) e "O que é Skillsy" uma lista que não era exibida
-  - [ ] (7) Termos e Privacidade
+  - [x] (7) Termos e Privacidade: primeira tradução completa em `lib/legal/{terms,privacy}.{en,es}.ts` (mesmos ids de seção; teste `tests/i18n/legal.test.mjs` compara a estrutura com o português), aviso "prevalece a versão em português" nas traduções e data no formato de cada idioma. Revisão jurídica e dos revisores na E8
+- [x] Prévia local com `NEXT_PUBLIC_ENABLED_LOCALES=pt,en,es` (05/11/2026): 44 páginas em `/en` e `/es` sem nenhuma chave crua; sobras em português só em conteúdo de usuários, categorias (E4), `meta keywords` (E5) e no 404 de endereços inexistentes, que fica fora de `app/[lang]` (E5: o proxy passa o idioma por cabeçalho)
+- [ ] Links com o idioma (`useHref`/`localizedHref`) nos `href` e `router.push` do site: hoje o cookie `lang` leva o link sem prefixo para o idioma certo, mas quem chega por um link `/en/...` sem ter escolhido o idioma volta ao português ao clicar
+- [ ] Mensagens de erro lançadas pelos serviços (`services/*.ts`) e textos dos componentes de UI genéricos (`components/ui/*`)
 - [ ] Validações zod com chaves (dificuldade 7); `z.config` com o idioma
 - [ ] Datas, notas e plurais com `format.ts`
 - [x] `auth.languageCode` antes de enviar e-mails do Firebase Auth (site; o app fica para a E7)

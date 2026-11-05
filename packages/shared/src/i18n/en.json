@@ -917,6 +917,29 @@
     "myPostsText": "There was a temporary problem loading your articles. Try again in a moment.",
     "myPostsBack": "Back to my articles"
   },
+  "legal": {
+    "translationNotice": "This is a translation. If there is any difference, the Portuguese version prevails.",
+    "index": "Contents",
+    "updated": "Last updated: {date}.",
+    "termsTitle": "Terms of Use",
+    "termsDescription": "Understand how Skillsy works, the platform's limits and the responsibilities of those who use it.",
+    "termsImageTitle": "Skillsy Terms of Use",
+    "termsImageDescription": "Understand the platform's rules, the limits of the service and the responsibilities of those who use Skillsy.",
+    "imageLabel": "Legal page",
+    "termsHeadline": "Rules for using Skillsy with {a} and {b}",
+    "termsHeadlineA": "respect",
+    "termsHeadlineB": "responsibility",
+    "heroAlt": "People and services in a community setting",
+    "termsRelated": "Read the Privacy Policy",
+    "privacyTitle": "Privacy Policy",
+    "privacyDescription": "Understand what data Skillsy processes, how it is used and what rights you have over your privacy.",
+    "privacyImageTitle": "Privacy Policy",
+    "privacyImageDescription": "See how Skillsy processes data, protects information and explains your rights more clearly.",
+    "privacyHeadline": "Privacy with {a}, care and {b}",
+    "privacyHeadlineA": "clarity",
+    "privacyHeadlineB": "responsibility",
+    "privacyRelated": "Read the Terms of Use"
+  },
   "language": {
     "label": "Language",
     "choose": "Choose the language"
