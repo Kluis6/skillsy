@@ -1,6 +1,7 @@
 "use client";
 
 import { RouteError } from "@/components/route-error";
+import { useT } from "@/lib/i18n/provider";
 
 export default function MyPostsError({
   error,
@@ -9,14 +10,15 @@ export default function MyPostsError({
   error: Error & { digest?: string };
   retry: () => void;
 }) {
+  const t = useT();
   return (
     <RouteError
       error={error}
       retry={retry}
-      title="Não foi possível carregar seus artigos"
-      description="Houve uma falha temporária ao buscar seus artigos. Tente novamente em instantes."
+      title={t("errors.myPostsTitle")}
+      description={t("errors.myPostsText")}
       backHref="/meus-artigos"
-      backLabel="Voltar aos meus artigos"
+      backLabel={t("errors.myPostsBack")}
     />
   );
 }

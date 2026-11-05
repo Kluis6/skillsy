@@ -3,83 +3,63 @@
 import Image from "next/image";
 
 import { motion } from "motion/react";
+import { useT } from "@/lib/i18n/provider";
+import { rich } from "@/lib/i18n/rich";
+import type { MessageKey } from "@skillsy/shared/i18n/keys";
 
 const steps = [
-  {
-    eyebrow: "CRIE SEU PERFIL",
-    number: "01",
-    title: "Monte sua presença",
-    description:
-      "Mostre quem você é, no que trabalha e como pode ajudar pessoas da sua região com mais contexto e confiança.",
-    cta: "Começar agora",
-    href: "/signin",
-  },
-  {
-    eyebrow: "ATENDA E CONECTE",
-    number: "02",
-    title: "Entre na comunidade",
-    description:
-      "Receba contatos, converse com mais clareza e aproxime seu trabalho de quem realmente precisa do seu serviço.",
-    cta: "Ver oportunidades",
-    href: "/oportunidades",
-  },
-  {
-    eyebrow: "FORTALEÇA SUA MARCA",
-    number: "03",
-    title: "Construa reputação",
-    description:
-      "Avaliações e boas experiências ajudam seu perfil a ganhar mais credibilidade e gerar novas indicações.",
-    cta: "Criar minha conta",
-    href: "/signin",
-  },
-];
+  { number: "01", title: "join.step1Title", description: "join.step1Text" },
+  { number: "02", title: "join.step2Title", description: "join.step2Text" },
+  { number: "03", title: "join.step3Title", description: "join.step3Text" },
+] satisfies { number: string; title: MessageKey; description: MessageKey }[];
 
 const authGalleryImages = [
   {
     src: "/Gemini_Generated_Image_81npfy81npfy81np.png",
-    alt: "Ilustracao de criacao colaborativa",
+    alt: "auth.galleryCollaboration",
     className: "col-span-8",
     delay: 0,
   },
   {
     src: "/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png",
-    alt: "Ilustracao de aprendizado digital",
+    alt: "auth.galleryLearning",
     className: "col-span-4",
     delay: 0.06,
   },
   {
     src: "/Gemini_Generated_Image_ndy0l8ndy0l8ndy0.png",
-    alt: "Ilustracao de networking profissional",
+    alt: "auth.galleryNetworking",
     className: "col-span-4",
     delay: 0.12,
   },
   {
     src: "/Gemini_Generated_Image_xfqkexfqkexfqkex.png",
-    alt: "Ilustracao de estudo online",
+    alt: "auth.galleryStudy",
     className: "col-span-4",
     delay: 0.18,
   },
   {
     src: "/Gemini_Generated_Image_ez45xsez45xsez45.png",
-    alt: "Ilustracao de comunidade criativa",
+    alt: "auth.galleryCommunity",
     className: "col-span-4",
     delay: 0.24,
   },
   {
     src: "/Gemini_Generated_Image_2guq8v2guq8v2guq.png",
-    alt: "Ilustracao de portfolio digital",
+    alt: "auth.galleryPortfolio",
     className: "col-span-4",
     delay: 0.3,
   },
   {
     src: "/Gemini_Generated_Image_cjqsrjcjqsrjcjqs.png",
-    alt: "Ilustracao de ensino e troca de habilidades",
+    alt: "auth.gallerySkills",
     className: "col-span-8",
     delay: 0.36,
   },
-];
+] satisfies { src: string; alt: MessageKey; className: string; delay: number }[];
 
 export default function Sectionstart() {
+  const t = useT();
   return (
     <section id="como-funciona" className="bg-surface my-24 scroll-mt-24 py-10">
       <div className="container mx-auto px-4">
@@ -93,11 +73,10 @@ export default function Sectionstart() {
               className="space-y-4"
             >
               <h2 className="text-xl md:text-2xl font-bold text-text-main">
-                Estamos aqui para ajudar <br /> você a encontrar o que precisa.
+                {rich(t("join.helpTitle"), { br: <br /> })}
               </h2>
               <p className="text-base font-normal text-text-muted">
-                Buscando um profissional ou divulgando seu trabalho, a Skillsy é
-                o seu lugar.
+                {t("join.helpText")}
               </p>
             </motion.div>
 
@@ -116,9 +95,7 @@ export default function Sectionstart() {
                   className="grid gap-4 border-t border-border-subtle pt-5 md:grid-cols-[6.5rem_minmax(0,1fr)]"
                 >
                   <div className="space-y-1">
-                    {/* <p className="text-xs font-bold tracking-[0.22em] text-text-main">
-                        {step.eyebrow}
-                      </p> */}
+                    
                     <p className="font-heading text-4xl md:text-5xl leading-none font-semibold text-text-main">
                       {step.number}
                     </p>
@@ -126,18 +103,12 @@ export default function Sectionstart() {
 
                   <div className="max-w-md">
                     <h3 className="text-lg font-semibold text-text-main">
-                      {step.title}
+                      {t(step.title)}
                     </h3>
                     <p className="mt-2 text-sm leading-6 text-text-muted">
-                      {step.description}
+                      {t(step.description)}
                     </p>
-                    {/* <Link
-                        href={step.href}
-                        className="mt-4 inline-flex items-center gap-2 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/90"
-                      >
-                        {step.cta}
-                        <ArrowRight size={16} />
-                      </Link> */}
+                    
                   </div>
                 </motion.article>
               ))}
@@ -159,7 +130,7 @@ export default function Sectionstart() {
                 >
                   <Image
                     src={image.src}
-                    alt={image.alt}
+                    alt={t(image.alt)}
                     fill
                     sizes="(min-width: 1024px) 25vw, 50vw"
                     className="object-cover bg-cover transition-transform duration-700 group-hover:scale-105"

@@ -14,66 +14,54 @@ import HeaderSection, {
 import { Button } from "@/components/ui/button";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import Sectionstart from "@/components/sectionstart";
+import { getMessages, getT } from "@/lib/i18n/server";
+import { I18nProvider } from "@/lib/i18n/provider";
+import type { TranslateFn } from "@skillsy/shared/i18n/keys";
 
-export const metadata: Metadata = createPublicMetadata({
-  title: "Participe do Skillsy",
-  description:
-    "Cadastre-se no Skillsy para divulgar seu trabalho, encontrar oportunidades e fortalecer conexões de confiança na comunidade.",
-  path: "/join",
-  imageTitle: "Participe do Skillsy",
-  imageDescription:
-    "Divulgue seu trabalho, fortaleça sua reputação e gere novas conexões dentro da comunidade.",
-  imageLabel: "Cadastro público",
-  heroImage: "join",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return createPublicMetadata({
+    title: t("join.metaTitle"),
+    description: t("join.metaDescription"),
+    path: "/join",
+    imageTitle: t("join.metaTitle"),
+    imageDescription: t("join.metaImageDescription"),
+    imageLabel: t("join.metaImageLabel"),
+    heroImage: "join",
+  });
+}
 
 const highlights = [
-  {
-    title: "Conexões que continuam",
-    description:
-      "Mais do que fechar um serviço, você constrói relacionamentos que podem gerar novas oportunidades.",
-    icon: Users,
-  },
-  {
-    title: "Espaço para crescer",
-    description:
-      "Quem presta um bom serviço encontra mais visibilidade. Quem contrata encontra ajuda com mais proximidade.",
-    icon: Trophy,
-  },
-  {
-    title: "Comunidade mais forte",
-    description:
-      "Quando talentos locais se apoiam, todos ganham: profissionais, famílias e a rede ao redor.",
-    icon: Sprout,
-  },
-];
+  { title: "join.highlight1Title", description: "join.highlight1Text", icon: Users },
+  { title: "join.highlight2Title", description: "join.highlight2Text", icon: Trophy },
+  { title: "join.highlight3Title", description: "join.highlight3Text", icon: Sprout },
+] as const;
 
-const headerHeadlineSegments: HeaderTextSegment[] = [
-  { text: "Seu trabalho pode gerar " },
-  {
-    text: "oportunidades",
-    className: "text-white drop-shadow-sm drop-shadow-black/50",
-  },
-  { text: ", conexões de " },
-  {
-    text: "confiança",
-    className: "text-white drop-shadow-sm drop-shadow-black/50",
-  },
-  { text: " e " },
-  {
-    text: "apoio real",
-    className: "text-white drop-shadow-sm drop-shadow-black/50",
-  },
-  { text: " dentro da comunidade." },
-];
+// The headline with its highlighted words, in the page's language.
+function headlineSegments(t: TranslateFn): HeaderTextSegment[] {
+  const highlight = "text-white drop-shadow-sm drop-shadow-black/50";
+  const words: Record<string, string> = {
+    opportunities: t("join.headlineOpportunities"),
+    trust: t("join.headlineTrust"),
+    support: t("join.headlineSupport"),
+  };
+  return t("join.headline")
+    .split(/(\{\w+\})/)
+    .filter(Boolean)
+    .map((part) => {
+      const name = /^\{(\w+)\}$/.exec(part)?.[1];
+      return name && name in words ? { text: words[name], className: highlight } : { text: part };
+    });
+}
 
-export default function JoinPage() {
+export default async function JoinPage() {
+  const [t, messages] = await Promise.all([getT(), getMessages("join")]);
   return (
     <main className="min-h-screen w-full">
       <HeaderSection
         backgroundImageSrc="/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png"
-        backgroundImageAlt="Pessoas e serviços em contexto comunitário"
-        headlineSegments={headerHeadlineSegments}
+        backgroundImageAlt={t("join.heroAlt")}
+        headlineSegments={headlineSegments(t)}
         imageClassName="sm:object-top"
       />
 
@@ -82,13 +70,10 @@ export default function JoinPage() {
           <div className="grid grid-cols-12 gap-4 gap-y-8 xl:gap-8">
             <div className="col-span-12 space-y-4">
               <h2 className="text-xl md:text-2xl font-bold text-text-main">
-                Participe do Skillsy
+                {t("join.metaTitle")}
               </h2>
               <p className="text-base font-normal text-text-muted">
-                O Skillsy foi criado para ajudar pessoas a divulgar seus
-                talentos, encontrar profissionais com mais contexto e fortalecer
-                uma rede de apoio baseada em confiança, serviço e
-                responsabilidade.
+                {t("join.intro")}
               </p>
             </div>
 
@@ -96,7 +81,7 @@ export default function JoinPage() {
             <div className="col-span-12 flex flex-col gap-4 sm:flex-row">
               <AuthModal>
                 <Button className="h-12 w-full bg-primary px-6 text-base font-bold text-primary-foreground hover:bg-primary/90 sm:w-auto">
-                  Criar minha conta
+                  {t("join.createAccount")}
                   <ArrowRight size={18} className="ml-2" />
                 </Button>
               </AuthModal>
@@ -105,19 +90,19 @@ export default function JoinPage() {
         </div>
       </div>
 
-      <Sectionstart />
+      <I18nProvider messages={messages}>
+        <Sectionstart />
+      </I18nProvider>
 
       <section className="container mx-auto my-24 px-4">
         <div className="grid grid-cols-12 gap-4 md:gap-8">
           <div className="col-span-12 lg:col-span-4">
             <div className="space-y-4">
               <h2 className="text-xl md:text-2xl font-bold text-text-main 2xl:text-2xl">
-                O que essa participação pode fortalecer
+                {t("join.strengthenTitle")}
               </h2>
               <p className="text-base font-normal text-text-muted">
-                Cada perfil relevante, cada contratação bem-feita e cada
-                recomendação responsável ajudam a tornar o Skillsy mais útil
-                para todos.
+                {t("join.strengthenText")}
               </p>
             </div>
           </div>
@@ -129,8 +114,8 @@ export default function JoinPage() {
                 <FeatureCard
                   key={item.title}
                   icon={item.icon}
-                  title={item.title}
-                  description={item.description}
+                  title={t(item.title)}
+                  description={t(item.description)}
                   className="col-span-12"
                 />
               ))}
@@ -145,27 +130,21 @@ export default function JoinPage() {
             <div className="col-span-12 md:col-span-6">
               <div className="space-y-4">
                 <h2 className="text-xl md:text-2xl font-bold text-text-main">
-                  Por que vale a pena participar
+                  {t("join.whyTitle")}
                 </h2>
                 <p className="text-base font-normal text-text-muted">
-                  Participar do Skillsy não é apenas criar um perfil. É abrir
-                  espaço para que seu trabalho seja visto, lembrado e
-                  recomendado com mais segurança.
+                  {t("join.whyText1")}
                 </p>
                 <p className="text-base font-normal text-text-muted">
-                  A plataforma foi pensada para facilitar encontros entre
-                  pessoas que precisam de ajuda prática e pessoas dispostas a
-                  servir com qualidade, honestidade e cuidado.
+                  {t("join.whyText2")}
                 </p>
 
                 <div className="space-y-4">
                   <h3 className="text-lg font-bold text-text-main">
-                    O que você encontra aqui
+                    {t("join.findTitle")}
                   </h3>
                   <p className="text-base font-normal text-text-muted">
-                    Mais visibilidade para talentos locais, mais confiança na
-                    hora de contratar e uma rede que pode gerar novas conexões,
-                    indicações e oportunidades reais.
+                    {t("join.findText")}
                   </p>
                 </div>
               </div>
@@ -175,7 +154,7 @@ export default function JoinPage() {
               <div className="relative h-90 w-full overflow-hidden md:h-full">
                 <Image
                   src="/Gemini_Generated_Image_lb1x7blb1x7blb1x copy.png"
-                  alt="Pessoas em colaboração e atendimento"
+                  alt={t("join.collaborationAlt")}
                   className="object-cover object-top"
                   fill
                   sizes="(min-width: 768px) 50vw, 100vw"
@@ -190,17 +169,13 @@ export default function JoinPage() {
         <section className="border border-warning-border bg-warning-surface p-4  md:p-8">
           <div className="max-w-4xl space-y-4">
             <h2 className="text-xl md:text-2xl font-bold text-warning-foreground">
-              Comunicado importante
+              {t("join.noticeTitle")}
             </h2>
             <p className="text-sm leading-relaxed text-warning-foreground">
-              O Skillsy não intermedeia pagamentos, não certifica tecnicamente
-              os profissionais cadastrados e não substitui a responsabilidade
-              pessoal de avaliar um serviço antes de contratar.
+              {t("join.noticeText1")}
             </p>
             <p className="text-sm leading-relaxed text-warning-foreground">
-              A plataforma existe para facilitar conexões com mais contexto e
-              confiança, mas acordos, valores, prazos e decisões finais
-              continuam sendo definidos diretamente entre as partes.
+              {t("join.noticeText2")}
             </p>
           </div>
         </section>
@@ -209,17 +184,15 @@ export default function JoinPage() {
       <section className="bg-primary py-20 text-white dark:bg-accent">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold md:text-4xl">
-            Trabalho, confiança e serviço também fortalecem a comunidade.
+            {t("join.ctaTitle")}
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-white/85">
-            Ao entrar no Skillsy, você ajuda a transformar habilidades em apoio
-            real e abre espaço para que oportunidades circulem com mais clareza
-            entre pessoas da mesma rede.
+            {t("join.ctaText")}
           </p>
           <div className="mt-8 flex justify-center">
             <AuthModal>
               <Button className="h-12 bg-card px-8 text-base font-bold text-primary hover:bg-surface">
-                Fazer Parte do Skillsy
+                {t("join.ctaButton")}
               </Button>
             </AuthModal>
           </div>

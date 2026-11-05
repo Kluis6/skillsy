@@ -1,6 +1,7 @@
 "use client";
 
 import { RouteError } from "@/components/route-error";
+import { useT } from "@/lib/i18n/provider";
 
 export default function ContactsError({
   error,
@@ -9,14 +10,15 @@ export default function ContactsError({
   error: Error & { digest?: string };
   retry: () => void;
 }) {
+  const t = useT();
   return (
     <RouteError
       error={error}
       retry={retry}
-      title="Não foi possível carregar seus contatos"
-      description="Houve uma falha temporária ao buscar seus contatos. Tente novamente em instantes."
+      title={t("errors.contactsTitle")}
+      description={t("errors.contactsText")}
       backHref="/"
-      backLabel="Voltar ao início"
+      backLabel={t("errors.contactsBack")}
     />
   );
 }

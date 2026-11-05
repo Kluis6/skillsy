@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AlertCircle, ArrowLeft, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/provider";
 
 type RouteErrorProps = {
   error: Error & { digest?: string };
@@ -33,6 +34,7 @@ export function RouteError({
   icon = <AlertCircle size={40} />,
   fullScreen = false,
 }: RouteErrorProps) {
+  const t = useT();
   useEffect(() => {
     console.error(`${title}:`, error);
   }, [error, title]);
@@ -58,7 +60,7 @@ export function RouteError({
 
       <div className="flex flex-col gap-4 sm:flex-row">
         <Button onClick={() => retry()} className="h-12 px-8 font-bold">
-          <RotateCcw size={18} /> Tentar novamente
+          <RotateCcw size={18} /> {t("errors.retry")}
         </Button>
         <Button
           render={<Link href={backHref} />}
@@ -72,7 +74,7 @@ export function RouteError({
 
       {error.digest ? (
         <p className="mt-12 text-xs text-text-muted">
-          Se o problema continuar, informe este código ao suporte:
+          {t("errors.supportCode")}
           <code className="ml-1 border border-border-subtle bg-card px-2 py-1">
             {error.digest}
           </code>
@@ -82,7 +84,7 @@ export function RouteError({
       {process.env.NODE_ENV === "development" && (
         <div className="mt-12 w-full max-w-2xl overflow-hidden border border-destructive/20 bg-destructive/5 p-6 text-left">
           <p className="break-words font-mono text-xs text-destructive">
-            {error.message || "Erro desconhecido"}
+            {error.message || t("errors.unknown")}
           </p>
           {error.stack && (
             <pre className="mt-4 overflow-x-auto font-mono text-xs text-destructive">

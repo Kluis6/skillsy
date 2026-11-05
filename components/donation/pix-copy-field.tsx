@@ -2,6 +2,7 @@
 
 import { toast } from "sonner";
 import { Copy } from "lucide-react";
+import { useT } from "@/lib/i18n/provider";
 
 type PixCopyFieldProps = {
   pixKey: string;
@@ -25,14 +26,15 @@ async function copyText(value: string) {
 }
 
 export function PixCopyField({ pixKey }: PixCopyFieldProps) {
+  const t = useT();
   const handleCopy = async () => {
     try {
       await copyText(pixKey);
-      toast.success("Chave Pix copiada!", {
-        description: "Cole no app do seu banco para continuar a doação.",
+      toast.success(t("donation.pixCopied"), {
+        description: t("donation.pixCopiedText"),
       });
     } catch {
-      toast.error("Não foi possível copiar a chave Pix.");
+      toast.error(t("donation.pixCopyError"));
     }
   };
 
@@ -41,15 +43,15 @@ export function PixCopyField({ pixKey }: PixCopyFieldProps) {
       type="button"
       onClick={handleCopy}
       className="block w-full border border-border-subtle bg-surface p-4 text-left transition-colors hover:bg-card focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer shadow-xs"
-      aria-label="Copiar chave Pix"
+      aria-label={t("donation.copyPixAria")}
     >
       <span className="mb-3 flex items-center justify-between gap-3">
         <span>
           <span className="block text-xs font-bold text-text-muted">
-            Pix copia e cola
+            {t("donation.pixCopyPaste")}
           </span>
           <span className="mt-1 block text-sm font-semibold text-text-main">
-            Copiar código completo
+            {t("donation.copyFullCode")}
           </span>
         </span>
         <span className="flex size-10 shrink-0 items-center justify-center bg-primary text-primary-foreground">
@@ -59,11 +61,10 @@ export function PixCopyField({ pixKey }: PixCopyFieldProps) {
       {/* The code embeds the recipient's name and CPF, so it is copied but
           not printed on the page. */}
       <span className="block border border-border-subtle bg-card px-3 py-3 text-sm leading-relaxed text-text-muted">
-        Código Pix pronto para colar. Os dados do recebedor aparecem no app
-        do banco antes de você confirmar.
+        {t("donation.pixReady")}
       </span>
       <span className="mt-3 block text-xs font-medium text-primary">
-        Toque ou clique para copiar e colar no app do banco.
+        {t("donation.tapToCopy")}
       </span>
     </button>
   );

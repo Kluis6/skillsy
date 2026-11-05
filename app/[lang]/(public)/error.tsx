@@ -1,6 +1,7 @@
 "use client";
 
 import { RouteError } from "@/components/route-error";
+import { useT } from "@/lib/i18n/provider";
 
 export default function PublicError({
   error,
@@ -9,14 +10,15 @@ export default function PublicError({
   error: Error & { digest?: string };
   retry: () => void;
 }) {
+  const t = useT();
   return (
     <RouteError
       error={error}
       retry={retry}
-      title="Não foi possível carregar esta página"
-      description="Pode ser uma instabilidade temporária na conexão. Tente novamente em instantes."
+      title={t("errors.publicTitle")}
+      description={t("errors.publicText")}
       backHref="/"
-      backLabel="Voltar ao início"
+      backLabel={t("errors.publicBack")}
     />
   );
 }

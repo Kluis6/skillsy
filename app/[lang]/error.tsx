@@ -1,6 +1,7 @@
 "use client";
 
 import { RouteError } from "@/components/route-error";
+import { useT } from "@/lib/i18n/provider";
 
 export default function RootError({
   error,
@@ -9,14 +10,15 @@ export default function RootError({
   error: Error & { digest?: string };
   retry: () => void;
 }) {
+  const t = useT();
   return (
     <RouteError
       error={error}
       retry={retry}
-      title="Algo deu errado"
-      description="Ocorreu um erro inesperado ao carregar esta página. Tente novamente em instantes."
+      title={t("errors.rootTitle")}
+      description={t("errors.rootText")}
       backHref="/"
-      backLabel="Voltar ao início"
+      backLabel={t("errors.rootBack")}
       fullScreen
     />
   );

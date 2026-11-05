@@ -1,6 +1,7 @@
 "use client";
 
 import { RouteError } from "@/components/route-error";
+import { useT } from "@/lib/i18n/provider";
 
 export default function SearchError({
   error,
@@ -9,14 +10,15 @@ export default function SearchError({
   error: Error & { digest?: string };
   retry: () => void;
 }) {
+  const t = useT();
   return (
     <RouteError
       error={error}
       retry={retry}
-      title="Não foi possível concluir a busca"
-      description="Houve uma falha temporária ao buscar profissionais. Tente novamente ou ajuste os filtros."
+      title={t("errors.searchTitle")}
+      description={t("errors.searchText")}
       backHref="/search"
-      backLabel="Nova busca"
+      backLabel={t("errors.searchBack")}
     />
   );
 }

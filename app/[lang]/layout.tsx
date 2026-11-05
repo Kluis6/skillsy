@@ -100,7 +100,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
   const locale = await lang();
   if (!isLocale(locale) || !ENABLED.includes(locale)) notFound();
   // Areas used on every page (menus, footer); pages add their own.
-  const messages = await getMessages("common", "nav", "footer", "card", "location", "notifications", "auth", "notices");
+  const messages = await getMessages("common", "nav", "footer", "card", "location", "notifications", "auth", "notices", "errors");
 
   return (
     <html

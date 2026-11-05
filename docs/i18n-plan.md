@@ -239,7 +239,7 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
   - [x] (4) Artigos e vagas: lista, página do artigo, ações (compartilhar, editar, apagar, denunciar), Minhas publicações e editor. Categoria e status (artigo/vaga, rascunho/em revisão…) traduzidos no site; `getPostExcerpt` aceita o texto padrão no idioma
   - [x] (5a) Login e cadastro (modal, /signin, /recovery), bloqueio, contatos, aviso de cookies e diálogo de novos termos. E-mail de redefinição de senha no idioma da página (`auth.languageCode`). Descrições das imagens do login ganharam acentos
   - [x] (5b) Perfil/configurações (identidade, vínculo com a comunidade e consentimento da ala, serviço, endereço, contatos, galeria, cancelar conta). Conferência das telas com login: cada mensagem do `pt.json` precisa existir idêntica no código anterior à E3 (variáveis como coringa); `i18n:check` passou a recusar mensagens com espaço nas pontas
-  - [ ] (6) Páginas institucionais
+  - [x] (6) Páginas institucionais (Participe, O que é Skillsy, Doação, seção "como funciona"), páginas de erro e 404. O 404 de endereços inexistentes (`global-not-found`, fora de `app/[lang]`) fica em português; a página de doação perdeu um trecho que nunca aparecia (QR Code ausente) e "O que é Skillsy" uma lista que não era exibida
   - [ ] (7) Termos e Privacidade
 - [ ] Validações zod com chaves (dificuldade 7); `z.config` com o idioma
 - [ ] Datas, notas e plurais com `format.ts`
