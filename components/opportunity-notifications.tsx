@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { BriefcaseBusiness, Clock3, Newspaper } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useLocale, useT } from "@/lib/i18n/provider";
+import { DATE_FNS_LOCALE } from "@/lib/i18n/date-fns";
+import type { Locale } from "@skillsy/shared/i18n/locales";
 import { useAuth } from "@/hooks/use-auth";
 import { UserNotification } from "@/models/types";
 import { UserNotificationService } from "@/services/user-notification-service";
@@ -12,12 +14,12 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BsBell, BsCheckAll } from "react-icons/bs";
 
-function timeAgo(value: unknown) {
+function timeAgo(value: unknown, locale: Locale, now: string) {
   if (!value || typeof value !== "object" || !("seconds" in value))
-    return "Agora";
+    return now;
   return formatDistanceToNow(new Date(Number(value.seconds) * 1000), {
     addSuffix: true,
-    locale: ptBR,
+    locale: DATE_FNS_LOCALE[locale],
   });
 }
 
@@ -35,6 +37,8 @@ export function OpportunityNotifications() {
   const [subscribedItems, setItems] = useState<UserNotification[]>([]);
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  const t = useT();
+  const locale = useLocale();
 
   const uid = user?.uid;
   // Signed out: show nothing, without clearing state inside the effect.
@@ -63,7 +67,7 @@ export function OpportunityNotifications() {
         variant="ghost"
         size="icon"
         className="relative"
-        aria-label="Abrir notificações"
+        aria-label={t("notifications.open")}
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
@@ -77,13 +81,13 @@ export function OpportunityNotifications() {
       {open ? (
         <div className="absolute transition-discrete duration-500 md:right-0 -right-14 top-12 z-50 w-sm md:w-[min(22rem,calc(100vw-2rem))] overflow-hidden  border border-border-subtle bg-popover shadow-lg">
           <div className="flex items-center justify-between border-b border-border-subtle bg-surface px-4 py-3">
-            <p className="text-sm font-semibold text-text-main">Notificações</p>
+            <p className="text-sm font-semibold text-text-main">{t("notifications.title")}</p>
             <Link
               href="/oportunidades/para-voce"
               onClick={() => setOpen(false)}
               className="text-xs font-semibold text-primary"
             >
-              Oportunidades para você
+              {t("notifications.forYou")}
             </Link>
           </div>
           <ScrollArea className="max-h-80">
@@ -116,7 +120,7 @@ export function OpportunityNotifications() {
                     </span>
                     <span className="mt-2 flex items-center gap-1 text-xs text-text-muted">
                       <Clock3 className="size-4" />
-                      {timeAgo(item.createdAt)}
+                      {timeAgo(item.createdAt, locale, t("notifications.now"))}
                     </span>
                   </span>
                 </Link>
@@ -125,7 +129,7 @@ export function OpportunityNotifications() {
               <div className="p-8 text-center">
                 <BsCheckAll  className="mx-auto mb-2 size-6 text-primary" />
                 <p className="text-sm text-text-muted">
-                  Nenhuma notificação nova.
+                  {t("notifications.empty")}
                 </p>
               </div>
             )}

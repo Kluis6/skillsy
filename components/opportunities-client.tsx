@@ -1,11 +1,14 @@
 "use client";
 
 import {
-  formatFirestoreDate,
-  OPPORTUNITY_URGENCY,
   opportunityWhatsappUrl,
   sortOpportunities,
 } from "@skillsy/shared/opportunities";
+import { OPPORTUNITY_DAYS, OPPORTUNITY_REMINDER_DAYS } from "@skillsy/shared/terms";
+import { formatDate } from "@skillsy/shared/i18n/format";
+import { INTL_LOCALE } from "@skillsy/shared/i18n/locales";
+import type { MessageKey, TranslateFn } from "@skillsy/shared/i18n/keys";
+import { useLocale, useT } from "@/lib/i18n/provider";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -66,18 +69,21 @@ const followUpToggleClass =
 
 const urgencyMeta = {
   normal: {
-    ...OPPORTUNITY_URGENCY.normal,
+    label: "opportunities.urgencyNormal",
+    help: "opportunities.urgencyNormalHelp",
     className: "border-border bg-background text-text-muted",
   },
   soon: {
-    ...OPPORTUNITY_URGENCY.soon,
+    label: "opportunities.urgencySoon",
+    help: "opportunities.urgencySoonHelp",
     className: "border-primary/20 bg-primary/10 text-primary",
   },
   urgent: {
-    ...OPPORTUNITY_URGENCY.urgent,
+    label: "opportunities.urgencyUrgent",
+    help: "opportunities.urgencyUrgentHelp",
     className: "border-destructive/20 bg-destructive/10 text-destructive",
   },
-} as const;
+} as const satisfies Record<string, { label: MessageKey; help: MessageKey; className: string }>;
 
 function OpportunityCard({
   opportunity,
@@ -88,6 +94,8 @@ function OpportunityCard({
   profile: UserProfile | null;
   onStatus: (id: string, status: "active" | "closed") => Promise<void>;
 }) {
+  const t = useT();
+  const locale = useLocale();
   const isOwner = profile?.uid === opportunity.authorId;
   const status = getOpportunityStatus(opportunity);
   const canContact = Boolean(
@@ -111,7 +119,7 @@ function OpportunityCard({
                 ) : (
                   <Clock3 className="size-3" />
                 )}
-                {urgencyInfo.label}
+                {t(urgencyInfo.label)}
               </Badge>
             ) : null}
           </div>
@@ -120,7 +128,8 @@ function OpportunityCard({
           </h2>
         </div>
         <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-text-muted">
-          <Clock3 className="size-3.5" /> {formatFirestoreDate(opportunity.createdAt)}
+          <Clock3 className="size-3.5" />{" "}
+          {formatDate(opportunity.createdAt, INTL_LOCALE[locale]) || t("opportunities.now")}
         </span>
       </div>
 
@@ -149,18 +158,18 @@ function OpportunityCard({
             // Same green WhatsApp button as the profile page.
             className="w-full bg-success font-bold text-success-foreground hover:bg-success/90 active:bg-success/80 sm:w-auto"
           >
-            <FaWhatsapp className="size-4" /> Falar com{" "}
-            {opportunity.authorName.split(" ")[0]}
+            <FaWhatsapp className="size-4" />{" "}
+            {t("opportunities.talkTo", { name: opportunity.authorName.split(" ")[0] })}
           </Button>
         ) : null}
         {!profile && (
           <p className="text-sm text-text-muted">
-            Entre para falar diretamente com quem publicou a oportunidade.
+            {t("opportunities.signInToTalk")}
           </p>
         )}
         {profile && !profile.isProvider && !isOwner ? (
           <p className="text-sm text-text-muted">
-            Complete um perfil profissional para responder por WhatsApp.
+            {t("opportunities.completeProfile")}
           </p>
         ) : null}
         {isOwner && status === "active" ? (
@@ -168,7 +177,7 @@ function OpportunityCard({
             variant="outline"
             onClick={() => onStatus(opportunity.id!, "closed")}
           >
-            Encerrar oportunidade
+            {t("opportunities.close")}
           </Button>
         ) : null}
         {isOwner && status !== "active" ? (
@@ -176,7 +185,7 @@ function OpportunityCard({
             variant="outline"
             onClick={() => onStatus(opportunity.id!, "active")}
           >
-            Reativar oportunidade
+            {t("opportunities.reopen")}
           </Button>
         ) : null}
       </div>
@@ -186,33 +195,30 @@ function OpportunityCard({
 
 type OpportunitiesMode = "all" | "for-you" | "help";
 
-function getModeCopy(mode: OpportunitiesMode) {
+function getModeCopy(mode: OpportunitiesMode, t: TranslateFn) {
   if (mode === "for-you") {
     return {
-      eyebrow: "Oportunidades compatíveis",
-      title: "Oportunidades para o seu serviço",
-      description:
-        "Estas oportunidades combinam com a categoria e o estado informados no seu perfil profissional.",
-      createLabel: "Criar oportunidade",
+      eyebrow: t("opportunities.forYouEyebrow"),
+      title: t("opportunities.forYouTitle"),
+      description: t("opportunities.forYouDescription"),
+      createLabel: t("opportunities.create"),
     };
   }
 
   if (mode === "help") {
     return {
-      eyebrow: "Encontrar ajuda",
-      title: "O que você precisa resolver?",
-      description:
-        "Busque um profissional ou publique uma oportunidade — quem atende na sua categoria e estado é avisado.",
-      createLabel: "Publicar oportunidade",
+      eyebrow: t("opportunities.helpEyebrow"),
+      title: t("opportunities.helpTitle"),
+      description: t("opportunities.helpDescription"),
+      createLabel: t("opportunities.publish"),
     };
   }
 
   return {
-    eyebrow: "Oportunidades da comunidade",
-    title: "Encontre ajuda ou ofereça seu talento",
-    description:
-      "Oportunidades ativas são mostradas a profissionais do mesmo tipo de serviço e estado. Você decide quando encerrar a exibição.",
-    createLabel: "Criar oportunidade",
+    eyebrow: t("opportunities.allEyebrow"),
+    title: t("opportunities.allTitle"),
+    description: t("opportunities.allDescription"),
+    createLabel: t("opportunities.create"),
   };
 }
 
@@ -225,6 +231,7 @@ export function OpportunitiesClient({
 }) {
   const router = useRouter();
   const { profile, user } = useAuth();
+  const t = useT();
   const [opportunities, setOpportunities] = useState(initialOpportunities);
   const [form, setForm] = useState<OpportunityFormInput>(() => ({
     ...emptyForm,
@@ -238,7 +245,7 @@ export function OpportunitiesClient({
   const [followUpDrafts, setFollowUpDrafts] = useState<
     Record<string, { receivedResponse: boolean; platformSatisfied: boolean }>
   >({});
-  const modeCopy = getModeCopy(mode);
+  const modeCopy = getModeCopy(mode, t);
   // Sync state with props/profile during render instead of in effects
   // (https://react.dev/learn/you-might-not-need-an-effect).
   const [syncedOpportunities, setSyncedOpportunities] =
@@ -290,7 +297,7 @@ export function OpportunitiesClient({
       })
       .catch(() => {
         if (active)
-          toast.error("Não foi possível carregar suas oportunidades.");
+          toast.error(t("opportunities.loadError"));
       });
     return () => {
       active = false;
@@ -301,6 +308,7 @@ export function OpportunitiesClient({
     profile?.isProvider,
     profile?.category,
     profile?.businessState,
+    t,
   ]);
   const myFollowUps = useMemo(
     () =>
@@ -330,14 +338,14 @@ export function OpportunitiesClient({
       );
       toast.success(
         status === "closed"
-          ? "Oportunidade encerrada. Profissionais não a verão mais."
-          : "Oportunidade reativada.",
+          ? t("opportunities.closed")
+          : t("opportunities.reopened"),
       );
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Não foi possível atualizar a oportunidade.",
+          : t("opportunities.updateError"),
       );
     }
   };
@@ -345,7 +353,7 @@ export function OpportunitiesClient({
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (!profile) {
-      toast.error("Faça login para criar uma oportunidade.");
+      toast.error(t("opportunities.signInToCreate"));
       return;
     }
     setCreating(true);
@@ -354,7 +362,7 @@ export function OpportunitiesClient({
         name: profile.name,
         whatsapp: profile.whatsapp,
       });
-      toast.success("Oportunidade publicada para profissionais compatíveis.");
+      toast.success(t("opportunities.published"));
       setShowForm(false);
       setForm(emptyForm);
       router.refresh();
@@ -362,7 +370,7 @@ export function OpportunitiesClient({
       toast.error(
         error instanceof Error
           ? error.message
-          : "Não foi possível publicar a oportunidade.",
+          : t("opportunities.publishError"),
       );
     } finally {
       setCreating(false);
@@ -404,11 +412,11 @@ export function OpportunitiesClient({
       });
       toast.success(
         closeRequest
-          ? "Obrigado. A oportunidade foi encerrada."
-          : "Obrigado pelo retorno. A oportunidade continuará ativa.",
+          ? t("opportunities.followUpClosed")
+          : t("opportunities.followUpKept"),
       );
     } catch {
-      toast.error("Não foi possível registrar sua resposta.");
+      toast.error(t("opportunities.followUpError"));
     }
   };
 
@@ -424,7 +432,7 @@ export function OpportunitiesClient({
               onClick={() =>
                 user
                   ? setShowForm((open) => !open)
-                  : toast.error("Faça login para criar uma oportunidade.")
+                  : toast.error(t("opportunities.signInToCreate"))
               }
             >
               <Plus className="size-4" /> {modeCopy.createLabel}
@@ -439,10 +447,10 @@ export function OpportunitiesClient({
             <Search className="size-5 text-primary" />
             <div className="space-y-1">
               <h2 className="font-heading text-lg font-semibold text-text-main">
-                Buscar profissional
+                {t("opportunities.findProfessional")}
               </h2>
               <p className="text-sm leading-relaxed text-text-muted">
-                Use quando já sabe o serviço e quer escolher alguém pelo perfil.
+                {t("opportunities.findProfessionalText")}
               </p>
             </div>
             <Button
@@ -451,17 +459,17 @@ export function OpportunitiesClient({
               render={<Link href="/search" />}
               nativeButton={false}
             >
-              Buscar agora
+              {t("opportunities.searchNow")}
             </Button>
           </SurfacePanel>
           <SurfacePanel className="flex flex-col gap-4 border-primary/30 bg-primary/5">
             <ClipboardPlus className="size-5 text-primary" />
             <div className="space-y-1">
               <h2 className="font-heading text-lg font-semibold text-text-main">
-                Publicar oportunidade
+                {t("opportunities.publish")}
               </h2>
               <p className="text-sm leading-relaxed text-text-muted">
-                Sua oportunidade entra no mural e avisa profissionais do mesmo serviço e estado.
+                {t("opportunities.publishText")}
               </p>
             </div>
             <Button
@@ -469,20 +477,20 @@ export function OpportunitiesClient({
               onClick={() =>
                 user
                   ? setShowForm(true)
-                  : toast.error("Faça login para criar uma oportunidade.")
+                  : toast.error(t("opportunities.signInToCreate"))
               }
             >
-              Publicar oportunidade
+              {t("opportunities.publish")}
             </Button>
           </SurfacePanel>
           <SurfacePanel className="flex flex-col gap-4">
             <LayoutList className="size-5 text-primary" />
             <div className="space-y-1">
               <h2 className="font-heading text-lg font-semibold text-text-main">
-                Ver oportunidades
+                {t("opportunities.seeOpportunities")}
               </h2>
               <p className="text-sm leading-relaxed text-text-muted">
-                Veja o mural da comunidade por serviço e estado.
+                {t("opportunities.seeOpportunitiesText")}
               </p>
             </div>
             <Button
@@ -491,7 +499,7 @@ export function OpportunitiesClient({
               render={<Link href="/oportunidades" />}
               nativeButton={false}
             >
-              Abrir mural
+              {t("opportunities.openBoard")}
             </Button>
           </SurfacePanel>
         </div>
@@ -505,7 +513,7 @@ export function OpportunitiesClient({
                 htmlFor="opportunity-title"
                 className="text-sm font-medium"
               >
-                Título da oportunidade
+                {t("opportunities.titleLabel")}
               </Label>
               <Input
                 id="opportunity-title"
@@ -514,7 +522,7 @@ export function OpportunitiesClient({
                 maxLength={120}
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="Ex.: Preciso de eletricista para instalar ventiladores"
+                placeholder={t("opportunities.titlePlaceholder")}
               />
             </div>
             <div className="space-y-1.5">
@@ -522,7 +530,7 @@ export function OpportunitiesClient({
                 htmlFor="opportunity-category"
                 className="text-sm font-medium"
               >
-                Tipo de serviço
+                {t("opportunities.serviceType")}
               </Label>
               <Select
                 required
@@ -535,7 +543,7 @@ export function OpportunitiesClient({
                   id="opportunity-category"
                   className="h-10 w-full px-3 text-sm"
                 >
-                  <SelectValue>{form.category || "Selecione"}</SelectValue>
+                  <SelectValue>{form.category || t("opportunities.select")}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {PROVIDER_CATEGORIES.map((item) => (
@@ -551,7 +559,7 @@ export function OpportunitiesClient({
                 htmlFor="opportunity-urgency"
                 className="text-sm font-medium"
               >
-                Urgência
+                {t("opportunities.urgency")}
               </Label>
               <Select
                 required
@@ -568,18 +576,18 @@ export function OpportunitiesClient({
                   id="opportunity-urgency"
                   className="h-10 w-full px-3 text-sm"
                 >
-                  <SelectValue>{urgencyMeta[form.urgency].label}</SelectValue>
+                  <SelectValue>{t(urgencyMeta[form.urgency].label)}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {Object.entries(urgencyMeta).map(([value, meta]) => (
                     <SelectItem key={value} value={value}>
-                      {meta.label}
+                      {t(meta.label)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <p className="text-xs leading-relaxed text-text-muted">
-                {urgencyMeta[form.urgency].help}
+                {t(urgencyMeta[form.urgency].help)}
               </p>
             </div>
             <div className="space-y-1.5">
@@ -587,7 +595,7 @@ export function OpportunitiesClient({
                 htmlFor="opportunity-state"
                 className="text-sm font-medium"
               >
-                Estado
+                {t("opportunities.state")}
               </Label>
               <Select
                 required
@@ -602,7 +610,7 @@ export function OpportunitiesClient({
                 >
                   <SelectValue>
                     {BRAZIL_STATES.find((item) => item.value === form.state)
-                      ?.label || "Selecione"}
+                      ?.label || t("opportunities.select")}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
@@ -618,7 +626,7 @@ export function OpportunitiesClient({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="opportunity-city" className="text-sm font-medium">
-                Cidade
+                {t("opportunities.city")}
               </Label>
               <Input
                 id="opportunity-city"
@@ -634,7 +642,7 @@ export function OpportunitiesClient({
                 htmlFor="opportunity-neighborhood"
                 className="text-sm font-medium"
               >
-                Bairro
+                {t("opportunities.neighborhood")}
               </Label>
               <Input
                 id="opportunity-neighborhood"
@@ -652,7 +660,7 @@ export function OpportunitiesClient({
                 htmlFor="opportunity-description"
                 className="text-sm font-medium"
               >
-                Descreva o serviço
+                {t("opportunities.descriptionLabel")}
               </Label>
               <Textarea
                 id="opportunity-description"
@@ -663,27 +671,24 @@ export function OpportunitiesClient({
                 onChange={(e) =>
                   setForm({ ...form, description: e.target.value })
                 }
-                placeholder="Explique o que precisa, detalhes importantes e quando gostaria de realizar o serviço."
+                placeholder={t("opportunities.descriptionPlaceholder")}
                 rows={5}
               />
             </div>
             <p className="text-xs leading-relaxed text-text-muted md:col-span-2">
-              Seu WhatsApp será exibido apenas como ação de contato desta
-              oportunidade. Ela ficará ativa por até 30 dias e você pode encerrar
-              antes. Oportunidades urgentes ajudam a priorizar o contato, mas não
-              substituem canais de emergência.
+              {t("opportunities.formNotice", { days: OPPORTUNITY_DAYS })}
             </p>
             <div className="flex gap-2 md:col-span-2">
               <Button type="submit" disabled={creating}>
                 <Send className="size-4" />{" "}
-                {creating ? "Publicando…" : "Publicar oportunidade"}
+                {creating ? t("opportunities.publishing") : t("opportunities.publish")}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setShowForm(false)}
               >
-                Cancelar
+                {t("opportunities.cancel")}
               </Button>
             </div>
           </form>
@@ -710,17 +715,16 @@ export function OpportunitiesClient({
               <div className="space-y-4">
                 <div>
                   <p className="font-semibold text-text-main">
-                    Sua oportunidade “{opportunity.title}” ainda está ativa.
+                    {t("opportunities.followUpTitle", { title: opportunity.title })}
                   </p>
                   <p className="text-sm text-text-muted">
-                    Já se passaram 20 dias. Conte como foi e escolha se quer
-                    manter a oportunidade visível.
+                    {t("opportunities.followUpText", { days: OPPORTUNITY_REMINDER_DAYS })}
                   </p>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <fieldset className="space-y-2">
                     <legend className="text-sm font-medium text-text-main">
-                      Algum profissional respondeu?
+                      {t("opportunities.followUpResponse")}
                     </legend>
                     <ToggleGroup
                       variant="outline"
@@ -733,16 +737,16 @@ export function OpportunitiesClient({
                       }}
                     >
                       <ToggleGroupItem value="yes" className={followUpToggleClass}>
-                        Sim
+                        {t("opportunities.yes")}
                       </ToggleGroupItem>
                       <ToggleGroupItem value="no" className={followUpToggleClass}>
-                        Ainda não
+                        {t("opportunities.notYet")}
                       </ToggleGroupItem>
                     </ToggleGroup>
                   </fieldset>
                   <fieldset className="space-y-2">
                     <legend className="text-sm font-medium text-text-main">
-                      Você ficou satisfeito com o Skillsy?
+                      {t("opportunities.followUpSatisfied")}
                     </legend>
                     <ToggleGroup
                       variant="outline"
@@ -755,10 +759,10 @@ export function OpportunitiesClient({
                       }}
                     >
                       <ToggleGroupItem value="yes" className={followUpToggleClass}>
-                        Sim
+                        {t("opportunities.yes")}
                       </ToggleGroupItem>
                       <ToggleGroupItem value="no" className={followUpToggleClass}>
-                        Pode melhorar
+                        {t("opportunities.couldBeBetter")}
                       </ToggleGroupItem>
                     </ToggleGroup>
                   </fieldset>
@@ -769,10 +773,10 @@ export function OpportunitiesClient({
                   variant="outline"
                   onClick={() => answerFollowUp(opportunity, false)}
                 >
-                  Manter visível
+                  {t("opportunities.keepVisible")}
                 </Button>
                 <Button onClick={() => answerFollowUp(opportunity, true)}>
-                  Responder e encerrar
+                  {t("opportunities.answerAndClose")}
                 </Button>
               </div>
             </div>
@@ -784,7 +788,7 @@ export function OpportunitiesClient({
         <SurfacePanel className="flex flex-col gap-4 md:flex-row md:items-end">
           <div className="w-full space-y-1.5">
             <Label htmlFor="filter-category" className="text-sm font-medium">
-              Serviço
+              {t("opportunities.service")}
             </Label>
             <Select
               value={category || "all"}
@@ -796,10 +800,10 @@ export function OpportunitiesClient({
                 id="filter-category"
                 className="h-10 w-full px-3 text-sm"
               >
-                <SelectValue>{category || "Todos os serviços"}</SelectValue>
+                <SelectValue>{category || t("opportunities.allServices")}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os serviços</SelectItem>
+                <SelectItem value="all">{t("opportunities.allServices")}</SelectItem>
                 {PROVIDER_CATEGORIES.map((item) => (
                   <SelectItem key={item} value={item}>
                     {item}
@@ -810,7 +814,7 @@ export function OpportunitiesClient({
           </div>
           <div className="w-full space-y-1.5">
             <Label htmlFor="filter-state" className="text-sm font-medium">
-              Estado
+              {t("opportunities.state")}
             </Label>
             <Select
               value={state || "all"}
@@ -821,11 +825,11 @@ export function OpportunitiesClient({
               <SelectTrigger id="filter-state" className="h-10 w-full px-3 text-sm">
                 <SelectValue>
                   {BRAZIL_STATES.find((item) => item.value === state)?.label ||
-                    "Todos os estados"}
+                    t("opportunities.allStates")}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os estados</SelectItem>
+                <SelectItem value="all">{t("opportunities.allStates")}</SelectItem>
                 {BRAZIL_STATES.filter((item) => item.value !== "all").map(
                   (item) => (
                     <SelectItem key={item.value} value={item.value}>
@@ -853,11 +857,11 @@ export function OpportunitiesClient({
       ) : (
         <EmptyState
           icon={<BriefcaseBusiness className="size-6" />}
-          title="Nenhuma oportunidade encontrada"
+          title={t("opportunities.emptyTitle")}
           description={
             mode === "all" && (category || state)
-              ? "Ajuste os filtros ou crie a primeira oportunidade desta necessidade na comunidade."
-              : "Ainda não há oportunidades abertas. Publique a primeira e ela aparece aqui no mural."
+              ? t("opportunities.emptyFiltered")
+              : t("opportunities.empty")
           }
         />
       )}

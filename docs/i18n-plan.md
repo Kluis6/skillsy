@@ -22,7 +22,7 @@ Objetivo: site e app em **português do Brasil (padrão), inglês e espanhol da 
 ### Não entra (decisão consciente)
 
 - **Conteúdo dos usuários** (perfis, artigos, vagas, oportunidades, avaliações) aparece no idioma em que foi escrito. Ver dificuldade 11.
-- **Uso fora do Brasil.** Estados (UF), telefone com +55, CEP e WhatsApp continuam brasileiros. A tradução atende quem fala inglês ou espanhol **no Brasil** (ou acompanha a comunidade brasileira). Abrir para outros países é um projeto separado (endereços, DDI, moedas, leis locais).
+- **Uso fora do Brasil.** Estados (UF), telefone com +55, CEP e WhatsApp continuam brasileiros. A tradução atende quem fala inglês ou espanhol **no Brasil** (ou acompanha a comunidade brasileira). Abrir para outros países é um projeto separado (endereços, DDI, moedas, leis locais). Mesmo assim, artigos, vagas e oportunidades já guardam idioma e país de origem (dificuldade 12), para que conteúdo de fora nunca gere alerta para o Brasil.
 - **Painel administrativo**: continua só em português nesta etapa (público interno).
 - **Notificações para admins** (`admin_notifications`): continuam em português.
 
@@ -181,7 +181,7 @@ Páginas com componentes cliente pesados envolvem o conteúdo num `I18nProvider`
 | 9 | **Busca entre idiomas**: `searchTokens` só tem palavras em português; quem busca "electrician" não acha "Eletricista" | 1) Os tokens passam a incluir os **rótulos da categoria nos 3 idiomas**. 2) Dicionário de sinônimos de serviços (`electrician→eletric`, `plumber→encanad`, `limpieza→limpez`…) aplicado nos radicais da busca antes da consulta. 3) Script para recalcular `searchTokens` dos perfis existentes (roda o responsável, como os outros scripts de produção) |
 | 10 | **Plurais e formatos** (`"1 indicação"`, nota `"4,5"`, datas com date-fns `ptBR` em 5 arquivos e 15 usos de `pt-BR`) | `Intl.PluralRules` no `t()` (`indicacoes_one`/`_other`), `Intl.NumberFormat` para notas, `Intl.DateTimeFormat`/`RelativeTimeFormat` no lugar do date-fns |
 | 11 | **Conteúdo dos usuários** em português para quem lê em outro idioma | Campo opcional `language` em artigos e vagas (padrão `pt`), selo do idioma no card e, no futuro, botão "Traduzir" com Gemini no cliente (regra da plataforma). Perfis não são traduzidos |
-| 12 | **Notificações e push** criadas nas Functions com texto em português | `preferredLanguage` no perfil. As Functions montam título e mensagem por destinatário com um dicionário próprio (`functions/i18n.js`). Na criação em massa (`notifyMembersOfNewPost`), agrupar destinatários por idioma |
+| 12 | **Notificações e push**: o alerta pertence ao conteúdo, não a quem recebe. Uma vaga ou artigo publicado nos Estados Unidos, em inglês, não pode avisar quem está no Brasil (decisão do responsável, 05/11/2026) | Artigos, vagas e oportunidades gravam o **idioma** e o **país** de origem (`language`, `country`, padrão `pt`/`BR`). As Functions só avisam quem tem o mesmo país (e, nas oportunidades, o mesmo estado, como hoje) e o mesmo idioma de preferência (`preferredLanguage`). O título e a mensagem da notificação ficam no idioma em que o conteúdo foi criado; o sino só traduz a moldura ("Notificações", "Agora") |
 | 13 | **E-mails do Firebase Auth** (recuperar senha) saem no idioma do console | `auth.languageCode = locale` antes de `sendPasswordResetEmail` (site e app) e modelos traduzidos no console do Firebase |
 | 14 | **SEO**: conteúdo duplicado e canonical | `alternates.canonical` por idioma, `alternates.languages` (`pt-BR`, `en`, `es-419`, `x-default` = pt) em `createPublicMetadata`; sitemap com as 3 versões de cada URL; OG com `locale` e texto no idioma |
 | 15 | **Textos mais longos** em inglês e espanhol (+15–30%) quebram botões, chips, abas e cards | Etapa de revisão visual em larguras de 360, 412 e 1280 px; textos de botão curtos no glossário; `numberOfLines`/`truncate` onde fizer sentido |
@@ -235,7 +235,7 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
   - [x] Base: `lib/i18n/server.ts` (`getT`, `getLocale`, `getMessages` com `next/root-params`), `lib/i18n/provider.tsx` (`I18nProvider`, `useT`, `useLocale`, `useHref`), chaves tipadas a partir do `pt.json` (`keys.ts`)
   - [x] (1) Layout e metadados do site, menu (o menu da busca passou a reutilizar o da barra), rodapé, botão de tema, Início (hero, categorias, benefícios, Fale conosco). Nomes das categorias ficam para a E4 (são termos de busca); mensagens do zod ficam para o item de validações
   - [x] (2) Busca, perfil público, cards, filtro de localização. `rich()` para elementos dentro do texto (`lib/i18n/rich.tsx`); datas relativas com date-fns no idioma (`lib/i18n/date-fns.ts`), mantendo o português igual; nota com `formatRating` (o perfil mostrava "4.5" e passou a "4,5", como nos cards). Rótulos de dias, categorias e motivos de denúncia ficam para a E4
-  - [ ] (3) Oportunidades
+  - [x] (3) Oportunidades (mural, para você, encontrar ajuda, formulário, acompanhamento de 20 dias) e o sino de notificações (só a moldura; o texto de cada aviso fica no idioma do conteúdo, dificuldade 12). Urgência traduzida no site; o pacote compartilhado mantém os rótulos em português para o app até a E7
   - [ ] (4) Artigos e vagas
   - [ ] (5) Login, cadastro, perfil/configurações, bloqueio
   - [ ] (6) Páginas institucionais
@@ -252,6 +252,7 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
 - [ ] `toSearchTokens` com os rótulos da categoria nos 3 idiomas; sinônimos de serviços nos radicais da busca
 - [ ] Script `scripts/reindex-search-tokens.mjs` (o responsável roda em produção)
 - [ ] Campo `language` em `posts` (regras: `isValidPost` aceita `language in ['pt','en','es']`) + selo no card
+- [ ] Busca e filtros ligados ao idioma e ao local de quem busca (decisão do responsável, 05/11/2026): perfis, oportunidades, artigos e vagas guardam `country` e `language` (padrão `BR`/`pt`, sem migração); a busca de profissionais, o mural de oportunidades e a lista de artigos e vagas mostram por padrão o país e o idioma da página (`/en` → conteúdo em inglês do país da pessoa), e o filtro de estado lista as divisões do país escolhido
 
 **Pronto quando:** "electrician"/"electricista" encontram eletricistas nos emuladores; testes de regras passam.
 
@@ -267,7 +268,9 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
 
 - [ ] `preferredLanguage` em `users/{uid}`: regras (`allowedFields` + validação), `USER_PROFILE_FIELDS`, testes de regras
 - [ ] Seletor de idioma grava cookie e, logado, `preferredLanguage`
-- [ ] Functions com `functions/i18n.js`: `notifyMatchingProfessionals`, `maintainOpportunities`, `notifyMembersOfNewPost` (agrupado por idioma); `sendPushNotification` usa o texto já gravado
+- [ ] `language` e `country` em `posts` e `opportunities` (regras do Firestore, formulários do site e do app; padrão `pt`/`BR`, sem migração: documento sem os campos conta como `pt`/`BR`)
+- [ ] Functions filtram destinatários pela origem do conteúdo: `notifyMembersOfNewPost` avisa só membros do mesmo país e idioma; `notifyMatchingProfessionals` mantém categoria + estado e soma país e idioma. Texto da notificação no idioma do conteúdo; `sendPushNotification` usa o texto já gravado
+- [ ] `maintainOpportunities` (lembrete de 20 dias) escreve no idioma da oportunidade
 - [ ] Modelos de e-mail do Firebase Auth em inglês e espanhol (console)
 
 **Pronto quando:** teste nos emuladores mostra notificações no idioma de cada usuário.
