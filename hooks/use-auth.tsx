@@ -16,6 +16,8 @@ import { auth } from '@/lib/firebase';
 import { UserService } from '@/services/user-service';
 import { UserProfile } from '@/models/types';
 import { toast } from 'sonner';
+import { useLocale, useT } from '@/lib/i18n/provider';
+import { HTML_LANG } from '@skillsy/shared/i18n/locales';
 
 const BLOCKED_ALLOWED_PATHS = new Set(['/blocked', '/termos', '/privacidade']);
 
@@ -41,6 +43,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+  const t = useT();
+  const locale = useLocale();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -145,6 +149,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
+    // Firebase Auth emails (password reset) go out in the page's language.
+    auth.languageCode = HTML_LANG[locale];
     await sendPasswordResetEmail(auth, email);
   };
 
@@ -164,8 +170,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const toggleContact = async (contactId: string) => {
     if (!user || !profile) {
-      toast.error('Login necessário', {
-        description: 'Você precisa estar logado para salvar contatos.'
+      toast.error(t('auth.loginRequired'), {
+        description: t('auth.loginToSaveContacts'),
       });
       return;
     }

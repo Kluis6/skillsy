@@ -10,6 +10,7 @@ import { useContactsStore } from "@/store/use-contacts-store";
 import { toast } from "sonner";
 import Link from "next/link";
 import { LuArrowLeft } from "react-icons/lu";
+import { useT } from "@/lib/i18n/provider";
 
 interface ContactsAsideProps {
   contacts: UserProfile[];
@@ -24,6 +25,7 @@ export function ContactsAside({
 
   onContactToggle,
 }: ContactsAsideProps) {
+  const t = useT();
   const {
     selectedContactId,
     setSelectedContactId,
@@ -56,10 +58,10 @@ export function ContactsAside({
             className="flex justify-start items-center space-x-[0.4rem] h-10"
           >
             <LuArrowLeft className="text-text-muted size-4" />
-            <p className="text-text-muted font-normal text-sm">Voltar</p>
+            <p className="text-text-muted font-normal text-sm">{t("contacts.back")}</p>
           </Link>
 
-          <h4 className="text-sm font-medium text-text-muted">Meus contatos</h4>
+          <h4 className="text-sm font-medium text-text-muted">{t("contacts.title")}</h4>
         </div>
         <div className="relative">
           <Search
@@ -67,7 +69,7 @@ export function ContactsAside({
             size={16}
           />
           <Input
-            placeholder="Buscar contatos..."
+            placeholder={t("contacts.searchPlaceholder")}
             className="pl-10 h-10 text-sm bg-card focus:bg-card placeholder:text-text-muted border-input"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -133,7 +135,7 @@ export function ContactsAside({
                     </div> */}
                   </div>
                   <p className="text-xs text-text-muted truncate font-medium">
-                    {c.companyName || c.category || "Membro"}
+                    {c.companyName || c.category || t("contacts.member")}
                   </p>
                 </div>
               </button>
@@ -143,7 +145,7 @@ export function ContactsAside({
           <div className="p-12 text-center">
             <Users className="mx-auto h-12 w-12 text-text-muted/20 mb-4" />
             <p className="text-sm text-text-muted font-medium">
-              Nenhum contato encontrado
+              {t("contacts.noneFound")}
             </p>
           </div>
         )}

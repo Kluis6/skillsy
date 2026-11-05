@@ -12,6 +12,10 @@ import { auth } from '@/lib/firebase';
 import { UserService } from '@/services/user-service';
 import { BLOCK_APPEAL_DAYS } from '@skillsy/shared/terms';
 import { toast } from 'sonner';
+import { useLocale, useT } from '@/lib/i18n/provider';
+import { rich } from '@/lib/i18n/rich';
+import { formatDate } from '@skillsy/shared/i18n/format';
+import { INTL_LOCALE } from '@skillsy/shared/i18n/locales';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -21,11 +25,11 @@ function toDate(value: unknown) {
   return Number.isFinite(seconds) ? new Date(seconds * 1000) : null;
 }
 
-const formatDate = (date: Date) =>
-  new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long' }).format(date);
-
 export function BlockedClient() {
   const { user, profile } = useAuth();
+  const t = useT();
+  const locale = useLocale();
+  const longDate = (date: Date) => formatDate(date, INTL_LOCALE[locale], 'long');
   const router = useRouter();
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
@@ -43,7 +47,7 @@ export function BlockedClient() {
       await signOut(auth);
       router.replace('/');
     } catch {
-      toast.error('Erro ao sair');
+      toast.error(t('blocked.signOutError'));
     }
   };
 
@@ -58,7 +62,7 @@ export function BlockedClient() {
       });
       setSent(true);
     } catch {
-      toast.error('Não foi possível enviar. Tente de novo.');
+      toast.error(t('blocked.sendError'));
     } finally {
       setSending(false);
     }
@@ -72,21 +76,27 @@ export function BlockedClient() {
         </div>
 
         <h1 className="text-3xl font-bold text-text-main font-heading mb-4 text-center">
-          Conta bloqueada
+          {t('blocked.title')}
         </h1>
 
         <p className="text-text-muted mb-6 leading-relaxed text-center">
-          Sua conta foi bloqueada por descumprir os{' '}
-          <Link href="/termos" className="font-semibold text-primary hover:underline">
-            Termos de uso
-          </Link>
-          {blockedAt ? ` em ${formatDate(blockedAt)}` : ''}. Enquanto isso, seu perfil não aparece
-          nas buscas.
+          {rich(
+            blockedAt
+              ? t('blocked.textOn', { date: longDate(blockedAt) })
+              : t('blocked.text'),
+            {
+              terms: (
+                <Link href="/termos" className="font-semibold text-primary hover:underline">
+                  {t('blocked.termsLink')}
+                </Link>
+              ),
+            },
+          )}
         </p>
 
         {profile?.blockedReason ? (
           <div className="mb-6 border border-border-subtle bg-surface p-4 text-sm leading-relaxed">
-            <p className="font-semibold text-text-main">Motivo</p>
+            <p className="font-semibold text-text-main">{t('blocked.reason')}</p>
             <p className="mt-1 whitespace-pre-wrap text-text-muted">{profile.blockedReason}</p>
           </div>
         ) : null}
@@ -94,21 +104,23 @@ export function BlockedClient() {
         {sent ? (
           <div className="mb-8 flex items-start gap-3 border border-success/30 bg-success/10 p-4 text-sm text-text-main">
             <CheckCircle2 size={20} className="mt-0.5 shrink-0 text-success" />
-            <p>Pedido enviado. A equipe vai analisar e responder pelo seu e-mail.</p>
+            <p>{t('blocked.sent')}</p>
           </div>
         ) : canAppeal ? (
           <div className="mb-8 space-y-3">
             <p className="text-sm font-semibold text-text-main">
-              Pedir revisão
+              {t('blocked.askReview')}
               {deadline ? (
-                <span className="font-normal text-text-muted"> · até {formatDate(deadline)}</span>
+                <span className="font-normal text-text-muted">
+                  {t('blocked.until', { date: longDate(deadline) })}
+                </span>
               ) : null}
             </p>
             <Textarea
               value={message}
               onChange={(event) => setMessage(event.target.value)}
               maxLength={900}
-              placeholder="Explique o que aconteceu e por que o bloqueio deve ser revisto."
+              placeholder={t('blocked.placeholder')}
               className="min-h-28"
             />
             <Button
@@ -117,13 +129,15 @@ export function BlockedClient() {
               disabled={message.trim().length < 20 || sending}
               onClick={sendAppeal}
             >
-              {sending ? 'Enviando...' : 'Enviar pedido de revisão'}
+              {sending ? t('blocked.sending') : t('blocked.send')}
             </Button>
           </div>
         ) : (
           <p className="mb-8 border border-border-subtle bg-surface p-4 text-sm text-text-muted">
-            O prazo de {BLOCK_APPEAL_DAYS} dias para pedir revisão terminou em{' '}
-            {deadline ? formatDate(deadline) : ''}.
+            {t('blocked.expired', {
+              days: BLOCK_APPEAL_DAYS,
+              date: deadline ? longDate(deadline) : '',
+            })}
           </p>
         )}
 
@@ -132,7 +146,7 @@ export function BlockedClient() {
           variant="ghost"
           className="w-full h-12 font-bold text-text-muted hover:text-primary"
         >
-          Sair da conta
+          {t('blocked.signOut')}
         </Button>
       </div>
     </div>

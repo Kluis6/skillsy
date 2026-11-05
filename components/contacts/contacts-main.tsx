@@ -34,6 +34,8 @@ import {
 } from "@/components/ui/sheet";
 import { LuChurch, LuUserRound } from "react-icons/lu";
 import { FaTelegramPlane } from "react-icons/fa";
+import { useT } from "@/lib/i18n/provider";
+import { rich } from "@/lib/i18n/rich";
 
 interface ContactsMainProps {
   contacts: UserProfile[];
@@ -42,6 +44,7 @@ interface ContactsMainProps {
 
 export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
   const { selectedContactId, setSelectedContactId } = useContactsStore();
+  const t = useT();
 
   const selectedContact =
     contacts.find((c) => c.uid === selectedContactId) ||
@@ -69,8 +72,8 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
     const phone = getWhatsAppNumber(selectedContact);
 
     if (!phone) {
-      toast.error("WhatsApp não informado", {
-        description: "Este contato ainda não possui um número disponível.",
+      toast.error(t("contacts.noWhatsapp"), {
+        description: t("contacts.noWhatsappText"),
       });
       return;
     }
@@ -87,11 +90,11 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
 
     try {
       await navigator.clipboard.writeText(shareUrl);
-      toast.success("Link copiado", {
-        description: "Agora você pode compartilhar o perfil do contato.",
+      toast.success(t("contacts.linkCopied"), {
+        description: t("contacts.linkCopiedText"),
       });
     } catch {
-      toast.error("Não foi possível copiar o link");
+      toast.error(t("contacts.copyError"));
     }
   };
 
@@ -101,7 +104,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
     try {
       await navigator.share({
         title: selectedContact.name,
-        text: `Confira o contato de ${selectedContact.name} no Skillsy.`,
+        text: t("contacts.shareText", { name: selectedContact.name }),
         url: shareUrl,
       });
     } catch {
@@ -112,7 +115,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
   const handleWhatsAppShare = () => {
     if (!selectedContact || !shareUrl) return;
 
-    const message = `Confira o contato de ${selectedContact.name} no Skillsy: ${shareUrl}`;
+    const message = t("contacts.shareMessage", { name: selectedContact.name, url: shareUrl });
     window.open(
       `https://wa.me/?text=${encodeURIComponent(message)}`,
       "_blank",
@@ -123,7 +126,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
   const handleTelegramShare = () => {
     if (!selectedContact || !shareUrl) return;
 
-    const message = `Confira o contato de ${selectedContact.name} no Skillsy: ${shareUrl}`;
+    const message = t("contacts.shareMessage", { name: selectedContact.name, url: shareUrl });
     window.open(
       `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(message)}`,
       "_blank",
@@ -133,22 +136,22 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
 
   const shareActions = [
     {
-      label: "Compartilhar no WhatsApp",
-      description: "Envie o contato no WhatsApp.",
+      label: t("contacts.shareWhatsapp"),
+      description: t("contacts.shareWhatsappText"),
       icon: BsWhatsapp,
       onClick: handleWhatsAppShare,
       className: "text-success ",
     },
     {
-      label: "Compartilhar no Telegram",
-      description: "Envie o contato no Telegram.",
+      label: t("contacts.shareTelegram"),
+      description: t("contacts.shareTelegramText"),
       icon: FaTelegramPlane,
       onClick: handleTelegramShare,
       className: "text-sky-500 ",
     },
     {
-      label: "Copiar link",
-      description: "Copia o link para a area de transferencia.",
+      label: t("contacts.copyLink"),
+      description: t("contacts.copyLinkText"),
       icon: Copy,
       onClick: handleCopyLink,
       className: "text-sky-600 ",
@@ -172,7 +175,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
             <PiShareFat className="text-text-muted" />
           </TooltipTrigger>
           <TooltipContent>
-            <p>Compartilhar</p>
+            <p>{t("contacts.share")}</p>
           </TooltipContent>
         </Tooltip>
       );
@@ -197,7 +200,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
             }
           />
           <TooltipContent>
-            <p>Compartilhar</p>
+            <p>{t("contacts.share")}</p>
           </TooltipContent>
         </Tooltip>
         {renderShareSheet()}
@@ -208,9 +211,11 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
   const renderShareSheet = () => (
     <SheetContent side="bottom" className="">
       <SheetHeader className="text-left">
-        <SheetTitle>Compartilhar contato</SheetTitle>
+        <SheetTitle>{t("contacts.shareTitle")}</SheetTitle>
         <SheetDescription className="">
-          Envie o contato de <strong>{selectedContact?.name}</strong> por:
+          {rich(t("contacts.shareTitleText"), {
+            name: <strong>{selectedContact?.name}</strong>,
+          })}
         </SheetDescription>
       </SheetHeader>
       <div className="gap-2 p-4 flex md:flex-row flex-col w-full">
@@ -300,7 +305,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                   </Button>
                   <div className="flex justify-end md:text-right md:hidden flex-col">
                     <p className="text-xs font-bold text-text-muted">
-                      Indicações
+                      {t("contacts.recommendations")}
                     </p>
                     <RecommendationCount
                       recommendationCount={selectedContact.recommendationCount || 0}
@@ -324,7 +329,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
 
                       <div className="text-center md:text-left md:flex flex-col hidden">
                         <p className="text-xs font-bold text-text-muted">
-                          Indicações
+                          {t("contacts.recommendations")}
                         </p>
                         <RecommendationCount
                           recommendationCount={selectedContact.recommendationCount || 0}
@@ -338,7 +343,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                       <p className="text-base font-medium text-text-main">
                         {selectedContact.serviceType ||
                           selectedContact.category ||
-                          "Membro da comunidade"}
+                          t("contacts.communityMember")}
                       </p>
                     </div>
                     {selectedContact.companyName && (
@@ -354,7 +359,7 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
                       <MapPin size={14} />
                       <p className="text-text-muted text-sm font-normal">
                         {[selectedContact.publicCity, selectedContact.publicState].filter(Boolean).join(", ") ||
-                          "Localização não informada"}
+                          t("contacts.noLocation")}
                       </p>
                     </div>
 
@@ -381,11 +386,11 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
               <div className="md:col-span-2 space-y-6">
                 <section className="bg-card p-4 border-border-subtle">
                   <h3 className="text-lg font-bold font-heading text-text-main">
-                    Sobre o profissional
+                    {t("contacts.about")}
                   </h3>
                   <p className="text-text-muted text-sm leading-relaxed whitespace-pre-wrap">
                     {selectedContact.bio ||
-                      "Este membro ainda não adicionou uma descrição detalhada ao seu perfil."}
+                      t("contacts.noBio")}
                   </p>
                 </section>
 
@@ -395,20 +400,20 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
               <Button
                 onClick={() => {
                   toggleContact(selectedContact.uid).then(() => {
-                    toast.success("Contato removido");
+                    toast.success(t("contacts.removed"));
                     setSelectedContactId(null);
                   });
                 }}
                 variant="destructive"
                 className="h-10 md:w-1/2 w-full font-bold space-x-2"
               >
-                <UserMinus size={18} /> <p>Remover contato</p>
+                <UserMinus size={18} /> <p>{t("contacts.remove")}</p>
               </Button>
               <Link
                 className="h-10 w-full flex justify-center items-center space-x-2 text-primary-foreground font-bold bg-primary hover:bg-primary/90 active:bg-primary/80"
                 href={`/profile/${selectedContact.uid}`}
               >
-                <LuUserRound size={18} /> <p className="text-sm">Ver contato</p>
+                <LuUserRound size={18} /> <p className="text-sm">{t("contacts.view")}</p>
               </Link>
             </div>
           </motion.div>
@@ -418,11 +423,10 @@ export function ContactsMain({ contacts, toggleContact }: ContactsMainProps) {
               <Users size={48} className="text-primary/20" />
             </div>
             <h3 className="text-2xl font-bold text-text-main mb-2">
-              Selecione um contato
+              {t("contacts.selectTitle")}
             </h3>
             <p className="text-text-muted max-w-sm">
-              Escolha um profissional da sua lista à esquerda para visualizar os
-              detalhes do perfil e entrar em contato.
+              {t("contacts.selectText")}
             </p>
           </div>
         )}

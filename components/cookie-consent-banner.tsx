@@ -12,8 +12,11 @@ import {
   readCookieConsent,
   writeCookieConsent,
 } from "@/lib/cookie-consent";
+import { useT } from "@/lib/i18n/provider";
+import { rich } from "@/lib/i18n/rich";
 
 export function CookieConsentBanner() {
+  const t = useT();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -48,20 +51,22 @@ export function CookieConsentBanner() {
         <div className="bg-linear-to-r from-primary to-primary/80 px-5 py-3 text-primary-foreground">
           <div className="flex items-center gap-2 text-sm font-semibold tracking-tight">
             <Cookie size={18} />
-            Controle de cookies e preferências
+            {t("notices.cookiesTitle")}
           </div>
         </div>
 
         <div className="space-y-4 px-5 py-4 text-sm text-text-muted md:px-6 md:py-5">
           <p>
-            Esta plataforma salva cookies. Mais informações estão na nossa{" "}
-            <Link
-              className="font-semibold text-primary underline underline-offset-4"
-              href="/privacidade"
-            >
-              Política de Privacidade
-            </Link>
-            .
+            {rich(t("notices.cookiesText"), {
+              privacy: (
+                <Link
+                  className="font-semibold text-primary underline underline-offset-4"
+                  href="/privacidade"
+                >
+                  {t("notices.privacyPolicy")}
+                </Link>
+              ),
+            })}
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
@@ -71,14 +76,14 @@ export function CookieConsentBanner() {
               className="border-border-subtle"
               onClick={() => handleChoice("rejected")}
             >
-              Recusar
+              {t("notices.reject")}
             </Button>
             <Button
               type="button"
               className="bg-primary text-primary-foreground hover:bg-primary/90"
               onClick={() => handleChoice("accepted")}
             >
-              Aceitar
+              {t("notices.accept")}
             </Button>
           </div>
         </div>

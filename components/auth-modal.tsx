@@ -21,6 +21,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { MINIMUM_AGE } from "@skillsy/shared/terms";
+import { useT } from "@/lib/i18n/provider";
+import { rich } from "@/lib/i18n/rich";
+import type { MessageKey, TranslateFn } from "@skillsy/shared/i18n/keys";
 
 const profileLimits = {
   avatarAndBannerMaxSizeMb: 10,
@@ -28,7 +31,7 @@ const profileLimits = {
   supportedFormats: "JPG, PNG ou WEBP",
 };
 
-function getSignUpErrorMessage(error: unknown) {
+function getSignUpErrorMessage(error: unknown, t: TranslateFn) {
   if (
     typeof error === "object" &&
     error !== null &&
@@ -37,67 +40,67 @@ function getSignUpErrorMessage(error: unknown) {
   ) {
     switch ((error as { code: string }).code) {
       case "auth/email-already-in-use":
-        return "Este e-mail já está em uso. Entre com ele ou use outro endereço.";
+        return t("auth.emailInUse");
       case "auth/invalid-email":
-        return "Digite um e-mail válido com até 100 caracteres.";
+        return t("auth.invalidEmail");
       case "auth/weak-password":
-        return "A senha precisa ter entre 6 e 50 caracteres.";
+        return t("auth.weakPassword");
       case "auth/network-request-failed":
-        return "Não foi possível concluir o cadastro por causa da conexão. Tente novamente.";
+        return t("auth.networkError");
       case "auth/too-many-requests":
-        return "Muitas tentativas em pouco tempo. Aguarde um instante e tente novamente.";
+        return t("auth.tooManyRequests");
       default:
         break;
     }
   }
 
-  return "Não foi possível criar a conta. Revise os campos e tente novamente.";
+  return t("auth.signUpError");
 }
 
 const authGalleryImages = [
   {
     src: "/Gemini_Generated_Image_c5bw8sc5bw8sc5bw.png",
-    alt: "Ilustracao de criacao colaborativa",
+    alt: "auth.galleryCollaboration",
     className: "col-span-8",
     delay: 0,
   },
   {
     src: "/Gemini_Generated_Image_81npfy81npfy81np.png",
-    alt: "Ilustracao de aprendizado digital",
+    alt: "auth.galleryLearning",
     className: "col-span-4",
     delay: 0.06,
   },
   {
     src: "/Gemini_Generated_Image_m9c1ibm9c1ibm9c1.png",
-    alt: "Ilustracao de networking profissional",
+    alt: "auth.galleryNetworking",
     className: "col-span-4",
     delay: 0.12,
   },
   {
     src: "/Gemini_Generated_Image_xfqkexfqkexfqkex.png",
-    alt: "Ilustracao de estudo online",
+    alt: "auth.galleryStudy",
     className: "col-span-4",
     delay: 0.18,
   },
   {
     src: "/Gemini_Generated_Image_ez45xsez45xsez45.png",
-    alt: "Ilustracao de comunidade criativa",
+    alt: "auth.galleryCommunity",
     className: "col-span-4",
     delay: 0.24,
   },
   {
     src: "/Gemini_Generated_Image_2guq8v2guq8v2guq.png",
-    alt: "Ilustracao de portfolio digital",
+    alt: "auth.galleryPortfolio",
     className: "col-span-4",
     delay: 0.3,
   },
   {
     src: "/Gemini_Generated_Image_cjqsrjcjqsrjcjqs.png",
-    alt: "Ilustracao de ensino e troca de habilidades",
+    alt: "auth.gallerySkills",
     className: "col-span-8",
     delay: 0.36,
   },
-];
+] satisfies { src: string; alt: MessageKey; className: string; delay: number }[];
 
 type AuthModalProps = {
   /** The element that opens the modal. Omit it and pass `open` to open the
@@ -117,6 +120,7 @@ export function AuthModal({
 }: AuthModalProps) {
   const { signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword } =
     useAuth();
+  const t = useT();
   const [tab, setTab] = useState<"login" | "signup">(defaultTab);
   const [loading, setLoading] = useState(false);
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
@@ -161,27 +165,25 @@ export function AuthModal({
     try {
       await signInWithGoogle();
       setOpen(false);
-      toast.success("Bem-vindo ao Skillsy!");
+      toast.success(t("auth.welcome"));
     } catch (error: any) {
       console.error("Login error detail:", error);
 
-      let message = "Erro ao entrar com Google. Tente novamente.";
+      let message = t("auth.googleError");
 
       if (error.code === "auth/unauthorized-domain") {
-        message =
-          'Domínio não autorizado. Adicione os URLs do projeto na seção "Authentication > Settings" do Firebase Console.';
+        message = t("auth.unauthorizedDomain");
       } else if (error.code === "auth/popup-blocked") {
-        message =
-          "O popup foi bloqueado pelo seu navegador. Por favor, permita popups para este site.";
+        message = t("auth.popupBlocked");
       } else if (error.code === "auth/popup-closed-by-user") {
-        message = "O login foi cancelado (popup fechado antes da conclusão).";
+        message = t("auth.popupClosed");
       } else if (error.message) {
-        message = `Erro: ${error.message}`;
+        message = t("auth.errorDetail", { message: error.message });
       }
 
       toast.error(message, {
         duration: 8000,
-        description: error.code ? `Código do erro: ${error.code}` : undefined,
+        description: error.code ? t("auth.errorCode", { code: error.code }) : undefined,
       });
     } finally {
       setLoading(false);
@@ -193,9 +195,9 @@ export function AuthModal({
     try {
       await signInWithEmail(data.email, data.password);
       setOpen(false);
-      toast.success("Bem-vindo de volta!");
+      toast.success(t("auth.welcomeBack"));
     } catch (error: any) {
-      toast.error("E-mail ou senha incorretos");
+      toast.error(t("auth.wrongCredentials"));
     } finally {
       setLoading(false);
     }
@@ -206,10 +208,10 @@ export function AuthModal({
     try {
       await signUpWithEmail(data.email, data.password);
       setOpen(false);
-      toast.success("Conta criada com sucesso!");
+      toast.success(t("auth.accountCreated"));
     } catch (error: any) {
-      toast.error("Erro ao criar conta", {
-        description: getSignUpErrorMessage(error),
+      toast.error(t("auth.createAccountError"), {
+        description: getSignUpErrorMessage(error, t),
       });
     } finally {
       setLoading(false);
@@ -220,7 +222,7 @@ export function AuthModal({
     const email = getLoginValues("email").trim();
     if (!/^\S+@\S+\.\S+$/.test(email)) {
       setLoginError("email", {
-        message: "Informe seu e-mail acima para receber o link de redefinição.",
+        message: t("auth.resetNeedsEmail"),
       });
       return;
     }
@@ -232,9 +234,8 @@ export function AuthModal({
     } finally {
       setLoading(false);
     }
-    toast.success("Verifique seu e-mail", {
-      description:
-        "Se houver uma conta com esse endereço, enviamos um link para criar uma nova senha.",
+    toast.success(t("auth.checkEmail"), {
+      description: t("auth.checkEmailText"),
     });
   };
 
@@ -259,7 +260,7 @@ export function AuthModal({
                 >
                   <Image
                     src={image.src}
-                    alt={image.alt}
+                    alt={t(image.alt)}
                     fill
                     sizes="(min-width: 768px) 16vw, 0vw"
                     className="object-cover bg-cover transition-transform duration-700 group-hover:scale-105"
@@ -272,15 +273,15 @@ export function AuthModal({
             <div className="flex min-h-[34rem] flex-col gap-6 p-5 sm:p-7 md:p-8">
               <div>
                 <h1 className="hidden 2xl:block text-3xl md:text-4xl font-bold text-primary mb-2">
-                  Skillsy
+                  {t("common.appName")}
                 </h1>
                 <h2 className="text-base md:text-xl font-medium text-foreground mb-1">
-                  {tab === "login" ? "Bem-vindo de volta!" : "Crie sua conta"}
+                  {tab === "login" ? t("auth.welcomeBack") : t("auth.createAccount")}
                 </h2>
                 <p className="text-xs font-normal md:text-sm text-muted-foreground mb-2 xxl:mb-6">
                   {tab === "login"
-                    ? "Entre para continuar compartilhando suas habilidades."
-                    : "Leva menos de um minuto. Você completa seu perfil depois."}
+                    ? t("auth.loginSubtitle")
+                    : t("auth.signUpSubtitle")}
                 </p>
               </div>
 
@@ -291,10 +292,10 @@ export function AuthModal({
               >
                 <TabsList className="w-full space-x-2 bg-muted">
                   <TabsTrigger className="" value="login">
-                    Entrar
+                    {t("auth.tabSignIn")}
                   </TabsTrigger>
                   <TabsTrigger className="" value="signup">
-                    Cadastrar
+                    {t("auth.tabSignUp")}
                   </TabsTrigger>
                 </TabsList>
 
@@ -309,12 +310,12 @@ export function AuthModal({
                         htmlFor="email"
                         className="text-xs md:text-sm font-medium text-muted-foreground"
                       >
-                        E-mail
+                        {t("auth.email")}
                       </Label>
                       <Input
                         id="email"
                         type="email"
-                        placeholder="seu@email.com"
+                        placeholder={t("auth.emailPlaceholder")}
                         aria-invalid={Boolean(loginErrors.email)}
                         aria-describedby={
                           loginErrors.email ? "login-email-error" : undefined
@@ -336,7 +337,7 @@ export function AuthModal({
                         htmlFor="password"
                         className="text-xs md:text-sm font-medium text-muted-foreground"
                       >
-                        Senha
+                        {t("auth.password")}
                       </Label>
                       <Input
                         id="password"
@@ -365,7 +366,7 @@ export function AuthModal({
                         disabled={loading}
                         className="h-auto p-0 text-xs"
                       >
-                        Esqueci minha senha
+                        {t("auth.forgotPassword")}
                       </Button>
                     </div>
                     <Button
@@ -376,7 +377,7 @@ export function AuthModal({
                       {loading ? (
                         <Loader2 className="mr-2 size-4 animate-spin" />
                       ) : (
-                        "Entrar"
+                        t("auth.signIn")
                       )}
                     </Button>
                   </form>
@@ -393,12 +394,12 @@ export function AuthModal({
                         htmlFor="signup-email"
                         className="text-xs md:text-sm font-medium text-muted-foreground"
                       >
-                        E-mail <span className="text-destructive">*</span>
+                        {t("auth.email")} <span className="text-destructive">*</span>
                       </Label>
                       <Input
                         id="signup-email"
                         type="email"
-                        placeholder="seu@email.com"
+                        placeholder={t("auth.emailPlaceholder")}
                         aria-invalid={Boolean(signUpErrors.email)}
                         aria-describedby={
                           signUpErrors.email
@@ -412,7 +413,7 @@ export function AuthModal({
                         id="signup-email-help"
                         className="text-xs text-muted-foreground ml-1"
                       >
-                        Use um e-mail que você acessa: é por ele que você recupera a senha.
+                        {t("auth.emailHelp")}
                       </p>
                       {signUpErrors.email && (
                         <p
@@ -428,13 +429,13 @@ export function AuthModal({
                         htmlFor="signup-password"
                         className="text-xs md:text-sm font-medium text-muted-foreground"
                       >
-                        Senha <span className="text-destructive">*</span>
+                        {t("auth.password")} <span className="text-destructive">*</span>
                       </Label>
                       <div className="relative">
                         <Input
                           id="signup-password"
                           type="password"
-                          placeholder="Crie uma senha segura"
+                          placeholder={t("auth.passwordPlaceholder")}
                           aria-invalid={Boolean(signUpErrors.password)}
                           aria-describedby={
                             signUpErrors.password
@@ -449,7 +450,7 @@ export function AuthModal({
                         id="signup-password-help"
                         className="text-xs text-muted-foreground ml-1"
                       >
-                        A senha deve ter o mínimo de 6 caracteres.
+                        {t("auth.passwordHelp")}
                       </p>
                       {signUpErrors.password && (
                         <p
@@ -469,7 +470,7 @@ export function AuthModal({
                       {loading ? (
                         <Loader2 className="mr-2 size-4 animate-spin" />
                       ) : (
-                        "Criar conta"
+                        t("auth.createAccountButton")
                       )}
                     </Button>
                   </form>
@@ -478,7 +479,7 @@ export function AuthModal({
               <div className="flex items-center gap-4 w-full">
                 <div className="h-px flex-grow bg-border" />
                 <h3 className="md:text-base text-base font-bold text-muted-foreground shrink-0">
-                  ou
+                  {t("auth.or")}
                 </h3>
                 <div className="h-px flex-grow bg-border" />
               </div>
@@ -511,19 +512,21 @@ export function AuthModal({
                     />
                   </svg>
                 )}
-                Continuar com Google
+                {t("auth.continueWithGoogle")}
               </Button>
               <p className="text-center text-xs leading-relaxed text-text-muted">
-                Ao continuar, você declara ter {MINIMUM_AGE} anos ou mais e
-                concorda com os{" "}
-                <Link href="/termos" className="font-semibold text-primary hover:underline">
-                  Termos de uso
-                </Link>{" "}
-                e a{" "}
-                <Link href="/privacidade" className="font-semibold text-primary hover:underline">
-                  Política de privacidade
-                </Link>
-                .
+                {rich(t("auth.consent", { age: MINIMUM_AGE }), {
+                  terms: (
+                    <Link href="/termos" className="font-semibold text-primary hover:underline">
+                      {t("auth.termsLink")}
+                    </Link>
+                  ),
+                  privacy: (
+                    <Link href="/privacidade" className="font-semibold text-primary hover:underline">
+                      {t("auth.privacyLink")}
+                    </Link>
+                  ),
+                })}
               </p>
             </div>
           </div>

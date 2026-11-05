@@ -16,6 +16,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useT } from "@/lib/i18n/provider";
+import { rich } from "@/lib/i18n/rich";
 
 // Reading the documents must stay possible while the dialog is pending.
 const LEGAL_PATHS = new Set(["/termos", "/privacidade", "/blocked"]);
@@ -24,6 +26,7 @@ const LEGAL_PATHS = new Set(["/termos", "/privacidade", "/blocked"]);
  * the current one (Termos de Uso, "Alterações destes termos"). */
 export function TermsUpdateDialog() {
   const { user, profile } = useAuth();
+  const t = useT();
   const pathname = usePathname();
   const [accepted, setAccepted] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -43,7 +46,7 @@ export function TermsUpdateDialog() {
       await UserService.acceptCurrentTerms(user.uid);
       setAccepted(user.uid);
     } catch {
-      toast.error("Não foi possível registrar o aceite. Tente de novo.");
+      toast.error(t("notices.termsAcceptError"));
     } finally {
       setSaving(false);
     }
@@ -53,27 +56,28 @@ export function TermsUpdateDialog() {
     <AlertDialog open={pending}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Atualizamos os Termos de Uso e a Política de Privacidade</AlertDialogTitle>
+          <AlertDialogTitle>{t("notices.termsTitle")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Deixamos mais claro o papel da Skillsy, as responsabilidades de cada usuário, o
-            tratamento dos dados de ala e ano de batismo e as regras de bloqueio. O uso continua
-            gratuito, e o cadastro é permitido somente para maiores de {MINIMUM_AGE} anos.
+            {t("notices.termsText", { age: MINIMUM_AGE })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <p className="text-sm text-text-muted">
-          Leia os{" "}
-          <Link href="/termos" className="font-semibold text-primary hover:underline">
-            Termos de Uso
-          </Link>{" "}
-          e a{" "}
-          <Link href="/privacidade" className="font-semibold text-primary hover:underline">
-            Política de Privacidade
-          </Link>
-          .
+          {rich(t("notices.termsRead"), {
+            terms: (
+              <Link href="/termos" className="font-semibold text-primary hover:underline">
+                {t("notices.termsOfUse")}
+              </Link>
+            ),
+            privacy: (
+              <Link href="/privacidade" className="font-semibold text-primary hover:underline">
+                {t("notices.privacyPolicy")}
+              </Link>
+            ),
+          })}
         </p>
         <AlertDialogFooter>
           <AlertDialogAction onClick={accept} disabled={saving}>
-            {saving ? "Salvando..." : "Li e concordo"}
+            {saving ? t("notices.saving") : t("notices.agree")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

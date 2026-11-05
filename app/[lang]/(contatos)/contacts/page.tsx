@@ -1,11 +1,21 @@
+import type { Metadata } from 'next';
 import { ContactsClient } from '@/components/contacts-client';
 import { createPrivateMetadata } from '@/lib/public-metadata';
+import { getMessages, getT } from '@/lib/i18n/server';
+import { I18nProvider } from '@/lib/i18n/provider';
 
-export const metadata = createPrivateMetadata({
-  title: 'Meus Contatos',
-  description: 'Área restrita para gerenciar seus contatos no Skillsy.',
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return createPrivateMetadata({
+    title: t('contacts.metaTitle'),
+    description: t('contacts.metaDescription'),
+  });
+}
 
-export default function ContactsPage() {
-  return <ContactsClient />;
+export default async function ContactsPage() {
+  return (
+    <I18nProvider messages={await getMessages('contacts')}>
+      <ContactsClient />
+    </I18nProvider>
+  );
 }
