@@ -709,6 +709,20 @@ export const UserService = {
     }
   },
 
+  /** Records that the member accepted the current Terms of Use and Privacy
+   * Policy (firestore.rules only accepts termsAcceptedAt = request.time). */
+  async acceptCurrentTerms(uid: string): Promise<void> {
+    const path = `users/${uid}`;
+    try {
+      await updateDoc(doc(db, "users", uid), {
+        termsVersion: TERMS_VERSION,
+        termsAcceptedAt: serverTimestamp(),
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, path);
+    }
+  },
+
   /** Blocks (with the reason shown to the member on /blocked) or unblocks an
    * account. Writes only these fields, and hides or shows the public profile. */
   async adminSetBlocked(

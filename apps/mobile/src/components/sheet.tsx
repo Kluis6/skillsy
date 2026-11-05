@@ -11,11 +11,13 @@ type SheetProps = {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  /** false for a required step: no close button, backdrop or back gesture. */
+  dismissable?: boolean;
 };
 
 /** Bottom sheet shell (Material 3 modal bottom sheet) in the platform's look:
  * square corners, brand colors, Inter. Same on Android and web. */
-export function Sheet({ visible, title, onClose, children }: SheetProps) {
+export function Sheet({ visible, title, onClose, children, dismissable = true }: SheetProps) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -23,13 +25,13 @@ export function Sheet({ visible, title, onClose, children }: SheetProps) {
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={dismissable ? onClose : () => {}}
       statusBarTranslucent
       navigationBarTranslucent>
       <KeyboardAvoidingView behavior="padding" className="flex-1 justify-end">
         <Pressable
           className="absolute inset-0 bg-black/40"
-          onPress={onClose}
+          onPress={dismissable ? onClose : undefined}
           accessibilityLabel="Fechar"
         />
         {/* Animated.View only animates: NativeWind does not style it, so the
@@ -43,13 +45,17 @@ export function Sheet({ visible, title, onClose, children }: SheetProps) {
             </View>
             <View className="flex-row items-center justify-between py-1 pl-4 pr-1">
               <Text className="font-heading text-lg font-semibold">{title}</Text>
-              <Pressable
-                onPress={onClose}
-                className="size-12 items-center justify-center active:bg-accent"
-                accessibilityRole="button"
-                accessibilityLabel="Fechar">
-                <X size={20} className="text-foreground" />
-              </Pressable>
+              {dismissable ? (
+                <Pressable
+                  onPress={onClose}
+                  className="size-12 items-center justify-center active:bg-accent"
+                  accessibilityRole="button"
+                  accessibilityLabel="Fechar">
+                  <X size={20} className="text-foreground" />
+                </Pressable>
+              ) : (
+                <View className="size-12" />
+              )}
             </View>
             {children}
           </View>

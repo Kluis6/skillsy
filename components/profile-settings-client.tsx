@@ -1011,6 +1011,20 @@ export function ProfileSettingsClient() {
                               )}
                             </div>
                           </div>
+                          {/* LGPD art. 11: specific consent for religious data
+                              (Termos de Uso, "Dados de filiação religiosa"). */}
+                          <p className="text-xs leading-relaxed text-text-muted">
+                            Opcional. Ao informar a ala e o ano de batismo, você
+                            consente que eles apareçam no seu perfil, conforme
+                            os{" "}
+                            <Link
+                              href="/termos#dados-de-filiacao-religiosa"
+                              className="font-semibold text-primary hover:underline"
+                            >
+                              Termos de Uso
+                            </Link>
+                            . Para retirar o consentimento, basta apagá-los.
+                          </p>
                         </div>
                       )}
 

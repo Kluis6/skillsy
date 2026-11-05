@@ -8,6 +8,7 @@ import { useState } from 'react';
 
 import { BrandSplash } from '@/components/brand-splash';
 import { SnackbarProvider } from '@/components/snackbar';
+import { TermsUpdateSheet } from '@/components/terms-update-sheet';
 import { AppearanceProvider, useAppearance } from '@/lib/appearance';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { NotificationsProvider } from '@/lib/notifications';
@@ -49,6 +50,7 @@ function Navigation() {
         {/* Every screen draws its own AppHeader, so tabs and stacked screens
             share the same bar, title size and back arrow. */}
         <Stack screenOptions={{ headerShown: false }} />
+        <TermsUpdateSheet />
         <PortalHost />
       </SnackbarProvider>
       {/* Until the saved session is restored, so the first screen already

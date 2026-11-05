@@ -26,6 +26,7 @@ import { Switch } from '@/components/ui/switch';
 import { Text } from '@/components/ui/text';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/lib/auth';
+import { openSite } from '@/lib/site';
 import { CATEGORY_OPTIONS, STATE_OPTIONS } from '@/lib/filters';
 import { pickImage, uploadImage, type ImageKind } from '@/lib/image-upload';
 import { saveProfile } from '@/lib/profile';
@@ -302,6 +303,17 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
                   maxLength={4}
                 />
               </Field>
+              {/* LGPD art. 11: specific consent for religious data. */}
+              <Text className="text-xs leading-5 text-muted-foreground">
+                Opcional. Ao informar a ala e o ano de batismo, você consente que eles apareçam no
+                seu perfil, conforme os{' '}
+                <Text
+                  className="text-xs font-semibold text-primary"
+                  onPress={() => openSite('/termos#dados-de-filiacao-religiosa')}>
+                  Termos de uso
+                </Text>
+                . Para retirar o consentimento, basta apagá-los.
+              </Text>
             </>
           ) : null}
         </Section>
