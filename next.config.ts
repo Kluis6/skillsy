@@ -37,6 +37,10 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  experimental: {
+    // app/global-not-found.tsx: 404 for URLs outside app/[lang] routes.
+    globalNotFound: true,
+  },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
   },

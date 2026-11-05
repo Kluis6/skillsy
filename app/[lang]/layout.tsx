@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "../globals.css";
 import { Inter, Outfit } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/hooks/use-auth";
 import { getPublicBaseUrl } from "@/lib/public-metadata";
+import { lang } from "next/root-params";
+import { notFound } from "next/navigation";
+import { HTML_LANG, enabledLocales, isLocale } from "@skillsy/shared/i18n/locales";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading" });
@@ -79,14 +82,21 @@ import { TermsUpdateDialog } from "@/components/terms-update-dialog";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ErrorBoundary } from "@/components/error-boundary";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+// One static version per enabled language (docs/i18n-plan.md). proxy.ts
+// keeps the disabled ones out; the check below covers direct hits.
+const ENABLED = enabledLocales(process.env.NEXT_PUBLIC_ENABLED_LOCALES);
+
+export function generateStaticParams() {
+  return ENABLED.map((locale) => ({ lang: locale }));
+}
+
+export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
+  const locale = await lang();
+  if (!isLocale(locale) || !ENABLED.includes(locale)) notFound();
+
   return (
     <html
-      lang="pt-BR"
+      lang={HTML_LANG[locale]}
       className={cn("font-sans", inter.variable, outfit.variable)}
       suppressHydrationWarning
     >

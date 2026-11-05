@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { SearchSlash, Home } from 'lucide-react';
 import Link from 'next/link';
 
-export default function NotFound() {
+export function NotFoundPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-surface text-center">
       <div className="w-24 h-24 bg-primary/5 text-primary flex items-center justify-center mb-8 rotate-3">

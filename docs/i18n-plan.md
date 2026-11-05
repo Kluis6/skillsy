@@ -216,12 +216,14 @@ Cada etapa termina com o site em produção **sem mudança visível em portuguê
 
 ### E2 — Roteamento do site (2–3 dias, congelar o site)
 
-- [ ] `git mv` de `app/*` para `app/[lang]/*` (exceto `api/`, `robots.ts`, `sitemap.ts`)
-- [ ] `proxy.ts` (seção 3.2), `NEXT_PUBLIC_ENABLED_LOCALES=pt`
-- [ ] `app/[lang]/layout.tsx` com `<html lang>`, `generateStaticParams`, `I18nProvider` (ainda com textos fixos)
-- [ ] `global-not-found.tsx` + flag no `next.config.ts`
-- [ ] `localizedHref`, `LocalizedLink`; trocar os 67 `href` e as 22 navegações; `useAuth` (`/blocked`, `/admin`, `BLOCKED_ALLOWED_PATHS`); redirect `/admin/users` no `next.config.ts`
-- [ ] Testes do `proxy` com `next/experimental/testing/server` (`isRewrite`, `getRedirectUrl`): `/`, `/pt/x`, `/en/x` desligado → 404, cookie, `Accept-Language`
+- [x] `git mv` de `app/*` para `app/[lang]/*` (ficam na raiz: `api/`, `robots.ts`, `sitemap.ts`, `globals.css`, ícones e `opengraph-image.tsx` do site)
+- [x] `proxy.ts` com as regras em `packages/shared/src/i18n/routing.ts` (função pura; `Accept-Language` lido por um parser próprio de ~20 linhas, sem `negotiator`/`intl-localematcher`), `NEXT_PUBLIC_ENABLED_LOCALES=pt` (padrão quando a variável não existe)
+- [x] `app/[lang]/layout.tsx` com `lang` de `next/root-params`, `<html lang>`, `generateStaticParams` e 404 para idioma desligado. `I18nProvider` vai para a E3, junto dos primeiros textos
+- [x] `global-not-found.tsx` + `experimental.globalNotFound`; a página 404 virou `components/not-found-page.tsx`, usada pelos dois
+- [x] `localizedHref` (`lib/i18n/href.ts`). A troca dos `href`, das navegações e dos caminhos do `useAuth` fica para a E3, arquivo por arquivo junto dos textos: com só o português ligado nada muda, e com outro idioma ligado o cookie `lang` já leva o link sem prefixo para o idioma certo
+- [x] Testes das regras do proxy em `tests/i18n/routing.test.mjs`: `/`, `/pt/x` → 308, `/en/x` desligado → 404, cookie, `Accept-Language`, imagens `opengraph-image` em `/pt`
+- [x] Conferido com `next build` + `next start`: URLs atuais com 200, `/pt/x` → 308, `/en` e `/es` → 404, 404 com o visual da Skillsy, imagens de perfil e artigo, `robots.txt`, `sitemap.xml`, `/api/og` e navegação pelo cliente
+- Observação para a E5: as imagens de compartilhamento de perfil e artigo passaram a ter `/pt/` na URL (`/pt/profile/…/opengraph-image-…`); o proxy serve essas URLs sem redirecionar
 
 **Pronto quando:** `next build` passa, todas as URLs atuais respondem igual, testes do proxy passam, Vercel em produção sem diferença.
 
