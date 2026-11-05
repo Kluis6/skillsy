@@ -69,7 +69,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { formatReviewCount, RecommendationCount } from '@/components/profile/recommendation-summary';
+import { RecommendationCount } from '@/components/profile/recommendation-summary';
+import { formatReviewCount } from '@skillsy/shared/format';
 import { MembershipMark } from '@/components/ui/trust-signals';
 import {
   Dialog,

@@ -234,7 +234,7 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
 - [ ] Extrair textos para `pt.json` mantendo o português **idêntico**. Conferência: retrato do texto de 21 páginas públicas (desktop e celular: texto, título, metas, `aria-label`, `placeholder`, `title`, `alt`) antes e depois de cada área, comparado como texto corrido
   - [x] Base: `lib/i18n/server.ts` (`getT`, `getLocale`, `getMessages` com `next/root-params`), `lib/i18n/provider.tsx` (`I18nProvider`, `useT`, `useLocale`, `useHref`), chaves tipadas a partir do `pt.json` (`keys.ts`)
   - [x] (1) Layout e metadados do site, menu (o menu da busca passou a reutilizar o da barra), rodapé, botão de tema, Início (hero, categorias, benefícios, Fale conosco). Nomes das categorias ficam para a E4 (são termos de busca); mensagens do zod ficam para o item de validações
-  - [ ] (2) Busca, perfil público, cards
+  - [x] (2) Busca, perfil público, cards, filtro de localização. `rich()` para elementos dentro do texto (`lib/i18n/rich.tsx`); datas relativas com date-fns no idioma (`lib/i18n/date-fns.ts`), mantendo o português igual; nota com `formatRating` (o perfil mostrava "4.5" e passou a "4,5", como nos cards). Rótulos de dias, categorias e motivos de denúncia ficam para a E4
   - [ ] (3) Oportunidades
   - [ ] (4) Artigos e vagas
   - [ ] (5) Login, cadastro, perfil/configurações, bloqueio

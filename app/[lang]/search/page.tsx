@@ -3,17 +3,20 @@ import { SearchClient } from "@/components/search-client";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { UserService } from "@/services/user-service";
 import { UserProfile } from "@/models/types";
+import { getMessages, getT } from "@/lib/i18n/server";
+import { I18nProvider } from "@/lib/i18n/provider";
 
-export const metadata: Metadata = createPublicMetadata({
-  title: "Busca de profissionais",
-  description:
-    "Encontre os melhores profissionais e serviços na comunidade. Resultados personalizados por localização e categoria.",
-  path: "/search",
-  imageTitle: "Busque profissionais com mais contexto",
-  imageDescription:
-    "Compartilhe resultados e descubra serviços por localização, categoria e confiança da comunidade.",
-  imageLabel: "Busca pública",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return createPublicMetadata({
+    title: t("search.metaTitle"),
+    description: t("search.metaDescription"),
+    path: "/search",
+    imageTitle: t("search.imageTitle"),
+    imageDescription: t("search.imageDescription"),
+    imageLabel: t("search.imageLabel"),
+  });
+}
 
 interface SearchPageProps {
   searchParams: Promise<{
@@ -44,13 +47,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   }
 
   return (
-    <SearchClient
-      initialQuery={query}
-      initialCity={city}
-      initialState={state}
-      initialCategory={category}
-      initialResults={results}
-      initialSuggestions={suggestions}
-    />
+    <I18nProvider messages={await getMessages("search")}>
+      <SearchClient
+        initialQuery={query}
+        initialCity={city}
+        initialState={state}
+        initialCategory={category}
+        initialResults={results}
+        initialSuggestions={suggestions}
+      />
+    </I18nProvider>
   );
 }

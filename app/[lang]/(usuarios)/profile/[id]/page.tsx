@@ -3,6 +3,8 @@ import { cache } from 'react';
 import { ProfileDetailClient } from '@/components/profile-detail-client';
 import { createPublicMetadata } from '@/lib/public-metadata';
 import { UserService } from '@/services/user-service';
+import { getMessages, getT } from '@/lib/i18n/server';
+import { I18nProvider } from '@/lib/i18n/provider';
 
 // Deduplicates the fetch shared by generateMetadata and the page in one request.
 const getPublicProfile = cache((id: string) => UserService.getPublicProfile(id));
@@ -22,12 +24,18 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
+  const t = await getT();
   try {
     const profile = await getPublicProfile(id);
-    if (!profile) return { title: 'Perfil não encontrado' };
+    if (!profile) return { title: t('profile.notFound') };
 
-    const title = `${profile.name} | ${profile.serviceType || 'Membro'}`;
-    const description = profile.bio || `Conheça ${profile.name}, profissional na comunidade SUD especializado em ${profile.serviceType || 'serviços diversos'}.`;
+    const title = `${profile.name} | ${profile.serviceType || t('profile.metaMember')}`;
+    const description =
+      profile.bio ||
+      t('profile.metaDescription', {
+        name: profile.name,
+        service: profile.serviceType || t('profile.metaVariousServices'),
+      });
 
     return createPublicMetadata({
       title,
@@ -35,17 +43,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       path: `/profile/${profile.uid}`,
       imageTitle: profile.name,
       imageDescription: description,
-      imageLabel: profile.category || 'Perfil público',
+      imageLabel: profile.category || t('profile.metaImageLabel'),
       useRouteOgImage: true,
     });
   } catch (error) {
-    return { title: 'Perfil' };
+    return { title: t('profile.metaTitle') };
   }
 }
 
 export default async function PublicProfilePage({ params }: Props) {
   const { id } = await params;
-  const initialProfile = await getPublicProfile(id);
-  
-  return <ProfileDetailClient id={id} initialProfile={initialProfile} />;
+  const [initialProfile, messages] = await Promise.all([
+    getPublicProfile(id),
+    getMessages('profile'),
+  ]);
+
+  return (
+    <I18nProvider messages={messages}>
+      <ProfileDetailClient id={id} initialProfile={initialProfile} />
+    </I18nProvider>
+  );
 }

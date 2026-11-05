@@ -4,10 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPin, Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  formatReviewCount,
-  RecommendationCount,
-} from "@/components/profile/recommendation-summary";
+import { RecommendationCount } from "@/components/profile/recommendation-summary";
+import { useLocale, useT } from "@/lib/i18n/provider";
+import { formatRating } from "@skillsy/shared/i18n/format";
+import { INTL_LOCALE } from "@skillsy/shared/i18n/locales";
+import type { TranslateFn } from "@skillsy/shared/i18n/keys";
 import { MembershipMark } from "@/components/ui/trust-signals";
 import { UserProfile } from "@/models/types";
 import { cn } from "@/lib/utils";
@@ -31,11 +32,11 @@ function getInitial(name: string) {
   return name.trim().charAt(0).toUpperCase() || "S";
 }
 
-function getRoleLabel(provider: UserProfile) {
+function getRoleLabel(provider: UserProfile, t: TranslateFn) {
   return (
     provider.serviceType ||
     provider.category ||
-    (provider.isProvider ? "Prestador de serviço" : "Membro da comunidade")
+    (provider.isProvider ? t("card.roleProvider") : t("card.roleMember"))
   );
 }
 
@@ -52,8 +53,10 @@ function ProviderSignals({
   reviewCount: number;
   recommendationCount: number;
 }) {
+  const t = useT();
+  const locale = useLocale();
   if (reviewCount === 0 && recommendationCount === 0) {
-    return <span className="text-sm text-text-muted">Novo na comunidade</span>;
+    return <span className="text-sm text-text-muted">{t("card.newInCommunity")}</span>;
   }
 
   return (
@@ -61,9 +64,9 @@ function ProviderSignals({
       {reviewCount > 0 ? (
         <span className="inline-flex items-center gap-1 text-sm font-semibold text-text-main">
           <Star className="size-3.5 text-highlight" fill="currentColor" aria-hidden="true" />
-          {(rating || 0).toFixed(1).replace(".", ",")}
+          {formatRating(rating, INTL_LOCALE[locale])}
           <span className="font-normal text-text-muted">
-            ({formatReviewCount(reviewCount)})
+            ({t("common.reviews", { count: reviewCount })})
           </span>
         </span>
       ) : null}
@@ -77,11 +80,8 @@ function ProviderSignals({
   );
 }
 
-function getBioPreview(provider: UserProfile) {
-  return (
-    provider.bio ||
-    "Perfil da comunidade Skillsy com contexto para você avaliar, conversar e decidir com mais confiança."
-  );
+function getBioPreview(provider: UserProfile, t: TranslateFn) {
+  return provider.bio || t("card.bioFallback");
 }
 
 export function ProviderProfileCard({
@@ -89,8 +89,9 @@ export function ProviderProfileCard({
   variant = "grid",
   className,
 }: ProviderProfileCardProps) {
+  const t = useT();
   const location = provider.publicState;
-  const roleLabel = getRoleLabel(provider);
+  const roleLabel = getRoleLabel(provider, t);
   const reviewCount = provider.reviewCount || 0;
   const recommendationCount = provider.recommendationCount || 0;
   const initial = getInitial(provider.name);
@@ -124,7 +125,7 @@ export function ProviderProfileCard({
 
                   <p className="line-clamp-1 text-sm font-normal text-text-muted">
                     {provider.companyName
-                      ? `${roleLabel} na ${provider.companyName}`
+                      ? t("card.roleAt", { role: roleLabel, company: provider.companyName })
                       : roleLabel}
                   </p>
                 </div>
@@ -132,7 +133,7 @@ export function ProviderProfileCard({
             </div>
             <div className="">
               <p className="line-clamp-2 max-w-3xl text-sm leading-relaxed text-text-muted">
-                {getBioPreview(provider)}
+                {getBioPreview(provider, t)}
               </p>
 
               <div className="flex flex-wrap items-center gap-2 pt-1">
@@ -180,7 +181,7 @@ export function ProviderProfileCard({
           {provider.bannerURL ? (
             <Image
               src={provider.bannerURL}
-              alt={`Capa do perfil de ${provider.name}`}
+              alt={t("card.coverAlt", { name: provider.name })}
               width={768}
               height={180}
               className="relative z-20 h-30 w-full object-cover brightness-70 dark:brightness-50"
@@ -230,7 +231,7 @@ export function ProviderProfileCard({
             <p className="text-sm font-normal text-text-muted">{roleLabel}</p>
           </CardTitle>
           <CardDescription className="line-clamp-2 col-span-4">
-            {getBioPreview(provider)}
+            {getBioPreview(provider, t)}
           </CardDescription>
         </CardHeader>
         <CardFooter className="mt-auto flex items-center justify-between gap-2">
@@ -240,7 +241,7 @@ export function ProviderProfileCard({
             recommendationCount={recommendationCount}
           />
           <span className="inline-flex items-center text-sm font-semibold text-primary">
-            Ver perfil
+            {t("card.viewProfile")}
             <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" />
           </span>
         </CardFooter>

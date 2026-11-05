@@ -58,6 +58,8 @@ import { MdLogin, MdSearch } from "react-icons/md";
 import { PROVIDER_CATEGORIES } from "@/lib/profile-form";
 import { ThemeToggle } from "./theme-toggle";
 import { OpportunityNotifications } from "./opportunity-notifications";
+import { useT } from "@/lib/i18n/provider";
+import { rich } from "@/lib/i18n/rich";
 
 interface SearchClientProps {
   initialQuery: string;
@@ -80,6 +82,7 @@ export function SearchClient({
   const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const t = useT();
 
   const query = initialQuery;
   const city = initialCity;
@@ -214,10 +217,10 @@ export function SearchClient({
       }
     >
       <SelectTrigger id={id} className="h-12 w-full  px-3 text-sm">
-        <SelectValue>{selectedCategory || "Todas as categorias"}</SelectValue>
+        <SelectValue>{selectedCategory || t("search.allCategories")}</SelectValue>
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">Todas as categorias</SelectItem>
+        <SelectItem value="all">{t("search.allCategories")}</SelectItem>
         {PROVIDER_CATEGORIES.map((cat) => (
           <SelectItem key={cat} value={cat}>
             {cat}
@@ -245,7 +248,7 @@ export function SearchClient({
                     size="icon"
                     variant="ghost"
                     className="md:hidden"
-                    aria-label="Abrir menu principal"
+                    aria-label={t("nav.openMenu")}
                   >
                     <BsList className="size-4 text-text-main" />
                   </Button>
@@ -261,7 +264,7 @@ export function SearchClient({
             </Drawer>
             <Link href="/">
               <h1 className="font-heading text-2xl font-semibold tracking-normal text-brand">
-                Skillsy
+                {t("common.appName")}
               </h1>
             </Link>
           </div>
@@ -277,16 +280,16 @@ export function SearchClient({
               />
               <Input
                 name="q"
-                aria-label="Buscar profissionais e serviços"
+                aria-label={t("search.searchAria")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="O que você procura? Pintor, Advogado, Bolo de Pote…"
+                placeholder={t("search.placeholder")}
                 className="pl-12 h-10 w-full placeholder:text-text-muted placeholder:sm:text-sm"
               />
               <Button
                 type="submit"
                 size="icon"
-                aria-label="Buscar profissionais"
+                aria-label={t("search.submitAria")}
                 className="absolute right-1 top-1/2 -translate-y-1/2 bg-primary  text-primary-foreground px-6 h-8  hidden sm:flex justify-center items-center transition-colors"
               >
                 <BsSearch className="text-white" size={20} />
@@ -305,7 +308,7 @@ export function SearchClient({
                     size="icon"
                     variant="ghost"
                     className="hidden md:flex"
-                    aria-label="Abrir menu principal"
+                    aria-label={t("nav.openMenu")}
                   >
                     <BsList className="size-4 text-text-main" />
                   </Button>
@@ -330,11 +333,11 @@ export function SearchClient({
               <AuthModal>
                 <Button
                   variant="default"
-                  title="Faça login ou crie sua conta"
-                  aria-label="Entrar ou criar conta"
+                  title={t("nav.signInTitle")}
+                  aria-label={t("nav.signInAria")}
                   className="px-3 normal-case lg:px-6"
                 >
-                  <span className="font-medium">Entrar</span>
+                  <span className="font-medium">{t("common.signIn")}</span>
                 </Button>
               </AuthModal>
             )}
@@ -353,10 +356,10 @@ export function SearchClient({
 
               <Input
                 name="q"
-                aria-label="Buscar profissionais e serviços"
+                aria-label={t("search.searchAria")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="O que você procura?"
+                placeholder={t("search.placeholderShort")}
                 className="pl-12 h-10 w-full bg-card placeholder:text-text-muted placeholder:text-xs"
               />
             </div>
@@ -371,7 +374,7 @@ export function SearchClient({
               <div className="flex items-center space-x-2 mb-6">
                 <BsSliders2 className="size-4 text-text-main" />
                 <h3 className="font-bold text-text-main font-heading">
-                  Filtros
+                  {t("search.filters")}
                 </h3>
               </div>
               <div className="space-y-6">
@@ -380,7 +383,7 @@ export function SearchClient({
                     htmlFor="search-state-filter"
                     className="mb-4 block text-xs font-bold text-text-muted"
                   >
-                    Estado
+                    {t("search.state")}
                   </label>
                   <div className="relative">
                     <Select
@@ -394,11 +397,11 @@ export function SearchClient({
                         <SelectValue>
                           {state && state !== "all"
                             ? selectedStateLabel
-                            : "Todos os estados"}
+                            : t("search.allStates")}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Todos os estados</SelectItem>
+                        <SelectItem value="all">{t("search.allStates")}</SelectItem>
                         {BRAZIL_STATES.map((item) => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
@@ -414,7 +417,7 @@ export function SearchClient({
                     htmlFor="search-category-filter"
                     className="mb-4 block text-xs font-bold text-text-muted"
                   >
-                    Categorias
+                    {t("search.categories")}
                   </label>
                   {renderCategoryFilter("search-category-filter")}
                 </div>
@@ -427,7 +430,7 @@ export function SearchClient({
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-bold text-text-muted">
-                    {`${results.length} resultado${results.length === 1 ? "" : "s"} encontrado${results.length === 1 ? "" : "s"}`}
+                    {t("search.resultsFound", { count: results.length })}
                   </p>
                 </div>
 
@@ -436,9 +439,9 @@ export function SearchClient({
                     render={
                       <Button
                         size="icon-lg"
-                        aria-label="Abrir filtros"
+                        aria-label={t("search.openFilters")}
                         variant="ghost"
-                        title="Filtros"
+                        title={t("search.filters")}
                         className="lg:hidden"
                       >
                         <BsSliders2 className="size-4 text-text-main" />
@@ -447,7 +450,7 @@ export function SearchClient({
                   />
                   <SheetContent side="bottom">
                     <SheetHeader>
-                      <SheetTitle>Filtros</SheetTitle>
+                      <SheetTitle>{t("search.filters")}</SheetTitle>
                     </SheetHeader>
                     <section className="w-full">
                       <div className="px-4 h-full">
@@ -457,7 +460,7 @@ export function SearchClient({
                               htmlFor="search-mobile-state-filter"
                               className="mb-4 block text-xs font-bold text-text-muted"
                             >
-                              Estado
+                              {t("search.state")}
                             </label>
                             <div className="relative">
                               <Select
@@ -471,12 +474,12 @@ export function SearchClient({
                                   <SelectValue>
                                     {state && state !== "all"
                                       ? selectedStateLabel
-                                      : "Todos os estados"}
+                                      : t("search.allStates")}
                                   </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="all">
-                                    Todos os estados
+                                    {t("search.allStates")}
                                   </SelectItem>
                                   {BRAZIL_STATES.map((item) => (
                                     <SelectItem
@@ -496,7 +499,7 @@ export function SearchClient({
                               htmlFor="search-mobile-category-filter"
                               className="block text-xs font-bold text-text-muted"
                             >
-                              Categorias
+                              {t("search.categories")}
                             </label>
                             {renderCategoryFilter(
                               "search-mobile-category-filter",
@@ -512,7 +515,7 @@ export function SearchClient({
               {hasActiveFilters ? (
                 <div className="flex flex-wrap items-center gap-2 p-3 md:p-3">
                   <span className="text-xs font-semibold text-text-muted">
-                    Filtros ativos:
+                    {t("search.activeFilters")}
                   </span>
                   {query ? (
                     <Button
@@ -522,7 +525,7 @@ export function SearchClient({
                       onClick={clearSearchQuery}
                       className="hover:text-primary"
                     >
-                      Busca: {query} ×
+                      {t("search.queryChip", { query })}
                     </Button>
                   ) : null}
                   {activeLocationLabel ? (
@@ -533,7 +536,7 @@ export function SearchClient({
                       onClick={() => handleStateChange("all")}
                       className="hover:text-primary"
                     >
-                      Local: {activeLocationLabel} ×
+                      {t("search.placeChip", { place: activeLocationLabel })}
                     </Button>
                   ) : null}
                   {selectedCategory ? (
@@ -544,7 +547,7 @@ export function SearchClient({
                       onClick={() => handleCategoryChange(null)}
                       className="hover:text-primary"
                     >
-                      Categoria: {selectedCategory} ×
+                      {t("search.categoryChip", { category: selectedCategory })}
                     </Button>
                   ) : null}
                   <Button
@@ -554,7 +557,7 @@ export function SearchClient({
                     onClick={clearAllFilters}
                     className="ml-auto h-8 text-xs"
                   >
-                    Limpar filtros
+                    {t("search.clearFilters")}
                   </Button>
                 </div>
               ) : null}
@@ -577,16 +580,16 @@ export function SearchClient({
                   {results.length > ITEMS_PER_PAGE && (
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-10 pb-20 border-t border-border-subtle mt-10">
                       <p className="text-sm font-bold text-text-muted">
-                        Página{" "}
-                        <span className="text-primary">{currentPage}</span> de{" "}
-                        {totalPages}
+                        {rich(t("search.pageOf", { total: totalPages }), {
+                          current: <span className="text-primary">{currentPage}</span>,
+                        })}
                       </p>
 
                       <div className="flex items-center gap-2">
                         <Button
                           variant="outline"
                           size="icon-lg"
-                          aria-label="Ir para a primeira página"
+                          aria-label={t("search.firstPage")}
                           onClick={() => setCurrentPage(1)}
                           disabled={currentPage === 1}
                           className="h-10 w-10  hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-30"
@@ -596,7 +599,7 @@ export function SearchClient({
                         <Button
                           variant="outline"
                           size="icon-lg"
-                          aria-label="Ir para a página anterior"
+                          aria-label={t("search.previousPage")}
                           onClick={() =>
                             setCurrentPage((prev) => Math.max(1, prev - 1))
                           }
@@ -625,7 +628,7 @@ export function SearchClient({
                                         ? "default"
                                         : "outline"
                                     }
-                                    aria-label={`Ir para a página ${pageNum}`}
+                                    aria-label={t("search.goToPage", { page: pageNum })}
                                     aria-current={
                                       currentPage === pageNum
                                         ? "page"
@@ -670,7 +673,7 @@ export function SearchClient({
                         <Button
                           variant="outline"
                           size="icon"
-                          aria-label="Ir para a próxima página"
+                          aria-label={t("search.nextPage")}
                           onClick={() =>
                             setCurrentPage((prev) =>
                               Math.min(totalPages, prev + 1),
@@ -684,7 +687,7 @@ export function SearchClient({
                         <Button
                           variant="outline"
                           size="icon-lg"
-                          aria-label="Ir para a última página"
+                          aria-label={t("search.lastPage")}
                           onClick={() => setCurrentPage(totalPages)}
                           disabled={currentPage === totalPages}
                           className="hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-30"
@@ -701,18 +704,15 @@ export function SearchClient({
                     <div className="space-y-2">
                       <Search className="mx-auto size-10 md:size-16 text-primary/40" />
                       <h4 className="text-xl md:text-2xl font-bold text-text-main">
-                        Nenhum resultado exato encontrado
+                        {t("search.noResults")}
                       </h4>
                       <p className="text-text-muted max-w-md mx-auto">
-                        Não encontramos profissionais para &quot;{query}&quot;
-                        {city
-                          ? ` em ${city}, ${state}`
-                          : state
-                            ? ` em ${selectedStateLabel}`
-                            : ""}
-                        . Tente termos mais genéricos, veja as sugestões
-                        abaixo ou publique o que você precisa para
-                        profissionais da área serem avisados.
+                        {city || state
+                          ? t("search.noResultsTextIn", {
+                              query,
+                              place: city ? `${city}, ${state}` : selectedStateLabel,
+                            })
+                          : t("search.noResultsText", { query })}
                       </p>
                     </div>
 
@@ -722,14 +722,14 @@ export function SearchClient({
                         nativeButton={false}
                         className="h-10 px-4"
                       >
-                        Publicar o que preciso
+                        {t("search.publishNeed")}
                       </Button>
                       <Button
                         onClick={clearAllFilters}
                         variant="outline"
                         className="h-10 px-4"
                       >
-                        Limpar filtros
+                        {t("search.clearFilters")}
                       </Button>
                     </div>
                   </div>
@@ -740,10 +740,10 @@ export function SearchClient({
                         <div className="h-px flex-grow bg-border-subtle" />
                         <h3 className="md:text-lg text-base font-bold text-text-muted tracking-normal shrink-0">
                           {city
-                            ? `Membros em ${city}`
+                            ? t("search.membersIn", { place: city })
                             : state
-                              ? `Membros em ${selectedStateLabel}`
-                              : "Membros em Destaque"}
+                              ? t("search.membersIn", { place: selectedStateLabel })
+                              : t("search.featuredMembers")}
                         </h3>
                         <div className="h-px flex-grow bg-border-subtle" />
                       </div>

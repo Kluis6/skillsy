@@ -9,10 +9,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  formatReviewCount,
   RecommendationCount,
   RecommendationSummary,
 } from "@/components/profile/recommendation-summary";
+import { useLocale, useT } from "@/lib/i18n/provider";
+import { rich } from "@/lib/i18n/rich";
+import { DATE_FNS_LOCALE } from "@/lib/i18n/date-fns";
+import { formatRating } from "@skillsy/shared/i18n/format";
+import { INTL_LOCALE } from "@skillsy/shared/i18n/locales";
 import {
   Building2,
   CalendarDays,
@@ -79,7 +83,6 @@ import { AVAILABILITY_OPTIONS } from "@/lib/profile-form";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { reportUserSchema, type ReportUserFormData } from "@/lib/validations";
 import { REPORT_REASON_LABELS, REPORT_REASON_OPTIONS } from "@/lib/reporting";
 
@@ -99,6 +102,8 @@ export function ProfileDetailClient({
     profile,
     logout,
   } = useAuth();
+  const t = useT();
+  const locale = useLocale();
   const [targetProfile, setTargetProfile] = useState<UserProfile | null>(
     initialProfile,
   );
@@ -178,13 +183,13 @@ export function ProfileDetailClient({
         setTargetProfile(p);
       } catch (error) {
         console.error("Error fetching profile:", error);
-        toast.error("Erro ao carregar perfil");
+        toast.error(t("profile.loadError"));
       } finally {
         setLoading(false);
       }
     };
     fetchProfile();
-  }, [id, initialProfile]);
+  }, [id, initialProfile, t]);
 
   useEffect(() => {
     const fetchRatings = async () => {
@@ -199,14 +204,14 @@ export function ProfileDetailClient({
         setRatings(nextRatings);
       } catch (error) {
         console.error("Error fetching ratings:", error);
-        toast.error("Não foi possível carregar os comentários.");
+        toast.error(t("profile.ratingsLoadError"));
       } finally {
         setLoadingRatings(false);
       }
     };
 
     fetchRatings();
-  }, [targetProfile?.uid, targetProfile?.isProvider]);
+  }, [targetProfile?.uid, targetProfile?.isProvider, t]);
 
   useEffect(() => {
     if (
@@ -236,9 +241,9 @@ export function ProfileDetailClient({
 
   const handleToggleContact = async () => {
     if (!user) {
-      toast.error("Você precisa estar logado para adicionar contatos", {
-        description: "Faça login para criar sua rede de confiança.",
-        action: { label: "Entrar", onClick: () => setAuthModalOpen(true) },
+      toast.error(t("profile.loginToConnect"), {
+        description: t("profile.loginToConnectText"),
+        action: { label: t("common.signIn"), onClick: () => setAuthModalOpen(true) },
       });
       return;
     }
@@ -246,18 +251,18 @@ export function ProfileDetailClient({
     try {
       await toggleContact(id);
       toast.success(
-        isContact ? "Removido dos contatos" : "Adicionado aos contatos",
+        isContact ? t("profile.removedFromContacts") : t("profile.addedToContacts"),
       );
     } catch (error) {
-      toast.error("Erro ao atualizar contatos");
+      toast.error(t("profile.contactsError"));
     }
   };
 
   const handleToggleRecommendation = async () => {
     if (!user) {
-      toast.error("Entre para indicar um profissional", {
-        description: "A indicação comunitária é registrada uma vez por membro.",
-        action: { label: "Entrar", onClick: () => setAuthModalOpen(true) },
+      toast.error(t("profile.loginToRecommend"), {
+        description: t("profile.loginToRecommendText"),
+        action: { label: t("common.signIn"), onClick: () => setAuthModalOpen(true) },
       });
       return;
     }
@@ -318,14 +323,14 @@ export function ProfileDetailClient({
 
         return current.filter((item) => item.recommenderId !== user.uid);
       });
-      toast.success(added ? "Indicação registrada" : "Indicação removida", {
+      toast.success(added ? t("profile.recommendationAdded") : t("profile.recommendationRemoved"), {
         description: added
-          ? "Seu nome e foto públicos podem aparecer como prova social neste perfil."
-          : "Você pode indicar novamente quando quiser.",
+          ? t("profile.recommendationAddedText")
+          : t("profile.recommendationRemovedText"),
       });
     } catch (error) {
       console.error("Error toggling recommendation:", error);
-      toast.error("Não foi possível atualizar sua indicação");
+      toast.error(t("profile.recommendationError"));
     } finally {
       setRecommendationLoading(false);
     }
@@ -339,9 +344,8 @@ export function ProfileDetailClient({
 
   const handleWhatsApp = () => {
     if (!targetProfile?.whatsapp) {
-      toast.error("WhatsApp não informado", {
-        description:
-          "Este profissional ainda não cadastrou um número de contato.",
+      toast.error(t("profile.noWhatsapp"), {
+        description: t("profile.noWhatsappText"),
       });
       return;
     }
@@ -353,11 +357,11 @@ export function ProfileDetailClient({
 
     try {
       await navigator.clipboard.writeText(shareUrl);
-      toast.success("Link copiado", {
-        description: "Agora você pode compartilhar este perfil.",
+      toast.success(t("profile.linkCopied"), {
+        description: t("profile.linkCopiedText"),
       });
     } catch {
-      toast.error("Não foi possível copiar o link");
+      toast.error(t("profile.copyError"));
     }
   };
 
@@ -367,7 +371,7 @@ export function ProfileDetailClient({
     try {
       await navigator.share({
         title: targetProfile.name,
-        text: `Confira o perfil de ${targetProfile.name} no Skillsy.`,
+        text: t("profile.shareText", { name: targetProfile.name }),
         url: shareUrl,
       });
     } catch {
@@ -377,15 +381,15 @@ export function ProfileDetailClient({
 
   const handleSubmitReport = async (data: ReportUserFormData) => {
     if (!user) {
-      toast.error("Login necessário", {
-        description: "Você precisa estar logado para denunciar um perfil.",
+      toast.error(t("profile.loginRequired"), {
+        description: t("profile.loginToReport"),
       });
       return;
     }
 
     if (!targetProfile || user.uid === targetProfile.uid) {
-      toast.error("Ação inválida", {
-        description: "Você não pode denunciar o próprio perfil.",
+      toast.error(t("profile.invalidAction"), {
+        description: t("profile.cantReportSelf"),
       });
       return;
     }
@@ -398,8 +402,8 @@ export function ProfileDetailClient({
         details: data.details?.trim(),
       });
 
-      toast.success("Denúncia enviada", {
-        description: "Nossa equipe administrativa poderá revisar esse perfil.",
+      toast.success(t("profile.reportSent"), {
+        description: t("profile.reportSentText"),
       });
       reportForm.reset({
         reason: "informacao_falsa",
@@ -408,14 +412,14 @@ export function ProfileDetailClient({
       setReportDialogOpen(false);
     } catch (error) {
       console.error("Error submitting report:", error);
-      toast.error("Não foi possível enviar a denúncia.");
+      toast.error(t("profile.reportError"));
     }
   };
 
   const handleWhatsAppShare = () => {
     if (!targetProfile || !shareUrl) return;
 
-    const message = `Confira o perfil de ${targetProfile.name} no Skillsy: ${shareUrl}`;
+    const message = t("profile.shareMessage", { name: targetProfile.name, url: shareUrl });
     window.open(
       `https://wa.me/?text=${encodeURIComponent(message)}`,
       "_blank",
@@ -426,7 +430,7 @@ export function ProfileDetailClient({
   const handleTelegramShare = () => {
     if (!targetProfile || !shareUrl) return;
 
-    const message = `Confira o perfil de ${targetProfile.name} no Skillsy: ${shareUrl}`;
+    const message = t("profile.shareMessage", { name: targetProfile.name, url: shareUrl });
     window.open(
       `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(message)}`,
       "_blank",
@@ -436,22 +440,22 @@ export function ProfileDetailClient({
 
   const shareActions = [
     {
-      label: "Compartilhar no WhatsApp",
-      description: "Envie o perfil no WhatsApp.",
+      label: t("profile.shareWhatsapp"),
+      description: t("profile.shareWhatsappText"),
       icon: BsWhatsapp,
       onClick: handleWhatsAppShare,
       className: "text-success",
     },
     {
-      label: "Compartilhar no Telegram",
-      description: "Envie o perfil no Telegram.",
+      label: t("profile.shareTelegram"),
+      description: t("profile.shareTelegramText"),
       icon: FaTelegramPlane,
       onClick: handleTelegramShare,
       className: "text-sky-500",
     },
     {
-      label: "Copiar link",
-      description: "Copia o link para a area de transferencia.",
+      label: t("profile.copyLink"),
+      description: t("profile.copyLinkText"),
       icon: Copy,
       onClick: handleCopyLink,
       className: "text-sky-600",
@@ -461,9 +465,11 @@ export function ProfileDetailClient({
   const renderShareSheet = () => (
     <SheetContent side="bottom" className="">
       <SheetHeader className="text-left">
-        <SheetTitle>Compartilhar perfil</SheetTitle>
+        <SheetTitle>{t("profile.shareProfile")}</SheetTitle>
         <SheetDescription>
-          Envie o perfil de <strong>{targetProfile?.name}</strong> por:
+          {rich(t("profile.shareProfileText"), {
+            name: <strong>{targetProfile?.name}</strong>,
+          })}
         </SheetDescription>
       </SheetHeader>
       <div className="flex w-full flex-col gap-2 p-4 md:flex-row">
@@ -517,7 +523,7 @@ export function ProfileDetailClient({
             <PiShareFat className="text-text-muted" />
           </TooltipTrigger>
           <TooltipContent>
-            <p>Compartilhar</p>
+            <p>{t("profile.share")}</p>
           </TooltipContent>
         </Tooltip>
       );
@@ -541,7 +547,7 @@ export function ProfileDetailClient({
             }
           />
           <TooltipContent>
-            <p>Compartilhar</p>
+            <p>{t("profile.share")}</p>
           </TooltipContent>
         </Tooltip>
         {renderShareSheet()}
@@ -570,15 +576,14 @@ export function ProfileDetailClient({
             <Flag className="text-destructive" />
           </TooltipTrigger>
           <TooltipContent>
-            <p>Denunciar perfil</p>
+            <p>{t("profile.reportProfile")}</p>
           </TooltipContent>
         </Tooltip>
         <DialogContent className="sm:max-w-md sm:h-auto">
           <DialogHeader>
-            <DialogTitle>Denunciar perfil</DialogTitle>
+            <DialogTitle>{t("profile.reportProfile")}</DialogTitle>
             <DialogDescription>
-              Informe o motivo da denúncia. Isso será enviado para o painel
-              administrativo.
+              {t("profile.reportText")}
             </DialogDescription>
           </DialogHeader>
           <form
@@ -586,15 +591,14 @@ export function ProfileDetailClient({
             className="space-y-4"
           >
             <div className="border border-warning-border bg-warning-surface px-4 py-3 text-xs text-warning-foreground">
-              Use a denúncia apenas para casos reais de conteúdo inadequado,
-              fraude, spam ou informações enganosas.
+              {t("profile.reportWarning")}
             </div>
             <div className="space-y-2">
               <Label
                 htmlFor="profile-report-reason"
                 className="text-sm font-medium text-text-main"
               >
-                Motivo
+                {t("profile.reason")}
               </Label>
               <Controller
                 control={reportForm.control}
@@ -636,17 +640,17 @@ export function ProfileDetailClient({
                 htmlFor="profile-report-details"
                 className="text-sm font-medium text-text-main"
               >
-                Detalhes adicionais
+                {t("profile.details")}
               </Label>
               <Textarea
                 id="profile-report-details"
                 {...reportForm.register("details")}
-                placeholder="Descreva o problema com até 1000 caracteres."
+                placeholder={t("profile.detailsPlaceholder")}
                 maxLength={1000}
                 className="min-h-28"
               />
               <div className="flex items-center justify-between text-xs text-text-muted">
-                <span>Opcional, mas ajuda na análise.</span>
+                <span>{t("profile.detailsHint")}</span>
                 <span>{(reportDetails || "").length}/1000</span>
               </div>
               {reportForm.formState.errors.details && (
@@ -671,8 +675,8 @@ export function ProfileDetailClient({
                 disabled={reportForm.formState.isSubmitting}
               >
                 {reportForm.formState.isSubmitting
-                  ? "Enviando..."
-                  : "Enviar denúncia"}
+                  ? t("profile.sending")
+                  : t("profile.sendReport")}
               </Button>
             </DialogFooter>
           </form>
@@ -709,12 +713,12 @@ export function ProfileDetailClient({
       typeof createdAt !== "object" ||
       !("seconds" in createdAt)
     ) {
-      return "Agora há pouco";
+      return t("profile.justNow");
     }
 
     return formatDistanceToNow(new Date(createdAt.seconds * 1000), {
       addSuffix: true,
-      locale: ptBR,
+      locale: DATE_FNS_LOCALE[locale],
     });
   };
 
@@ -728,30 +732,29 @@ export function ProfileDetailClient({
 
   const handleRate = async () => {
     if (!user) {
-      toast.error("Login necessário", {
-        description:
-          "Você precisa estar logado para avaliar este profissional.",
+      toast.error(t("profile.loginRequired"), {
+        description: t("profile.loginToRate"),
       });
       return;
     }
 
     if (user.uid === id) {
-      toast.error("Ação inválida", {
-        description: "Você não pode avaliar seu próprio perfil.",
+      toast.error(t("profile.invalidAction"), {
+        description: t("profile.cantRateSelf"),
       });
       return;
     }
 
     if (!targetProfile?.isProvider) {
-      toast.error("Avaliação indisponível", {
-        description: "Este perfil não está público para avaliações.",
+      toast.error(t("profile.ratingUnavailable"), {
+        description: t("profile.ratingUnavailableText"),
       });
       return;
     }
 
     if (!userRating) {
-      toast.error("Selecione uma nota", {
-        description: "Escolha de 1 a 5 estrelas para enviar sua avaliação.",
+      toast.error(t("profile.selectRating"), {
+        description: t("profile.selectRatingText"),
       });
       return;
     }
@@ -764,9 +767,8 @@ export function ProfileDetailClient({
         userRating,
         ratingComment.trim() || undefined,
       );
-      toast.success("Avaliação enviada!", {
-        description:
-          "Obrigado por compartilhar sua percepção com a comunidade.",
+      toast.success(t("profile.ratingSent"), {
+        description: t("profile.ratingSentText"),
       });
       // Apply the new score locally instead of refetching the profile.
       const updatedRatings = await UserService.getRatings(id);
@@ -786,7 +788,7 @@ export function ProfileDetailClient({
     } catch (error: any) {
       console.error("Error submitting rating:", error);
 
-      let message = "Erro ao enviar avaliação";
+      let message = t("profile.ratingError");
 
       // Try to parse the FirestoreErrorInfo or generic error
       try {
@@ -796,8 +798,7 @@ export function ProfileDetailClient({
             errorData.error.toLowerCase().includes("permission") ||
             errorData.error.toLowerCase().includes("insufficient")
           ) {
-            message =
-              "Erro de permissão. Verifique se você já avaliou este profissional ou tente novamente mais tarde.";
+            message = t("profile.ratingPermissionError");
           } else {
             message = errorData.error;
           }
@@ -823,14 +824,13 @@ export function ProfileDetailClient({
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-surface">
         <Info size={64} className="text-text-muted mb-6" />
-        <h1 className="text-3xl font-bold mb-4">Perfil não encontrado</h1>
+        <h1 className="text-3xl font-bold mb-4">{t("profile.notFound")}</h1>
         <p className="text-text-muted mb-8">
-          Este perfil não está disponível publicamente no momento ou o link
-          informado está incorreto.
+          {t("profile.notFoundText")}
         </p>
         <Link href="/">
           <Button className="bg-primary text-primary-foreground font-bold  px-8">
-            Voltar ao início
+            {t("profile.backHome")}
           </Button>
         </Link>
       </div>
@@ -840,7 +840,7 @@ export function ProfileDetailClient({
   const profileRoleLabel =
     targetProfile.serviceType ||
     targetProfile.category ||
-    "Membro da comunidade Skillsy";
+    t("profile.communityMember");
   return (
     <>
       <Navbar user={user} profile={profile} logout={logout} />
@@ -860,7 +860,7 @@ export function ProfileDetailClient({
               {targetProfile.bannerURL ? (
                 <Image
                   src={targetProfile.bannerURL}
-                  alt={`Capa do perfil de ${targetProfile.name}`}
+                  alt={t("card.coverAlt", { name: targetProfile.name })}
                   fill
                   className="object-cover"
                   referrerPolicy="no-referrer"
@@ -898,7 +898,7 @@ export function ProfileDetailClient({
                           }
                         />
                         <TooltipContent>
-                          <p>Editar perfil</p>
+                          <p>{t("profile.editProfile")}</p>
                         </TooltipContent>
                       </Tooltip>
                     ) : (
@@ -912,11 +912,11 @@ export function ProfileDetailClient({
                           >
                             {isContact ? (
                               <>
-                                <LuUserMinus /> Desconectar
+                                <LuUserMinus /> {t("profile.disconnect")}
                               </>
                             ) : (
                               <>
-                                <UserPlus size={18} className="mr-2" /> Conectar
+                                <UserPlus size={18} className="mr-2" /> {t("profile.connect")}
                               </>
                             )}
                           </Button>
@@ -930,7 +930,7 @@ export function ProfileDetailClient({
                       variant="default"
                       className="rounded-none bg-success px-6 font-bold text-success-foreground hover:bg-success/90 active:bg-success/80"
                     >
-                      <FaWhatsapp /> <p>Falar no WhatsApp</p>
+                      <FaWhatsapp /> <p>{t("profile.whatsapp")}</p>
                     </Button>
                     {user?.uid !== targetProfile.uid &&
                       !targetProfile.isProvider && (
@@ -942,7 +942,7 @@ export function ProfileDetailClient({
                           className="px-5 font-semibold rounded-none"
                         >
                           <ThumbsUp className="size-4" />
-                          {isRecommended ? "Você indicou" : "Eu indico"}
+                          {isRecommended ? t("profile.youRecommended") : t("profile.recommend")}
                         </Button>
                       )}
                   </div>
@@ -1024,9 +1024,9 @@ export function ProfileDetailClient({
                         </p>
                       </div>
                       <p className="text-xs font-bold text-text-muted">
-                        {(targetProfile.recommendationCount || 0) === 1
-                          ? "indicação"
-                          : "indicações"}
+                        {t("profile.recommendationsLabel", {
+                          count: targetProfile.recommendationCount || 0,
+                        })}
                       </p>
                     </div>
                     <div className="flex flex-col gap-2 sm:hidden">
@@ -1046,7 +1046,7 @@ export function ProfileDetailClient({
                               }
                             />
                             <TooltipContent>
-                              <p>Editar perfil</p>
+                              <p>{t("profile.editProfile")}</p>
                             </TooltipContent>
                           </Tooltip>
                         ) : (
@@ -1060,12 +1060,12 @@ export function ProfileDetailClient({
                               >
                                 {isContact ? (
                                   <>
-                                    <LuUserMinus /> Desconectar
+                                    <LuUserMinus /> {t("profile.disconnect")}
                                   </>
                                 ) : (
                                   <>
                                     <UserPlus size={18} className="mr-2" />
-                                    Conectar
+                                    {t("profile.connect")}
                                   </>
                                 )}
                               </Button>
@@ -1080,7 +1080,7 @@ export function ProfileDetailClient({
                         size="lg"
                         className="w-full bg-success px-6 font-bold text-success-foreground hover:bg-success/90 active:bg-success/80"
                       >
-                        <FaWhatsapp /> <p>Falar no WhatsApp</p>
+                        <FaWhatsapp /> <p>{t("profile.whatsapp")}</p>
                       </Button>
                       {user?.uid !== targetProfile.uid &&
                         !targetProfile.isProvider && (
@@ -1092,7 +1092,7 @@ export function ProfileDetailClient({
                             className="w-full font-semibold"
                           >
                             <ThumbsUp className="size-4" />
-                            {isRecommended ? "Você indicou" : "Eu indico"}
+                            {isRecommended ? t("profile.youRecommended") : t("profile.recommend")}
                           </Button>
                         )}
                     </div>
@@ -1107,10 +1107,10 @@ export function ProfileDetailClient({
               <div className="container mx-auto flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
                 <div className="space-y-1">
                   <h3 className="text-base font-semibold text-text-main">
-                    Indicado pela comunidade
+                    {t("profile.recommendedByCommunity")}
                   </h3>
                   <p className="max-w-2xl text-sm leading-relaxed text-text-muted">
-                    Cada membro pode indicar uma vez este profissional.
+                    {t("profile.recommendOnce")}
                   </p>
                 </div>
 
@@ -1133,7 +1133,7 @@ export function ProfileDetailClient({
                       className="w-full sm:w-auto"
                     >
                       <ThumbsUp className="size-4" />
-                      {isRecommended ? "Você indicou" : "Eu indico"}
+                      {isRecommended ? t("profile.youRecommended") : t("profile.recommend")}
                     </Button>
                   ) : null}
                 </div>
@@ -1145,11 +1145,10 @@ export function ProfileDetailClient({
           <section className="bg-card border-y border-border-subtle">
             <div className="mx-auto container p-4 space-y-4">
               <h3 className="md:text-xl text-base font-semibold text-text-main">
-                Sobre este perfil
+                {t("profile.about")}
               </h3>
               <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap max-w-3xl">
-                {targetProfile.bio ||
-                  "Este membro ainda não adicionou uma descrição."}
+                {targetProfile.bio || t("profile.noBio")}
               </p>
             </div>
           </section>
@@ -1160,7 +1159,7 @@ export function ProfileDetailClient({
               <div className="bg-card w-full border-y border-border-subtle md:border-r border-r-0">
                 <div className="h-full w-full md:ps-7 p-4 mx-auto container space-y-4">
                   <h3 className="text-base font-semibold text-text-main md:text-xl">
-                    Disponibilidade
+                    {t("profile.availability")}
                   </h3>
 
                   {availabilityDays.length > 0 && (
@@ -1168,7 +1167,7 @@ export function ProfileDetailClient({
                       <div className="flex items-center gap-1">
                         <CalendarDays size={16} className="text-text-muted" />
                         <p className="text-xs font-bold text-text-muted">
-                          Dias de atendimento
+                          {t("profile.serviceDays")}
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -1188,7 +1187,7 @@ export function ProfileDetailClient({
                       <div className="flex items-center gap-1">
                         <Clock size={16} className="text-text-muted" />{" "}
                         <p className="text-xs font-bold text-text-muted">
-                          Horário de atendimento
+                          {t("profile.serviceHours")}
                         </p>
                       </div>
                       <div className="bg-surface px-4 py-2">
@@ -1205,14 +1204,14 @@ export function ProfileDetailClient({
               <div className="bg-card w-full border-y border-border-subtle md:border-l border-l-0">
                 <div className="h-full w-full p-4 mx-auto container md:pe-7 space-y-4">
                   <h3 className="md:text-xl text-base font-semibold text-text-main">
-                    Avaliar este profissional
+                    {t("profile.rateTitle")}
                   </h3>
                   <div className="flex w-full space-x-2 md:space-x-4">
                     <div className="text-center bg-surface border size-26 p-2 flex-none">
                       <div className="flex flex-col items-center justify-center h-full w-full">
                         <p className="md:text-3xl text-2xl font-bold text-text-main">
                           {hasReviews
-                            ? Number(targetProfile.rating || 0).toFixed(1)
+                            ? formatRating(targetProfile.rating, INTL_LOCALE[locale])
                             : "—"}
                         </p>
                         {hasReviews ? (
@@ -1235,26 +1234,23 @@ export function ProfileDetailClient({
                         ) : null}
                         <p className="text-xs font-bold text-text-muted">
                           {hasReviews
-                            ? formatReviewCount(targetProfile.reviewCount || 0)
-                            : "Ainda sem avaliações"}
+                            ? t("common.reviews", { count: targetProfile.reviewCount || 0 })
+                            : t("profile.noReviewsYet")}
                         </p>
                       </div>
                     </div>
 
                     {user?.uid === targetProfile.uid ? (
                       <p className="text-sm text-text-muted">
-                        Este é o seu perfil. Quando outros membros avaliarem seu
-                        trabalho, a nota aparece aqui.
+                        {t("profile.ownProfileRating")}
                       </p>
                     ) : (
                       <div className="flex flex-col space-y-1.5">
                         <p className="text-sm text-text-main font-medium">
-                          Dê uma nota em estrelas e, se quiser, deixe um
-                          comentário.
+                          {t("profile.rateHint")}
                         </p>
                         <p className="text-xs text-text-muted">
-                          A nota de 1 a 5 estrelas acompanha o seu comentário,
-                          que é opcional. Seu nome aparece junto à avaliação.
+                          {t("profile.rateHintDetails")}
                         </p>
                         {!user ? (
                           <Button
@@ -1263,13 +1259,13 @@ export function ProfileDetailClient({
                             className="w-fit"
                             onClick={() => setAuthModalOpen(true)}
                           >
-                            Entrar para avaliar
+                            {t("profile.signInToRate")}
                           </Button>
                         ) : (
                           <div
                             className="flex items-center gap-1.5"
                             role="radiogroup"
-                            aria-label="Nota em estrelas"
+                            aria-label={t("profile.starsAria")}
                           >
                             {[1, 2, 3, 4, 5].map((star) => (
                               <button
@@ -1277,7 +1273,7 @@ export function ProfileDetailClient({
                                 type="button"
                                 role="radio"
                                 aria-checked={userRating === star}
-                                aria-label={`${star} ${star === 1 ? "estrela" : "estrelas"}`}
+                                aria-label={t("profile.stars", { count: star })}
                                 disabled={!canRateProfile || submittingRating}
                                 onMouseEnter={() => setRatingHover(star)}
                                 onMouseLeave={() => setRatingHover(0)}
@@ -1310,14 +1306,14 @@ export function ProfileDetailClient({
                         onChange={(event) =>
                           setRatingComment(event.target.value)
                         }
-                        placeholder="Compartilhe sua experiência ou recomendação. Opcional."
+                        placeholder={t("profile.ratingPlaceholder")}
                         maxLength={500}
                         disabled={!canRateProfile || submittingRating}
                         className="min-h-24 w-full bg-background flex"
                       />
                       <div className="flex items-center justify-between gap-3">
                         <p className="text-xs font-medium text-text-muted">
-                          {ratingComment.length}/500 caracteres
+                          {t("profile.charCount", { count: ratingComment.length, max: 500 })}
                         </p>
                         <Button
                           type="button"
@@ -1328,8 +1324,8 @@ export function ProfileDetailClient({
                           className="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
                         >
                           {submittingRating
-                            ? "Enviando..."
-                            : "Enviar avaliação"}
+                            ? t("profile.sending")
+                            : t("profile.sendRating")}
                         </Button>
                       </div>
                     </>
@@ -1345,22 +1341,21 @@ export function ProfileDetailClient({
                 <div className="flex items-center gap-2">
                   <MessageSquareText size={18} className="text-primary" />
                   <h3 className="md:text-xl text-base font-semibold text-text-main">
-                    Comentários da comunidade
+                    {t("profile.comments")}
                   </h3>
                 </div>
 
                 {loadingRatings ? (
                   <p className="text-sm text-text-muted">
-                    Carregando comentários...
+                    {t("profile.loadingComments")}
                   </p>
                 ) : ratings.length === 0 ? (
                   <div className="border border-dashed border-border-subtle bg-surface p-4">
                     <p className="text-sm text-text-muted">
-                      Ainda não há avaliações públicas sobre este profissional.
+                      {t("profile.noComments")}
                     </p>
                     <p className="mt-1 text-xs text-text-muted">
-                      As novas avaliações mostram o nome de quem avaliou; o
-                      comentário continua opcional.
+                      {t("profile.noCommentsText")}
                     </p>
                   </div>
                 ) : (
@@ -1391,7 +1386,7 @@ export function ProfileDetailClient({
                               ))}
                             </div>
                             <p className="text-xs font-medium text-text-muted">
-                              {rating.authorName || "Membro Skillsy"}
+                              {rating.authorName || t("card.memberFallback")}
                             </p>
                           </div>
                           <p className="text-xs text-text-muted">
@@ -1404,7 +1399,7 @@ export function ProfileDetailClient({
                           </p>
                         ) : (
                           <p className="text-sm text-text-muted">
-                            Classificação sem comentário.
+                            {t("profile.noComment")}
                           </p>
                         )}
                       </article>
@@ -1421,7 +1416,7 @@ export function ProfileDetailClient({
                 {hasContactInfo && (
                   <div className="space-y-4">
                     <h3 className="md:text-xl text-base font-semibold text-text-main">
-                      Contato e redes
+                      {t("profile.contactAndSocial")}
                     </h3>
                     <div className="space-y-3">
                       {targetProfile.whatsapp && (
@@ -1516,21 +1511,21 @@ export function ProfileDetailClient({
               <div className="mx-auto container p-4 space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="md:text-xl text-base font-semibold text-text-main">
-                    Galeria de fotos
+                    {t("profile.gallery")}
                   </h3>
                   {user?.uid === targetProfile.uid &&
                   targetProfile.gallery &&
                   targetProfile.gallery.length > 0 ? (
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-medium text-text-muted">
-                        {targetProfile.gallery.length}/5 fotos
+                        {t("profile.galleryCount", { count: targetProfile.gallery.length, max: 5 })}
                       </span>
                       <Button
                         size="sm"
                         render={<Link href="/profile" />}
                         nativeButton={false}
                       >
-                        Gerenciar galeria
+                        {t("profile.manageGallery")}
                       </Button>
                     </div>
                   ) : null}
@@ -1558,7 +1553,7 @@ export function ProfileDetailClient({
                             alt={
                               typeof photo === "object" && photo.description
                                 ? photo.description
-                                : `Galeria ${index + 1}`
+                                : t("profile.galleryAlt", { n: index + 1 })
                             }
                             fill
                             className="object-cover"
@@ -1567,7 +1562,7 @@ export function ProfileDetailClient({
                         </DialogTrigger>
                         <DialogContent className="gap-0 overflow-hidden border-none bg-black/95 p-0">
                           <DialogTitle className="sr-only">
-                            Visualização de foto
+                            {t("profile.photoView")}
                           </DialogTitle>
                           <div className="relative flex h-[80vh] w-full items-center justify-center bg-black">
                             <Image
@@ -1577,7 +1572,7 @@ export function ProfileDetailClient({
                               alt={
                                 typeof photo === "object" && photo.description
                                   ? photo.description
-                                  : `Galeria ${index + 1}`
+                                  : t("profile.galleryAlt", { n: index + 1 })
                               }
                               fill
                               className="object-contain"
@@ -1587,7 +1582,7 @@ export function ProfileDetailClient({
                           {typeof photo === "object" && photo.description && (
                             <DialogFooter className="bg-card">
                               <h4 className="mb-2 text-xs font-bold text-primary">
-                                Comentário
+                                {t("profile.comment")}
                               </h4>
                               <DialogDescription className="text-base leading-relaxed tracking-tight text-text-main">
                                 {photo.description}
@@ -1602,14 +1597,14 @@ export function ProfileDetailClient({
                   <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-border-subtle bg-surface/50">
                     <Camera className="w-12 h-12 text-text-muted/30 mb-4" />
                     <p className="text-sm text-text-muted font-medium mb-4">
-                      Sua galeria ainda não possui fotos profissionais.
+                      {t("profile.galleryEmpty")}
                     </p>
                     <Button
                       size="sm"
                       render={<Link href="/profile" />}
                       nativeButton={false}
                     >
-                      Adicionar fotos
+                      {t("profile.addPhotos")}
                     </Button>
                   </div>
                 )}
@@ -1626,7 +1621,7 @@ export function ProfileDetailClient({
             size="lg"
             className="h-12 flex-1 bg-success font-bold text-success-foreground hover:bg-success/90 active:bg-success/80"
           >
-            <FaWhatsapp /> Falar no WhatsApp
+            <FaWhatsapp /> {t("profile.whatsapp")}
           </Button>
         </div>
       ) : null}

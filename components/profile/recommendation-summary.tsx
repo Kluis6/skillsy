@@ -12,12 +12,7 @@ import {
 } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import {
-  formatRecommendationCount,
-  formatReviewCount,
-} from "@skillsy/shared/format";
-
-export { formatRecommendationCount, formatReviewCount };
+import { useT } from "@/lib/i18n/provider";
 
 export type Recommender = {
   id: string;
@@ -45,7 +40,8 @@ export function RecommendationCount({
   compact = false,
   className,
 }: RecommendationCountProps) {
-  const label = formatRecommendationCount(recommendationCount);
+  const t = useT();
+  const label = t("common.recommendations", { count: recommendationCount });
 
   return (
     <span
@@ -85,13 +81,14 @@ export function RecommendationSummary({
   avatarSize = "default",
   className,
 }: RecommendationSummaryProps) {
+  const t = useT();
   const displayed = recommenders.slice(0, maxAvatars);
   const hiddenCount = Math.max(0, recommendationCount - displayed.length);
 
   return (
     <div className={cn("flex flex-wrap items-center gap-3", className)}>
       {displayed.length > 0 ? (
-        <AvatarGroup aria-label="Membros que indicam este profissional">
+        <AvatarGroup aria-label={t("card.recommendersAria")}>
           {displayed.map((person) => (
             <Tooltip key={person.id}>
               <TooltipTrigger
@@ -100,7 +97,9 @@ export function RecommendationSummary({
                     <AvatarImage
                       src={person.photoURL || ""}
                       alt={
-                        person.name ? `Foto de ${person.name}` : "Membro que indicou"
+                        person.name
+                          ? t("card.photoOf", { name: person.name })
+                          : t("card.memberWhoRecommended")
                       }
                     />
                     <AvatarFallback className="bg-primary text-primary-foreground">
@@ -110,7 +109,7 @@ export function RecommendationSummary({
                 }
               />
               <TooltipContent>
-                <p>{person.name || "Membro Skillsy"} indicou</p>
+                <p>{t("card.recommendedBy", { name: person.name || t("card.memberFallback") })}</p>
               </TooltipContent>
             </Tooltip>
           ))}
@@ -120,7 +119,7 @@ export function RecommendationSummary({
         </AvatarGroup>
       ) : recommendationCount === 0 ? (
         <span className="text-sm text-text-muted">
-          Seja a primeira pessoa a indicar
+          {t("card.beFirst")}
         </span>
       ) : null}
     </div>

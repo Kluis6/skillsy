@@ -6,6 +6,7 @@ import { MapPin, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LocationService } from "@/services/location-service";
 import { toast } from "sonner";
+import { useT } from "@/lib/i18n/provider";
 
 interface CepFilterProps {
   onLocationChange: (location: { city: string; state: string } | null) => void;
@@ -16,6 +17,7 @@ export function CepFilter({
   onLocationChange,
   initialLocation,
 }: CepFilterProps) {
+  const t = useT();
   const [cep, setCep] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,13 +57,13 @@ export function CepFilter({
         } else {
           setLocation(null);
           onLocationChange(null);
-          setError("CEP não encontrado");
+          setError(t("location.cepNotFound"));
         }
       } catch (err) {
         console.error("Erro ao buscar CEP:", err);
         setLocation(null);
         onLocationChange(null);
-        setError("Erro ao buscar CEP");
+        setError(t("location.cepError"));
       } finally {
         setLoading(false);
       }
@@ -84,12 +86,12 @@ export function CepFilter({
       setLocation(newLocation);
       onLocationChange(newLocation);
       setCep(""); // Clear CEP if using GPS
-      toast.success("Localização detectada!", {
+      toast.success(t("location.detected"), {
         description: `${data.city}, ${data.state}`,
       });
     } catch (err: any) {
       setError(err.message);
-      toast.error("Erro de geolocalização", { description: err.message });
+      toast.error(t("location.geoError"), { description: err.message });
     } finally {
       setLoading(false);
     }
@@ -111,7 +113,7 @@ export function CepFilter({
           className="flex justify-center items-center px-7 h-12 w-full"
         >
           <X className="size-4 text-text-muted" />
-          <p className="text-text-muted">Remover localização</p>
+          <p className="text-text-muted">{t("location.remove")}</p>
         </Button>
       ) : (
         <Button
@@ -129,7 +131,7 @@ export function CepFilter({
               <MapPin
                 className={`transition-colors ${error ? "text-destructive" : "text-text-muted"}`}
               />
-              <p className="text-sm">Sua localização</p>
+              <p className="text-sm">{t("location.yours")}</p>
             </>
           )}
         </Button>
