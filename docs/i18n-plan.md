@@ -201,16 +201,16 @@ Cada etapa termina com o site em produção **sem mudança visível em portuguê
 ### E0 — Preparação (½ dia)
 
 - [x] Glossário e tom de voz com base em dicionários, guias de estilo e termos oficiais da Igreja (29/10/2026)
-- [ ] Branch `i18n` com merges curtos na `main` por etapa; avisar sobre o congelamento da E2
+- [x] Trabalho direto na `main` (regra do projeto: commit, push e deploy a cada etapa), com cada etapa publicada sem mudar nada visível até a E9
 - [ ] Definir as 3 telas de referência para a revisão visual (Início, Perfil do profissional, Publicar oportunidade)
 
 **Pronto quando:** branch criada e telas de referência definidas (o glossário não depende mais de aprovação prévia).
 
 ### E1 — Base compartilhada (1–2 dias)
 
-- [ ] `packages/shared/src/i18n/`: `locales.ts`, `pt.json` inicial, `types.ts`, `translate.ts` (variáveis e plural), `format.ts`, `labels.ts`
-- [ ] Scripts `i18n:check`, `i18n:export`, `i18n:import` + `i18n:check` no CI
-- [ ] Testes unitários de `translate` (variáveis, plural pt/en/es) e `format`
+- [x] `packages/shared/src/i18n/`: `locales.ts`, `pt.json`/`en.json`/`es.json` iniciais, `translate.ts` (tipos, variáveis e plural; zero sempre no plural), `format.ts`. `labels.ts` fica para a E4
+- [x] Scripts `i18n:check`, `i18n:export`, `i18n:import` + `i18n:check` no CI
+- [x] Testes unitários de `translate` (variáveis, plural pt/en/es), `format`, `locales` e da ida e volta da planilha (`npm run test:i18n`, no CI)
 
 **Pronto quando:** `npm run i18n:check` passa e os helpers têm testes.
 

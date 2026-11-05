@@ -1,0 +1,33 @@
+{
+  "common": {
+    "appName": "Skillsy",
+    "slogan": "Where talent meets opportunity",
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "signOut": "Sign out",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "share": "Share",
+    "report": "Report",
+    "loading": "Loading…",
+    "recommendations_one": "{count} recommendation",
+    "recommendations_other": "{count} recommendations",
+    "reviews_one": "{count} review",
+    "reviews_other": "{count} reviews"
+  },
+  "nav": {
+    "home": "Home",
+    "search": "Search",
+    "opportunities": "Opportunities",
+    "newsAndJobs": "News & jobs",
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "contactUs": "Contact us",
+    "terms": "Terms of Use",
+    "privacy": "Privacy Policy"
+  },
+  "language": {
+    "label": "Language",
+    "choose": "Choose your language"
+  }
+}

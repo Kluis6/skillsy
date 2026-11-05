@@ -18,7 +18,11 @@
     "inspect:public-profiles": "node scripts/inspect-public-profiles.mjs",
     "inspect:public-profile-consistency": "node scripts/inspect-public-profile-consistency.mjs",
     "inspect:user-profile-shape": "node scripts/inspect-user-profile-shape.mjs",
-    "inspect:user-verification": "node scripts/inspect-users-verification.mjs"
+    "inspect:user-verification": "node scripts/inspect-users-verification.mjs",
+    "i18n:check": "node scripts/i18n/check.mjs",
+    "i18n:export": "node scripts/i18n/export.mjs",
+    "i18n:import": "node scripts/i18n/import.mjs",
+    "test:i18n": "node --test tests/i18n/*.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",

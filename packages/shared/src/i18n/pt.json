@@ -1,0 +1,33 @@
+{
+  "common": {
+    "appName": "Skillsy",
+    "slogan": "Onde talentos encontram oportunidades",
+    "signIn": "Entrar",
+    "signUp": "Criar conta",
+    "signOut": "Sair",
+    "save": "Salvar alterações",
+    "cancel": "Cancelar",
+    "share": "Compartilhar",
+    "report": "Denunciar",
+    "loading": "Carregando…",
+    "recommendations_one": "{count} indicação",
+    "recommendations_other": "{count} indicações",
+    "reviews_one": "{count} avaliação",
+    "reviews_other": "{count} avaliações"
+  },
+  "nav": {
+    "home": "Início",
+    "search": "Buscar",
+    "opportunities": "Oportunidades",
+    "newsAndJobs": "Novidades e vagas",
+    "profile": "Perfil",
+    "notifications": "Notificações",
+    "contactUs": "Fale conosco",
+    "terms": "Termos de Uso",
+    "privacy": "Política de Privacidade"
+  },
+  "language": {
+    "label": "Idioma",
+    "choose": "Escolha o idioma"
+  }
+}
