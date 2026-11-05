@@ -236,7 +236,7 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
   - [x] (1) Layout e metadados do site, menu (o menu da busca passou a reutilizar o da barra), rodapé, botão de tema, Início (hero, categorias, benefícios, Fale conosco). Nomes das categorias ficam para a E4 (são termos de busca); mensagens do zod ficam para o item de validações
   - [x] (2) Busca, perfil público, cards, filtro de localização. `rich()` para elementos dentro do texto (`lib/i18n/rich.tsx`); datas relativas com date-fns no idioma (`lib/i18n/date-fns.ts`), mantendo o português igual; nota com `formatRating` (o perfil mostrava "4.5" e passou a "4,5", como nos cards). Rótulos de dias, categorias e motivos de denúncia ficam para a E4
   - [x] (3) Oportunidades (mural, para você, encontrar ajuda, formulário, acompanhamento de 20 dias) e o sino de notificações (só a moldura; o texto de cada aviso fica no idioma do conteúdo, dificuldade 12). Urgência traduzida no site; o pacote compartilhado mantém os rótulos em português para o app até a E7
-  - [ ] (4) Artigos e vagas
+  - [x] (4) Artigos e vagas: lista, página do artigo, ações (compartilhar, editar, apagar, denunciar), Minhas publicações e editor. Categoria e status (artigo/vaga, rascunho/em revisão…) traduzidos no site; `getPostExcerpt` aceita o texto padrão no idioma
   - [ ] (5) Login, cadastro, perfil/configurações, bloqueio
   - [ ] (6) Páginas institucionais
   - [ ] (7) Termos e Privacidade

@@ -1,10 +1,16 @@
+import type { Metadata } from "next";
 import { EditPostPageClient } from "@/components/posts/edit-post-page-client";
 import { createPrivateMetadata } from "@/lib/public-metadata";
+import { getMessages, getT } from "@/lib/i18n/server";
+import { I18nProvider } from "@/lib/i18n/provider";
 
-export const metadata = createPrivateMetadata({
-  title: "Editar publicação",
-  description: "Área restrita para editar uma publicação no Skillsy.",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return createPrivateMetadata({
+    title: t("posts.editPost"),
+    description: t("posts.editMetaDescription"),
+  });
+}
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -15,7 +21,9 @@ export default async function EditarArtigoPage({ params }: PageProps) {
 
   return (
     <main className="container mx-auto max-w-6xl px-4 py-10">
-      <EditPostPageClient id={id} />
+      <I18nProvider messages={await getMessages("posts")}>
+        <EditPostPageClient id={id} />
+      </I18nProvider>
     </main>
   );
 }

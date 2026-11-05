@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
+import { useT } from '@/lib/i18n/provider';
 
 export default function MeusArtigosLayout({
   children,
@@ -10,6 +11,7 @@ export default function MeusArtigosLayout({
   children: React.ReactNode;
 }) {
   const { user, loading } = useAuth();
+  const t = useT();
   const router = useRouter();
 
   React.useEffect(() => {
@@ -28,7 +30,7 @@ export default function MeusArtigosLayout({
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           <p className="text-sm font-bold text-text-muted uppercase tracking-normal">
-            {loading ? 'Verificando acesso...' : 'Redirecionando...'}
+            {loading ? t('common.checkingAccess') : t('common.redirecting')}
           </p>
         </div>
       </div>

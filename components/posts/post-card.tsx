@@ -3,7 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Post } from "@/models/types";
-import { POST_CATEGORY_LABELS, getPostExcerpt } from "@/lib/post-utils";
+import { getPostExcerpt } from "@/lib/post-utils";
+import { useT } from "@/lib/i18n/provider";
+import { rich } from "@/lib/i18n/rich";
 import { Badge } from "@/components/ui/badge";
 import { PostPublicActions } from "@/components/posts/post-public-actions";
 import {
@@ -16,6 +18,7 @@ import {
 } from "../ui/card";
 
 export function PostCard({ post }: { post: Post }) {
+  const t = useT();
   return (
     <>
       <article className="col-span-12 lg:col-span-4 h-full w-full">
@@ -37,7 +40,7 @@ export function PostCard({ post }: { post: Post }) {
           <CardHeader>
             <div>
               <h3 className="text-xs text-text-muted">
-                por <strong> {post.authorName}</strong>
+                {rich(t("posts.by"), { name: <strong>{post.authorName}</strong> })}
               </h3>
             </div>
             <CardAction>
@@ -45,23 +48,23 @@ export function PostCard({ post }: { post: Post }) {
                 variant="secondary"
                 className={` ${post.category === "job" ? "bg-success/15 text-success" : "bg-warning/15 text-warning-foreground"} `}
               >
-                {POST_CATEGORY_LABELS[post.category]}
+                {post.category === "job" ? t("posts.categoryJob") : t("posts.categoryArticle")}
               </Badge>
               {post.isFeatured ? (
                 <Badge className="bg-primary/10 text-primary border-primary/10">
-                  Destaque
+                  {t("posts.featured")}
                 </Badge>
               ) : null}
             </CardAction>
             <CardTitle>{post.title}</CardTitle>
             <div className="w-full flex flex-col space-y-4">
-              <CardDescription>{getPostExcerpt(post)}</CardDescription>
+              <CardDescription>{getPostExcerpt(post, t("posts.excerptFallback"))}</CardDescription>
               <CardDescription>
                 <Link
                   href={`/artigosevagas/${post.slug}`}
                   className="text-sm font-bold text-primary hover:underline"
                 >
-                  {post.category === "job" ? "Ver vaga" : "Ler publicação"}
+                  {post.category === "job" ? t("posts.viewJob") : t("posts.readPost")}
                 </Link>
               </CardDescription>
             </div>

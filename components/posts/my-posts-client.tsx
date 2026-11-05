@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { Post } from "@/models/types";
-import { POST_CATEGORY_LABELS, getPostExcerpt } from "@/lib/post-utils";
+import { getPostExcerpt } from "@/lib/post-utils";
+import { useT } from "@/lib/i18n/provider";
+import type { MessageKey } from "@skillsy/shared/i18n/keys";
 import { PostService } from "@/services/post-service";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,15 +15,16 @@ import { PostPublicActions } from "@/components/posts/post-public-actions";
 import { MyPostsPageLoading } from "@/components/loading/route-loaders";
 import { toast } from "sonner";
 
-const statusLabels: Record<Post["status"], string> = {
-  draft: "Rascunho",
-  pending_review: "Em revisão",
-  published: "Publicado",
-  rejected: "Rejeitado",
+const statusLabels: Record<Post["status"], MessageKey> = {
+  draft: "posts.statusDraft",
+  pending_review: "posts.statusPendingReview",
+  published: "posts.statusPublished",
+  rejected: "posts.statusRejected",
 };
 
 export function MyPostsClient() {
   const { user, loading } = useAuth();
+  const t = useT();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -37,14 +40,14 @@ export function MyPostsClient() {
         setPosts(result);
       } catch (error) {
         console.error(error);
-        toast.error("Não foi possível carregar seus artigos.");
+        toast.error(t("posts.myLoadError"));
       } finally {
         setIsLoading(false);
       }
     };
 
     run();
-  }, [user]);
+  }, [user, t]);
 
   if (loading || isLoading) {
     return <MyPostsPageLoading />;
@@ -54,8 +57,8 @@ export function MyPostsClient() {
     return (
       <SurfacePanel>
         <EmptyState
-          title="Faça login para acessar suas publicações"
-          description="A área de publicação é restrita a usuários autenticados."
+          title={t("posts.myLoginTitle")}
+          description={t("posts.myLoginText")}
         />
       </SurfacePanel>
     );
@@ -64,11 +67,11 @@ export function MyPostsClient() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Minhas publicações"
-        description="Crie rascunhos, publique conteúdo e acompanhe o status."
+        title={t("posts.myTitle")}
+        description={t("posts.myDescription")}
         action={
           <Button render={<Link href="/meus-artigos/novo" />} nativeButton={false}>
-            Nova publicação
+            {t("posts.newPost")}
           </Button>
         }
       />
@@ -76,11 +79,11 @@ export function MyPostsClient() {
       <SurfacePanel className="p-0 md:p-0">
         {posts.length === 0 ? (
           <EmptyState
-            title="Você ainda não criou nenhuma publicação."
-            description="Compartilhe uma notícia, oportunidade ou conteúdo útil para a comunidade."
+            title={t("posts.myEmptyTitle")}
+            description={t("posts.myEmptyText")}
             action={
               <Button render={<Link href="/meus-artigos/novo" />} nativeButton={false}>
-                Criar primeira publicação
+                {t("posts.createFirst")}
               </Button>
             }
           />
@@ -94,13 +97,13 @@ export function MyPostsClient() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <h2 className="text-xl font-bold text-text-main">{post.title}</h2>
-                    <Badge variant="outline">{POST_CATEGORY_LABELS[post.category]}</Badge>
-                    <Badge variant="outline">{statusLabels[post.status]}</Badge>
+                    <Badge variant="outline">{post.category === "job" ? t("posts.categoryJob") : t("posts.categoryArticle")}</Badge>
+                    <Badge variant="outline">{t(statusLabels[post.status])}</Badge>
                   </div>
-                  <p className="max-w-2xl text-sm text-text-muted">{getPostExcerpt(post)}</p>
+                  <p className="max-w-2xl text-sm text-text-muted">{getPostExcerpt(post, t("posts.excerptFallback"))}</p>
                   {post.rejectionReason ? (
                     <p className="text-xs font-medium text-destructive">
-                      Motivo da rejeição: {post.rejectionReason}
+                      {t("posts.rejectionReason", { reason: post.rejectionReason })}
                     </p>
                   ) : null}
                 </div>
@@ -111,7 +114,7 @@ export function MyPostsClient() {
                       render={<Link href={`/artigosevagas/${post.slug}`} />}
                       nativeButton={false}
                     >
-                      Ver publicado
+                      {t("posts.viewPublished")}
                     </Button>
                   ) : null}
                 </div>

@@ -34,7 +34,12 @@ export const POST_STATUS_LABELS: Record<PostStatus, string> = {
   rejected: "Rejeitado",
 };
 
-export function getPostExcerpt(post: { excerpt?: string; content?: string }) {
+/** `emptyText` is shown for a post with a cover and no text; the site passes
+ * it in the page's language. */
+export function getPostExcerpt(
+  post: { excerpt?: string; content?: string },
+  emptyText = "Esta publicação foi compartilhada com imagem de capa e sem texto complementar.",
+) {
   const excerpt = post.excerpt?.trim();
   if (excerpt) {
     return excerpt;
@@ -42,7 +47,7 @@ export function getPostExcerpt(post: { excerpt?: string; content?: string }) {
 
   const content = post.content?.replace(/\s+/g, " ").trim() || "";
   if (!content) {
-    return "Esta publicação foi compartilhada com imagem de capa e sem texto complementar.";
+    return emptyText;
   }
 
   return content.length > 180 ? `${content.slice(0, 177).trimEnd()}...` : content;

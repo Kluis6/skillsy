@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { useT } from "@/lib/i18n/provider";
 
 type PostPublicActionsProps = {
   post: Post;
@@ -45,6 +46,7 @@ export function PostPublicActions({
 }: PostPublicActionsProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const t = useT();
   const [isDeleting, startDeleting] = useTransition();
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [isSubmittingReport, startSubmittingReport] = useTransition();
@@ -77,9 +79,7 @@ export function PostPublicActions({
       return;
     }
 
-    const confirmed = window.confirm(
-      "Deseja realmente apagar esta publicação? Esta ação não pode ser desfeita.",
-    );
+    const confirmed = window.confirm(t("posts.deleteConfirm"));
 
     if (!confirmed) {
       return;
@@ -88,7 +88,7 @@ export function PostPublicActions({
     startDeleting(async () => {
       try {
         await PostService.deleteOwnPost(post.id!);
-        toast.success("Publicação apagada com sucesso.");
+        toast.success(t("posts.deleted"));
 
         if (redirectOnDelete) {
           router.push(redirectOnDelete);
@@ -98,21 +98,21 @@ export function PostPublicActions({
         router.refresh();
       } catch (error) {
         console.error(error);
-        toast.error("Não foi possível apagar a publicação.");
+        toast.error(t("posts.deleteError"));
       }
     });
   };
 
   const handleReportSubmit = (data: ReportPostFormData) => {
     if (!user) {
-      toast.error("Login necessário", {
-        description: "Você precisa estar logado para denunciar uma publicação.",
+      toast.error(t("posts.loginRequired"), {
+        description: t("posts.loginToReport"),
       });
       return;
     }
 
     if (!post.id) {
-      toast.error("Publicação inválida");
+      toast.error(t("posts.invalidPost"));
       return;
     }
 
@@ -126,7 +126,7 @@ export function PostPublicActions({
           reason: data.reason,
           details: data.details || "",
         });
-        toast.success("Denúncia enviada.");
+        toast.success(t("posts.reportSent"));
         reportForm.reset({
           reason: "informacao_falsa",
           details: "",
@@ -134,7 +134,7 @@ export function PostPublicActions({
         setReportDialogOpen(false);
       } catch (error) {
         console.error(error);
-        toast.error("Não foi possível enviar a denúncia.");
+        toast.error(t("posts.reportError"));
       }
     });
   };
@@ -153,11 +153,11 @@ export function PostPublicActions({
 
     try {
       await navigator.clipboard.writeText(shareUrl);
-      toast.success("Link copiado", {
-        description: "Agora você pode compartilhar esta publicação.",
+      toast.success(t("posts.linkCopied"), {
+        description: t("posts.linkCopiedText"),
       });
     } catch {
-      toast.error("Não foi possível copiar o link");
+      toast.error(t("posts.copyError"));
     }
   };
 
@@ -170,8 +170,8 @@ export function PostPublicActions({
           title: post.title,
           text:
             post.category === "job"
-              ? `Confira esta vaga no Skillsy: ${post.title}`
-              : `Confira esta publicação no Skillsy: ${post.title}`,
+              ? t("posts.shareJob", { title: post.title })
+              : t("posts.sharePost", { title: post.title }),
           url: shareUrl,
         });
         return;
@@ -192,7 +192,7 @@ export function PostPublicActions({
         onClick={handleShare}
       >
         <Share2 size={16} className="mr-2" />
-        Compartilhar
+        {t("posts.share")}
       </Button>
 
       {isOwnPost && post.id ? (
@@ -204,7 +204,7 @@ export function PostPublicActions({
             size={compact ? "sm" : "default"}
           >
             <Pencil size={16} className="sm:mr-2" />
-            <p className="hidden sm:flex"> Editar</p>
+            <p className="hidden sm:flex"> {t("posts.edit")}</p>
           </Button>
           <Button
             type="button"
@@ -214,7 +214,7 @@ export function PostPublicActions({
             onClick={handleDelete}
           >
             <Trash2 size={16} className="sm:mr-2" />
-            <p className="hidden sm:flex"> {isDeleting ? "Apagando..." : "Apagar"}</p>
+            <p className="hidden sm:flex"> {isDeleting ? t("posts.deleting") : t("posts.delete")}</p>
           </Button>
         </div>
       ) : null}
@@ -227,14 +227,13 @@ export function PostPublicActions({
             }
           >
             <Flag size={16} className="mr-2" />
-            Denunciar
+            {t("posts.report")}
           </DialogTrigger>
           <DialogContent className="md:w-fit md:h-auto">
             <DialogHeader>
-              <DialogTitle>Denunciar publicação</DialogTitle>
+              <DialogTitle>{t("posts.reportTitle")}</DialogTitle>
               <DialogDescription>
-                Conte para a equipe por que esta publicação precisa ser
-                revisada.
+                {t("posts.reportText")}
               </DialogDescription>
             </DialogHeader>
 
@@ -243,7 +242,7 @@ export function PostPublicActions({
               className="space-y-4"
             >
               <div className="space-y-2">
-                <Label htmlFor="post-report-reason">Motivo</Label>
+                <Label htmlFor="post-report-reason">{t("posts.reason")}</Label>
                 <Controller
                   control={reportForm.control}
                   name="reason"
@@ -281,12 +280,12 @@ export function PostPublicActions({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="post-report-details">Detalhes</Label>
+                <Label htmlFor="post-report-details">{t("posts.details")}</Label>
                 <Textarea
                 className="w-full h-full placeholder:text-sm"
                   id="post-report-details"
                   rows={5}
-                  placeholder="Explique rapidamente o problema encontrado."
+                  placeholder={t("posts.detailsPlaceholder")}
                   {...reportForm.register("details")}
                 />
                 <div className="text-right text-xs text-text-muted">
@@ -301,7 +300,7 @@ export function PostPublicActions({
 
               <DialogFooter className="">
                 <Button className="h-10 w-full" type="submit" disabled={isSubmittingReport}>
-                  {isSubmittingReport ? "Enviando..." : "Enviar denúncia"}
+                  {isSubmittingReport ? t("posts.sending") : t("posts.sendReport")}
                 </Button>
               </DialogFooter>
             </form>

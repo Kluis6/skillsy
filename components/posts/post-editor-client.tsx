@@ -12,7 +12,6 @@ import { uploadImage } from "@/lib/image-upload";
 import { postEditorSchema, type PostEditorFormData } from "@/lib/validations";
 import {
   normalizePostTags,
-  POST_CATEGORY_LABELS,
   slugifyPostTitle,
 } from "@/lib/post-utils";
 import { Post } from "@/models/types";
@@ -31,6 +30,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useT } from "@/lib/i18n/provider";
 
 const MAX_IMAGE_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
 const SUPPORTED_IMAGE_TYPES = new Set([
@@ -39,7 +39,7 @@ const SUPPORTED_IMAGE_TYPES = new Set([
   "image/webp",
 ]);
 
-const getCompressionErrorMessage = (error: unknown) => {
+const getCompressionErrorMessage = (error: unknown, fallback: string) => {
   if (error instanceof Error && error.message) {
     return error.message;
   }
@@ -48,7 +48,7 @@ const getCompressionErrorMessage = (error: unknown) => {
     return error;
   }
 
-  return "Não foi possível processar essa imagem.";
+  return fallback;
 };
 
 type PostEditorClientProps = {
@@ -62,6 +62,7 @@ export function PostEditorClient({
 }: PostEditorClientProps) {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
+  const t = useT();
   const [isPublishing, startPublishing] = useTransition();
   const [autoSlugEdited, setAutoSlugEdited] = useState(Boolean(initialPost));
   const [uploadingCover, setUploadingCover] = useState(false);
@@ -104,24 +105,24 @@ export function PostEditorClient({
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error("Arquivo invalido", {
-        description: "Selecione um arquivo de imagem.",
+      toast.error(t("posts.invalidFile"), {
+        description: t("posts.invalidFileText"),
       });
       event.target.value = "";
       return;
     }
 
     if (!SUPPORTED_IMAGE_TYPES.has(file.type)) {
-      toast.error("Formato não suportado", {
-        description: "Use uma imagem JPG, PNG ou WEBP.",
+      toast.error(t("posts.unsupportedFormat"), {
+        description: t("posts.unsupportedFormatText"),
       });
       event.target.value = "";
       return;
     }
 
     if (file.size > MAX_IMAGE_UPLOAD_SIZE_BYTES) {
-      toast.error("Imagem muito grande", {
-        description: "Escolha uma imagem de até 10 MB.",
+      toast.error(t("posts.imageTooLarge"), {
+        description: t("posts.imageTooLargeText"),
       });
       event.target.value = "";
       return;
@@ -134,10 +135,10 @@ export function PostEditorClient({
         shouldDirty: true,
         shouldValidate: true,
       });
-      toast.success("Imagem de capa carregada!");
+      toast.success(t("posts.coverUploaded"));
     } catch (error) {
-      toast.error("Erro ao carregar imagem", {
-        description: getCompressionErrorMessage(error),
+      toast.error(t("posts.imageUploadError"), {
+        description: getCompressionErrorMessage(error, t("posts.imageError")),
       });
     } finally {
       setUploadingCover(false);
@@ -154,7 +155,7 @@ export function PostEditorClient({
 
   const onSubmit = async (data: PostEditorFormData) => {
     if (!user) {
-      toast.error("Login necessário");
+      toast.error(t("posts.loginRequired"));
       return;
     }
 
@@ -171,7 +172,7 @@ export function PostEditorClient({
 
       if (mode === "create") {
         const id = await PostService.createDraft(payload);
-        toast.success("Rascunho criado com sucesso.");
+        toast.success(t("posts.draftCreated"));
         router.push(`/meus-artigos/${id}/editar`);
         return;
       }
@@ -179,15 +180,15 @@ export function PostEditorClient({
       if (!initialPost?.id) return;
 
       await PostService.updateOwnPost(initialPost.id, payload);
-      toast.success("Rascunho atualizado.");
+      toast.success(t("posts.draftUpdated"));
       router.refresh();
     } catch (error) {
       console.error(error);
       const message =
         error instanceof Error &&
         error.message.includes("Missing or insufficient permissions")
-          ? "Seu perfil parece verificado na interface, mas ainda não foi aceito pela regra do Firestore. Tente salvar o perfil novamente e depois publicar."
-          : "Não foi possível salvar o artigo.";
+          ? t("posts.permissionError")
+          : t("posts.saveError");
       toast.error(message);
     }
   };
@@ -212,12 +213,12 @@ export function PostEditorClient({
         await PostService.updateOwnPost(postId, payload);
         await PostService.publishOwnPost(postId);
         toast.success(
-          isPublishedPost ? "Publicação atualizada." : "Publicação enviada com sucesso.",
+          isPublishedPost ? t("posts.postUpdated") : t("posts.postSent"),
         );
         router.push("/artigosevagas");
       } catch (error) {
         console.error(error);
-        toast.error("Não foi possível publicar.");
+        toast.error(t("posts.publishError"));
       }
     });
   });
@@ -229,12 +230,12 @@ export function PostEditorClient({
   if (!user) {
     return (
       <div className="mx-auto max-w-3xl border border-border-subtle bg-card p-10 text-center shadow-xs">
-        <h1 className="text-2xl font-bold text-text-main">Acesso restrito</h1>
+        <h1 className="text-2xl font-bold text-text-main">{t("posts.restrictedTitle")}</h1>
         <p className="mt-2 text-text-muted">
-          Faça login para escrever e gerenciar seus artigos.
+          {t("posts.restrictedText")}
         </p>
         <Link href="/" className="mt-6 inline-flex text-sm font-bold text-primary hover:underline">
-          Voltar para a home
+          {t("posts.backHome")}
         </Link>
       </div>
     );
@@ -244,16 +245,16 @@ export function PostEditorClient({
     return (
       <div className="mx-auto max-w-3xl border border-border-subtle bg-card p-10 text-center shadow-xs">
         <h1 className="text-2xl font-bold text-text-main">
-          Publicação disponível para membros verificados
+          {t("posts.verifiedOnlyTitle")}
         </h1>
         <p className="mt-2 text-text-muted">
-          Complete sua verificação de membro no perfil para criar artigos e vagas.
+          {t("posts.verifiedOnlyText")}
         </p>
         <Link
           href="/profile"
           className="mt-6 inline-flex text-sm font-bold text-primary hover:underline"
         >
-          Ir para meu perfil
+          {t("posts.goToProfile")}
         </Link>
       </div>
     );
@@ -262,19 +263,18 @@ export function PostEditorClient({
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="border border-primary/20 bg-primary/5 p-5 text-sm text-text-muted">
-        Escolha entre artigo e vaga. Para publicar, a postagem precisa ter pelo menos
-        texto ou imagem de capa. O resumo é opcional e as tags continuam limitadas a 5.
+        {t("posts.editorIntro")}
       </div>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 border border-border-subtle bg-card p-6 md:p-8 shadow-xs">
         <div className="space-y-2">
-          <Label htmlFor="category">Categoria</Label>
+          <Label htmlFor="category">{t("posts.category")}</Label>
           <Controller
             control={form.control}
             name="category"
             render={({ field }) => (
               <Select
-                items={POST_CATEGORY_LABELS}
+                items={{ article: t("posts.categoryArticle"), job: t("posts.categoryJob") }}
                 name={field.name}
                 value={field.value}
                 onValueChange={(value) => value && field.onChange(value)}
@@ -290,9 +290,9 @@ export function PostEditorClient({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="article">
-                    {POST_CATEGORY_LABELS.article}
+                    {t("posts.categoryArticle")}
                   </SelectItem>
-                  <SelectItem value="job">{POST_CATEGORY_LABELS.job}</SelectItem>
+                  <SelectItem value="job">{t("posts.categoryJob")}</SelectItem>
                 </SelectContent>
               </Select>
             )}
@@ -305,7 +305,7 @@ export function PostEditorClient({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="title">Título</Label>
+          <Label htmlFor="title">{t("posts.title")}</Label>
           <Input
             id="title"
             maxLength={120}
@@ -320,7 +320,7 @@ export function PostEditorClient({
 
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="slug">Slug</Label>
+            <Label htmlFor="slug">{t("posts.slug")}</Label>
             <Input
               id="slug"
               maxLength={140}
@@ -335,7 +335,7 @@ export function PostEditorClient({
             ) : null}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="coverImageUrl">URL da capa</Label>
+            <Label htmlFor="coverImageUrl">{t("posts.coverUrl")}</Label>
             <Input
               id="coverImageUrl"
               placeholder="https://..."
@@ -353,7 +353,7 @@ export function PostEditorClient({
                 ) : (
                   <ImagePlus size={16} className="mr-2" />
                 )}
-                {uploadingCover ? "Carregando..." : "Upload de imagem"}
+                {uploadingCover ? t("posts.uploading") : t("posts.uploadImage")}
               </Button>
               {coverImageValue ? (
                 <Button
@@ -362,7 +362,7 @@ export function PostEditorClient({
                   onClick={handleRemoveCoverImage}
                 >
                   <Trash2 size={16} className="mr-2" />
-                  Remover capa
+                  {t("posts.removeCover")}
                 </Button>
               ) : null}
             </div>
@@ -374,7 +374,7 @@ export function PostEditorClient({
               onChange={handleCoverFileChange}
             />
             <p className="text-xs text-text-muted">
-              Você pode colar uma URL ou enviar um arquivo JPG, PNG ou WEBP de até 10 MB.
+              {t("posts.coverHint")}
             </p>
             {form.formState.errors.coverImageUrl ? (
               <p className="text-xs font-bold text-destructive">
@@ -386,11 +386,11 @@ export function PostEditorClient({
 
         {coverImageValue ? (
           <div className="space-y-2">
-            <Label>Prévia da capa</Label>
+            <Label>{t("posts.coverPreview")}</Label>
             <div className="relative h-56 overflow-hidden border border-border-subtle bg-surface">
               <Image
                 src={coverImageValue}
-                alt="Prévia da imagem de capa"
+                alt={t("posts.coverPreviewAlt")}
                 fill
                 className="object-cover"
                 sizes="(max-width: 1023px) 100vw, 50vw"
@@ -400,7 +400,7 @@ export function PostEditorClient({
         ) : null}
 
         <div className="space-y-2">
-          <Label htmlFor="excerpt">Resumo</Label>
+          <Label htmlFor="excerpt">{t("posts.excerpt")}</Label>
           <Textarea
             id="excerpt"
             maxLength={240}
@@ -408,7 +408,7 @@ export function PostEditorClient({
             {...form.register("excerpt")}
           />
           <div className="flex justify-between text-xs text-text-muted">
-            <span>Opcional. Se vazio, usamos um resumo automático.</span>
+            <span>{t("posts.excerptHint")}</span>
             <span>{excerptValue.length}/240</span>
           </div>
           {form.formState.errors.excerpt ? (
@@ -419,7 +419,7 @@ export function PostEditorClient({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="content">Conteúdo</Label>
+          <Label htmlFor="content">{t("posts.content")}</Label>
           <Textarea
             id="content"
             className="min-h-[420px]"
@@ -427,7 +427,7 @@ export function PostEditorClient({
             {...form.register("content")}
           />
           <div className="flex justify-between text-xs text-text-muted">
-            <span>O texto é opcional se você enviar uma capa, mas quando existir deve ter pelo menos 40 caracteres.</span>
+            <span>{t("posts.contentHint")}</span>
             <span>{contentValue.length}/20000</span>
           </div>
           {form.formState.errors.content ? (
@@ -438,10 +438,10 @@ export function PostEditorClient({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="tags">Tags</Label>
+          <Label htmlFor="tags">{t("posts.tags")}</Label>
           <Input
             id="tags"
-            placeholder="serviços, comunidade, notícias"
+            placeholder={t("posts.tagsPlaceholder")}
             maxLength={120}
             {...form.register("tags")}
           />
@@ -454,7 +454,7 @@ export function PostEditorClient({
 
         <div className="flex flex-col gap-3 border-t border-border-subtle pt-6 sm:flex-row">
           <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? "Salvando..." : "Salvar rascunho"}
+            {form.formState.isSubmitting ? t("posts.saving") : t("posts.saveDraft")}
           </Button>
           {mode === "edit" ? (
             <Button
@@ -464,10 +464,10 @@ export function PostEditorClient({
               onClick={handleSubmitForReview}
             >
               {isPublishing
-                ? "Publicando..."
+                ? t("posts.publishing")
                 : isPublishedPost
-                  ? "Atualizar publicação"
-                  : "Publicar agora"}
+                  ? t("posts.updatePost")
+                  : t("posts.publishNow")}
             </Button>
           ) : null}
         </div>

@@ -5,7 +5,10 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/footer";
 import { Badge } from "@/components/ui/badge";
 import { createPublicMetadata } from "@/lib/public-metadata";
-import { getPostExcerpt, POST_CATEGORY_LABELS } from "@/lib/post-utils";
+import { getPostExcerpt } from "@/lib/post-utils";
+import { getMessages, getT } from "@/lib/i18n/server";
+import { I18nProvider } from "@/lib/i18n/provider";
+import { rich } from "@/lib/i18n/rich";
 import { PostPublicActions } from "@/components/posts/post-public-actions";
 import { PostService } from "@/services/post-service";
 import Link from "next/link";
@@ -34,21 +37,22 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPublishedPost(slug);
+  const [post, t] = await Promise.all([getPublishedPost(slug), getT()]);
 
   if (!post) {
     return {
-      title: "Artigo não encontrado",
+      title: t("posts.notFound"),
     };
   }
+  const excerpt = getPostExcerpt(post, t("posts.excerptFallback"));
 
   return createPublicMetadata({
     title: post.title,
-    description: getPostExcerpt(post),
+    description: excerpt,
     path: `/artigosevagas/${post.slug}`,
     imageTitle: post.title,
-    imageDescription: getPostExcerpt(post),
-    imageLabel: post.category === "job" ? "Vaga publicada" : "Artigo publicado",
+    imageDescription: excerpt,
+    imageLabel: post.category === "job" ? t("posts.jobPublished") : t("posts.articlePublished"),
     useRouteOgImage: true,
     openGraphType: "article",
   });
@@ -56,7 +60,11 @@ export async function generateMetadata({
 
 export default async function NoticiaDetalhePage({ params }: PageProps) {
   const { slug } = await params;
-  const post = await getPublishedPost(slug);
+  const [post, t, messages] = await Promise.all([
+    getPublishedPost(slug),
+    getT(),
+    getMessages("posts"),
+  ]);
 
   if (!post) {
     notFound();
@@ -72,7 +80,7 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
               className="flex items-center space-x-1 text-text-muted hover:text-primary transition-colors cursor-pointer"
             >
               <LuArrowLeft />
-              <p className="font-medium text-sm">Voltar</p>
+              <p className="font-medium text-sm">{t("posts.back")}</p>
             </Link>
           </div>
           {post.coverImageUrl ? (
@@ -92,18 +100,18 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
           {/* Text column capped at ~65 characters per line for readability. */}
           <div className="mx-auto flex max-w-prose items-center justify-between px-4 py-4">
             <p className="text-sm text-text-muted">
-              por <strong>{post.authorName}</strong>
+              {rich(t("posts.by"), { name: <strong>{post.authorName}</strong> })}
             </p>
             <div className="flex gap-2">
               <Badge
                 variant="secondary"
                 className={` ${post.category === "job" ? "bg-success/15 text-success" : "bg-warning/15 text-warning-foreground"} `}
               >
-                {POST_CATEGORY_LABELS[post.category]}
+                {post.category === "job" ? t("posts.categoryJob") : t("posts.categoryArticle")}
               </Badge>
               {post.isFeatured ? (
                 <Badge className="bg-primary/10 text-primary border-primary/10">
-                  Destaque
+                  {t("posts.featured")}
                 </Badge>
               ) : null}
             </div>
@@ -113,9 +121,11 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
               {post.title}
             </h1>
             <p className="text-lg leading-7 text-text-muted font-normal">
-              {getPostExcerpt(post)}
+              {getPostExcerpt(post, t("posts.excerptFallback"))}
             </p>
-            <PostPublicActions post={post} redirectOnDelete="/artigosevagas" />
+            <I18nProvider messages={messages}>
+              <PostPublicActions post={post} redirectOnDelete="/artigosevagas" />
+            </I18nProvider>
             <article>
               {post.content.trim() ? (
                 <p className="whitespace-pre-wrap text-base leading-7 text-text-main font-normal">
@@ -123,7 +133,7 @@ export default async function NoticiaDetalhePage({ params }: PageProps) {
                 </p>
               ) : (
                 <p className="text-base leading-8 text-text-muted">
-                  Esta publicação foi compartilhada sem texto adicional.
+                  {t("posts.noText")}
                 </p>
               )}
             </article>

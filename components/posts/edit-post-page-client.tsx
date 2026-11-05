@@ -7,9 +7,11 @@ import { PostService } from "@/services/post-service";
 import { PostEditorClient } from "@/components/posts/post-editor-client";
 import { PostEditorPageLoading } from "@/components/loading/route-loaders";
 import { toast } from "sonner";
+import { useT } from "@/lib/i18n/provider";
 
 export function EditPostPageClient({ id }: { id: string }) {
   const { user, loading } = useAuth();
+  const t = useT();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,14 +31,14 @@ export function EditPostPageClient({ id }: { id: string }) {
         setPost(result);
       } catch (error) {
         console.error(error);
-        toast.error("Não foi possível carregar a publicação.");
+        toast.error(t("posts.loadError"));
       } finally {
         setIsLoading(false);
       }
     };
 
     run();
-  }, [id, user]);
+  }, [id, user, t]);
 
   if (loading || isLoading) {
     return <PostEditorPageLoading />;
@@ -45,7 +47,7 @@ export function EditPostPageClient({ id }: { id: string }) {
   if (!post) {
     return (
       <div className="border border-border-subtle bg-card p-10 text-center text-text-muted shadow-xs">
-        Publicação não encontrada ou indisponível para edição.
+        {t("posts.editNotFound")}
       </div>
     );
   }
