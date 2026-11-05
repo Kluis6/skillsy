@@ -112,6 +112,7 @@ export function BlockedClient() {
               {t('blocked.askReview')}
               {deadline ? (
                 <span className="font-normal text-text-muted">
+                  {' '}
                   {t('blocked.until', { date: longDate(deadline) })}
                 </span>
               ) : null}

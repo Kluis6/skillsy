@@ -238,7 +238,7 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
   - [x] (3) Oportunidades (mural, para você, encontrar ajuda, formulário, acompanhamento de 20 dias) e o sino de notificações (só a moldura; o texto de cada aviso fica no idioma do conteúdo, dificuldade 12). Urgência traduzida no site; o pacote compartilhado mantém os rótulos em português para o app até a E7
   - [x] (4) Artigos e vagas: lista, página do artigo, ações (compartilhar, editar, apagar, denunciar), Minhas publicações e editor. Categoria e status (artigo/vaga, rascunho/em revisão…) traduzidos no site; `getPostExcerpt` aceita o texto padrão no idioma
   - [x] (5a) Login e cadastro (modal, /signin, /recovery), bloqueio, contatos, aviso de cookies e diálogo de novos termos. E-mail de redefinição de senha no idioma da página (`auth.languageCode`). Descrições das imagens do login ganharam acentos
-  - [ ] (5b) Perfil/configurações
+  - [x] (5b) Perfil/configurações (identidade, vínculo com a comunidade e consentimento da ala, serviço, endereço, contatos, galeria, cancelar conta). Conferência das telas com login: cada mensagem do `pt.json` precisa existir idêntica no código anterior à E3 (variáveis como coringa); `i18n:check` passou a recusar mensagens com espaço nas pontas
   - [ ] (6) Páginas institucionais
   - [ ] (7) Termos e Privacidade
 - [ ] Validações zod com chaves (dificuldade 7); `z.config` com o idioma

@@ -1,6 +1,6 @@
 // npm run i18n:check — every language has the messages of pt.json (the source
-// of truth), no extra ones, the same {variables}, and an "_other" form for
-// every plural. Runs in CI; exits with 1 on any problem.
+// of truth), no extra ones, the same {variables}, an "_other" form for every
+// plural and no spaces at the ends. Runs in CI; exits with 1 on any problem.
 import { LOCALES, baseKey, flatten, isPlural, readDictionary, varsOf } from "./dictionaries.mjs";
 
 const flat = Object.fromEntries(LOCALES.map((locale) => [locale, flatten(readDictionary(locale))]));
@@ -13,6 +13,14 @@ const messages = (locale) => {
   return groups;
 };
 const source = messages("pt");
+
+// The review spreadsheet trims cells, so a message can't start or end with a
+// space: put that space in the component instead.
+for (const locale of LOCALES) {
+  for (const [path, text] of Object.entries(flat[locale])) {
+    if (text !== text.trim()) problems.push(`${locale}: "${path}" começa ou termina com espaço`);
+  }
+}
 
 for (const locale of LOCALES.filter((locale) => locale !== "pt")) {
   const target = messages(locale);
