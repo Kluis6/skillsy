@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "@/lib/i18n/navigation";
+import { usePathname } from "@/lib/i18n/navigation";
 import { toast } from "sonner";
 import { MINIMUM_AGE, TERMS_VERSION } from "@skillsy/shared/terms";
 import { useAuth } from "@/hooks/use-auth";

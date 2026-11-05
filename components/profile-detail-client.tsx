@@ -12,7 +12,7 @@ import {
   RecommendationCount,
   RecommendationSummary,
 } from "@/components/profile/recommendation-summary";
-import { useLocale, useT } from "@/lib/i18n/provider";
+import { useLocale, useT, useValidationMessage } from "@/lib/i18n/provider";
 import { rich } from "@/lib/i18n/rich";
 import { DATE_FNS_LOCALE } from "@/lib/i18n/date-fns";
 import { formatRating } from "@skillsy/shared/i18n/format";
@@ -33,7 +33,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import { motion } from "motion/react";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { toast } from "sonner";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
@@ -103,6 +103,7 @@ export function ProfileDetailClient({
     logout,
   } = useAuth();
   const t = useT();
+  const tv = useValidationMessage();
   const locale = useLocale();
   const [targetProfile, setTargetProfile] = useState<UserProfile | null>(
     initialProfile,
@@ -631,7 +632,7 @@ export function ProfileDetailClient({
               />
               {reportForm.formState.errors.reason && (
                 <p className="text-xs font-bold text-destructive">
-                  {reportForm.formState.errors.reason.message}
+                  {tv(reportForm.formState.errors.reason.message)}
                 </p>
               )}
             </div>
@@ -655,7 +656,7 @@ export function ProfileDetailClient({
               </div>
               {reportForm.formState.errors.details && (
                 <p className="text-xs font-bold text-destructive">
-                  {reportForm.formState.errors.details.message}
+                  {tv(reportForm.formState.errors.details.message)}
                 </p>
               )}
             </div>
@@ -806,7 +807,7 @@ export function ProfileDetailClient({
       } catch {
         // Not JSON, use message directly if it's user-friendly
         if (error.message && !error.message.includes("[object Object]")) {
-          message = error.message;
+          message = tv(error.message);
         }
       }
 

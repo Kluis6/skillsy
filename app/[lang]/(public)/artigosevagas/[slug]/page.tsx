@@ -11,7 +11,7 @@ import { I18nProvider } from "@/lib/i18n/provider";
 import { rich } from "@/lib/i18n/rich";
 import { PostPublicActions } from "@/components/posts/post-public-actions";
 import { PostService } from "@/services/post-service";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { LuArrowLeft } from "react-icons/lu";
 
 // Public data, regenerated at most once an hour (ISR) instead of querying

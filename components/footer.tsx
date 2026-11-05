@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { openCookiePreferences } from "@/lib/cookie-consent";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n/provider";

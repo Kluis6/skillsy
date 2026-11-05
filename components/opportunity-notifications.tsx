@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { BriefcaseBusiness, Clock3, Newspaper } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useLocale, useT } from "@/lib/i18n/provider";

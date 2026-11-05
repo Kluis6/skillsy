@@ -19,9 +19,9 @@ import {
   type SignUpFormData,
 } from "@/lib/validations";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { MINIMUM_AGE } from "@skillsy/shared/terms";
-import { useT } from "@/lib/i18n/provider";
+import { useT, useValidationMessage } from "@/lib/i18n/provider";
 import { rich } from "@/lib/i18n/rich";
 import type { MessageKey, TranslateFn } from "@skillsy/shared/i18n/keys";
 
@@ -121,6 +121,7 @@ export function AuthModal({
   const { signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword } =
     useAuth();
   const t = useT();
+  const tv = useValidationMessage();
   const [tab, setTab] = useState<"login" | "signup">(defaultTab);
   const [loading, setLoading] = useState(false);
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
@@ -328,7 +329,7 @@ export function AuthModal({
                           id="login-email-error"
                           className="text-xs text-destructive font-bold ml-1"
                         >
-                          {loginErrors.email.message}
+                          {tv(loginErrors.email.message)}
                         </p>
                       )}
                     </div>
@@ -356,7 +357,7 @@ export function AuthModal({
                           id="login-password-error"
                           className="text-xs text-destructive font-bold ml-1"
                         >
-                          {loginErrors.password.message}
+                          {tv(loginErrors.password.message)}
                         </p>
                       )}
                       <Button
@@ -420,7 +421,7 @@ export function AuthModal({
                           id="signup-email-error"
                           className="text-xs text-destructive font-bold ml-1"
                         >
-                          {signUpErrors.email.message}
+                          {tv(signUpErrors.email.message)}
                         </p>
                       )}
                     </div>
@@ -457,7 +458,7 @@ export function AuthModal({
                           id="signup-password-error"
                           className="text-xs text-destructive font-bold ml-1"
                         >
-                          {signUpErrors.password.message}
+                          {tv(signUpErrors.password.message)}
                         </p>
                       )}
                     </div>

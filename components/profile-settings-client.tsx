@@ -36,7 +36,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -57,7 +57,7 @@ import {
 
 import { LocationService } from "@/services/location-service";
 import { Footer } from "./footer";
-import { useT } from "@/lib/i18n/provider";
+import { useT, useValidationMessage } from "@/lib/i18n/provider";
 import { rich } from "@/lib/i18n/rich";
 import type { MessageKey } from "@skillsy/shared/i18n/keys";
 
@@ -162,6 +162,7 @@ export function ProfileSettingsClient() {
     loading: authLoading,
   } = useAuth();
   const t = useT();
+  const tv = useValidationMessage();
   const [loading, setLoading] = useState(false);
   const [cancelingAccount, setCancelingAccount] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
@@ -306,7 +307,7 @@ export function ProfileSettingsClient() {
       });
       toast.success(t("settings.locationDetected"), { description: data.display });
     } catch (error: any) {
-      toast.error(t("settings.geoError"), { description: error.message });
+      toast.error(t("settings.geoError"), { description: tv(error.message) });
     } finally {
       setDetectingLocation(false);
     }
@@ -333,7 +334,7 @@ export function ProfileSettingsClient() {
           errorMessage = t("settings.errorDetail", { message: errorData.error });
         }
       } catch (e) {
-        if (error.message) errorMessage = error.message;
+        if (error.message) errorMessage = tv(error.message);
       }
 
       toast.error(errorMessage);
@@ -434,7 +435,7 @@ export function ProfileSettingsClient() {
       }
     } catch (error) {
       toast.error(t("settings.imageUploadError"), {
-        description: getCompressionErrorMessage(error, t("settings.imageError")),
+        description: tv(getCompressionErrorMessage(error, t("settings.imageError"))),
       });
     } finally {
       setUploading(null);
@@ -476,7 +477,7 @@ export function ProfileSettingsClient() {
       toast.success(t("settings.accountCanceled"));
     } catch (error: any) {
       toast.error(t("settings.cancelError"), {
-        description: error?.message || t("settings.tryAgainSoon"),
+        description: tv(error?.message) || t("settings.tryAgainSoon"),
       });
     } finally {
       setCancelingAccount(false);
@@ -863,7 +864,7 @@ export function ProfileSettingsClient() {
                       </p>
                       {errors.name && (
                         <p className="text-xs text-destructive font-bold ml-1">
-                          {errors.name.message}
+                          {tv(errors.name.message)}
                         </p>
                       )}
                     </div>
@@ -896,7 +897,7 @@ export function ProfileSettingsClient() {
                       </div>
                       {errors.location && (
                         <p className="text-xs text-destructive font-bold ml-1">
-                          {errors.location.message}
+                          {tv(errors.location.message)}
                         </p>
                       )}
                       <p className="text-xs text-text-muted ml-1">
@@ -981,7 +982,7 @@ export function ProfileSettingsClient() {
                               </p>
                               {errors.ward && (
                                 <p className="text-xs text-destructive font-bold ml-1">
-                                  {errors.ward.message}
+                                  {tv(errors.ward.message)}
                                 </p>
                               )}
                             </div>
@@ -1002,7 +1003,7 @@ export function ProfileSettingsClient() {
                               />
                               {errors.baptismYear && (
                                 <p className="text-xs text-destructive font-bold ml-1">
-                                  {errors.baptismYear.message}
+                                  {tv(errors.baptismYear.message)}
                                 </p>
                               )}
                             </div>
@@ -1056,7 +1057,7 @@ export function ProfileSettingsClient() {
                     </p>
                     {errors.bio && (
                       <p className="text-xs text-destructive font-bold ml-1">
-                        {errors.bio.message}
+                        {tv(errors.bio.message)}
                       </p>
                     )}
                   </div>
@@ -1157,7 +1158,7 @@ export function ProfileSettingsClient() {
                         />
                         {errors.category && (
                           <p className="text-xs text-destructive font-bold ml-1">
-                            {errors.category.message}
+                            {tv(errors.category.message)}
                           </p>
                         )}
                         <p className="text-xs text-text-muted ml-1">
@@ -1179,7 +1180,7 @@ export function ProfileSettingsClient() {
                         </p>
                         {errors.serviceType && (
                           <p className="text-xs text-destructive font-bold ml-1">
-                            {errors.serviceType.message}
+                            {tv(errors.serviceType.message)}
                           </p>
                         )}
                       </div>
@@ -1199,7 +1200,7 @@ export function ProfileSettingsClient() {
                         />
                         {errors.companyName && (
                           <p className="text-xs text-destructive font-bold ml-1">
-                            {errors.companyName.message}
+                            {tv(errors.companyName.message)}
                           </p>
                         )}
                       </div>
@@ -1254,7 +1255,7 @@ export function ProfileSettingsClient() {
                         </p>
                         {errors.serviceHours && (
                           <p className="text-xs text-destructive font-bold ml-1">
-                            {errors.serviceHours.message}
+                            {tv(errors.serviceHours.message)}
                           </p>
                         )}
                       </div>
@@ -1367,7 +1368,7 @@ export function ProfileSettingsClient() {
                     </p>
                     {errors.whatsapp && (
                       <p className="text-xs text-destructive font-bold ml-1">
-                        {errors.whatsapp.message}
+                        {tv(errors.whatsapp.message)}
                       </p>
                     )}
                   </div>
@@ -1390,7 +1391,7 @@ export function ProfileSettingsClient() {
                     </p>
                     {errors.phone && (
                       <p className="text-xs text-destructive font-bold ml-1">
-                        {errors.phone.message}
+                        {tv(errors.phone.message)}
                       </p>
                     )}
                   </div>
@@ -1409,7 +1410,7 @@ export function ProfileSettingsClient() {
                     </p>
                     {errors.instagram && (
                       <p className="text-xs text-destructive font-bold ml-1">
-                        {errors.instagram.message}
+                        {tv(errors.instagram.message)}
                       </p>
                     )}
                   </div>
@@ -1425,7 +1426,7 @@ export function ProfileSettingsClient() {
                     />
                     {errors.facebook && (
                       <p className="text-xs text-destructive font-bold ml-1">
-                        {errors.facebook.message}
+                        {tv(errors.facebook.message)}
                       </p>
                     )}
                   </div>
@@ -1441,7 +1442,7 @@ export function ProfileSettingsClient() {
                     />
                     {errors.linkedin && (
                       <p className="text-xs text-destructive font-bold ml-1">
-                        {errors.linkedin.message}
+                        {tv(errors.linkedin.message)}
                       </p>
                     )}
                   </div>
@@ -1460,7 +1461,7 @@ export function ProfileSettingsClient() {
                     </p>
                     {errors.website && (
                       <p className="text-xs text-destructive font-bold ml-1">
-                        {errors.website.message}
+                        {tv(errors.website.message)}
                       </p>
                     )}
                   </div>

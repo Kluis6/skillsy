@@ -8,6 +8,7 @@ import { lang } from "next/root-params";
 import { notFound } from "next/navigation";
 import { HTML_LANG, OG_LOCALE, enabledLocales, isLocale } from "@skillsy/shared/i18n/locales";
 import { getLocale, getMessages, getT } from "@/lib/i18n/server";
+import { DICTIONARIES } from "@skillsy/shared/i18n";
 import { I18nProvider } from "@/lib/i18n/provider";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
@@ -100,7 +101,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
   const locale = await lang();
   if (!isLocale(locale) || !ENABLED.includes(locale)) notFound();
   // Areas used on every page (menus, footer); pages add their own.
-  const messages = await getMessages("common", "nav", "footer", "card", "location", "notifications", "auth", "notices", "errors");
+  const messages = await getMessages("common", "nav", "footer", "card", "location", "notifications", "auth", "notices", "errors", "validation");
 
   return (
     <html
@@ -118,8 +119,12 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
           enableSystem
           disableTransitionOnChange
         >
-          <ErrorBoundary>
-            <I18nProvider locale={locale} messages={messages}>
+          <I18nProvider
+            locale={locale}
+            messages={messages}
+            validationSource={DICTIONARIES.pt.validation}
+          >
+            <ErrorBoundary>
               <AuthProvider>
                 <TooltipProvider>
                   {children}
@@ -128,8 +133,8 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
                   <Toaster position="top-center" richColors />
                 </TooltipProvider>
               </AuthProvider>
-            </I18nProvider>
-          </ErrorBoundary>
+            </ErrorBoundary>
+          </I18nProvider>
         </ThemeProvider>
       </body>
     </html>

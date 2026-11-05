@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { contactSchema, ContactFormData } from "@/lib/validations";
 import { UserService } from "@/services/user-service";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { useT } from "@/lib/i18n/provider";
+import { useT, useValidationMessage } from "@/lib/i18n/provider";
 
 const CONTACT_LIMITS = {
   name: 50,
@@ -21,6 +21,7 @@ const CONTACT_LIMITS = {
 
 export function ContactCTA() {
   const t = useT();
+  const tv = useValidationMessage();
   const {
     register,
     handleSubmit,
@@ -100,7 +101,7 @@ export function ContactCTA() {
                   </div>
                   {errors.name && (
                     <p className="text-xs text-destructive font-bold ml-2">
-                      {errors.name.message}
+                      {tv(errors.name.message)}
                     </p>
                   )}
                   <p className="text-xs text-text-muted ml-2">
@@ -133,7 +134,7 @@ export function ContactCTA() {
                   </div>
                   {errors.email && (
                     <p className="text-xs text-destructive font-bold ml-2">
-                      {errors.email.message}
+                      {tv(errors.email.message)}
                     </p>
                   )}
                   <p className="text-xs text-text-muted ml-2">
@@ -180,7 +181,7 @@ export function ContactCTA() {
                   </div>
                   {errors.message && (
                     <p className="text-xs text-destructive font-bold ml-2">
-                      {errors.message.message}
+                      {tv(errors.message.message)}
                     </p>
                   )}
                   <p className="text-xs text-text-muted ml-2">

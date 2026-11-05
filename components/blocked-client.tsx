@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import Link from '@/lib/i18n/navigation';
+import { useRouter } from '@/lib/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ShieldAlert, CheckCircle2 } from 'lucide-react';

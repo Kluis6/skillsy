@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from "@/lib/i18n/navigation";
+import { useRouter } from "@/lib/i18n/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { useT } from "@/lib/i18n/provider";
+import { useT, useValidationMessage } from "@/lib/i18n/provider";
 
 type PostPublicActionsProps = {
   post: Post;
@@ -47,6 +47,7 @@ export function PostPublicActions({
   const router = useRouter();
   const { user } = useAuth();
   const t = useT();
+  const tv = useValidationMessage();
   const [isDeleting, startDeleting] = useTransition();
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [isSubmittingReport, startSubmittingReport] = useTransition();
@@ -274,7 +275,7 @@ export function PostPublicActions({
                 />
                 {reportForm.formState.errors.reason ? (
                   <p className="text-xs font-medium text-destructive">
-                    {reportForm.formState.errors.reason.message}
+                    {tv(reportForm.formState.errors.reason.message)}
                   </p>
                 ) : null}
               </div>
@@ -293,7 +294,7 @@ export function PostPublicActions({
                 </div>
                 {reportForm.formState.errors.details ? (
                   <p className="text-xs font-medium text-destructive">
-                    {reportForm.formState.errors.details.message}
+                    {tv(reportForm.formState.errors.details.message)}
                   </p>
                 ) : null}
               </div>

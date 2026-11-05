@@ -8,10 +8,10 @@ import { OPPORTUNITY_DAYS, OPPORTUNITY_REMINDER_DAYS } from "@skillsy/shared/ter
 import { formatDate } from "@skillsy/shared/i18n/format";
 import { INTL_LOCALE } from "@skillsy/shared/i18n/locales";
 import type { MessageKey, TranslateFn } from "@skillsy/shared/i18n/keys";
-import { useLocale, useT } from "@/lib/i18n/provider";
+import { useLocale, useT, useValidationMessage } from "@/lib/i18n/provider";
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from "@/lib/i18n/navigation";
+import { useRouter } from "@/lib/i18n/navigation";
 import {
   AlertTriangle,
   BriefcaseBusiness,
@@ -232,6 +232,7 @@ export function OpportunitiesClient({
   const router = useRouter();
   const { profile, user } = useAuth();
   const t = useT();
+  const tv = useValidationMessage();
   const [opportunities, setOpportunities] = useState(initialOpportunities);
   const [form, setForm] = useState<OpportunityFormInput>(() => ({
     ...emptyForm,
@@ -344,7 +345,7 @@ export function OpportunitiesClient({
     } catch (error) {
       toast.error(
         error instanceof Error
-          ? error.message
+          ? tv(error.message)
           : t("opportunities.updateError"),
       );
     }
@@ -369,7 +370,7 @@ export function OpportunitiesClient({
     } catch (error) {
       toast.error(
         error instanceof Error
-          ? error.message
+          ? tv(error.message)
           : t("opportunities.publishError"),
       );
     } finally {

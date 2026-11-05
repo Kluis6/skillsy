@@ -6,7 +6,7 @@ import { MapPin, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LocationService } from "@/services/location-service";
 import { toast } from "sonner";
-import { useT } from "@/lib/i18n/provider";
+import { useT, useValidationMessage } from "@/lib/i18n/provider";
 
 interface CepFilterProps {
   onLocationChange: (location: { city: string; state: string } | null) => void;
@@ -18,6 +18,7 @@ export function CepFilter({
   initialLocation,
 }: CepFilterProps) {
   const t = useT();
+  const tv = useValidationMessage();
   const [cep, setCep] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,8 +91,8 @@ export function CepFilter({
         description: `${data.city}, ${data.state}`,
       });
     } catch (err: any) {
-      setError(err.message);
-      toast.error(t("location.geoError"), { description: err.message });
+      setError(tv(err.message));
+      toast.error(t("location.geoError"), { description: tv(err.message) });
     } finally {
       setLoading(false);
     }

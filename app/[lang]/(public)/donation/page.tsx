@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { FeatureCard } from "@/components/ui/feature-card";
 import HeaderSection from "@/components/headersection";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import {
   AlertTriangle,
   Equal,

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { FeatureCard } from "@/components/ui/feature-card";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { ArrowRight, Compass, Lightbulb, Users } from "lucide-react";
 import Image from "next/image";
 import HeaderSection, {

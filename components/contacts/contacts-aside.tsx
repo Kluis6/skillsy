@@ -8,7 +8,7 @@ import { UserProfile } from "@/models/types";
 import { MembershipMark } from "@/components/ui/trust-signals";
 import { useContactsStore } from "@/store/use-contacts-store";
 import { toast } from "sonner";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { LuArrowLeft } from "react-icons/lu";
 import { useT } from "@/lib/i18n/provider";
 

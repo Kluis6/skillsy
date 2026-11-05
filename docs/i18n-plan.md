@@ -231,7 +231,7 @@ Cada etapa termina com o site em produção **sem mudança visível em portuguê
 
 Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards · (3) Oportunidades · (4) Artigos e vagas · (5) Login, cadastro, perfil/configurações, bloqueio · (6) Páginas institucionais · (7) Termos e Privacidade (por último, com texto revisado)
 
-- [ ] Extrair textos para `pt.json` mantendo o português **idêntico**. Conferência: retrato do texto de 21 páginas públicas (desktop e celular: texto, título, metas, `aria-label`, `placeholder`, `title`, `alt`) antes e depois de cada área, comparado como texto corrido
+- [x] Extrair textos para `pt.json` mantendo o português **idêntico**. Conferência: retrato do texto de 21 páginas públicas (desktop e celular: texto, título, metas, `aria-label`, `placeholder`, `title`, `alt`) antes e depois de cada área, comparado como texto corrido
   - [x] Base: `lib/i18n/server.ts` (`getT`, `getLocale`, `getMessages` com `next/root-params`), `lib/i18n/provider.tsx` (`I18nProvider`, `useT`, `useLocale`, `useHref`), chaves tipadas a partir do `pt.json` (`keys.ts`)
   - [x] (1) Layout e metadados do site, menu (o menu da busca passou a reutilizar o da barra), rodapé, botão de tema, Início (hero, categorias, benefícios, Fale conosco). Nomes das categorias ficam para a E4 (são termos de busca); mensagens do zod ficam para o item de validações
   - [x] (2) Busca, perfil público, cards, filtro de localização. `rich()` para elementos dentro do texto (`lib/i18n/rich.tsx`); datas relativas com date-fns no idioma (`lib/i18n/date-fns.ts`), mantendo o português igual; nota com `formatRating` (o perfil mostrava "4.5" e passou a "4,5", como nos cards). Rótulos de dias, categorias e motivos de denúncia ficam para a E4
@@ -242,10 +242,10 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
   - [x] (6) Páginas institucionais (Participe, O que é Skillsy, Doação, seção "como funciona"), páginas de erro e 404. O 404 de endereços inexistentes (`global-not-found`, fora de `app/[lang]`) fica em português; a página de doação perdeu um trecho que nunca aparecia (QR Code ausente) e "O que é Skillsy" uma lista que não era exibida
   - [x] (7) Termos e Privacidade: primeira tradução completa em `lib/legal/{terms,privacy}.{en,es}.ts` (mesmos ids de seção; teste `tests/i18n/legal.test.mjs` compara a estrutura com o português), aviso "prevalece a versão em português" nas traduções e data no formato de cada idioma. Revisão jurídica e dos revisores na E8
 - [x] Prévia local com `NEXT_PUBLIC_ENABLED_LOCALES=pt,en,es` (05/11/2026): 44 páginas em `/en` e `/es` sem nenhuma chave crua; sobras em português só em conteúdo de usuários, categorias (E4), `meta keywords` (E5) e no 404 de endereços inexistentes, que fica fora de `app/[lang]` (E5: o proxy passa o idioma por cabeçalho)
-- [ ] Links com o idioma (`useHref`/`localizedHref`) nos `href` e `router.push` do site: hoje o cookie `lang` leva o link sem prefixo para o idioma certo, mas quem chega por um link `/en/...` sem ter escolhido o idioma volta ao português ao clicar
-- [ ] Mensagens de erro lançadas pelos serviços (`services/*.ts`) e textos dos componentes de UI genéricos (`components/ui/*`)
-- [ ] Validações zod com chaves (dificuldade 7); `z.config` com o idioma
-- [ ] Datas, notas e plurais com `format.ts`
+- [x] Links com o idioma: `lib/i18n/navigation.tsx` (`Link`, `useRouter`, `usePathname` sem o prefixo) em todo o site, fora o painel administrativo; regra de lint (`no-restricted-imports`) impede voltar a usar `next/link` e `useRouter`/`usePathname` do Next. Conferido com os três idiomas ligados: nenhum link de `/en` e `/es` sem o idioma, busca da home vai para `/en/search`
+- [x] Mensagens de erro dos serviços que chegam à tela e o `ErrorBoundary` global (agora dentro do `I18nProvider`). Erros internos de formato de documento (`profile-documents.ts`) ficam em português
+- [x] Validações: os esquemas do pacote compartilhado continuam com o texto em português, porque o app os mostra direto até a E7. O site traduz pela frase: `useValidationMessage()` procura a mensagem em `pt.json` "validation" (aceita modelos como "Ano deve estar entre 1830 e {year}") e mostra no idioma da página. `tests/i18n/validation.test.mjs` garante que toda mensagem dos esquemas do site está no dicionário. Na E7, o app passa a usar o mesmo mecanismo
+- [x] Datas, notas e plurais com `format.ts` (datas relativas com date-fns no idioma, para o português sair igual)
 - [x] `auth.languageCode` antes de enviar e-mails do Firebase Auth (site; o app fica para a E7)
 
 **Pronto quando:** nenhum texto visível fixo nas áreas da etapa (busca por acentos/palavras comuns nos `.tsx`), português igual ao de antes.

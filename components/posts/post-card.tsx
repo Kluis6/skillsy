@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { Post } from "@/models/types";
 import { getPostExcerpt } from "@/lib/post-utils";
 import { useT } from "@/lib/i18n/provider";

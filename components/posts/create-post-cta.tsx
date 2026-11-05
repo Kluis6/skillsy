@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { shouldShowVerifiedBadge } from "@/lib/member-verification";
 import { useT } from "@/lib/i18n/provider";

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { HERO_OVERLAY_CLASS } from "@/lib/hero";
 import Form from "next/form";
 import { motion } from "motion/react";
@@ -11,7 +11,7 @@ import { CepFilter } from "@/components/cep-filter";
 import { Input } from "@/components/ui/input";
 import { Card } from "./ui/card";
 import { BsSearch } from "react-icons/bs";
-import { useT } from "@/lib/i18n/provider";
+import { useHref, useT } from "@/lib/i18n/provider";
 
 interface HeroSectionProps {
   searchTerm: string;
@@ -31,6 +31,7 @@ export function HeroSection({
   showSignupCta = true,
 }: HeroSectionProps) {
   const t = useT();
+  const href = useHref();
   const heroTransition = {
     type: "spring" as const,
     visualDuration: 0.7,
@@ -96,7 +97,7 @@ export function HeroSection({
             </div>
 
             <Form
-              action="/search"
+              action={href("/search")}
               className="flex flex-col w-full space-y-5 justify-center items-center"
             >
               <div className="relative w-full flex justify-center items-center">

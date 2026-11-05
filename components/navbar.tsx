@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { BsList, BsXLg } from "react-icons/bs";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { ArrowLeft, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "@/lib/i18n/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AuthModal } from "@/components/auth-modal";
 import { UserProfile } from "@/models/types";

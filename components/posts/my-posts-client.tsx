@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Post } from "@/models/types";
 import { getPostExcerpt } from "@/lib/post-utils";

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/lib/i18n/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImagePlus, Loader2, Trash2 } from "lucide-react";
@@ -29,8 +29,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import Link from "next/link";
-import { useT } from "@/lib/i18n/provider";
+import Link from "@/lib/i18n/navigation";
+import { useT, useValidationMessage } from "@/lib/i18n/provider";
 
 const MAX_IMAGE_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
 const SUPPORTED_IMAGE_TYPES = new Set([
@@ -63,6 +63,7 @@ export function PostEditorClient({
   const router = useRouter();
   const { user, profile, loading } = useAuth();
   const t = useT();
+  const tv = useValidationMessage();
   const [isPublishing, startPublishing] = useTransition();
   const [autoSlugEdited, setAutoSlugEdited] = useState(Boolean(initialPost));
   const [uploadingCover, setUploadingCover] = useState(false);
@@ -138,7 +139,7 @@ export function PostEditorClient({
       toast.success(t("posts.coverUploaded"));
     } catch (error) {
       toast.error(t("posts.imageUploadError"), {
-        description: getCompressionErrorMessage(error, t("posts.imageError")),
+        description: tv(getCompressionErrorMessage(error, t("posts.imageError"))),
       });
     } finally {
       setUploadingCover(false);
@@ -299,7 +300,7 @@ export function PostEditorClient({
           />
           {form.formState.errors.category ? (
             <p className="text-xs font-bold text-destructive">
-              {form.formState.errors.category.message}
+              {tv(form.formState.errors.category.message)}
             </p>
           ) : null}
         </div>
@@ -313,7 +314,7 @@ export function PostEditorClient({
           />
           {form.formState.errors.title ? (
             <p className="text-xs font-bold text-destructive">
-              {form.formState.errors.title.message}
+              {tv(form.formState.errors.title.message)}
             </p>
           ) : null}
         </div>
@@ -330,7 +331,7 @@ export function PostEditorClient({
             />
             {form.formState.errors.slug ? (
               <p className="text-xs font-bold text-destructive">
-                {form.formState.errors.slug.message}
+                {tv(form.formState.errors.slug.message)}
               </p>
             ) : null}
           </div>
@@ -378,7 +379,7 @@ export function PostEditorClient({
             </p>
             {form.formState.errors.coverImageUrl ? (
               <p className="text-xs font-bold text-destructive">
-                {form.formState.errors.coverImageUrl.message}
+                {tv(form.formState.errors.coverImageUrl.message)}
               </p>
             ) : null}
           </div>
@@ -413,7 +414,7 @@ export function PostEditorClient({
           </div>
           {form.formState.errors.excerpt ? (
             <p className="text-xs font-bold text-destructive">
-              {form.formState.errors.excerpt.message}
+              {tv(form.formState.errors.excerpt.message)}
             </p>
           ) : null}
         </div>
@@ -432,7 +433,7 @@ export function PostEditorClient({
           </div>
           {form.formState.errors.content ? (
             <p className="text-xs font-bold text-destructive">
-              {form.formState.errors.content.message}
+              {tv(form.formState.errors.content.message)}
             </p>
           ) : null}
         </div>
@@ -447,7 +448,7 @@ export function PostEditorClient({
           />
           {form.formState.errors.tags ? (
             <p className="text-xs font-bold text-destructive">
-              {form.formState.errors.tags.message}
+              {tv(form.formState.errors.tags.message)}
             </p>
           ) : null}
         </div>

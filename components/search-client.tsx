@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import { DrawerNavigation } from "@/components/navbar";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "@/lib/i18n/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { UserProfile } from "@/models/types";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ import {
   UserIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 
 import { AuthModal } from "./auth-modal";
 import { BRAZIL_STATES } from "@/lib/brazil-states";

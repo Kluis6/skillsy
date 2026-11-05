@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/lib/i18n/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { useT } from '@/lib/i18n/provider';
 

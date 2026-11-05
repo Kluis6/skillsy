@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { AlertTriangle, CheckCircle2, Info, RefreshCcw } from "lucide-react";
 import type { LegalBlock, LegalDocumentContent } from "@/lib/legal/types";
 import { getLocale, getT } from "@/lib/i18n/server";

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { SearchSlash, Home } from 'lucide-react';
-import Link from 'next/link';
+import Link from '@/lib/i18n/navigation';
 import type { TranslateFn } from '@skillsy/shared/i18n/keys';
 
 /** `t` comes from the caller: global-not-found renders outside app/[lang],

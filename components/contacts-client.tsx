@@ -5,7 +5,7 @@ import { useContactsController } from "@/hooks/use-contacts-controller";
 import { Button } from "@/components/ui/button";
 import { ContactsPageLoading } from "@/components/loading/route-loaders";
 import { Users } from "lucide-react";
-import Link from "next/link";
+import Link from "@/lib/i18n/navigation";
 import { AppSidebar } from "./appsidebar";
 import { ContactsAside } from "./contacts/contacts-aside";
 import { ContactsMain } from "./contacts/contacts-main";
