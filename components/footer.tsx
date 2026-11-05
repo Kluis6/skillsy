@@ -3,38 +3,40 @@
 import Link from "next/link";
 import { openCookiePreferences } from "@/lib/cookie-consent";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n/provider";
 
 export function Footer() {
+  const t = useT();
   return (
     <footer className="border-t border-border-subtle bg-card py-5">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row items-start lg:items-center lg:justify-between  gap-4 w-full">
-          <h4 className="font-bold text-text-main tracking-tight order-1">Skillsy</h4>
+          <h4 className="font-bold text-text-main tracking-tight order-1">{t("common.appName")}</h4>
 
           <div className="order-2 lg:order-3 flex flex-col md:flex-row gap-4 lg:gap-6 text-text-muted items-start">
             <Link
               href="/artigosevagas"
               className="hover:text-primary text-text-muted transition-colors text-sm font-normal"
             >
-              Novidades e vagas
+              {t("footer.newsAndJobs")}
             </Link>
             <Link
               href="/join"
               className="hover:text-primary text-text-muted transition-colors text-sm font-normal"
             >
-              Participe
+              {t("footer.join")}
             </Link>
             <Link
               href="/termos"
               className="hover:text-primary text-text-muted transition-colors text-sm font-normal"
             >
-              Termos
+              {t("footer.terms")}
             </Link>
             <Link
               href="/privacidade"
               className="hover:text-primary text-text-muted transition-colors text-sm font-normal"
             >
-              Privacidade
+              {t("footer.privacy")}
             </Link>
             <Button
               type="button"
@@ -42,11 +44,11 @@ export function Footer() {
               onClick={openCookiePreferences}
               className="h-auto p-0 text-sm font-normal text-text-muted no-underline hover:text-primary hover:no-underline"
             >
-              Cookies
+              {t("footer.cookies")}
             </Button>
           </div>
           <p className="order-3 lg:order-2 text-text-muted text-center text-xs md:text-left">
-            © {new Date().getFullYear()} <strong>Skillsy</strong>. Criado para fortalecer a comunidade
+            © {new Date().getFullYear()} <strong>{t("common.appName")}</strong>. {t("footer.madeFor")}
           </p>
         </div>
       </div>

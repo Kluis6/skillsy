@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { BsMoon, BsSun } from "react-icons/bs";
+import { useT } from "@/lib/i18n/provider";
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -20,6 +21,7 @@ export function ThemeToggle() {
   }, []);
 
   const isDark = mounted && resolvedTheme === "dark";
+  const t = useT();
 
   return (
     <Button
@@ -30,7 +32,7 @@ export function ThemeToggle() {
     >
       {isDark ? <BsMoon className="size-4" /> : <BsSun className="size-4" />}
 
-      <span className="sr-only">Alternar tema</span>
+      <span className="sr-only">{t("common.toggleTheme")}</span>
     </Button>
   );
 }

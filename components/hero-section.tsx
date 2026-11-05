@@ -11,6 +11,7 @@ import { CepFilter } from "@/components/cep-filter";
 import { Input } from "@/components/ui/input";
 import { Card } from "./ui/card";
 import { BsSearch } from "react-icons/bs";
+import { useT } from "@/lib/i18n/provider";
 
 interface HeroSectionProps {
   searchTerm: string;
@@ -29,6 +30,7 @@ export function HeroSection({
   setLocationFilter,
   showSignupCta = true,
 }: HeroSectionProps) {
+  const t = useT();
   const heroTransition = {
     type: "spring" as const,
     visualDuration: 0.7,
@@ -71,11 +73,10 @@ export function HeroSection({
         >
           <div className="space-y-4">
             <h2 className="text-balance font-heading drop-shadow-xl/50 text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white  md:text-7xl lg:text-8xl">
-              Onde talentos encontram oportunidades
+              {t("common.slogan")}
             </h2>
             <p className="mx-auto hidden md:block max-w-2xl text-base font-semibold leading-relaxed text-white md:text-xl lg:mx-0">
-              O Skillsy conecta membros, profissionais e negócios em uma rede
-              onde indicação, confiança e propósito caminham juntos.
+              {t("home.heroText")}
             </p>
           </div>
         </motion.div>
@@ -87,10 +88,10 @@ export function HeroSection({
           <Card className="border-none p-4 shadow-xl md:p-6">
             <div className="space-y-1">
               <p className="text-sm font-bold text-text-main">
-                Encontre alguém da rede
+                {t("home.findSomeone")}
               </p>
               <p className="text-sm text-text-muted">
-                Busque profissionais e oportunidades.
+                {t("home.findSomeoneHint")}
               </p>
             </div>
 
@@ -105,8 +106,8 @@ export function HeroSection({
                 />
                 <Input
                   name="q"
-                  aria-label="Buscar talentos, profissionais e serviços"
-                  placeholder="O que você precisa?"
+                  aria-label={t("home.searchAria")}
+                  placeholder={t("home.searchPlaceholder")}
                   className="h-12 w-full bg-background pl-10 pr-12 text-text-main placeholder:text-text-muted"
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
@@ -118,7 +119,7 @@ export function HeroSection({
                     size="icon"
                     onClick={() => setSearchTerm("")}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted hover:bg-surface hover:text-text-main"
-                    aria-label="Limpar busca"
+                    aria-label={t("home.clearSearch")}
                   >
                     <X className="size-4" />
                   </Button>
@@ -141,11 +142,11 @@ export function HeroSection({
               )}
 
               <p className="w-full text-xs font-normal text-text-muted">
-                Localização:{" "}
+                {t("home.location")}{" "}
                 <span className="text-primary font-semibold">
                   {locationFilter
                     ? `${locationFilter.city}, ${locationFilter.state}`
-                    : "Todo o Brasil"}
+                    : t("home.allBrazil")}
                 </span>
               </p>
 
@@ -156,7 +157,7 @@ export function HeroSection({
                   variant="default"
                   className="h-12 w-full font-medium text-base bg-primary hover:bg-primary/90 text-primary-foreground active:bg-primary/80"
                 >
-                  {searching ? "Pesquisando..." : "Buscar talento"}
+                  {searching ? t("home.searching") : t("home.searchTalent")}
                 </Button>
               </div>
             </Form>
@@ -171,10 +172,10 @@ export function HeroSection({
                   >
                     <span>
                       <span className="block text-xs font-bold text-primary">
-                        Seu talento também pode ajudar alguém.
+                        {t("home.signupTitle")}
                       </span>
                       <span className="block text-xs text-text-muted">
-                        Crie seu perfil na comunidade.
+                        {t("home.signupHint")}
                       </span>
                     </span>
                     <ArrowRight className="size-4 text-primary" />
@@ -189,10 +190,10 @@ export function HeroSection({
                 >
                   <span>
                     <span className="block text-xs font-bold text-primary">
-                      Mantenha seu perfil pronto para ser encontrado.
+                      {t("home.profileTitle")}
                     </span>
                     <span className="block text-xs text-text-muted">
-                      Atualize suas skills e contatos.
+                      {t("home.profileHint")}
                     </span>
                   </span>
                   <ArrowRight className="size-4 text-primary" />
@@ -201,8 +202,7 @@ export function HeroSection({
             </div>
           </Card>
           <p className="mx-auto md:hidden text-center mt-6 text-pretty text-base font-semibold leading-relaxed text-white md:text-xl lg:mx-0 drop-shadow-lg/50">
-            O Skillsy conecta membros, profissionais e negócios em uma rede onde
-            indicação, confiança e propósito caminham juntos.
+            {t("home.heroText")}
           </p>
         </motion.div>
       </motion.div>

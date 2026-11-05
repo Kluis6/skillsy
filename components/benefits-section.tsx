@@ -7,25 +7,24 @@ import { Button } from "@/components/ui/button";
 import { AuthModal } from "@/components/auth-modal";
 import { FaAward } from "react-icons/fa6";
 import { FaUsers, FaUserTie } from "react-icons/fa";
+import { useT } from "@/lib/i18n/provider";
 
 export function BenefitsSection() {
+  const t = useT();
   const benefits = [
     {
-      title: "Relações de confiança",
-      description:
-        "Encontre pessoas com valores, história e vínculos reais com a comunidade.",
+      title: t("home.trustTitle"),
+      description: t("home.trustText"),
       icon: FaUserTie,
     },
     {
-      title: "Talentos com dignidade",
-      description:
-        "Mostre o que você sabe fazer de forma simples, clara e pronta para ser indicada.",
+      title: t("home.dignityTitle"),
+      description: t("home.dignityText"),
       icon: FaAward,
     },
     {
-      title: "Indicações que ajudam",
-      description:
-        "Avaliações e perfis públicos ajudam a transformar uma recomendação em decisão.",
+      title: t("home.recommendTitle"),
+      description: t("home.recommendText"),
       icon: FaUsers,
     },
   ];
@@ -83,11 +82,10 @@ export function BenefitsSection() {
             >
               <div className="flex  flex-col space-y-4">
                 <h3 className="text-xl font-heading font-bold text-text-main md:text-2xl lg:text-3xl">
-                  Uma rede feita por pessoas
+                  {t("home.benefitsTitle")}
                 </h3>
                 <p className="text-base font-normal leading-relaxed text-text-muted md:text-lg">
-                  O Skillsy aproxima necessidades reais de talentos e transforma
-                  seu trabalho em novas oportunidades.
+                  {t("home.benefitsText")}
                 </p>
               </div>
             </motion.div>
@@ -121,7 +119,7 @@ export function BenefitsSection() {
                 variant="default"
                 className="group flex h-12 w-fit items-center justify-center  border-0 bg-primary px-6 text-sm font-bold transition-colors hover:bg-primary/90 md:h-14 md:px-8 md:text-base"
               >
-                Criar meu perfil na comunidade
+                {t("home.createProfileCta")}
                 <ArrowRight
                   size={20}
                   className="ml-2 group-hover:translate-x-1 transition-transform"

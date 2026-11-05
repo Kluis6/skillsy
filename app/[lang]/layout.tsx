@@ -6,73 +6,79 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { getPublicBaseUrl } from "@/lib/public-metadata";
 import { lang } from "next/root-params";
 import { notFound } from "next/navigation";
-import { HTML_LANG, enabledLocales, isLocale } from "@skillsy/shared/i18n/locales";
+import { HTML_LANG, OG_LOCALE, enabledLocales, isLocale } from "@skillsy/shared/i18n/locales";
+import { getLocale, getMessages, getT } from "@/lib/i18n/server";
+import { I18nProvider } from "@/lib/i18n/provider";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading" });
 const baseUrl = getPublicBaseUrl();
-const defaultDescription =
-  "Conectando talentos e serviços na comunidade de membros. Uma plataforma para impulsionar pessoas.";
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  const locale = await getLocale();
+  const title = t("meta.siteTitle");
+  const description = t("meta.siteDescription");
 
-export const metadata: Metadata = {
-  metadataBase: new URL(baseUrl),
-  title: {
-    default: "Skillsy | Network entre membros",
-    template: "%s | Skillsy",
-  },
-  description: defaultDescription,
-  keywords: [
-    "SUD",
-    "comunidade",
-    "serviços",
-    "profissionais",
-    "membros para membros",
-    "talentos",
-  ],
-  authors: [{ name: "Skillsy Community" }],
-  creator: "Skillsy",
-  icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/apple-icon.svg",
-  },
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    type: "website",
-    locale: "pt_BR",
-    url: "/",
-    siteName: "Skillsy",
-    title: "Skillsy | Network entre membros",
-    description: defaultDescription,
-    images: [
-      {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: "Skillsy - Network entre membros",
-      },
+  return {
+    metadataBase: new URL(baseUrl),
+    title: {
+      default: title,
+      template: "%s | Skillsy",
+    },
+    description,
+    keywords: [
+      "SUD",
+      "comunidade",
+      "serviços",
+      "profissionais",
+      "membros para membros",
+      "talentos",
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Skillsy | Network entre membros",
-    description: defaultDescription,
-    images: ["/opengraph-image"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+    authors: [{ name: "Skillsy Community" }],
+    creator: "Skillsy",
+    icons: {
+      icon: "/icon.svg",
+      shortcut: "/icon.svg",
+      apple: "/apple-icon.svg",
+    },
+    alternates: {
+      canonical: "/",
+    },
+    openGraph: {
+      type: "website",
+      locale: OG_LOCALE[locale],
+      url: "/",
+      siteName: "Skillsy",
+      title,
+      description,
+      images: [
+        {
+          url: "/opengraph-image",
+          width: 1200,
+          height: 630,
+          alt: t("meta.siteImageAlt"),
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/opengraph-image"],
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
-  },
-};
+  };
+}
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
@@ -93,6 +99,8 @@ export function generateStaticParams() {
 export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
   const locale = await lang();
   if (!isLocale(locale) || !ENABLED.includes(locale)) notFound();
+  // Areas used on every page (menus, footer); pages add their own.
+  const messages = await getMessages("common", "nav", "footer");
 
   return (
     <html
@@ -111,14 +119,16 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
           disableTransitionOnChange
         >
           <ErrorBoundary>
-            <AuthProvider>
-              <TooltipProvider>
-                {children}
-                <CookieConsentBanner />
-                <TermsUpdateDialog />
-                <Toaster position="top-center" richColors />
-              </TooltipProvider>
-            </AuthProvider>
+            <I18nProvider locale={locale} messages={messages}>
+              <AuthProvider>
+                <TooltipProvider>
+                  {children}
+                  <CookieConsentBanner />
+                  <TermsUpdateDialog />
+                  <Toaster position="top-center" richColors />
+                </TooltipProvider>
+              </AuthProvider>
+            </I18nProvider>
           </ErrorBoundary>
         </ThemeProvider>
       </body>

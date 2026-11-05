@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { UserProfile } from "@/models/types";
 import { Categorywall } from "./categorywall";
 import { ProviderProfileCard } from "@/components/profile/provider-profile-card";
+import { useT } from "@/lib/i18n/provider";
 
 export function HomeClient({
   initialProviders = [],
@@ -25,6 +26,7 @@ export function HomeClient({
   initialProviders?: UserProfile[];
 }) {
   const { user, profile, logout } = useAuth();
+  const t = useT();
   const [activeTab, setActiveTab] = useState<"explore" | "contacts">("explore");
 
   // Controllers
@@ -75,11 +77,10 @@ export function HomeClient({
             >
               <div className="text-center space-y-2 ">
                 <h3 className="text-xl md:text-2xl lg:text-3xl font-bold font-heading tracking-tight text-center text-text-main">
-                  Pessoas da comunidade colocando talento em movimento
+                  {t("home.providersTitle")}
                 </h3>
                 <p className="mx-auto max-w-2xl text-base font-normal leading-relaxed text-text-muted md:text-lg">
-                  Conheça membros que oferecem serviços e ajudam outras famílias a encontrar soluções
-                  confiáveis.
+                  {t("home.providersText")}
                 </p>
               </div>
 
@@ -103,11 +104,10 @@ export function HomeClient({
                 <div className="mx-auto max-w-2xl  bg-surface/40 px-6 py-20 text-center">
                   <SearchX className="mx-auto mb-4 h-12 w-12 text-primary/40" />
                   <h4 className="text-xl font-bold text-text-main">
-                    Ainda não encontramos alguém com esses filtros
+                    {t("home.emptyTitle")}
                   </h4>
                   <p className="text-sm text-text-muted">
-                    Tente buscar por uma categoria mais ampla ou remova a
-                    localização para ver mais membros disponíveis.
+                    {t("home.emptyText")}
                   </p>
                 </div>
               )}
@@ -120,7 +120,7 @@ export function HomeClient({
           {!user && (
             <div className="my-24 text-center flex-col md:flex-row flex w-full justify-center items-center space-x-2 ">
               <p className="text-sm text-text-muted">
-                Seu talento também pode ajudar alguém hoje.
+                {t("home.bottomText")}
               </p>
 
               <AuthModal>
@@ -129,7 +129,7 @@ export function HomeClient({
                   variant="link"
                   className="h-auto px-1 text-sm font-bold"
                 >
-                  Crie seu perfil na comunidade
+                  {t("home.bottomCta")}
                 </Button>
               </AuthModal>
             </div>

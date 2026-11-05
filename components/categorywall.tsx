@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n/provider";
 
 const categories = [
   {
@@ -177,6 +178,7 @@ const categories = [
 ];
 
 export function Categorywall() {
+  const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -196,8 +198,8 @@ export function Categorywall() {
 
         <div className="-mt-24 md:-mt-20 lg:-mt-16 mx-4 md:mx-8 lg:mx-12 z-40 bg-card p-4 sm:p-6 md:p-8 shadow-sm  space-y-8 transition-all">
           <div className="w-full">
-            <h3 className="text-xl lg:text-2xl font-bold text-text-main font-heading tracking-tight text-center">
-               As categorias <br  /> mais populares
+            <h3 className="mx-auto max-w-[16ch] text-balance text-xl lg:text-2xl font-bold text-text-main font-heading tracking-tight text-center">
+              {t("home.popularCategories")}
             </h3>
    
           </div>
@@ -233,7 +235,7 @@ export function Categorywall() {
               onClick={() => setShowAllCategories((current) => !current)}
               className="text-white"
             >
-              {showAllCategories ? "Ver menos" : "Ver todas"}
+              {showAllCategories ? t("home.seeLess") : t("home.seeAll")}
             </Button>
           </div>
         </div>

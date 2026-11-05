@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import {
-  DrawerLink,
-  primaryNavItems,
-  secondaryNavItems,
-} from "@/components/navbar";
+import { DrawerNavigation } from "@/components/navbar";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { UserProfile } from "@/models/types";
@@ -45,13 +41,8 @@ import { cn } from "@/lib/utils";
 
 import {
   Drawer,
-  DrawerClose,
-  DrawerHeader,
-  DrawerFooter,
   DrawerTrigger,
   DrawerContent,
-  DrawerTitle,
-  DrawerDescription,
 } from "./ui/drawer";
 import {
   Sheet,
@@ -65,7 +56,6 @@ import { LuLogIn } from "react-icons/lu";
 import { Footer } from "./footer";
 import { MdLogin, MdSearch } from "react-icons/md";
 import { PROVIDER_CATEGORIES } from "@/lib/profile-form";
-import { User } from "firebase/auth";
 import { ThemeToggle } from "./theme-toggle";
 import { OpportunityNotifications } from "./opportunity-notifications";
 
@@ -76,123 +66,6 @@ interface SearchClientProps {
   initialCategory: string;
   initialResults: UserProfile[];
   initialSuggestions: UserProfile[];
-}
-
-function isActivePath(pathname: string | null, href: string) {
-  if (!pathname) return false;
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-function SearchDrawerNavigation({
-  pathname,
-  user,
-  handleLogout,
-}: {
-  pathname: string | null;
-  user: User | null;
-  handleLogout: () => Promise<void>;
-}) {
-  return (
-    <>
-      <DrawerHeader className="flex flex-row justify-between">
-        <div className="mb-4">
-          <DrawerTitle className="text-base font-semibold normal-case text-text-main">
-            Skillsy
-          </DrawerTitle>
-          <DrawerDescription className="text-sm text-text-muted">
-            Onde talentos encontram oportunidades
-          </DrawerDescription>
-        </div>
-
-        <DrawerClose
-          render={
-            <Button
-              size="icon-lg"
-              variant="ghost"
-              aria-label="Fechar menu principal"
-            >
-              <BsXLg className="size-4 text-foreground" />
-            </Button>
-          }
-        />
-      </DrawerHeader>
-
-      <div className="space-y-4 px-4 overflow-y-auto">
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-text-main">
-            Encontre o que você precisa
-          </h3>
-          <ul className="space-y-1">
-            {primaryNavItems.map((item) => (
-              <DrawerLink
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                active={isActivePath(pathname, item.href)}
-              />
-            ))}
-          </ul>
-        </div>
-
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-text-main">
-            Quem somos
-          </h3>
-          <ul className="space-y-1">
-            {secondaryNavItems.map((item) => (
-              <DrawerLink
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                active={isActivePath(pathname, item.href)}
-              />
-            ))}
-          </ul>
-        </div>
-
-        {user ? (
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-text-main">
-              Minha conta
-            </h3>
-            <ul className="space-y-1">
-              <DrawerLink
-                href="/contacts"
-                label="Meus contatos"
-                active={isActivePath(pathname, "/contacts")}
-              />
-              <DrawerLink
-                href="/profile"
-                label="Configurações do perfil"
-                active={isActivePath(pathname, "/profile")}
-              />
-              <li className="mb-4">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start font-medium px-3 h-10 text-sm text-text-main normal-case"
-                  onClick={handleLogout}
-                >
-                  Sair da conta
-                </Button>
-              </li>
-            </ul>
-          </div>
-        ) : null}
-      </div>
-
-      <DrawerFooter>
-        <DrawerClose>
-          <Link
-            className="flex h-10 items-center justify-center bg-primary text-center text-sm font-medium text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
-            href="/donation"
-          >
-            Ajude o projeto
-          </Link>
-        </DrawerClose>
-      </DrawerFooter>
-    </>
-  );
 }
 
 export function SearchClient({
@@ -379,7 +252,7 @@ export function SearchClient({
                 }
               />
               <DrawerContent className="w-screen sm:max-w-sm">
-                <SearchDrawerNavigation
+                <DrawerNavigation
                   pathname={pathname}
                   user={user}
                   handleLogout={handleLogout}
@@ -439,7 +312,7 @@ export function SearchClient({
                 }
               />
               <DrawerContent className="w-screen sm:max-w-sm">
-                <SearchDrawerNavigation
+                <DrawerNavigation
                   pathname={pathname}
                   user={user}
                   handleLogout={handleLogout}

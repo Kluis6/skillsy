@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
+import { useT } from "@/lib/i18n/provider";
 
 
 const categories = [
@@ -180,6 +181,7 @@ const categories = [
 ];
 
 export function CategoryCarousel() {
+  const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -208,7 +210,7 @@ export function CategoryCarousel() {
           <div className="absolute top-[calc(100%-6rem)] z-40 w-[calc(100%-4rem)] space-y-2 border border-border bg-card p-4 text-card-foreground shadow-md md:w-[calc(100%-6rem)] md:space-y-4 md:p-8 lg:w-[calc(100%-8rem)]">
             <div className="w-full">
               <h3 className="text-center font-heading text-xl font-bold tracking-tight text-foreground lg:text-2xl">
-                As categorias mais populares
+                {t("home.popularCategories")}
               </h3>
      
             </div>

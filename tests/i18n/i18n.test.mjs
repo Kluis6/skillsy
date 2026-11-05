@@ -19,7 +19,7 @@ const es = read("es");
 
 describe("translate", () => {
   test("busca por área.chave", () => {
-    assert.equal(translate(pt, "pt-BR", "nav.home"), "Início");
+    assert.equal(translate(pt, "pt-BR", "nav.home"), "Inicial");
     assert.equal(translate(en, "en-US", "nav.home"), "Home");
     assert.equal(translate(es, "es-419", "nav.newsAndJobs"), "Novedades y empleos");
   });

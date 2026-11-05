@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { contactSchema, ContactFormData } from "@/lib/validations";
 import { UserService } from "@/services/user-service";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { useT } from "@/lib/i18n/provider";
 
 const CONTACT_LIMITS = {
   name: 50,
@@ -19,6 +20,7 @@ const CONTACT_LIMITS = {
 };
 
 export function ContactCTA() {
+  const t = useT();
   const {
     register,
     handleSubmit,
@@ -41,12 +43,12 @@ export function ContactCTA() {
     try {
       await UserService.submitSupportMessage(data);
 
-      toast.success("Mensagem enviada!", {
-        description: "Obrigado pelo contato. Retornaremos em breve.",
+      toast.success(t("contact.sent"), {
+        description: t("contact.sentText"),
       });
       reset();
     } catch (error) {
-      toast.error("Erro ao enviar mensagem");
+      toast.error(t("contact.error"));
       console.error(error);
     }
   };
@@ -57,11 +59,10 @@ export function ContactCTA() {
         <div className="col-span-12 lg:col-span-6 xl:col-span-7 w-full h-full">
           <div className="space-y-4 justify-center pt-4 lg:pt-0 items-center md:items-start flex flex-col w-full h-full">
             <h3 className="text-xl md:text-2xl lg:text-3xl font-bold font-heading tracking-tight text-center text-white md:text-left">
-              Dúvidas ou sugestões?
+              {t("contact.title")}
             </h3>
             <p className="max-w-2xl text-base font-normal leading-relaxed text-center text-white/90 md:text-left md:text-lg">
-              Conte para a gente como podemos ajudar você a encontrar um
-              serviço ou divulgar o seu talento.
+              {t("contact.text")}
             </p>
           </div>
         </div>
@@ -71,14 +72,14 @@ export function ContactCTA() {
             <CardContent>
               <CardHeader>
                 <CardTitle className="text-text-main text-xl font-medium mb-6 text-center">
-                  Fale conosco
+                  {t("contact.formTitle")}
                 </CardTitle>
               </CardHeader>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="space-y-1">
                   <div className="relative">
                     <Input
-                      placeholder="Nome *"
+                      placeholder={t("contact.name")}
                       maxLength={CONTACT_LIMITS.name}
                       {...register("name")}
                       className={` border-1 h-10 md:h-12  text-text-main placeholder:text-text-muted/50 transition-all ${
@@ -103,14 +104,14 @@ export function ContactCTA() {
                     </p>
                   )}
                   <p className="text-xs text-text-muted ml-2">
-                    Limite de {CONTACT_LIMITS.name} caracteres.
+                    {t("contact.nameLimit", { max: CONTACT_LIMITS.name })}
                   </p>
                 </div>
 
                 <div className="space-y-1">
                   <div className="relative">
                     <Input
-                      placeholder="E-mail *"
+                      placeholder={t("contact.email")}
                       type="email"
                       maxLength={CONTACT_LIMITS.email}
                       {...register("email")}
@@ -136,7 +137,7 @@ export function ContactCTA() {
                     </p>
                   )}
                   <p className="text-xs text-text-muted ml-2">
-                    Informe um e-mail válido.
+                    {t("contact.emailHint")}
                   </p>
                 </div>
 
@@ -146,7 +147,7 @@ export function ContactCTA() {
                       htmlFor="contact-message"
                       className="text-xs font-normal text-text-muted uppercase"
                     >
-                      Sua mensagem *
+                      {t("contact.message")}
                     </Label>
                     <span
                       className={`text-xs font-bold ${messageText?.length > 1000 ? "text-destructive" : "text-text-muted"}`}
@@ -157,7 +158,7 @@ export function ContactCTA() {
                   <div className="relative">
                     <Textarea
                       id="contact-message"
-                      placeholder="Conte-nos como podemos ajudar..."
+                      placeholder={t("contact.messagePlaceholder")}
                       {...register("message")}
                       aria-invalid={Boolean(errors.message)}
                       className={`h-32 p-4 pr-10 text-text-main placeholder:text-text-muted/50 transition-all ${
@@ -183,7 +184,7 @@ export function ContactCTA() {
                     </p>
                   )}
                   <p className="text-xs text-text-muted ml-2">
-                    Descreva sua dúvida, mínimo de 10 caracteres.
+                    {t("contact.messageHint")}
                   </p>
                 </div>
                 <Button
@@ -192,7 +193,7 @@ export function ContactCTA() {
                   disabled={isSubmitting}
                   className="w-full rounded-none bg-primary font-bold text-primary-foreground transition-colors hover:bg-primary/90 active:bg-primary/80"
                 >
-                  {isSubmitting ? "Enviando..." : "Enviar mensagem"}
+                  {isSubmitting ? t("contact.sending") : t("contact.send")}
                 </Button>
               </form>
             </CardContent>
