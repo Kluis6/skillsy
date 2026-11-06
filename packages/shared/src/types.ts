@@ -7,6 +7,9 @@ export interface GalleryItem {
 export type ContentLanguage = "pt" | "en" | "es";
 
 export interface UserProfile {
+  /** Language the member reads the site/app in: notifications they receive
+   * come from content in this language (functions/origin.js). Missing = "pt". */
+  preferredLanguage?: ContentLanguage;
   /** Language the content is written in (docs/i18n-plan.md). Missing = "pt". */
   language?: ContentLanguage;
   /** ISO country of origin. Missing = "BR". */

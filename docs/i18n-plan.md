@@ -272,11 +272,11 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
 
 ### E6 — Backend (1 dia)
 
-- [ ] `preferredLanguage` em `users/{uid}`: regras (`allowedFields` + validação), `USER_PROFILE_FIELDS`, testes de regras
-- [ ] Seletor de idioma grava cookie e, logado, `preferredLanguage`
-- [ ] `language` e `country` em `posts` e `opportunities` (regras do Firestore, formulários do site e do app; padrão `pt`/`BR`, sem migração: documento sem os campos conta como `pt`/`BR`)
-- [ ] Functions filtram destinatários pela origem do conteúdo: `notifyMembersOfNewPost` avisa só membros do mesmo país e idioma; `notifyMatchingProfessionals` mantém categoria + estado e soma país e idioma. Texto da notificação no idioma do conteúdo; `sendPushNotification` usa o texto já gravado
-- [ ] `maintainOpportunities` (lembrete de 20 dias) escreve no idioma da oportunidade
+- [x] `preferredLanguage` em `users/{uid}`: regras (criação e atualização), `USER_PROFILE_FIELDS`, testes de regras. O cadastro grava o idioma da página
+- [x] Seletor de idioma (`components/language-switcher.tsx`) no menu e no rodapé, visível só com mais de um idioma ligado: grava o cookie `lang`, salva `preferredLanguage` quando logado e abre a mesma página no novo idioma. No login, a preferência salva vira o cookie quando ainda não há escolha no aparelho
+- [x] `language` e `country` em `posts` e `opportunities` (feito na E4; formulários do app na E7)
+- [x] Functions filtram destinatários pela origem do conteúdo (`functions/origin.js`, testado em `tests/i18n/functions.test.mjs`): artigos e vagas avisam só membros do mesmo país e idioma de preferência; oportunidades mantêm categoria + estado e somam país e idioma. Texto no idioma do conteúdo, com a categoria traduzida; textos gerados dos dicionários em `functions/i18n.json` (`npm run i18n:functions`, conferido pelo `i18n:check`). Publicadas em 06/11/2026
+- [x] `maintainOpportunities` (lembrete de 20 dias) escreve no idioma da oportunidade
 - [ ] Modelos de e-mail do Firebase Auth em inglês e espanhol (console)
 
 **Pronto quando:** teste nos emuladores mostra notificações no idioma de cada usuário.

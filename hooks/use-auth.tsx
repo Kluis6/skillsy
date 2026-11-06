@@ -69,6 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 name: user.displayName || existingByEmail.name || 'Membro Skillsy',
                 photoURL: user.photoURL || existingByEmail.photoURL || '',
                 email: user.email || existingByEmail.email,
+                preferredLanguage: existingByEmail.preferredLanguage || locale,
               };
               await UserService.createProfile(updatedProfile);
               userProfile = await UserService.getProfile(user.uid);
@@ -84,12 +85,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isProvider: false,
                 role: isBootstrapAdmin ? 'admin' : 'user',
                 contacts: [],
+                // The language the member signed up in; changed with the
+                // language switcher.
+                preferredLanguage: locale,
               };
               await UserService.createProfile(newProfile);
               userProfile = await UserService.getProfile(user.uid);
             }
           }
           setProfile(userProfile);
+          // A member's saved language becomes the browser's choice on a new
+          // device (proxy.ts reads the `lang` cookie).
+          if (userProfile?.preferredLanguage && !document.cookie.includes('lang=')) {
+            document.cookie = `lang=${userProfile.preferredLanguage}; path=/; max-age=31536000; samesite=lax`;
+          }
 
           if (userProfile?.isDeleted) {
             setProfile(null);
@@ -120,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, [pathname, router]);
+  }, [pathname, router, locale]);
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();

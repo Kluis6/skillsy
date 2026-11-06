@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/drawer";
 import { OpportunityNotifications } from "@/components/opportunity-notifications";
 import { cn } from "@/lib/utils";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { useT } from "@/lib/i18n/provider";
 import type { MessageKey } from "@skillsy/shared/i18n/keys";
 
@@ -188,6 +189,7 @@ export function DrawerNavigation({
       </div>
 
       <DrawerFooter>
+        <LanguageSwitcher />
         <DrawerClose>
           <Link
             className="flex h-10 items-center justify-center bg-primary text-center text-sm font-medium text-primary-foreground hover:bg-primary/90 active:bg-primary/80"

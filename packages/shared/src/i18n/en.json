@@ -1106,6 +1106,14 @@
       "outro": "Other reason"
     }
   },
+  "functions": {
+    "opportunityMatchTitle": "New opportunity in {category}",
+    "opportunityMatchMessage": "{title} — {neighborhood}, {city} ({state})",
+    "jobPublished": "New job posted",
+    "articlePublished": "New article published",
+    "followUpTitle": "Does your opportunity still need help?",
+    "followUpMessage": "It's been {days} days since “{title}”. Tell us whether you got a reply and close the opportunity if you no longer need it."
+  },
   "language": {
     "label": "Language",
     "choose": "Choose the language",

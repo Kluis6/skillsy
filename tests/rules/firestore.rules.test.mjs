@@ -598,3 +598,17 @@ describe("ala: só para quem está logado", () => {
     await assertSucceeds(updateDoc(doc(dbAs(PROVIDER), "public_profiles", PROVIDER), { ward: deleteField() }));
   });
 });
+
+describe("idioma de preferência", () => {
+  test("dono escolhe pt, en ou es", async () => {
+    const db = dbAs(RATER);
+    await assertSucceeds(updateDoc(doc(db, "users", RATER), { preferredLanguage: "es" }));
+    await assertFails(updateDoc(doc(db, "users", RATER), { preferredLanguage: "fr" }));
+    await assertFails(updateDoc(doc(dbAs(RECOMMENDER), "users", RATER), { preferredLanguage: "en" }));
+  });
+
+  test("cadastro novo já pode vir com o idioma", async () => {
+    const NEW = "novo";
+    await assertSucceeds(setDoc(doc(dbAs(NEW), "users", NEW), userDoc(NEW, { preferredLanguage: "en" })));
+  });
+});

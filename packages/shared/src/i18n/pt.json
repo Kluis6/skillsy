@@ -1106,6 +1106,14 @@
       "outro": "Outro motivo"
     }
   },
+  "functions": {
+    "opportunityMatchTitle": "Nova oportunidade em {category}",
+    "opportunityMatchMessage": "{title} — {neighborhood}, {city} ({state})",
+    "jobPublished": "Nova vaga publicada",
+    "articlePublished": "Novo artigo publicado",
+    "followUpTitle": "Sua oportunidade ainda precisa de ajuda?",
+    "followUpMessage": "Já se passaram {days} dias desde “{title}”. Conte se recebeu resposta e encerre a oportunidade se não precisar mais dela."
+  },
   "language": {
     "label": "Idioma",
     "choose": "Escolha o idioma",

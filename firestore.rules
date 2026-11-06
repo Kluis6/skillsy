@@ -205,7 +205,7 @@ service cloud.firestore {
         'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
         'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'showPublicLocation', 'businessComplement',
         'termsVersion', 'termsAcceptedAt', 'blockedReason', 'blockedAt',
-        'language', 'country'
+        'language', 'country', 'preferredLanguage'
       ];
       
       return data.keys().hasAll(['uid', 'name', 'email', 'isProvider', 'role', 'createdAt']) &&
@@ -215,6 +215,7 @@ service cloud.firestore {
              isValidEmail(data.email) &&
              data.isProvider is bool &&
              (!('language' in data) || data.language in ['pt', 'en', 'es']) &&
+             (!('preferredLanguage' in data) || data.preferredLanguage in ['pt', 'en', 'es']) &&
              (!('country' in data) || (data.country is string && data.country.matches('^[A-Z]{2}$'))) &&
              (!('hasPublicProfile' in data) || data.hasPublicProfile is bool) &&
              data.role in ['admin', 'user'] &&
@@ -274,7 +275,7 @@ service cloud.firestore {
         'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
         'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'showPublicLocation', 'businessComplement',
         'termsVersion', 'termsAcceptedAt', 'blockedReason', 'blockedAt',
-        'language', 'country'
+        'language', 'country', 'preferredLanguage'
       ];
       
       // Only the keys this write adds, changes or removes are checked: the
@@ -292,6 +293,7 @@ service cloud.firestore {
              (!('isProvider' in changed) || !('isProvider' in data) || (data.isProvider is bool)) &&
              (!('role' in changed) || !('role' in data) || (data.role in ['admin', 'user'])) &&
              (!('language' in changed) || !('language' in data) || data.language in ['pt', 'en', 'es']) &&
+             (!('preferredLanguage' in changed) || !('preferredLanguage' in data) || data.preferredLanguage in ['pt', 'en', 'es']) &&
              (!('country' in changed) || !('country' in data) || (data.country is string && data.country.matches('^[A-Z]{2}$'))) &&
              (!('createdAt' in changed) || !('createdAt' in data) || (data.createdAt is timestamp)) &&
              (!('hasPublicProfile' in changed) || !('hasPublicProfile' in data) || data.hasPublicProfile is bool) &&

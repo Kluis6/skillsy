@@ -69,6 +69,7 @@ export const USER_PROFILE_FIELDS: ReadonlySet<string> = new Set([
   "blockedAt",
   "language",
   "country",
+  "preferredLanguage",
 ]);
 
 /** Fields an owner can never change through a profile update. */

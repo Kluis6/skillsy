@@ -14,6 +14,14 @@ const DATABASE_ID = "(default)";
 const REGION = "southamerica-east1";
 const db = getFirestore(DATABASE_ID);
 
+// Notifications are written in the language of the content (opportunity or
+// post) and only reach people from the same country who prefer that language:
+// a job posted in the US, in English, never alerts members in Brazil
+// (docs/i18n-plan.md, decided 05/11/2026). Missing fields mean Portuguese /
+// Brazil, as everywhere else. Texts come from functions/i18n.json, generated
+// from the site's dictionaries (npm run i18n:functions).
+const { categoryLabel, contentLanguage, message, sameOrigin } = require("./origin");
+
 // One notification per user, type and item (opportunity or post).
 function notificationRef(userId, itemId, type) {
   return db.doc(`users/${userId}/notifications/${type}_${itemId}`);
@@ -43,13 +51,15 @@ exports.notifyMatchingProfessionals = onDocumentCreated(
     for (const provider of providers.docs) {
       const data = provider.data();
       if (provider.id === opportunity.authorId || data.isBlocked === true || data.isDeleted === true) continue;
+      if (!sameOrigin(data, opportunity)) continue;
       recipients.push(provider.id);
     }
+    const language = contentLanguage(opportunity);
     await commitInChunks(recipients, (batch, providerId) => {
       batch.set(notificationRef(providerId, event.params.opportunityId, "opportunity_match"), {
         type: "opportunity_match",
-        title: `Nova oportunidade em ${opportunity.category}`,
-        message: `${opportunity.title} — ${opportunity.neighborhood}, ${opportunity.city} (${opportunity.state})`,
+        title: message(language, "opportunityMatchTitle", { category: categoryLabel(language, opportunity.category) }),
+        message: message(language, "opportunityMatchMessage", opportunity),
         opportunityId: event.params.opportunityId,
         read: false,
         createdAt: FieldValue.serverTimestamp(),
@@ -71,16 +81,18 @@ exports.notifyMembersOfNewPost = onDocumentWritten(
 
     const users = await db.collection("users").get();
     const isJob = post.category === "job";
+    const language = contentLanguage(post);
     const writer = db.bulkWriter();
     writer.onWriteError((error) => error.code !== 6 /* ALREADY_EXISTS */ && error.failedAttempts < 3);
     let recipients = 0;
     for (const user of users.docs) {
       const data = user.data();
       if (user.id === post.authorId || data.isBlocked === true || data.isDeleted === true) continue;
+      if (!sameOrigin(data, post)) continue;
       recipients += 1;
       writer.create(notificationRef(user.id, event.params.postId, "post_published"), {
         type: "post_published",
-        title: isJob ? "Nova vaga publicada" : "Novo artigo publicado",
+        title: message(language, isJob ? "jobPublished" : "articlePublished"),
         message: post.title,
         postId: event.params.postId,
         postSlug: post.slug,
@@ -177,10 +189,11 @@ exports.maintainOpportunities = onSchedule(
     });
     await commitInChunks(reminders, (batch, item) => {
       const opportunity = item.data();
+      const language = contentLanguage(opportunity);
       batch.set(notificationRef(opportunity.authorId, item.id, "opportunity_follow_up"), {
         type: "opportunity_follow_up",
-        title: "Sua oportunidade ainda precisa de ajuda?",
-        message: `Já se passaram 20 dias desde “${opportunity.title}”. Conte se recebeu resposta e encerre a oportunidade se não precisar mais dela.`,
+        title: message(language, "followUpTitle"),
+        message: message(language, "followUpMessage", { days: 20, title: opportunity.title }),
         opportunityId: item.id,
         read: false,
         createdAt: FieldValue.serverTimestamp(),

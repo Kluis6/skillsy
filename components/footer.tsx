@@ -4,6 +4,7 @@ import Link from "@/lib/i18n/navigation";
 import { openCookiePreferences } from "@/lib/cookie-consent";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n/provider";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 export function Footer() {
   const t = useT();
@@ -38,6 +39,7 @@ export function Footer() {
             >
               {t("footer.privacy")}
             </Link>
+            <LanguageSwitcher className="h-8 w-auto" />
             <Button
               type="button"
               variant="link"

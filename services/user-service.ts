@@ -196,6 +196,16 @@ function isSerializedFirestoreError(error: unknown) {
 // the star rating only breaks ties.
 
 export const UserService = {
+  /** Language the member reads the platform in (language switcher). */
+  async setPreferredLanguage(uid: string, language: NonNullable<UserProfile["preferredLanguage"]>) {
+    const path = `users/${uid}`;
+    try {
+      await updateDoc(doc(db, "users", uid), { preferredLanguage: language });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, path);
+    }
+  },
+
   /** The member's ward; only signed-in members can read it. */
   async getMemberWard(uid: string): Promise<string> {
     try {
