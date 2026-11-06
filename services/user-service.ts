@@ -135,33 +135,45 @@ const CANCELLED_ACCOUNT_REMOVED_FIELDS = [
   "membershipYears", "socialLinks",
 ] as const;
 
+// The ward is only for signed-in members (firestore.rules: member_wards). It
+// lives in member_wards/{uid}, next to the public profile, and is removed from
+// public_profiles, which anyone can read. Merge writes keep old fields, so the
+// public write deletes it explicitly.
+function memberWard(source: Partial<UserProfile>) {
+  const ward = typeof source.ward === "string" ? source.ward.trim() : "";
+  return ward && shouldSyncPublicProfile(source) && !source.isDeleted ? ward : "";
+}
+
 function syncPublicProfileBatch(
   batch: ReturnType<typeof writeBatch>,
   uid: string,
   source: Partial<UserProfile>,
 ) {
   const publicDocRef = doc(db, "public_profiles", uid);
+  const wardDocRef = doc(db, "member_wards", uid);
+  const ward = memberWard(source);
+  if (ward) batch.set(wardDocRef, { uid, ward });
+  else batch.delete(wardDocRef);
 
   if (!shouldSyncPublicProfile(source) || source.isDeleted) {
     batch.delete(publicDocRef);
     return;
   }
 
-  batch.set(publicDocRef, buildPublicProfileData(source), { merge: true });
+  batch.set(
+    publicDocRef,
+    { ...buildPublicProfileData(source), ward: deleteField() },
+    { merge: true },
+  );
 }
 
 async function syncPublicProfileDocument(
   uid: string,
   source: Partial<UserProfile>,
 ) {
-  const publicDocRef = doc(db, "public_profiles", uid);
-
-  if (!shouldSyncPublicProfile(source) || source.isDeleted) {
-    await deleteDoc(publicDocRef);
-    return;
-  }
-
-  await setDoc(publicDocRef, buildPublicProfileData(source), { merge: true });
+  const batch = writeBatch(db);
+  syncPublicProfileBatch(batch, uid, source);
+  await batch.commit();
 }
 
 function isSerializedFirestoreError(error: unknown) {
@@ -184,6 +196,18 @@ function isSerializedFirestoreError(error: unknown) {
 // the star rating only breaks ties.
 
 export const UserService = {
+  /** The member's ward; only signed-in members can read it. */
+  async getMemberWard(uid: string): Promise<string> {
+    try {
+      const snapshot = await getDoc(doc(db, "member_wards", uid));
+      return snapshot.exists() ? String(snapshot.data().ward || "") : "";
+    } catch (error) {
+      if (isPermissionDeniedError(error)) return "";
+      handleFirestoreError(error, OperationType.GET, `member_wards/${uid}`);
+      return "";
+    }
+  },
+
   async getPublicProfile(uid: string): Promise<UserProfile | null> {
     const path = `public_profiles/${uid}`;
     try {

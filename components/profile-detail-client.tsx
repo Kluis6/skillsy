@@ -247,9 +247,9 @@ export function ProfileDetailClient({
   useEffect(() => {
     if (!user || !targetProfile?.uid || targetProfile.isProvider) return;
     let active = true;
-    UserService.getPublicProfile(targetProfile.uid)
-      .then((profile) => {
-        if (active) setWard(profile?.ward || undefined);
+    UserService.getMemberWard(targetProfile.uid)
+      .then((value) => {
+        if (active) setWard(value || undefined);
       })
       .catch(() => {});
     return () => {

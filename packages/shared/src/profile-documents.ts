@@ -358,7 +358,8 @@ export function buildPublicProfileData(source: Partial<UserProfile>) {
     serviceType: source.serviceType || "",
     publicCity,
     publicState,
-    ward: source.ward || "",
+    // The ward is not public: it goes to member_wards/{uid}, readable only
+    // by signed-in members.
     memberVerified: source.memberVerified ?? false,
     communityFriend: source.communityFriend ?? false,
     searchTokens: toSearchTokens(

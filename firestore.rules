@@ -903,6 +903,19 @@ service cloud.firestore {
       }
     }
 
+    // A member's ward (ala/ramo), shown on the public profile only to
+    // signed-in members, so it is kept out of public_profiles.
+    match /member_wards/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if (isOwner(userId) || isAdmin()) &&
+                               request.resource.data.keys().hasOnly(['uid', 'ward']) &&
+                               request.resource.data.uid == userId &&
+                               request.resource.data.ward is string &&
+                               request.resource.data.ward.size() > 0 &&
+                               request.resource.data.ward.size() <= 200;
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
     match /public_profiles/{userId} {
       // Admins also read hidden (blocked/deleted) profiles: the admin tools
       // list the whole collection, and a list query is rejected outright if

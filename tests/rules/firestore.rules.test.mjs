@@ -568,3 +568,33 @@ describe("idioma e país do conteúdo", () => {
     await assertFails(updateDoc(doc(db, "public_profiles", PROVIDER), { country: "brasil" }));
   });
 });
+
+describe("ala: só para quem está logado", () => {
+  test("membro logado lê a ala; visitante sem conta não", async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "member_wards", PROVIDER), { uid: PROVIDER, ward: "Ala Centro" });
+    });
+    await assertSucceeds(getDoc(doc(dbAs(RATER), "member_wards", PROVIDER)));
+    await assertFails(getDoc(doc(env.unauthenticatedContext().firestore(), "member_wards", PROVIDER)));
+  });
+
+  test("dono grava e apaga a própria ala; ninguém grava a de outra pessoa", async () => {
+    const own = dbAs(PROVIDER);
+    await assertSucceeds(setDoc(doc(own, "member_wards", PROVIDER), { uid: PROVIDER, ward: "Ala Centro" }));
+    await assertFails(setDoc(doc(own, "member_wards", PROVIDER), { uid: PROVIDER, ward: "" }));
+    await assertFails(setDoc(doc(own, "member_wards", PROVIDER), { uid: PROVIDER, ward: "Ala", extra: true }));
+    await assertFails(setDoc(doc(dbAs(RATER), "member_wards", PROVIDER), { uid: PROVIDER, ward: "Outra" }));
+    await assertSucceeds(deleteDoc(doc(own, "member_wards", PROVIDER)));
+  });
+
+  test("admin grava a ala de qualquer membro", async () => {
+    await assertSucceeds(setDoc(doc(dbAs(ADMIN), "member_wards", RATER), { uid: RATER, ward: "Ala Norte" }));
+  });
+
+  test("perfil público pode perder o campo ala (gravação com merge apaga)", async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      await updateDoc(doc(context.firestore(), "public_profiles", PROVIDER), { ward: "Ala Centro" });
+    });
+    await assertSucceeds(updateDoc(doc(dbAs(PROVIDER), "public_profiles", PROVIDER), { ward: deleteField() }));
+  });
+});
