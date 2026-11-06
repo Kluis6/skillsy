@@ -17,7 +17,7 @@ const publicFieldNames = [
   "serviceType",
   "publicCity",
   "publicState",
-  "ward",
+  // No "ward": it is not public (member_wards, signed-in members only).
   "communityFriend",
   "searchTokens",
   "companyName",
