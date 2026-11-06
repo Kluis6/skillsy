@@ -153,14 +153,21 @@ export function planProviderSearch(
     };
   }
 
-  // Anchor on a single stem when there is one; otherwise on the group with
-  // the longest stem, through array-contains-any.
-  const singles = [...groups.filter((group) => group.length === 1).map((group) => group[0]), ...cityTokens];
-  const anchor = singles.sort((a, b) => b.length - a.length)[0];
-  const anchorAny = anchor
-    ? undefined
-    : [...groups].sort((a, b) => Math.max(...b.map((x) => x.length)) - Math.max(...a.map((x) => x.length)))[0];
-  return { ...base, terms: [], termGroups: groups, anchor, anchorAny };
+  // Anchor on the longest stem, as without synonyms (longer = fewer
+  // documents under the query limit). When it belongs to a word with
+  // alternatives, the whole group goes through array-contains-any.
+  const candidates = [
+    ...groups.map((group) => ({ group, length: Math.max(...group.map((stem) => stem.length)) })),
+    ...cityTokens.map((token) => ({ group: [token], length: token.length })),
+  ].sort((a, b) => b.length - a.length);
+  const best = candidates[0]?.group ?? [];
+  return {
+    ...base,
+    terms: [],
+    termGroups: groups,
+    anchor: best.length === 1 ? best[0] : undefined,
+    anchorAny: best.length > 1 ? best : undefined,
+  };
 }
 
 /** Turns the documents returned for a plan into the ranked result list. */

@@ -77,3 +77,35 @@ describe("origem do conteúdo", async () => {
     assert.deepEqual(byOrigin(items, { language: "en", country: "US" }).map((i) => i.id), [4]);
   });
 });
+
+describe("plano da consulta", async () => {
+  // providers.ts imports "./search" without an extension: load a copy that Node can run.
+  const { mkdtempSync, writeFileSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const dir = mkdtempSync(join(tmpdir(), "providers-"));
+  const src = (name) => readFileSync(new URL(`../../packages/shared/src/${name}.ts`, import.meta.url), "utf8");
+  writeFileSync(join(dir, "search.ts"), src("search"));
+  writeFileSync(join(dir, "providers.ts"), src("providers").replace('from "./search"', 'from "./search.ts"'));
+  const { planProviderSearch } = await import(join(dir, "providers.ts"));
+  rmSync(dir, { recursive: true, force: true });
+
+  test("sem sinônimos, plano igual ao de antes", () => {
+    const plan = planProviderSearch("marceneiro rio", { city: "Niterói" });
+    assert.deepEqual(plan.terms, toSearchStems("marceneiro rio"));
+    assert.equal(plan.termGroups, undefined);
+    assert.equal(plan.anchorAny, undefined);
+  });
+
+  test("âncora no termo mais longo, mesmo quando ele tem alternativas", () => {
+    const plan = planProviderSearch("carpenter rio", undefined, undefined, { carpenter: "marceneiro" });
+    assert.equal(plan.anchor, undefined);
+    assert.deepEqual(plan.anchorAny, [toSearchStems("carpenter")[0], toSearchStems("marceneiro")[0]]);
+  });
+
+  test("palavra sem alternativa mais longa vira a âncora simples", () => {
+    const plan = planProviderSearch("cake confeitaria", undefined, undefined, { cake: "bolo" });
+    assert.equal(plan.anchor, toSearchStems("confeitaria")[0]);
+    assert.equal(plan.anchorAny, undefined);
+  });
+});
