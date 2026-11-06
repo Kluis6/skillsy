@@ -1,5 +1,6 @@
 import { PostService } from "@/services/post-service";
-import { getPostExcerpt, POST_CATEGORY_LABELS } from "@/lib/post-utils";
+import { getPostExcerpt } from "@/lib/post-utils";
+import { getTFor } from "@/lib/i18n/translator";
 import {
   createPageOgImage,
   loadRemoteOgImage,
@@ -13,25 +14,29 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 type ImageProps = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ lang: string; slug: string }>;
 };
 
 export default async function OpenGraphImage({ params }: ImageProps) {
-  const { slug } = await params;
+  const { lang, slug } = await params;
+  const t = getTFor(lang);
   const post = await PostService.getPublishedPostBySlug(slug);
 
   if (!post) {
     return createPageOgImage({
-      label: "Publicação",
-      title: "Novidades, artigos e vagas",
-      description: "Conteúdo público da comunidade Skillsy.",
+      label: t("posts.ogLabel"),
+      title: t("posts.heroTitle"),
+      description: t("posts.ogFallbackText"),
     });
   }
 
   return createPageOgImage({
     image: await loadRemoteOgImage(post.coverImageUrl),
-    label: `${POST_CATEGORY_LABELS[post.category]} · por ${post.authorName}`,
+    label: t("posts.ogPostLabel", {
+      category: post.category === "job" ? t("posts.categoryJob") : t("posts.categoryArticle"),
+      name: post.authorName,
+    }),
     title: post.title,
-    description: getPostExcerpt(post),
+    description: getPostExcerpt(post, t("posts.excerptFallback")),
   });
 }

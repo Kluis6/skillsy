@@ -34,3 +34,4 @@ export async function getSearchSynonyms() {
     t(`labels.category.${CATEGORY_LABEL_KEYS[category]}` as MessageKey),
   );
 }
+

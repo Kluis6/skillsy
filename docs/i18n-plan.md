@@ -262,9 +262,11 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
 
 ### E5 — SEO (1 dia)
 
-- [ ] `createPublicMetadata(locale, …)`: título, descrição, `canonical`, `alternates.languages` com `x-default`, `openGraph.locale`
-- [ ] `sitemap.ts` com as URLs dos idiomas ligados; `robots.ts` sem mudança
-- [ ] `opengraph-image.tsx` e `/api/og` com texto no idioma
+- [x] `createPublicMetadata` (agora assíncrono) e o layout raiz leem o idioma da página: `canonical` com o prefixo, `alternates.languages` (`pt-BR`, `en`, `es-419`, `x-default` = português) só quando há mais de um idioma ligado, `og:locale` e `og:url`; palavras-chave dos metadados no dicionário
+- [x] `sitemap.ts`: cada página em cada idioma ligado, com `xhtml:link` alternativos; com só o português, igual ao de antes. `robots.ts` sem mudança
+- [x] Imagens de compartilhamento de perfil e artigo com os textos no idioma (`getTFor(params.lang)`, `lib/i18n/translator.ts`); `/api/og` já recebe os textos traduzidos. O `alt` das imagens segue em português (traduzir mudaria a URL das imagens)
+- [x] 404 de endereços inexistentes em `/en` e `/es` no idioma certo: o `proxy.ts` passa o idioma no cabeçalho `x-skillsy-locale`, lido por `app/global-not-found.tsx`
+- Conferido (06/11/2026) com os três idiomas ligados localmente: `hreflang` e `canonical` em `/en/termos`, sitemap com as alternativas, imagem do perfil em inglês, 404 em inglês e espanhol. Português idêntico em 21 páginas, incluindo metadados
 
 **Pronto quando:** HTML das páginas tem `hreflang` corretos e o sitemap lista só os idiomas ligados.
 

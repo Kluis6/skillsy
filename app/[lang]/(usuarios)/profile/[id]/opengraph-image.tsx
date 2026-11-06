@@ -10,6 +10,7 @@ import {
   shouldShowCommunityFriendBadge,
   shouldShowVerifiedBadge,
 } from "@/lib/member-verification";
+import { getTFor } from "@/lib/i18n/translator";
 
 export const runtime = "nodejs";
 export const alt = "Skillsy - Perfil público";
@@ -17,11 +18,12 @@ export const size = ogSize;
 export const contentType = ogContentType;
 
 type ImageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ lang: string; id: string }>;
 };
 
 export default async function OpenGraphImage({ params }: ImageProps) {
-  const { id } = await params;
+  const { lang, id } = await params;
+  const t = getTFor(lang);
   const profile = await UserService.getPublicProfile(id);
 
   if (!profile) {
@@ -31,7 +33,7 @@ export default async function OpenGraphImage({ params }: ImageProps) {
   return createProfileOgImage({
     name: profile.name,
     headline:
-      profile.serviceType || profile.category || "Membro da comunidade Skillsy",
+      profile.serviceType || profile.category || t("profile.communityMember"),
     bio: profile.bio,
     location: [profile.publicCity, profile.publicState]
       .filter(Boolean)
@@ -39,5 +41,9 @@ export default async function OpenGraphImage({ params }: ImageProps) {
     photo: await loadProfileOgPhoto(profile.photoURL),
     verified: shouldShowVerifiedBadge(profile),
     communityFriend: shouldShowCommunityFriendBadge(profile),
+    labels: {
+      bio: t("profile.ogBio", { name: profile.name }),
+      location: t("profile.metaImageLabel"),
+    },
   });
 }

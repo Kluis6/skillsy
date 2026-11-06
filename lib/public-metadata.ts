@@ -1,5 +1,35 @@
 import type { Metadata } from "next";
 import type { OgHeroImage } from "@/lib/og-image-templates";
+import {
+  DEFAULT_LOCALE,
+  HTML_LANG,
+  OG_LOCALE,
+  enabledLocales,
+  type Locale,
+} from "@skillsy/shared/i18n/locales";
+import { localizedPath } from "@skillsy/shared/i18n/routing";
+import { getLocale } from "@/lib/i18n/server";
+
+const ENABLED_LOCALES = enabledLocales(process.env.NEXT_PUBLIC_ENABLED_LOCALES);
+
+/**
+ * canonical, hreflang alternates and og:locale for a path in the page's
+ * language. `path` is the Portuguese one ("/termos"); the others get their
+ * prefix ("/en/termos"). With only Portuguese on, there are no alternates.
+ */
+export function localizedAlternates(path: string, locale: Locale) {
+  const canonical = localizedPath(path, locale, DEFAULT_LOCALE);
+  const languages =
+    ENABLED_LOCALES.length > 1
+      ? {
+          ...Object.fromEntries(
+            ENABLED_LOCALES.map((item) => [HTML_LANG[item], localizedPath(path, item, DEFAULT_LOCALE)]),
+          ),
+          "x-default": path,
+        }
+      : undefined;
+  return { canonical, languages, ogLocale: OG_LOCALE[locale] };
+}
 
 // Canonical host: skillsy.com.br redirects (307) to www, so URLs built from
 // this (og:image, canonical, sitemap) must use www to avoid the extra hop.
@@ -60,7 +90,7 @@ function createOgImageUrl({
   return `/api/og?${params.toString()}`;
 }
 
-export function createPublicMetadata({
+export async function createPublicMetadata({
   title,
   description,
   path,
@@ -71,7 +101,8 @@ export function createPublicMetadata({
   useRouteOgImage,
   openGraphType,
   keywords,
-}: PublicMetadataOptions): Metadata {
+}: PublicMetadataOptions): Promise<Metadata> {
+  const alternates = localizedAlternates(path, await getLocale());
   const socialImage = useRouteOgImage
     ? undefined
     : createOgImageUrl({
@@ -86,12 +117,13 @@ export function createPublicMetadata({
     description,
     keywords,
     alternates: {
-      canonical: path,
+      canonical: alternates.canonical,
+      ...(alternates.languages ? { languages: alternates.languages } : {}),
     },
     openGraph: {
       type: openGraphType ?? "website",
-      locale: "pt_BR",
-      url: path,
+      locale: alternates.ogLocale,
+      url: alternates.canonical,
       siteName,
       title: `${title} | ${siteName}`,
       description,

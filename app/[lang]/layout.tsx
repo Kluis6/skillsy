@@ -3,10 +3,10 @@ import "../globals.css";
 import { Inter, Outfit } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/hooks/use-auth";
-import { getPublicBaseUrl } from "@/lib/public-metadata";
+import { getPublicBaseUrl, localizedAlternates } from "@/lib/public-metadata";
 import { lang } from "next/root-params";
 import { notFound } from "next/navigation";
-import { HTML_LANG, OG_LOCALE, enabledLocales, isLocale } from "@skillsy/shared/i18n/locales";
+import { HTML_LANG, enabledLocales, isLocale } from "@skillsy/shared/i18n/locales";
 import { getLocale, getMessages, getT } from "@/lib/i18n/server";
 import { DICTIONARIES } from "@skillsy/shared/i18n";
 import { I18nProvider } from "@/lib/i18n/provider";
@@ -17,6 +17,7 @@ const baseUrl = getPublicBaseUrl();
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
   const locale = await getLocale();
+  const alternates = localizedAlternates("/", locale);
   const title = t("meta.siteTitle");
   const description = t("meta.siteDescription");
 
@@ -27,14 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
       template: "%s | Skillsy",
     },
     description,
-    keywords: [
-      "SUD",
-      "comunidade",
-      "serviços",
-      "profissionais",
-      "membros para membros",
-      "talentos",
-    ],
+    keywords: t("meta.keywords").split(", "),
     authors: [{ name: "Skillsy Community" }],
     creator: "Skillsy",
     icons: {
@@ -43,12 +37,13 @@ export async function generateMetadata(): Promise<Metadata> {
       apple: "/apple-icon.svg",
     },
     alternates: {
-      canonical: "/",
+      canonical: alternates.canonical,
+      ...(alternates.languages ? { languages: alternates.languages } : {}),
     },
     openGraph: {
       type: "website",
-      locale: OG_LOCALE[locale],
-      url: "/",
+      locale: alternates.ogLocale,
+      url: alternates.canonical,
       siteName: "Skillsy",
       title,
       description,

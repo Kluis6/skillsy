@@ -407,6 +407,8 @@ type ProfileOgOptions = {
   photo?: string;
   verified?: boolean;
   communityFriend?: boolean;
+  /** Texts in the page's language: bio when empty, location when missing. */
+  labels?: { bio?: string; location?: string };
 };
 
 export function loadProfileOgPhoto(photoUrl: string | undefined | null) {
@@ -421,9 +423,10 @@ export function createProfileOgImage({
   photo,
   verified,
   communityFriend,
+  labels,
 }: ProfileOgOptions) {
   const description =
-    bio?.trim() || `${name} faz parte da comunidade Skillsy.`;
+    bio?.trim() || labels?.bio || `${name} faz parte da comunidade Skillsy.`;
 
   return renderOgResponse(
     <div
@@ -532,7 +535,7 @@ export function createProfileOgImage({
           }}
         >
           <div style={{ display: "flex" }}>
-            {truncateOgText(location || "Perfil público", 34)}
+            {truncateOgText(location || labels?.location || "Perfil público", 34)}
           </div>
           <div style={{ display: "flex" }}>skillsy.com.br</div>
         </div>

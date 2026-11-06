@@ -17,7 +17,8 @@
   "meta": {
     "siteTitle": "Skillsy | A network among members",
     "siteDescription": "Connecting talent and services in the member community. A platform that helps people grow.",
-    "siteImageAlt": "Skillsy - A network among members"
+    "siteImageAlt": "Skillsy - A network among members",
+    "keywords": "Latter-day Saints, community, services, professionals, members helping members, talent"
   },
   "nav": {
     "searchProfessional": "Find a professional",
@@ -84,7 +85,8 @@
     "emptyTitle": "We haven't found anyone with these filters yet",
     "emptyText": "Try a broader category or remove the location to see more available members.",
     "bottomText": "Your talent can help someone today too.",
-    "bottomCta": "Create your profile in the community"
+    "bottomCta": "Create your profile in the community",
+    "keywords": "skillsy, trusted network, community, professionals, services, mutual support, service providers, trusted recommendations"
   },
   "contact": {
     "title": "Questions or suggestions?",
@@ -269,7 +271,8 @@
     "photoView": "Photo view",
     "comment": "Comment",
     "galleryEmpty": "Your gallery doesn't have work photos yet.",
-    "addPhotos": "Add photos"
+    "addPhotos": "Add photos",
+    "ogBio": "{name} is part of the Skillsy community."
   },
   "notifications": {
     "now": "Now",
@@ -483,7 +486,10 @@
     "updatePost": "Update post",
     "publishNow": "Publish now",
     "language": "Post language",
-    "languageHint": "The language the text is written in. Readers browsing in another language see a badge showing it."
+    "languageHint": "The language the text is written in. Readers browsing in another language see a badge showing it.",
+    "ogLabel": "Post",
+    "ogFallbackText": "Public content from the Skillsy community.",
+    "ogPostLabel": "{category} · by {name}"
   },
   "auth": {
     "signInMetaTitle": "Sign in or sign up",

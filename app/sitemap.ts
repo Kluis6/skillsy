@@ -1,6 +1,26 @@
 import { MetadataRoute } from 'next';
 import { getPublicBaseUrl } from '@/lib/public-metadata';
 import { UserService } from '@/services/user-service';
+import { DEFAULT_LOCALE, HTML_LANG, enabledLocales } from '@skillsy/shared/i18n/locales';
+import { localizedPath } from '@skillsy/shared/i18n/routing';
+
+type Entry = MetadataRoute.Sitemap[number];
+const ENABLED_LOCALES = enabledLocales(process.env.NEXT_PUBLIC_ENABLED_LOCALES);
+
+/**
+ * One entry per enabled language for each page, each listing the others as
+ * alternates (hreflang). With only Portuguese on, the list is unchanged.
+ */
+function withLanguages(baseUrl: string, entries: Entry[]): MetadataRoute.Sitemap {
+  if (ENABLED_LOCALES.length === 1) return entries;
+  return entries.flatMap((entry) => {
+    const path = entry.url.slice(baseUrl.length) || '/';
+    const url = (locale: (typeof ENABLED_LOCALES)[number]) =>
+      `${baseUrl}${localizedPath(path, locale, DEFAULT_LOCALE)}`.replace(/\/$/, '') || baseUrl;
+    const languages = Object.fromEntries(ENABLED_LOCALES.map((locale) => [HTML_LANG[locale], url(locale)]));
+    return ENABLED_LOCALES.map((locale) => ({ ...entry, url: url(locale), alternates: { languages } }));
+  });
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getPublicBaseUrl();
@@ -44,9 +64,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-    return [...routes, ...profileRoutes, ...postRoutes];
+    return withLanguages(baseUrl, [...routes, ...profileRoutes, ...postRoutes]);
   } catch (error) {
     console.error('Error generating sitemap profile routes:', error);
-    return routes;
+    return withLanguages(baseUrl, routes);
   }
 }

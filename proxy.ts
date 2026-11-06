@@ -8,6 +8,9 @@ import { resolveLocaleRoute } from '@skillsy/shared/i18n/routing';
 // packages/shared/src/i18n/routing.ts.
 const enabled = enabledLocales(process.env.NEXT_PUBLIC_ENABLED_LOCALES);
 
+/** Request header with the URL's language (read by app/global-not-found.tsx). */
+const LOCALE_HEADER = 'x-skillsy-locale';
+
 export function proxy(request: NextRequest) {
   const route = resolveLocaleRoute({
     pathname: request.nextUrl.pathname,
@@ -18,7 +21,15 @@ export function proxy(request: NextRequest) {
     defaultLocale: DEFAULT_LOCALE,
   });
 
-  if (route.action === 'next') return NextResponse.next();
+  if (route.action === 'next') {
+    // The language of a prefixed URL, for pages outside app/[lang] that can't
+    // read it from the route (app/global-not-found.tsx).
+    const first = request.nextUrl.pathname.split('/')[1];
+    if (!(LOCALES as readonly string[]).includes(first)) return NextResponse.next();
+    const headers = new Headers(request.headers);
+    headers.set(LOCALE_HEADER, first);
+    return NextResponse.next({ request: { headers } });
+  }
   if (route.action === 'notFound') {
     // A path no page matches: Next answers with app/global-not-found.tsx.
     const url = request.nextUrl.clone();

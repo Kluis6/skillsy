@@ -17,7 +17,8 @@
   "meta": {
     "siteTitle": "Skillsy | Red entre miembros",
     "siteDescription": "Conectamos talentos y servicios en la comunidad de miembros. Una plataforma para impulsar a las personas.",
-    "siteImageAlt": "Skillsy - Red entre miembros"
+    "siteImageAlt": "Skillsy - Red entre miembros",
+    "keywords": "SUD, comunidad, servicios, profesionales, miembros para miembros, talentos"
   },
   "nav": {
     "searchProfessional": "Buscar profesional",
@@ -84,7 +85,8 @@
     "emptyTitle": "Todavía no encontramos a nadie con estos filtros",
     "emptyText": "Prueba con una categoría más amplia o quita la ubicación para ver más miembros disponibles.",
     "bottomText": "Tu talento también puede ayudar a alguien hoy.",
-    "bottomCta": "Crea tu perfil en la comunidad"
+    "bottomCta": "Crea tu perfil en la comunidad",
+    "keywords": "skillsy, red de confianza, comunidad, profesionales, servicios, apoyo mutuo, prestadores de servicios, recomendaciones confiables"
   },
   "contact": {
     "title": "¿Dudas o sugerencias?",
@@ -269,7 +271,8 @@
     "photoView": "Vista de la foto",
     "comment": "Comentario",
     "galleryEmpty": "Tu galería todavía no tiene fotos de tu trabajo.",
-    "addPhotos": "Agregar fotos"
+    "addPhotos": "Agregar fotos",
+    "ogBio": "{name} forma parte de la comunidad Skillsy."
   },
   "notifications": {
     "now": "Ahora",
@@ -483,7 +486,10 @@
     "updatePost": "Actualizar publicación",
     "publishNow": "Publicar ahora",
     "language": "Idioma de la publicación",
-    "languageHint": "El idioma en el que está escrito el texto. Quien lee en otro idioma ve una insignia que lo indica."
+    "languageHint": "El idioma en el que está escrito el texto. Quien lee en otro idioma ve una insignia que lo indica.",
+    "ogLabel": "Publicación",
+    "ogFallbackText": "Contenido público de la comunidad Skillsy.",
+    "ogPostLabel": "{category} · por {name}"
   },
   "auth": {
     "signInMetaTitle": "Iniciar sesión o registrarse",

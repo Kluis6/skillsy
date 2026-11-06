@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
 
   return {
-    ...createPublicMetadata({
+    ...(await createPublicMetadata({
       title: t("home.metaTitle"),
       description: t("home.metaDescription"),
       path: "/",
@@ -22,17 +22,8 @@ export async function generateMetadata(): Promise<Metadata> {
       imageDescription: t("home.imageDescription"),
       imageLabel: t("home.imageLabel"),
       heroImage: "home",
-      keywords: [
-        "skillsy",
-        "rede de confiança",
-        "comunidade",
-        "profissionais",
-        "serviços",
-        "apoio mútuo",
-        "prestadores de serviço",
-        "indicações confiáveis",
-      ],
-    }),
+      keywords: t("home.keywords").split(", "),
+    })),
     category: "community platform",
     classification: "marketplace de serviços e diretório de profissionais",
     referrer: "origin-when-cross-origin",
