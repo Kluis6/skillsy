@@ -22,7 +22,7 @@ Objetivo: site e app em **português do Brasil (padrão), inglês e espanhol da 
 ### Não entra (decisão consciente)
 
 - **Conteúdo dos usuários** (perfis, artigos, vagas, oportunidades, avaliações) aparece no idioma em que foi escrito. Ver dificuldade 11.
-- **Uso fora do Brasil.** Estados (UF), telefone com +55, CEP e WhatsApp continuam brasileiros. A tradução atende quem fala inglês ou espanhol **no Brasil** (ou acompanha a comunidade brasileira). Abrir para outros países é um projeto separado (endereços, DDI, moedas, leis locais). Mesmo assim, artigos, vagas e oportunidades já guardam idioma e país de origem (dificuldade 12), para que conteúdo de fora nunca gere alerta para o Brasil.
+- **Uso fora do Brasil.** Estados (UF), telefone com +55 e WhatsApp continuam brasileiros. Esta etapa entrega pt, en e es com seletor na plataforma atual. Atender pessoas **nos próprios países** da América Latina, com o idioma entregue pela localização, está planejado em `docs/latam-plan.md` (backlog, decisão do responsável em 06/11/2026). Artigos, vagas e oportunidades já guardam idioma e país de origem (dificuldade 12), para que conteúdo de fora nunca gere alerta para o Brasil.
 - **Painel administrativo**: continua só em português nesta etapa (público interno).
 - **Notificações para admins** (`admin_notifications`): continuam em português.
 
@@ -305,7 +305,7 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
 ### E9 — Lançamento (½ dia + acompanhamento)
 
 - [ ] Ligar `en` e `es` em um ambiente de prévia da Vercel com `noindex`; revisores navegam pelo site e app
-- [ ] Produção: `NEXT_PUBLIC_ENABLED_LOCALES=pt,en,es`, seletor visível, sitemap atualizado
+- [x] Produção: `NEXT_PUBLIC_ENABLED_LOCALES=pt,en,es` na Vercel (06/11/2026, decisão do responsável, antes da revisão da E8), seletor visível, sitemap atualizado. O app passa a ter os três idiomas por padrão (chega no próximo APK)
 - [ ] APK novo do app
 - [ ] Posts nas redes anunciando os idiomas
 - [ ] Acompanhar por 2 semanas: 404s com prefixo, buscas sem resultado em en/es, mensagens no Fale conosco

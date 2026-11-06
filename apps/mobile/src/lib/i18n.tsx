@@ -15,11 +15,11 @@ import { setSiteLocale } from './site';
 // The app's language (docs/i18n-plan.md, E7). Expo Router has no language in
 // the routes, so it is app state: the choice saved on the device, then the
 // member's preferredLanguage, then the phone's language — within the
-// languages switched on (EXPO_PUBLIC_ENABLED_LOCALES; Portuguese only by
-// default, so nothing changes until the launch). Texts come from the same
+// languages switched on (EXPO_PUBLIC_ENABLED_LOCALES; all three by default
+// since 06/11/2026). Texts come from the same
 // dictionaries as the site.
 
-export const ENABLED_LOCALES = enabledLocales(process.env.EXPO_PUBLIC_ENABLED_LOCALES);
+export const ENABLED_LOCALES = enabledLocales(process.env.EXPO_PUBLIC_ENABLED_LOCALES ?? 'pt,en,es');
 const STORAGE_KEY = 'skillsy.language';
 
 function deviceLocale(): Locale {
