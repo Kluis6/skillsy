@@ -11,6 +11,7 @@ import { SnackbarProvider } from '@/components/snackbar';
 import { TermsUpdateSheet } from '@/components/terms-update-sheet';
 import { AppearanceProvider, useAppearance } from '@/lib/appearance';
 import { AuthProvider, useAuth } from '@/lib/auth';
+import { LocaleProvider } from '@/lib/i18n';
 import { NotificationsProvider } from '@/lib/notifications';
 import { usePushNotifications } from '@/lib/push';
 import { useAppFonts } from '@/lib/use-app-fonts';
@@ -29,11 +30,13 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <NotificationsProvider>
-          <AppearanceProvider>
-            <Navigation />
-          </AppearanceProvider>
-        </NotificationsProvider>
+        <LocaleProvider>
+          <NotificationsProvider>
+            <AppearanceProvider>
+              <Navigation />
+            </AppearanceProvider>
+          </NotificationsProvider>
+        </LocaleProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

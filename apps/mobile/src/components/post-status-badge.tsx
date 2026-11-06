@@ -1,9 +1,10 @@
-import { POST_STATUS_LABELS } from '@skillsy/shared/post-utils';
+import type { MessageKey } from '@skillsy/shared/i18n/keys';
 import type { PostStatus } from '@skillsy/shared/types';
 
 import { Badge } from '@/components/ui/badge';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n';
 
 const TONE: Record<PostStatus, string> = {
   draft: 'border-border bg-muted',
@@ -19,11 +20,19 @@ const TEXT: Record<PostStatus, string> = {
   rejected: 'text-destructive',
 };
 
+const LABEL: Record<PostStatus, MessageKey> = {
+  draft: 'posts.statusDraft',
+  pending_review: 'posts.statusPendingReview',
+  published: 'posts.statusPublished',
+  rejected: 'posts.statusRejected',
+};
+
 /** Rascunho / Em revisão / Publicado / Rejeitado, colored like the site. */
 export function PostStatusBadge({ status }: { status: PostStatus }) {
+  const t = useT();
   return (
     <Badge variant="outline" className={cn(TONE[status])}>
-      <Text className={cn('text-xs font-medium', TEXT[status])}>{POST_STATUS_LABELS[status]}</Text>
+      <Text className={cn('text-xs font-medium', TEXT[status])}>{t(LABEL[status])}</Text>
     </Badge>
   );
 }

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Text } from '@/components/ui/text';
+import { useT } from '@/lib/i18n';
 
 type ScreenPlaceholderProps = {
   icon: LucideIcon;
@@ -13,6 +14,7 @@ type ScreenPlaceholderProps = {
 
 // Temporary screen body until each tab gets its real content.
 export function ScreenPlaceholder({ icon: Icon, title, description }: ScreenPlaceholderProps) {
+  const t = useT();
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-background">
       <View className="gap-4 p-4">
@@ -28,7 +30,7 @@ export function ScreenPlaceholder({ icon: Icon, title, description }: ScreenPlac
             </View>
           </CardHeader>
           <CardContent>
-            <Text className="text-sm text-muted-foreground">Em construção.</Text>
+            <Text className="text-sm text-muted-foreground">{t("app.placeholder.building")}</Text>
           </CardContent>
         </Card>
       </View>

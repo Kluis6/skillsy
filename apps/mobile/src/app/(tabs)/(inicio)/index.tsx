@@ -1,3 +1,4 @@
+import { byOrigin } from '@skillsy/shared/i18n/origin';
 import type { UserProfile } from '@skillsy/shared/types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
@@ -23,6 +24,7 @@ import {
   type ServiceSection,
 } from '@/lib/service-catalog';
 import { openSite } from '@/lib/site';
+import { useLabels, useLocale, useT } from '@/lib/i18n';
 
 /** Início, modeled on GetNinjas' home: search, shortcuts, service carousels
  * and calls to action, in Skillsy's identity and vocabulary. */
@@ -30,6 +32,9 @@ export default function InicioScreen() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const showSnackbar = useSnackbar();
+  const t = useT();
+  const labels = useLabels();
+  const { locale } = useLocale();
   const { data: me } = useQuery({
     queryKey: ['me', user?.uid],
     queryFn: () => getOwnProfile(user!.uid),
@@ -37,11 +42,15 @@ export default function InicioScreen() {
   });
   // Same query as an empty search on Buscar, so the cache is shared.
   const { data: providers } = useQuery({
-    queryKey: ['providers', '', '', ''],
-    queryFn: () => searchProviders({ term: '' }),
+    queryKey: ['providers', '', '', '', locale],
+    queryFn: () => searchProviders({ term: '', language: locale }),
   });
 
-  const { data: posts } = useQuery({ queryKey: ['posts'], queryFn: getPublishedPosts });
+  const { data: posts } = useQuery({
+    queryKey: ['posts'],
+    queryFn: getPublishedPosts,
+    select: (items) => byOrigin(items, { language: locale }),
+  });
 
   const search = (q: string) => router.navigate({ pathname: '/buscar', params: { q } });
   const openProfile = (provider: UserProfile) => {
@@ -50,7 +59,7 @@ export default function InicioScreen() {
   };
   const publish = () => {
     if (user) return router.push('/oportunidade/nova');
-    showSnackbar('Entre na sua conta para publicar uma oportunidade.');
+    showSnackbar(t("app.home.signInToPublish"));
     router.navigate('/perfil');
   };
   const firstName = (me?.name || user?.displayName || '').trim().split(' ')[0];
@@ -58,7 +67,7 @@ export default function InicioScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <AppHeader title={firstName ? `Olá, ${firstName}` : 'Boas-vindas'} />
+      <AppHeader title={firstName ? t("app.home.hello", { name: firstName }) : t("app.home.welcome")} />
       <ScrollView contentContainerClassName="gap-8 pb-8">
         <View className="gap-5 border-b border-border bg-card pb-6 pt-4">
           <SearchLauncher
@@ -68,7 +77,7 @@ export default function InicioScreen() {
             {POPULAR_CATEGORIES.slice(0, 4).map((category) => (
               <CategoryTile
                 key={category}
-                label={category}
+                label={labels.category(category)}
                 icon={categoryIcon(category)}
                 onPress={() => search(category)}
               />
@@ -78,16 +87,16 @@ export default function InicioScreen() {
 
         {user ? null : (
           <PromoBanner
-            title="Acesse agora"
-            description="Entre ou crie sua conta e acompanhe suas oportunidades."
+            title={t("app.home.accessNow")}
+            description={t("app.home.accessNowText")}
             onPress={() => router.navigate('/perfil')}
           />
         )}
 
         <Carousel section={first} onSearch={search} />
         <FeaturedServiceCard
-          title={FEATURED_SERVICE.title}
-          description={FEATURED_SERVICE.description}
+          title={t(FEATURED_SERVICE.title)}
+          description={t(FEATURED_SERVICE.description)}
           image={FEATURED_SERVICE.image}
           onPress={() => search(FEATURED_SERVICE.search)}
         />
@@ -95,7 +104,7 @@ export default function InicioScreen() {
 
         {providers?.length ? (
           <View className="gap-3">
-            <SectionHeader title="Profissionais da comunidade" />
+            <SectionHeader title={t("app.home.providers")} />
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -113,7 +122,7 @@ export default function InicioScreen() {
 
         {posts?.length ? (
           <View className="gap-3">
-            <SectionHeader title="Novidades e vagas" onAction={() => router.push('/artigos')} />
+            <SectionHeader title={t("app.home.posts")} onAction={() => router.push('/artigos')} />
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -136,9 +145,9 @@ export default function InicioScreen() {
           <PromoBanner
             tone="brand"
             image={BANNER_IMAGES.comunidade}
-            title="Seja profissional"
-            description="Divulgue seu trabalho para a comunidade e receba avisos de oportunidades. Sem custo."
-            actionLabel="Quero anunciar"
+            title={t("app.home.beProfessional")}
+            description={t("app.home.beProfessionalText")}
+            actionLabel={t("app.home.advertise")}
             onPress={() => (user ? openSite('/profile') : router.navigate('/perfil'))}
           />
         )}
@@ -148,9 +157,9 @@ export default function InicioScreen() {
 
         <PromoBanner
           image={BANNER_IMAGES.procurando}
-          title="O que você precisa?"
-          description="Publique uma oportunidade e avise os profissionais do mesmo serviço e estado."
-          actionLabel="Publicar oportunidade"
+          title={t("app.home.whatDoYouNeed")}
+          description={t("app.home.whatDoYouNeedText")}
+          actionLabel={t("app.home.publish")}
           onPress={publish}
         />
       </ScrollView>
@@ -165,9 +174,10 @@ function Carousel({
   section: ServiceSection;
   onSearch: (q: string) => void;
 }) {
+  const t = useT();
   return (
     <View className="gap-3">
-      <SectionHeader title={section.title} onAction={() => router.navigate('/buscar')} />
+      <SectionHeader title={t(section.title)} onAction={() => router.navigate('/buscar')} />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -175,7 +185,7 @@ function Carousel({
         {section.services.map((service) => (
           <ServiceCard
             key={service.title}
-            title={service.title}
+            title={t(service.title)}
             image={service.image}
             onPress={() => onSearch(service.search)}
           />

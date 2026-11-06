@@ -17,7 +17,8 @@ import { TopTabs } from '@/components/top-tabs';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useAuth } from '@/lib/auth';
-import { CATEGORY_OPTIONS, STATE_OPTIONS } from '@/lib/filters';
+import { STATE_OPTIONS, useCategoryOptions } from '@/lib/filters';
+import { byOrigin } from '@skillsy/shared/i18n/origin';
 import {
   answerFollowUp,
   getActiveOpportunities,
@@ -25,15 +26,17 @@ import {
   setOpportunityStatus,
 } from '@/lib/opportunities';
 import { getOwnProfile } from '@/lib/providers';
+import { useLabels, useLocale, useT } from '@/lib/i18n';
 
 type Tab = 'mural' | 'minhas';
 const TABS = [
-  { value: 'mural', label: 'Mural' },
-  { value: 'minhas', label: 'Minhas oportunidades' },
+  { value: 'mural', label: 'app.opportunities.board' },
+  { value: 'minhas', label: 'app.opportunities.mine' },
 ] as const;
 
 export default function OportunidadesScreen() {
   const { user } = useAuth();
+  const t = useT();
   const showSnackbar = useSnackbar();
   // A tapped notification links here with ?tab=, also when the screen is
   // already open, so the tab follows the link whenever it changes.
@@ -47,7 +50,7 @@ export default function OportunidadesScreen() {
 
   const publish = () => {
     if (!user) {
-      showSnackbar('Entre na sua conta para publicar uma oportunidade.');
+      showSnackbar(t("app.opportunities.signInToPublish"));
       router.navigate('/perfil');
       return;
     }
@@ -56,24 +59,33 @@ export default function OportunidadesScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <AppHeader title="Oportunidades">
-        <TopTabs tabs={TABS} value={tab} onChange={setTab} />
+      <AppHeader title={t("app.opportunities.title")}>
+        <TopTabs
+          tabs={TABS.map((item) => ({ value: item.value, label: t(item.label) }))}
+          value={tab}
+          onChange={setTab}
+        />
       </AppHeader>
       {tab === 'mural' ? <Mural /> : <Minhas onPublish={publish} />}
       {/* Minhas has its own "Publicar" in the empty state; one call per screen. */}
-      {tab === 'mural' ? <Fab icon={Plus} label="Publicar oportunidade" onPress={publish} /> : null}
+      {tab === 'mural' ? <Fab icon={Plus} label={t("app.opportunities.publish")} onPress={publish} /> : null}
     </View>
   );
 }
 
 function Mural() {
   const { user } = useAuth();
+  const t = useT();
+  const labels = useLabels();
+  const { locale } = useLocale();
+  const categoryOptions = useCategoryOptions();
   const [category, setCategory] = useState('');
   const [state, setState] = useState('');
   const [sheet, setSheet] = useState<'category' | 'state' | null>(null);
   const { data, isPending, isError, refetch, isRefetching } = useQuery({
-    queryKey: ['opportunities', category, state],
-    queryFn: () => getActiveOpportunities({ category, state }),
+    queryKey: ['opportunities', category, state, locale],
+    // The visitor's country only, in the app's language first.
+    queryFn: async () => byOrigin(await getActiveOpportunities({ category, state }), { language: locale }),
   });
   const { data: me } = useQuery({
     queryKey: ['me', user?.uid],
@@ -89,19 +101,19 @@ function Mural() {
       <View className="flex-row gap-card border-b border-border bg-card px-4 pb-6 pt-4">
         <Chip
           className="h-12 flex-1"
-          label={category || 'Serviço'}
+          label={category ? labels.category(category) : t("app.opportunities.service")}
           selected={Boolean(category)}
           menu
           onPress={() => setSheet('category')}
-          accessibilityLabel={category ? `Serviço: ${category}` : 'Filtrar por serviço'}
+          accessibilityLabel={category ? t("app.opportunities.serviceAria", { value: labels.category(category) }) : t("app.opportunities.filterByService")}
         />
         <Chip
           className="h-12 flex-1"
-          label={stateLabel || 'Estado'}
+          label={stateLabel || t("app.opportunities.state")}
           selected={Boolean(state)}
           menu
           onPress={() => setSheet('state')}
-          accessibilityLabel={stateLabel ? `Estado: ${stateLabel}` : 'Filtrar por estado'}
+          accessibilityLabel={stateLabel ? t("app.opportunities.stateAria", { value: stateLabel }) : t("app.opportunities.filterByState")}
         />
       </View>
 
@@ -133,15 +145,15 @@ function Mural() {
           ListHeaderComponent={
             isProvider ? undefined : (
               <Text className="text-sm text-muted-foreground">
-                Profissionais com conta no Skillsy respondem às oportunidades pelo WhatsApp.
+                {t("app.opportunities.providersAnswer")}
               </Text>
             )
           }
           ListEmptyComponent={
             <Text className="p-8 text-center text-muted-foreground">
               {category || state
-                ? 'Nenhuma oportunidade com esses filtros.'
-                : 'Ainda não há oportunidades abertas. Publique a primeira.'}
+                ? t("app.opportunities.emptyFiltered")
+                : t("app.opportunities.empty")}
             </Text>
           }
         />
@@ -149,19 +161,19 @@ function Mural() {
 
       <OptionSheet
         visible={sheet === 'category'}
-        title="Serviço"
-        options={CATEGORY_OPTIONS}
+        title={t("app.opportunities.service")}
+        options={categoryOptions}
         value={category}
-        allLabel="Todos os serviços"
+        allLabel={t("app.opportunities.allServices")}
         onSelect={setCategory}
         onClose={() => setSheet(null)}
       />
       <OptionSheet
         visible={sheet === 'state'}
-        title="Estado"
+        title={t("app.opportunities.state")}
         options={STATE_OPTIONS}
         value={state}
-        allLabel="Todos os estados"
+        allLabel={t("app.opportunities.allStates")}
         onSelect={setState}
         onClose={() => setSheet(null)}
       />
@@ -171,6 +183,7 @@ function Mural() {
 
 function Minhas({ onPublish }: { onPublish: () => void }) {
   const { user } = useAuth();
+  const t = useT();
   const queryClient = useQueryClient();
   const showSnackbar = useSnackbar();
   const { data, isPending, isError, refetch, isRefetching } = useQuery({
@@ -189,11 +202,11 @@ function Minhas({ onPublish }: { onPublish: () => void }) {
       refresh();
       showSnackbar(
         next === 'closed'
-          ? 'Oportunidade encerrada. Profissionais não a verão mais.'
-          : 'Oportunidade reativada por mais 30 dias.'
+          ? t("app.opportunities.closed")
+          : t("app.opportunities.reopened")
       );
     },
-    onError: () => showSnackbar('Não foi possível atualizar a oportunidade.'),
+    onError: () => showSnackbar(t("app.opportunities.updateError")),
   });
   const followUp = useMutation({
     mutationFn: ({ id, answers }: { id: string; answers: Parameters<typeof answerFollowUp>[1] }) =>
@@ -202,21 +215,21 @@ function Minhas({ onPublish }: { onPublish: () => void }) {
       refresh();
       showSnackbar(
         answers.closeRequest
-          ? 'Obrigado. A oportunidade foi encerrada.'
-          : 'Obrigado pelo retorno. A oportunidade continua ativa.'
+          ? t("app.opportunities.followUpClosed")
+          : t("app.opportunities.followUpKept")
       );
     },
-    onError: () => showSnackbar('Não foi possível registrar sua resposta.'),
+    onError: () => showSnackbar(t("app.opportunities.followUpError")),
   });
 
   if (!user) {
     return (
       <EmptyState
         icon={BriefcaseBusiness}
-        title="Acompanhe suas oportunidades"
-        description="Entre na sua conta para publicar e acompanhar o que você precisa."
-        primary={{ label: 'Publicar oportunidade', onPress: onPublish }}
-        secondary={{ label: 'Entrar na sua conta', onPress: () => router.navigate('/perfil') }}
+        title={t("app.opportunities.followTitle")}
+        description={t("app.opportunities.followText")}
+        primary={{ label: t("app.opportunities.publish"), onPress: onPublish }}
+        secondary={{ label: t("app.opportunities.signIn"), onPress: () => router.navigate('/perfil') }}
       />
     );
   }
@@ -249,9 +262,9 @@ function Minhas({ onPublish }: { onPublish: () => void }) {
       ListEmptyComponent={
         <EmptyState
           icon={BriefcaseBusiness}
-          title="Você ainda não publicou oportunidades"
-          description="Conte o que precisa e os profissionais do mesmo serviço e estado são avisados."
-          primary={{ label: 'Publicar oportunidade', onPress: onPublish }}
+          title={t("app.opportunities.mineEmpty")}
+          description={t("app.opportunities.mineEmptyText")}
+          primary={{ label: t("app.opportunities.publish"), onPress: onPublish }}
         />
       }
     />
@@ -259,13 +272,14 @@ function Minhas({ onPublish }: { onPublish: () => void }) {
 }
 
 function ErrorState({ onRetry }: { onRetry: () => void }) {
+  const t = useT();
   return (
     <View className="items-center gap-3 p-8">
       <Text className="text-center text-muted-foreground">
-        Não foi possível carregar as oportunidades. Confira sua conexão.
+        {t("app.opportunities.loadError")}
       </Text>
       <Button variant="outline" onPress={onRetry}>
-        <Text>Tentar de novo</Text>
+        <Text>{t("app.opportunities.retry")}</Text>
       </Button>
     </View>
   );

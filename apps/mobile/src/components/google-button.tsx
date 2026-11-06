@@ -3,10 +3,12 @@ import Svg, { Path } from 'react-native-svg';
 
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n';
 
 /** "Continuar com Google" with the official multicolor G (Google's branding
  * guidelines require the logo unchanged), in the platform's button shape. */
 export function GoogleButton({ onPress, disabled }: { onPress: () => void; disabled?: boolean }) {
+  const t = useT();
   return (
     <Pressable
       onPress={onPress}
@@ -34,7 +36,7 @@ export function GoogleButton({ onPress, disabled }: { onPress: () => void; disab
           d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
         />
       </Svg>
-      <Text className="font-medium">Continuar com Google</Text>
+      <Text className="font-medium">{t("app.google.continue")}</Text>
     </Pressable>
   );
 }

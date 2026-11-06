@@ -3,6 +3,7 @@ import { Image } from 'expo-image';
 import { Newspaper, UserSearch } from '@/lib/icons';
 import { Pressable, View } from 'react-native';
 
+import { LanguageBadge } from '@/components/language-badge';
 import { PostCategoryBadge } from '@/components/post-category-badge';
 import { Text } from '@/components/ui/text';
 
@@ -40,8 +41,9 @@ export function PostTile({
         </View>
       )}
       <View className={wide ? 'gap-2 p-4' : 'h-24 gap-2 p-3'}>
-        <View className="flex-row">
+        <View className="flex-row gap-2">
           <PostCategoryBadge category={post.category} />
+          <LanguageBadge item={post} />
         </View>
         <Text className="font-semibold leading-5" numberOfLines={2}>
           {post.title}

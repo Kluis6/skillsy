@@ -32,6 +32,8 @@ export type PostInput = {
   content: string;
   coverImageUrl: string;
   tags: string[];
+  /** Language the post is written in (lists and alerts use it). */
+  language?: Post['language'];
 };
 
 const seconds = (value: unknown) =>
@@ -73,6 +75,7 @@ const fields = (input: PostInput) => ({
   content: input.content.trim(),
   coverImageUrl: input.coverImageUrl,
   tags: input.tags,
+  ...(input.language ? { language: input.language } : {}),
 });
 
 export async function getMyPosts(uid: string) {

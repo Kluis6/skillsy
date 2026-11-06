@@ -1,10 +1,13 @@
 import { Pressable, View } from 'react-native';
 
 import { Text } from '@/components/ui/text';
+import { useT } from '@/lib/i18n';
 
 type SectionHeaderProps = { title: string; actionLabel?: string; onAction?: () => void };
 
-export function SectionHeader({ title, actionLabel = 'Ver todas', onAction }: SectionHeaderProps) {
+export function SectionHeader({ title, actionLabel, onAction }: SectionHeaderProps) {
+  const t = useT();
+  actionLabel ??= t('home.seeAll');
   return (
     <View className="flex-row items-center justify-between px-4">
       <Text className="font-heading text-xl font-semibold">{title}</Text>

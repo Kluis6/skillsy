@@ -1,14 +1,15 @@
-import { formatFirestoreDate, OPPORTUNITY_URGENCY } from '@skillsy/shared/opportunities';
 import type { Opportunity } from '@skillsy/shared/types';
 import { AlertTriangle, Clock3, MapPin } from '@/lib/icons';
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
+import { LanguageBadge } from '@/components/language-badge';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { WhatsAppButton } from '@/components/whatsapp-button';
 import { cn } from '@/lib/utils';
+import { useFormat, useLabels, useT } from '@/lib/i18n';
 
 type OpportunityCardProps = {
   opportunity: Opportunity;
@@ -26,6 +27,9 @@ export function OpportunityCard({
   badge,
   children,
 }: OpportunityCardProps) {
+  const t = useT();
+  const labels = useLabels();
+  const format = useFormat();
   const urgency = opportunity.urgency || 'normal';
   const place = [opportunity.neighborhood, opportunity.city].filter(Boolean).join(', ');
 
@@ -33,7 +37,8 @@ export function OpportunityCard({
     <View className="gap-3 border border-border-subtle bg-card p-4 shadow-sm shadow-black/5">
       <View className="flex-row flex-wrap items-center gap-2">
         {badge}
-        <Text className="text-xs font-semibold text-primary">{opportunity.category}</Text>
+        <Text className="text-xs font-semibold text-primary">{labels.category(opportunity.category)}</Text>
+        <LanguageBadge item={opportunity} />
         {urgency !== 'normal' ? (
           <Badge
             variant="outline"
@@ -49,7 +54,7 @@ export function OpportunityCard({
               <Clock3 size={12} className="text-primary" />
             )}
             <Text className={urgency === 'urgent' ? 'text-destructive' : 'text-primary'}>
-              {OPPORTUNITY_URGENCY[urgency].label}
+              {urgency === 'urgent' ? t('opportunities.urgencyUrgent') : t('opportunities.urgencySoon')}
             </Text>
           </Badge>
         ) : null}
@@ -72,12 +77,12 @@ export function OpportunityCard({
         <View className="flex-row items-center gap-1">
           <Clock3 size={14} className="text-muted-foreground" />
           <Text className="text-sm text-muted-foreground">
-            {formatFirestoreDate(opportunity.createdAt)}
+            {format.date(opportunity.createdAt)}
           </Text>
         </View>
       </View>
 
-      {contactUrl ? <WhatsAppButton url={contactUrl} label="Tenho interesse" /> : null}
+      {contactUrl ? <WhatsAppButton url={contactUrl} label={t("app.opportunityCard.interested")} /> : null}
       {children}
     </View>
   );

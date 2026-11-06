@@ -8,6 +8,7 @@ import { Text } from '@/components/ui/text';
 import { useAuth } from '@/lib/auth';
 import { useNotifications } from '@/lib/notifications';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n';
 
 type AppHeaderProps = {
   title: string;
@@ -25,6 +26,7 @@ type AppHeaderProps = {
  * screen, tabs or not. The native stack header is off in _layout.
  */
 export function AppHeader({ title, back = false, actions, children }: AppHeaderProps) {
+  const t = useT();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   // The tab screens (no back arrow) end with the notifications bell.
@@ -47,7 +49,7 @@ export function AppHeader({ title, back = false, actions, children }: AppHeaderP
           <Pressable
             onPress={goBack}
             accessibilityRole="button"
-            accessibilityLabel="Voltar"
+            accessibilityLabel={t("app.header.back")}
             className="mr-1 size-12 items-center justify-center active:bg-accent">
             <ArrowLeft size={24} className="text-foreground" />
           </Pressable>
@@ -87,11 +89,12 @@ export function HeaderAction({
 /** Bell with the unread count; opens Notificações in the current tab. */
 function NotificationBell() {
   const { unread } = useNotifications();
+  const t = useT();
   return (
     <Pressable
       onPress={() => router.push('/notificacoes')}
       accessibilityRole="button"
-      accessibilityLabel={unread ? `Notificações, ${unread} não lidas` : 'Notificações'}
+      accessibilityLabel={unread ? t("app.header.notificationsUnread", { count: unread }) : t("app.header.notifications")}
       className="size-12 items-center justify-center active:bg-accent">
       <Bell size={22} className="text-foreground" />
       {unread ? (

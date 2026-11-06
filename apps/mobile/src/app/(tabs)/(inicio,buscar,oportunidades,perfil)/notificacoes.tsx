@@ -1,4 +1,3 @@
-import { formatFirestoreDate } from '@skillsy/shared/opportunities';
 import type { UserNotification } from '@skillsy/shared/types';
 import { router } from 'expo-router';
 import { FlatList, Pressable, View } from 'react-native';
@@ -16,6 +15,7 @@ import {
   useNotifications,
 } from '@/lib/notifications';
 import { cn } from '@/lib/utils';
+import { useFormat, useT } from '@/lib/i18n';
 
 const ICONS = {
   opportunity_match: BriefcaseBusiness,
@@ -27,6 +27,8 @@ const ICONS = {
 export default function NotificacoesScreen() {
   const { user } = useAuth();
   const { items, unread } = useNotifications();
+  const t = useT();
+  const format = useFormat();
 
   const open = (item: UserNotification) => {
     if (user && !item.read) markNotificationRead(user.uid, item.id).catch(() => {});
@@ -36,13 +38,13 @@ export default function NotificacoesScreen() {
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
       <AppHeader
-        title="Notificações"
+        title={t("app.header.notifications")}
         back
         actions={
           user && unread ? (
             <HeaderAction
               icon={CheckCheck}
-              label="Marcar todas como lidas"
+              label={t("app.notifications.markAll")}
               onPress={() => markAllNotificationsRead(user.uid, items).catch(() => {})}
             />
           ) : null
@@ -73,12 +75,12 @@ export default function NotificacoesScreen() {
                   {item.message}
                 </Text>
                 <Text className="text-xs text-muted-foreground">
-                  {formatFirestoreDate(item.createdAt)}
+                  {format.date(item.createdAt)}
                 </Text>
               </View>
               {!item.read ? (
                 <View
-                  accessibilityLabel="Não lida"
+                  accessibilityLabel={t("app.notifications.unread")}
                   className="mt-1.5 size-2 rounded-full bg-primary"
                 />
               ) : null}
@@ -88,8 +90,8 @@ export default function NotificacoesScreen() {
         ListEmptyComponent={
           <EmptyState
             icon={Bell}
-            title="Nenhuma notificação"
-            description="Avisamos aqui quando houver oportunidades para você e novos artigos e vagas."
+            title={t("app.notifications.empty")}
+            description={t("app.notifications.emptyText")}
           />
         }
       />

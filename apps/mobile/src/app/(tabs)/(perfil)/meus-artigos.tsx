@@ -1,4 +1,3 @@
-import { formatFirestoreDate } from '@skillsy/shared/opportunities';
 import type { Post } from '@skillsy/shared/types';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
@@ -16,10 +15,12 @@ import { useAuth } from '@/lib/auth';
 import { Newspaper, PenLine, ShieldCheck } from '@/lib/icons';
 import { getMyPosts } from '@/lib/my-posts';
 import { getOwnProfile } from '@/lib/providers';
+import { useFormat, useT } from '@/lib/i18n';
 
 /** The member's own articles and jobs, any status, newest change first. */
 export default function MeusArtigosScreen() {
   const { user } = useAuth();
+  const t = useT();
   const { data: me, isPending: loadingMe } = useQuery({
     queryKey: ['me', user?.uid],
     queryFn: () => getOwnProfile(user!.uid),
@@ -41,7 +42,7 @@ export default function MeusArtigosScreen() {
 
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
-      <AppHeader title="Meus artigos e vagas" back />
+      <AppHeader title={t("app.myPosts.title")} back />
       {loadingMe || isPending ? (
         <View className="gap-card p-4">
           <Skeleton className="h-28 w-full" />
@@ -50,9 +51,9 @@ export default function MeusArtigosScreen() {
       ) : !verified && !posts?.length ? (
         <EmptyState
           icon={ShieldCheck}
-          title="Publicação para membros verificados"
-          description="Informe sua ala e o ano de batismo em Editar perfil para escrever artigos e divulgar vagas."
-          primary={{ label: 'Editar perfil', onPress: () => router.push('/editar-perfil') }}
+          title={t("app.myPosts.verifiedTitle")}
+          description={t("app.myPosts.verifiedText")}
+          primary={{ label: t("app.myPosts.editProfile"), onPress: () => router.push('/editar-perfil') }}
         />
       ) : (
         <FlatList
@@ -65,40 +66,42 @@ export default function MeusArtigosScreen() {
           ListEmptyComponent={
             <EmptyState
               icon={Newspaper}
-              title="Nenhuma publicação ainda"
-              description="Escreva um artigo para a comunidade ou divulgue uma vaga."
-              primary={{ label: 'Escrever', onPress: write }}
+              title={t("app.myPosts.empty")}
+              description={t("app.myPosts.emptyText")}
+              primary={{ label: t("app.myPosts.write"), onPress: write }}
             />
           }
         />
       )}
-      {verified && posts?.length ? <Fab icon={PenLine} label="Escrever" onPress={write} /> : null}
+      {verified && posts?.length ? <Fab icon={PenLine} label={t("app.myPosts.write")} onPress={write} /> : null}
     </SafeAreaView>
   );
 }
 
 function MyPostCard({ post }: { post: Post }) {
+  const t = useT();
+  const format = useFormat();
   return (
     <Pressable
       onPress={() => router.push({ pathname: '/publicacao/editar', params: { id: post.id! } })}
       accessibilityRole="button"
-      accessibilityHint="Abre para editar"
+      accessibilityHint={t("app.myPosts.editHint")}
       className="gap-2 border border-border-subtle bg-card p-4 shadow-sm shadow-black/5 active:bg-accent">
       <View className="flex-row flex-wrap gap-2">
         <PostCategoryBadge category={post.category} />
         <PostStatusBadge status={post.status} />
         {post.isFeatured ? (
-          <Text className="text-xs font-medium text-primary">Destaque</Text>
+          <Text className="text-xs font-medium text-primary">{t('posts.featured')}</Text>
         ) : null}
       </View>
       <Text className="font-heading text-lg font-semibold leading-snug" numberOfLines={2}>
         {post.title}
       </Text>
       <Text className="text-xs text-muted-foreground">
-        Atualizado em {formatFirestoreDate(post.updatedAt)}
+        {t("app.myPosts.updatedAt", { date: format.date(post.updatedAt) })}
       </Text>
       {post.status === 'rejected' && post.rejectionReason ? (
-        <Text className="text-sm text-destructive">Motivo: {post.rejectionReason}</Text>
+        <Text className="text-sm text-destructive">{t("app.myPosts.reason", { reason: post.rejectionReason })}</Text>
       ) : null}
     </Pressable>
   );

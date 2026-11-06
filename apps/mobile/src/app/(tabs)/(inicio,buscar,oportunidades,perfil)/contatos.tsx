@@ -11,11 +11,13 @@ import { Text } from '@/components/ui/text';
 import { useAuth } from '@/lib/auth';
 import { getContacts } from '@/lib/contacts';
 import { getOwnProfile } from '@/lib/providers';
+import { useT } from '@/lib/i18n';
 
 /** Meus contatos: the professionals the member connected with ("Conectar"). */
 export default function ContatosScreen() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const t = useT();
   const { data: me } = useQuery({
     queryKey: ['me', user?.uid],
     queryFn: () => getOwnProfile(user!.uid),
@@ -35,14 +37,14 @@ export default function ContatosScreen() {
 
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
-      <AppHeader title="Meus contatos" back />
+      <AppHeader title={t("app.contacts.title")} back />
       {!user ? (
         <View className="items-center gap-3 p-8">
           <Text className="text-center text-muted-foreground">
-            Entre na sua conta para guardar os profissionais com quem você se conectou.
+            {t("app.contacts.signIn")}
           </Text>
           <Button variant="outline" onPress={() => router.navigate('/perfil')}>
-            <Text>Entrar</Text>
+            <Text>{t('common.signIn')}</Text>
           </Button>
         </View>
       ) : isPending ? (
@@ -66,11 +68,10 @@ export default function ContatosScreen() {
           ListEmptyComponent={
             <View className="items-center gap-3 py-8">
               <Text className="text-center text-muted-foreground">
-                Nenhum contato ainda. Toque em Conectar no perfil de um profissional para guardá-lo
-                aqui.
+                {t("app.contacts.empty")}
               </Text>
               <Button variant="outline" onPress={() => router.navigate('/buscar')}>
-                <Text>Buscar profissionais</Text>
+                <Text>{t("app.contacts.search")}</Text>
               </Button>
             </View>
           }

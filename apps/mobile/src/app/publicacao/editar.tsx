@@ -1,9 +1,9 @@
 import {
   normalizePostTags,
-  POST_CATEGORY_LABELS,
+  POST_CATEGORY_OPTIONS,
   slugifyPostTitle,
 } from '@skillsy/shared/post-utils';
-import type { Post, PostCategory } from '@skillsy/shared/types';
+import type { Post } from '@skillsy/shared/types';
 import { postEditorSchema } from '@skillsy/shared/validations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
@@ -27,6 +27,7 @@ import { Camera, ImagePlus, Trash2 } from '@/lib/icons';
 import { pickImage, uploadImage } from '@/lib/image-upload';
 import { deleteOwnPost, getPost, publishOwnPost, savePost, type PostInput } from '@/lib/my-posts';
 import { getOwnProfile } from '@/lib/providers';
+import { useLocale, useT, useValidationMessage } from '@/lib/i18n';
 
 type Values = Omit<PostInput, 'tags'> & { tags: string };
 type Errors = Partial<Record<keyof Values, string>>;
@@ -44,6 +45,7 @@ const EMPTY: Values = {
  * without `id` for a new post. */
 export default function EditarPublicacaoScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const t = useT();
   const { data: post, isPending } = useQuery({
     queryKey: ['post-edit', id],
     queryFn: () => getPost(id!),
@@ -54,7 +56,7 @@ export default function EditarPublicacaoScreen() {
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
       {id && isPending ? (
         <>
-          <AppHeader title="Editar publicação" back />
+          <AppHeader title={t("app.postEditor.editTitle")} back />
           <ActivityIndicator className="mt-10" />
         </>
       ) : (
@@ -66,6 +68,9 @@ export default function EditarPublicacaoScreen() {
 
 function PostForm({ post }: { post?: Post }) {
   const { user } = useAuth();
+  const t = useT();
+  const tv = useValidationMessage();
+  const { locale } = useLocale();
   const queryClient = useQueryClient();
   const showSnackbar = useSnackbar();
   const [values, setValues] = useState<Values>(
@@ -77,8 +82,9 @@ function PostForm({ post }: { post?: Post }) {
           content: post.content,
           coverImageUrl: post.coverImageUrl ?? '',
           tags: (post.tags ?? []).join(', '),
+          language: post.language ?? 'pt',
         }
-      : EMPTY
+      : { ...EMPTY, language: locale }
   );
   const [errors, setErrors] = useState<Errors>({});
   const [uploading, setUploading] = useState(false);
@@ -117,10 +123,10 @@ function PostForm({ post }: { post?: Post }) {
     const next: Errors = {};
     for (const issue of result.error.issues) {
       const field = (issue.path[0] === 'slug' ? 'title' : issue.path[0]) as keyof Values;
-      next[field] ??= issue.message;
+      next[field] ??= tv(issue.message);
     }
     setErrors(next);
-    showSnackbar('Revise os campos destacados.');
+    showSnackbar(t("app.postEditor.reviewFields"));
     return false;
   };
 
@@ -137,17 +143,17 @@ function PostForm({ post }: { post?: Post }) {
     onSuccess: (andPublish) => {
       refresh();
       showSnackbar(
-        published
-          ? 'Publicação atualizada.'
+                published
+          ? t("app.postEditor.updated")
           : andPublish
-            ? 'Publicado no site e no app.'
-            : 'Rascunho salvo.'
+            ? t("app.postEditor.published")
+            : t("app.postEditor.draftSaved")
       );
       if (router.canGoBack()) router.back();
     },
     onError: (error) => {
       console.error('Falha ao salvar a publicação:', error);
-      showSnackbar('Não foi possível salvar. Confira se seu perfil está verificado.');
+      showSnackbar(t("app.postEditor.saveError"));
     },
   });
 
@@ -156,10 +162,10 @@ function PostForm({ post }: { post?: Post }) {
     onSuccess: () => {
       setConfirmDelete(false);
       refresh();
-      showSnackbar('Publicação excluída.');
+      showSnackbar(t("app.postEditor.deleted"));
       if (router.canGoBack()) router.back();
     },
-    onError: () => showSnackbar('Não foi possível excluir. Tente de novo.'),
+    onError: () => showSnackbar(t("app.postEditor.deleteError")),
   });
 
   const submit = (andPublish: boolean) => {
@@ -173,7 +179,7 @@ function PostForm({ post }: { post?: Post }) {
     try {
       update({ coverImageUrl: await uploadImage(asset, 'posts') });
     } catch {
-      showSnackbar('Não foi possível enviar a imagem. Tente outra foto.');
+      showSnackbar(t("app.postEditor.uploadError"));
     } finally {
       setUploading(false);
     }
@@ -184,13 +190,13 @@ function PostForm({ post }: { post?: Post }) {
   return (
     <>
       <AppHeader
-        title={post ? 'Editar publicação' : 'Nova publicação'}
+        title={post ? t("app.postEditor.editTitle") : t("app.postEditor.newTitle")}
         back
         actions={
           post ? (
             <HeaderAction
               icon={Trash2}
-              label="Excluir publicação"
+              label={t("app.postEditor.deleteAria")}
               onPress={() => setConfirmDelete(true)}
             />
           ) : null
@@ -209,12 +215,12 @@ function PostForm({ post }: { post?: Post }) {
             </View>
           ) : null}
 
-          <Section title="Tipo">
+          <Section title={t("app.postEditor.type")}>
             <View className="flex-row gap-2">
-              {(Object.keys(POST_CATEGORY_LABELS) as PostCategory[]).map((category) => (
+              {POST_CATEGORY_OPTIONS.map((category) => (
                 <Chip
                   key={category}
-                  label={POST_CATEGORY_LABELS[category]}
+                  label={category === 'job' ? t('posts.categoryJob') : t('posts.categoryArticle')}
                   selected={values.category === category}
                   onPress={() => update({ category })}
                 />
@@ -222,12 +228,12 @@ function PostForm({ post }: { post?: Post }) {
             </View>
           </Section>
 
-          <Section title="Capa">
+          <Section title={t("app.postEditor.cover")}>
             <Pressable
               onPress={changeCover}
               disabled={uploading}
               accessibilityRole="button"
-              accessibilityLabel={values.coverImageUrl ? 'Trocar capa' : 'Adicionar capa'}
+              accessibilityLabel={values.coverImageUrl ? t("app.postEditor.changeCover") : t("app.postEditor.addCover")}
               className="overflow-hidden active:opacity-80">
               {values.coverImageUrl ? (
                 <Image
@@ -238,41 +244,41 @@ function PostForm({ post }: { post?: Post }) {
               ) : (
                 <View className="aspect-video w-full items-center justify-center gap-2 border border-dashed border-border bg-muted">
                   <ImagePlus size={28} className="text-muted-foreground" />
-                  <Text className="text-sm text-muted-foreground">Adicionar imagem de capa</Text>
+                  <Text className="text-sm text-muted-foreground">{t("app.postEditor.addCoverImage")}</Text>
                 </View>
               )}
               {uploading || values.coverImageUrl ? (
                 <View className="absolute bottom-2 right-2 flex-row items-center gap-1.5 bg-black/60 px-3 py-1.5">
                   <Camera size={14} className="text-white" />
                   <Text className="text-xs font-medium text-white">
-                    {uploading ? 'Enviando…' : 'Trocar capa'}
+                    {uploading ? t("app.postEditor.uploading") : t("app.postEditor.changeCover")}
                   </Text>
                 </View>
               ) : null}
             </Pressable>
             {values.coverImageUrl ? (
               <Button variant="ghost" onPress={() => update({ coverImageUrl: '' })}>
-                <Text className="text-destructive">Remover capa</Text>
+                <Text className="text-destructive">{t("app.postEditor.removeCover")}</Text>
               </Button>
             ) : null}
           </Section>
 
-          <Section title="Texto">
-            <Field label="Título" error={errors.title}>
+          <Section title={t("app.postEditor.text")}>
+            <Field label={t("app.postEditor.titleLabel")} error={errors.title}>
               <Input
                 value={values.title}
                 onChangeText={(title) => update({ title })}
                 placeholder={
                   values.category === 'job'
-                    ? 'Ex.: Vaga de auxiliar administrativo'
-                    : 'Título do artigo'
+                    ? t("app.postEditor.jobTitlePlaceholder")
+                    : t("app.postEditor.articleTitlePlaceholder")
                 }
                 maxLength={120}
               />
             </Field>
             <Field
-              label="Resumo (opcional)"
-              hint="Aparece nos cards. Sem resumo, usamos o começo do texto."
+              label={t("app.postEditor.excerpt")}
+              hint={t("app.postEditor.excerptHint")}
               error={errors.excerpt}>
               <Textarea
                 value={values.excerpt}
@@ -282,11 +288,11 @@ function PostForm({ post }: { post?: Post }) {
               />
             </Field>
             <Field
-              label="Conteúdo"
+              label={t("app.postEditor.content")}
               hint={
                 values.category === 'job'
-                  ? 'Requisitos, local, como se candidatar.'
-                  : 'Pelo menos 40 caracteres, ou só a imagem de capa.'
+                  ? t("app.postEditor.jobContentHint")
+                  : t("app.postEditor.articleContentHint")
               }
               error={errors.content}>
               <Textarea
@@ -297,11 +303,11 @@ function PostForm({ post }: { post?: Post }) {
                 textAlignVertical="top"
               />
             </Field>
-            <Field label="Tags (opcional)" hint="Até 5, separadas por vírgula." error={errors.tags}>
+            <Field label={t("app.postEditor.tags")} hint={t("app.postEditor.tagsHint")} error={errors.tags}>
               <Input
                 value={values.tags}
                 onChangeText={(tags) => update({ tags })}
-                placeholder="serviços, comunidade"
+                placeholder={t("app.postEditor.tagsPlaceholder")}
                 maxLength={120}
                 autoCapitalize="none"
               />
@@ -310,18 +316,18 @@ function PostForm({ post }: { post?: Post }) {
 
           {published ? (
             <Button onPress={() => submit(false)} disabled={busy}>
-              <Text>{save.isPending ? 'Salvando…' : 'Salvar alterações'}</Text>
+              <Text>{save.isPending ? t("app.postEditor.saving") : t("app.postEditor.saveChanges")}</Text>
             </Button>
           ) : (
             <View className="gap-3">
               <Button onPress={() => submit(true)} disabled={busy}>
-                <Text>{save.isPending ? 'Salvando…' : 'Publicar'}</Text>
+                <Text>{save.isPending ? t("app.postEditor.saving") : t("app.postEditor.publish")}</Text>
               </Button>
               <Button variant="outline" onPress={() => submit(false)} disabled={busy}>
-                <Text>Salvar rascunho</Text>
+                <Text>{t("app.postEditor.saveDraft")}</Text>
               </Button>
               <Text className="text-center text-xs text-muted-foreground">
-                Ao publicar, todos os membros recebem um aviso.
+                {t("app.postEditor.publishNotice")}
               </Text>
             </View>
           )}
@@ -330,17 +336,17 @@ function PostForm({ post }: { post?: Post }) {
 
       <Sheet
         visible={confirmDelete}
-        title="Excluir publicação?"
+        title={t("app.postEditor.confirmTitle")}
         onClose={() => setConfirmDelete(false)}>
         <View className="gap-3 px-4 pb-4">
           <Text className="text-muted-foreground">
-            “{post?.title}” sai do site e do app. Não dá para desfazer.
+            {t("app.postEditor.confirmText", { title: post?.title ?? '' })}
           </Text>
           <Button variant="destructive" onPress={() => remove.mutate()} disabled={remove.isPending}>
-            <Text>{remove.isPending ? 'Excluindo…' : 'Excluir'}</Text>
+            <Text>{remove.isPending ? t("app.postEditor.deleting") : t("app.postEditor.delete")}</Text>
           </Button>
           <Button variant="outline" onPress={() => setConfirmDelete(false)}>
-            <Text>Cancelar</Text>
+            <Text>{t("app.postEditor.cancel")}</Text>
           </Button>
         </View>
       </Sheet>

@@ -1,5 +1,4 @@
 import {
-  REPORT_REASON_LABELS,
   REPORT_REASON_OPTIONS,
   type ReportReason,
 } from '@skillsy/shared/reporting';
@@ -11,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import { useLabels, useT } from '@/lib/i18n';
 
 type ReportSheetProps = {
   visible: boolean;
@@ -32,13 +32,14 @@ export function ReportSheet({
 }: ReportSheetProps) {
   const [reason, setReason] = useState<ReportReason | null>(null);
   const [details, setDetails] = useState('');
+  const t = useT();
+  const labels = useLabels();
 
   return (
-    <Sheet visible={visible} title={`Denunciar ${name}`} onClose={onClose}>
+    <Sheet visible={visible} title={t("app.report.title", { name })} onClose={onClose}>
       <ScrollView contentContainerClassName="gap-3 px-4 pb-4" keyboardShouldPersistTaps="handled">
         <Text className="text-sm text-muted-foreground">
-          A denúncia vai para a equipe da Skillsy. A pessoa denunciada não fica sabendo quem
-          denunciou.
+          {t("app.report.intro")}
         </Text>
         <View accessibilityRole="radiogroup">
           {REPORT_REASON_OPTIONS.map((option) => {
@@ -57,7 +58,7 @@ export function ReportSheet({
                   )}>
                   {selected ? <View className="size-2.5 rounded-full bg-destructive" /> : null}
                 </View>
-                <Text className="flex-1">{REPORT_REASON_LABELS[option]}</Text>
+                <Text className="flex-1">{labels.reason(option)}</Text>
               </Pressable>
             );
           })}
@@ -65,7 +66,7 @@ export function ReportSheet({
         <Textarea
           value={details}
           onChangeText={setDetails}
-          placeholder="Detalhes (opcional): o que aconteceu?"
+          placeholder={t("app.report.details")}
           maxLength={1000}
           textAlignVertical="top"
         />
@@ -74,7 +75,7 @@ export function ReportSheet({
           variant="destructive"
           disabled={!reason || submitting}
           onPress={() => reason && onSubmit(reason, details)}>
-          <Text>{submitting ? 'Enviando…' : 'Enviar denúncia'}</Text>
+          <Text>{submitting ? t("app.report.sending") : t("app.report.submit")}</Text>
         </Button>
       </ScrollView>
     </Sheet>

@@ -11,6 +11,7 @@ import { useAuth } from '@/lib/auth';
 import { db } from '@/lib/firebase';
 import { getOwnProfile } from '@/lib/providers';
 import { openSite } from '@/lib/site';
+import { useT } from '@/lib/i18n';
 
 /** Same as the site's TermsUpdateDialog: members who accepted an older version
  * of the Terms of Use accept the current one. */
@@ -18,6 +19,7 @@ export function TermsUpdateSheet() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const showSnackbar = useSnackbar();
+  const t = useT();
   const { data: me } = useQuery({
     queryKey: ['me', user?.uid],
     queryFn: () => getOwnProfile(user!.uid),
@@ -32,7 +34,7 @@ export function TermsUpdateSheet() {
         termsAcceptedAt: serverTimestamp(),
       }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['me'] }),
-    onError: () => showSnackbar('Não foi possível registrar o aceite. Tente de novo.'),
+    onError: () => showSnackbar(t("app.terms.acceptError")),
   });
 
   const pending =
@@ -43,24 +45,21 @@ export function TermsUpdateSheet() {
     !accept.isSuccess;
 
   return (
-    <Sheet visible={pending} title="Termos atualizados" onClose={() => {}} dismissable={false}>
+    <Sheet visible={pending} title={t("app.terms.title")} onClose={() => {}} dismissable={false}>
       <View className="gap-4 px-4 pb-4">
         <Text className="text-muted-foreground">
-          Atualizamos os Termos de Uso e a Política de Privacidade. Deixamos mais claro o papel da
-          Skillsy, as responsabilidades de cada usuário, o tratamento dos dados de ala e ano de
-          batismo e as regras de bloqueio. O uso continua gratuito, e o cadastro é permitido somente
-          para maiores de {MINIMUM_AGE} anos.
+          {t("app.terms.text", { age: MINIMUM_AGE })}
         </Text>
         <View className="flex-row gap-card">
           <Button variant="outline" className="flex-1" onPress={() => openSite('/termos')}>
-            <Text>Termos de uso</Text>
+            <Text>{t("app.terms.terms")}</Text>
           </Button>
           <Button variant="outline" className="flex-1" onPress={() => openSite('/privacidade')}>
-            <Text>Privacidade</Text>
+            <Text>{t("app.terms.privacy")}</Text>
           </Button>
         </View>
         <Button onPress={() => accept.mutate()} disabled={accept.isPending}>
-          <Text>{accept.isPending ? 'Salvando…' : 'Li e concordo'}</Text>
+          <Text>{accept.isPending ? t("app.terms.saving") : t('notices.agree')}</Text>
         </Button>
       </View>
     </Sheet>

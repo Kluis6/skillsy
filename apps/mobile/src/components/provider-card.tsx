@@ -1,9 +1,3 @@
-import {
-  formatRating,
-  formatRecommendationCount,
-  formatReviewCount,
-  providerRoleLabel,
-} from '@skillsy/shared/format';
 import { whatsappUrl } from '@skillsy/shared/contact';
 import type { UserProfile } from '@skillsy/shared/types';
 import { MapPin, Star, ThumbsUp } from '@/lib/icons';
@@ -13,10 +7,13 @@ import { ProfileAvatar } from '@/components/profile-avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { WhatsAppButton } from '@/components/whatsapp-button';
+import { useFormat, useT } from '@/lib/i18n';
 
 type ProviderCardProps = { provider: UserProfile; onPress?: () => void };
 
 export function ProviderCard({ provider, onPress }: ProviderCardProps) {
+  const t = useT();
+  const format = useFormat();
   const reviewCount = provider.reviewCount || 0;
   const recommendationCount = provider.recommendationCount || 0;
   const place = [provider.publicCity, provider.publicState].filter(Boolean).join(' · ');
@@ -29,7 +26,7 @@ export function ProviderCard({ provider, onPress }: ProviderCardProps) {
       <Pressable
         onPress={onPress}
         accessibilityRole="link"
-        accessibilityHint="Abre o perfil completo"
+        accessibilityHint={t("app.providerCard.openHint")}
         className="gap-3 p-4 active:bg-accent">
         <View className="flex-row items-center gap-3">
           <ProfileAvatar
@@ -43,7 +40,7 @@ export function ProviderCard({ provider, onPress }: ProviderCardProps) {
               {provider.companyName || provider.name}
             </Text>
             <Text className="text-sm text-muted-foreground" numberOfLines={1}>
-              {providerRoleLabel(provider)}
+              {format.role(provider)}
             </Text>
           </View>
         </View>
@@ -52,9 +49,9 @@ export function ProviderCard({ provider, onPress }: ProviderCardProps) {
           {reviewCount > 0 ? (
             <View className="flex-row items-center gap-1">
               <Star size={14} className="text-highlight" fill="currentColor" />
-              <Text className="text-sm font-semibold">{formatRating(provider.rating)}</Text>
+              <Text className="text-sm font-semibold">{format.rating(provider.rating)}</Text>
               <Text className="text-sm text-muted-foreground">
-                ({formatReviewCount(reviewCount)})
+                ({format.reviews(reviewCount)})
               </Text>
             </View>
           ) : null}
@@ -62,12 +59,12 @@ export function ProviderCard({ provider, onPress }: ProviderCardProps) {
             <View className="flex-row items-center gap-1.5">
               <ThumbsUp size={14} className="text-primary" />
               <Text className="text-sm font-semibold text-primary">
-                {formatRecommendationCount(recommendationCount)}
+                {format.recommendations(recommendationCount)}
               </Text>
             </View>
           ) : null}
           {reviewCount === 0 && recommendationCount === 0 ? (
-            <Text className="text-sm text-muted-foreground">Novo na comunidade</Text>
+            <Text className="text-sm text-muted-foreground">{t("app.providerCard.newMember")}</Text>
           ) : null}
           {place ? (
             <View className="flex-row items-center gap-1">

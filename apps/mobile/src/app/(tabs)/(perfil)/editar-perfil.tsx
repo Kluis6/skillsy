@@ -27,11 +27,12 @@ import { Text } from '@/components/ui/text';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/lib/auth';
 import { openSite } from '@/lib/site';
-import { CATEGORY_OPTIONS, STATE_OPTIONS } from '@/lib/filters';
+import { STATE_OPTIONS, useCategoryOptions } from '@/lib/filters';
 import { pickImage, uploadImage, type ImageKind } from '@/lib/image-upload';
 import { saveProfile } from '@/lib/profile';
 import { getOwnProfile } from '@/lib/providers';
 import { cn } from '@/lib/utils';
+import { useLabels, useT, useValidationMessage } from '@/lib/i18n';
 
 type Errors = Partial<Record<keyof ProfileFormValues, string>>;
 
@@ -48,6 +49,7 @@ function splitLocation(location: string) {
  * (profileSchema) and the same documents (saveProfile → @skillsy/shared). */
 export default function EditarPerfilScreen() {
   const { user } = useAuth();
+  const t = useT();
   const { data: me, isPending } = useQuery({
     queryKey: ['me', user?.uid],
     queryFn: () => getOwnProfile(user!.uid),
@@ -56,7 +58,7 @@ export default function EditarPerfilScreen() {
 
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
-      <AppHeader title="Editar perfil" back />
+      <AppHeader title={t("app.editProfile.title")} back />
       {isPending || !me ? (
         <ActivityIndicator className="mt-12" />
       ) : (
@@ -69,6 +71,10 @@ export default function EditarPerfilScreen() {
 
 function ProfileForm({ initial }: { initial: ProfileFormValues }) {
   const { user } = useAuth();
+  const t = useT();
+  const tv = useValidationMessage();
+  const labels = useLabels();
+  const categoryOptions = useCategoryOptions();
   const queryClient = useQueryClient();
   const showSnackbar = useSnackbar();
   const [values, setValues] = useState(initial);
@@ -101,12 +107,12 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
       queryClient.invalidateQueries({ queryKey: ['me'] });
       queryClient.invalidateQueries({ queryKey: ['profile', user?.uid] });
       queryClient.invalidateQueries({ queryKey: ['providers'] });
-      showSnackbar('Perfil atualizado.');
+      showSnackbar(t("app.editProfile.saved"));
       if (router.canGoBack()) router.back();
     },
     onError: (error) => {
       console.error('Falha ao salvar o perfil:', error);
-      showSnackbar('Não foi possível salvar. Tente de novo.');
+      showSnackbar(t("app.editProfile.saveError"));
     },
   });
 
@@ -116,10 +122,10 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
       const next: Errors = {};
       for (const issue of result.error.issues) {
         const field = issue.path[0] as keyof ProfileFormValues;
-        next[field] ??= issue.message;
+        next[field] ??= tv(issue.message);
       }
       setErrors(next);
-      showSnackbar('Revise os campos destacados.');
+      showSnackbar(t("app.editProfile.reviewFields"));
       return;
     }
     save.mutate();
@@ -135,7 +141,7 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
       else if (kind === 'banner') update({ bannerURL: url });
       else update({ gallery: [...values.gallery, { url, description: '' }] });
     } catch {
-      showSnackbar('Não foi possível enviar a imagem. Tente outra foto.');
+      showSnackbar(t("app.editProfile.uploadError"));
     } finally {
       setUploading(null);
     }
@@ -146,11 +152,11 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
   return (
     <KeyboardAvoidingView behavior="padding" className="flex-1">
       <ScrollView contentContainerClassName="gap-card p-4 pb-8" keyboardShouldPersistTaps="handled">
-        <Section title="Fotos">
+        <Section title={t("app.editProfile.photos")}>
           <Pressable
             onPress={() => changeImage('banner')}
             accessibilityRole="button"
-            accessibilityLabel="Trocar capa"
+            accessibilityLabel={t("app.editProfile.changeCover")}
             className="overflow-hidden active:opacity-80">
             {values.bannerURL ? (
               <Image
@@ -163,13 +169,13 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
                 <ImagePlus size={28} className="text-primary-foreground" />
               </View>
             )}
-            <UploadBadge busy={uploading === 'banner'} label="Trocar capa" />
+            <UploadBadge busy={uploading === 'banner'} label={t("app.editProfile.changeCover")} />
           </Pressable>
           <View className="flex-row items-center gap-4">
             <Pressable
               onPress={() => changeImage('avatar')}
               accessibilityRole="button"
-              accessibilityLabel="Trocar foto de perfil">
+              accessibilityLabel={t("app.editProfile.changePhotoAria")}>
               <ProfileAvatar
                 uri={values.photoURL}
                 name={values.name}
@@ -183,18 +189,18 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
               disabled={uploading === 'avatar'}
               onPress={() => changeImage('avatar')}>
               <Camera size={16} className="text-foreground" />
-              <Text>{uploading === 'avatar' ? 'Enviando…' : 'Trocar foto'}</Text>
+              <Text>{uploading === 'avatar' ? t("app.editProfile.uploading") : t("app.editProfile.changePhoto")}</Text>
             </Button>
           </View>
         </Section>
 
-        <Section title="Sobre você">
-          <Field label="Nome" error={errors.name}>
+        <Section title={t("app.editProfile.aboutYou")}>
+          <Field label={t("app.editProfile.name")} error={errors.name}>
             <Input value={values.name} onChangeText={(name) => update({ name })} maxLength={50} />
           </Field>
           <Field
-            label="Sobre"
-            hint={`${values.bio.length}/500 · Conte o que você faz e como trabalha.`}
+            label={t("app.editProfile.about")}
+            hint={t("app.editProfile.aboutHint", { count: values.bio.length })}
             error={errors.bio}>
             <Textarea
               value={values.bio}
@@ -203,17 +209,17 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
               textAlignVertical="top"
             />
           </Field>
-          <Field label="Cidade" error={errors.location}>
+          <Field label={t("app.editProfile.city")} error={errors.location}>
             <Input
               value={location.city}
               onChangeText={(city) => setLocation((current) => ({ ...current, city }))}
               maxLength={90}
             />
           </Field>
-          <Field label="Estado">
+          <Field label={t("app.editProfile.state")}>
             <View className="flex-row">
               <Chip
-                label={stateLabel || 'Escolher estado'}
+                label={stateLabel || t("app.editProfile.chooseState")}
                 selected={Boolean(location.state)}
                 menu
                 onPress={() => setSheet('state')}
@@ -222,10 +228,10 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
           </Field>
         </Section>
 
-        <Section title="Contato">
+        <Section title={t("app.editProfile.contact")}>
           <Field
             label="WhatsApp"
-            hint="Com DDD, só números. Aparece no botão Falar no WhatsApp."
+            hint={t("app.editProfile.whatsappHint")}
             error={errors.whatsapp}>
             <Input
               value={values.whatsapp}
@@ -234,7 +240,7 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
               maxLength={15}
             />
           </Field>
-          <Field label="Telefone" error={errors.phone}>
+          <Field label={t("app.editProfile.phone")} error={errors.phone}>
             <Input
               value={values.phone}
               onChangeText={(phone) => update({ phone: phone.replace(/\D/g, '') })}
@@ -247,11 +253,11 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
               value={values.instagram}
               onChangeText={(instagram) => update({ instagram })}
               autoCapitalize="none"
-              placeholder="@seuperfil"
+              placeholder={t("app.editProfile.instagramPlaceholder")}
               maxLength={50}
             />
           </Field>
-          <Field label="Site" error={errors.website}>
+          <Field label={t("app.editProfile.website")} error={errors.website}>
             <Input
               value={values.website}
               onChangeText={(website) => update({ website })}
@@ -263,12 +269,12 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
           </Field>
         </Section>
 
-        <Section title="Comunidade">
+        <Section title={t("app.editProfile.community")}>
           <View className="flex-row flex-wrap gap-2">
             {(
               [
-                ['member', 'Sou membro da Igreja'],
-                ['friend', 'Sou amigo da comunidade'],
+                ['member', t('app.editProfile.member')],
+                ['friend', t('app.editProfile.friend')],
               ] as [MembershipType, string][]
             ).map(([value, label]) => (
               <Chip
@@ -283,7 +289,7 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
           </View>
           {values.membershipType === 'member' ? (
             <>
-              <Field label="Ala ou ramo" error={errors.ward}>
+              <Field label={t("app.editProfile.ward")} error={errors.ward}>
                 <Input
                   value={values.ward}
                   onChangeText={(ward) => update({ ward })}
@@ -291,8 +297,8 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
                 />
               </Field>
               <Field
-                label="Ano de batismo"
-                hint="Com ala e ano, seu perfil ganha o selo de membro."
+                label={t("app.editProfile.baptismYear")}
+                hint={t("app.editProfile.baptismHint")}
                 error={errors.baptismYear}>
                 <Input
                   value={values.baptismYear}
@@ -305,30 +311,28 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
               </Field>
               {/* LGPD art. 11: specific consent for religious data. */}
               <Text className="text-xs leading-5 text-muted-foreground">
-                Opcional. Ao informar a ala e o ano de batismo, você consente que eles apareçam no
-                seu perfil, conforme os{' '}
+                {t("app.editProfile.consentStart")}{' '}
                 <Text
                   className="text-xs font-semibold text-primary"
                   onPress={() => openSite('/termos#dados-de-filiacao-religiosa')}>
-                  Termos de uso
+                                    {t("app.editProfile.termsLink")}
                 </Text>
-                . Para retirar o consentimento, basta apagá-los.
+                {t("app.editProfile.consentEnd")}
               </Text>
             </>
           ) : null}
         </Section>
 
-        <Section title="Anunciar meus serviços">
+        <Section title={t("app.editProfile.advertiseSection")}>
           <Pressable
             onPress={() => update({ isProvider: !values.isProvider })}
             accessibilityRole="switch"
             aria-checked={values.isProvider}
             className="flex-row items-center gap-4">
             <View className="flex-1 gap-0.5">
-              <Text className="font-semibold">Quero anunciar</Text>
+              <Text className="font-semibold">{t("app.editProfile.advertise")}</Text>
               <Text className="text-sm text-muted-foreground">
-                Seu perfil aparece nas buscas e você recebe avisos de oportunidades do seu serviço e
-                estado.
+                {t("app.editProfile.advertiseText")}
               </Text>
             </View>
             <Switch
@@ -338,10 +342,10 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
           </Pressable>
           {values.isProvider ? (
             <>
-              <Field label="Serviço" error={errors.category}>
+              <Field label={t("app.editProfile.service")} error={errors.category}>
                 <View className="flex-row">
                   <Chip
-                    label={values.category || 'Escolher serviço'}
+                    label={values.category ? labels.category(values.category) : t("app.editProfile.chooseService")}
                     selected={Boolean(values.category)}
                     menu
                     onPress={() => setSheet('category')}
@@ -349,8 +353,8 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
                 </View>
               </Field>
               <Field
-                label="Profissão ou especialidade"
-                hint="Ex.: Eletricista, Diarista, Professor de inglês"
+                label={t("app.editProfile.profession")}
+                hint={t("app.editProfile.professionHint")}
                 error={errors.serviceType}>
                 <Input
                   value={values.serviceType}
@@ -358,21 +362,21 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
                   maxLength={100}
                 />
               </Field>
-              <Field label="Empresa (opcional)" error={errors.companyName}>
+              <Field label={t("app.editProfile.company")} error={errors.companyName}>
                 <Input
                   value={values.companyName}
                   onChangeText={(companyName) => update({ companyName })}
                   maxLength={100}
                 />
               </Field>
-              <Field label="Dias de atendimento">
+              <Field label={t("app.editProfile.days")}>
                 <View className="flex-row flex-wrap gap-2">
                   {AVAILABILITY_OPTIONS.map((day) => {
                     const selected = values.availability.includes(day);
                     return (
                       <Chip
                         key={day}
-                        label={day}
+                        label={labels.day(day)}
                         selected={selected}
                         onPress={() =>
                           update({
@@ -389,8 +393,8 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
                 </View>
               </Field>
               <Field
-                label="Horário"
-                hint="Ex.: 8h às 18h, Por agendamento"
+                label={t("app.editProfile.hours")}
+                hint={t("app.editProfile.hoursHint")}
                 error={errors.serviceHours}>
                 <Input
                   value={values.serviceHours}
@@ -402,7 +406,7 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
           ) : null}
         </Section>
 
-        <Section title={`Galeria (${values.gallery.length}/5)`}>
+        <Section title={t("app.editProfile.gallery", { count: values.gallery.length })}>
           {values.gallery.map((item, index) => (
             <View key={item.url} className="flex-row gap-3">
               <Image
@@ -420,14 +424,14 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
                       ),
                     })
                   }
-                  placeholder="Descrição (opcional)"
+                  placeholder={t("app.editProfile.photoDescription")}
                   maxLength={200}
                 />
               </View>
               <Pressable
                 onPress={() => update({ gallery: values.gallery.filter((_, i) => i !== index) })}
                 accessibilityRole="button"
-                accessibilityLabel="Remover foto"
+                accessibilityLabel={t("app.editProfile.removePhoto")}
                 className="size-12 items-center justify-center active:bg-accent">
                 <Trash2 size={18} className="text-destructive" />
               </Pressable>
@@ -439,7 +443,7 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
               disabled={uploading === 'gallery'}
               onPress={() => changeImage('gallery')}>
               <ImagePlus size={16} className="text-foreground" />
-              <Text>{uploading === 'gallery' ? 'Enviando…' : 'Adicionar foto'}</Text>
+              <Text>{uploading === 'gallery' ? t("app.editProfile.uploading") : t("app.editProfile.addPhoto")}</Text>
             </Button>
           ) : null}
         </Section>
@@ -447,25 +451,25 @@ function ProfileForm({ initial }: { initial: ProfileFormValues }) {
 
       <View className="border-t border-border bg-card p-4">
         <Button disabled={!dirty || save.isPending || uploading !== null} onPress={submit}>
-          <Text>{save.isPending ? 'Salvando…' : 'Salvar alterações'}</Text>
+          <Text>{save.isPending ? t("app.editProfile.saving") : t("app.editProfile.save")}</Text>
         </Button>
       </View>
 
       <OptionSheet
         visible={sheet === 'category'}
-        title="Serviço"
-        options={CATEGORY_OPTIONS}
+        title={t("app.editProfile.service")}
+        options={categoryOptions}
         value={values.category}
-        allLabel="Escolher depois"
+        allLabel={t("app.editProfile.chooseLater")}
         onSelect={(category) => update({ category: category as ProfileFormValues['category'] })}
         onClose={() => setSheet(null)}
       />
       <OptionSheet
         visible={sheet === 'state'}
-        title="Estado"
+        title={t("app.editProfile.state")}
         options={STATE_OPTIONS}
         value={location.state}
-        allLabel="Escolher depois"
+        allLabel={t("app.editProfile.chooseLater")}
         onSelect={(state) => setLocation((current) => ({ ...current, state }))}
         onClose={() => setSheet(null)}
       />
@@ -507,6 +511,7 @@ function Field({
 }
 
 function UploadBadge({ busy, label }: { busy: boolean; label: string }) {
+  const t = useT();
   return (
     <View
       className={cn(
@@ -514,7 +519,7 @@ function UploadBadge({ busy, label }: { busy: boolean; label: string }) {
         busy && 'bg-black/80'
       )}>
       <Camera size={14} className="text-white" />
-      <Text className="text-xs font-medium text-white">{busy ? 'Enviando…' : label}</Text>
+      <Text className="text-xs font-medium text-white">{busy ? t("app.editProfile.uploading") : label}</Text>
     </View>
   );
 }

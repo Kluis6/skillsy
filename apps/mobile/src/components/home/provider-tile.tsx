@@ -1,4 +1,4 @@
-import { nameInitial, providerRoleLabel } from '@skillsy/shared/format';
+import { nameInitial } from '@skillsy/shared/format';
 import type { UserProfile } from '@skillsy/shared/types';
 import { Image } from 'expo-image';
 import { ThumbsUp } from '@/lib/icons';
@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
 import { Text } from '@/components/ui/text';
+import { useFormat } from '@/lib/i18n';
 
 const WIDTH = 168;
 
@@ -22,6 +23,7 @@ export function ProviderTile({
   const [failed, setFailed] = useState(0);
   const image = sources[failed];
   const recommendations = provider.recommendationCount || 0;
+  const format = useFormat();
   return (
     <Pressable
       onPress={onPress}
@@ -50,7 +52,7 @@ export function ProviderTile({
           {provider.companyName || provider.name}
         </Text>
         <Text className="text-sm text-muted-foreground" numberOfLines={1}>
-          {providerRoleLabel(provider)}
+          {format.role(provider)}
         </Text>
         {recommendations > 0 ? (
           <View className="flex-row items-center gap-1">

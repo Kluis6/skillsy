@@ -6,6 +6,7 @@ import { Text } from '@/components/ui/text';
 import { useAppearance } from '@/lib/appearance';
 import { THEME } from '@/lib/theme';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n';
 
 // WhatsApp logo, the same glyph the site uses (Font Awesome "whatsapp",
 // CC BY 4.0, via react-icons' FaWhatsapp).
@@ -32,10 +33,12 @@ type WhatsAppButtonProps = {
 /** Green WhatsApp button, like the site's (bg-success, bold, WhatsApp logo). */
 export function WhatsAppButton({
   url,
-  label = 'Falar no WhatsApp',
+  label,
   size = 'default',
   className,
 }: WhatsAppButtonProps) {
+  const t = useT();
+  label ??= t("app.whatsapp.chat");
   // Same color as the label (white on light, dark green on dark).
   const iconColor = THEME[useAppearance().scheme].successForeground;
   return (

@@ -5,10 +5,12 @@ import { Pressable, View } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { useAuth } from '@/lib/auth';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n';
 
 // Browser preview of the Android bottom navigation (app-tabs.tsx).
 export default function AppTabs() {
   const { user } = useAuth();
+  const t = useT();
   return (
     <Tabs className="flex-1 bg-background">
       {/* flex: 1 keeps lists scrolling inside the screen, above the tab bar. */}
@@ -16,16 +18,16 @@ export default function AppTabs() {
       <TabList asChild>
         <View className="flex-row border-t border-border bg-card">
           <TabTrigger name="(inicio)" href="/" asChild>
-            <TabButton icon={House} label="Início" />
+            <TabButton icon={House} label={t("app.tabs.home")} />
           </TabTrigger>
           <TabTrigger name="(buscar)" href="/buscar" asChild>
-            <TabButton icon={Search} label="Buscar" />
+            <TabButton icon={Search} label={t("app.tabs.search")} />
           </TabTrigger>
           <TabTrigger name="(oportunidades)" href="/oportunidades" asChild>
-            <TabButton icon={BriefcaseBusiness} label="Oportunidades" />
+            <TabButton icon={BriefcaseBusiness} label={t("app.tabs.opportunities")} />
           </TabTrigger>
           <TabTrigger name="(perfil)" href="/perfil" asChild>
-            <TabButton icon={User} label={user ? 'Perfil' : 'Entrar'} />
+            <TabButton icon={User} label={user ? t("app.tabs.profile") : t("app.tabs.signIn")} />
           </TabTrigger>
         </View>
       </TabList>

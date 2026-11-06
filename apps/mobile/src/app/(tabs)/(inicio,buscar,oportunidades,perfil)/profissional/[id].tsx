@@ -1,11 +1,4 @@
 import { whatsappUrl } from '@skillsy/shared/contact';
-import {
-  formatRating,
-  formatRecommendationCount,
-  formatReviewCount,
-  providerRoleLabel,
-} from '@skillsy/shared/format';
-import { formatFirestoreDate } from '@skillsy/shared/opportunities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -45,13 +38,18 @@ import {
   toggleRecommendation,
 } from '@/lib/reviews';
 import { submitProfileReport } from '@/lib/reports';
-import { SITE_URL } from '@/lib/site';
+import { siteUrl } from '@/lib/site';
+import { useFormat, useLabels, useT, useValidationMessage } from '@/lib/i18n';
 
 export default function ProfissionalScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const showSnackbar = useSnackbar();
+  const t = useT();
+  const tv = useValidationMessage();
+  const labels = useLabels();
+  const format = useFormat();
   const [ratingOpen, setRatingOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
 
@@ -105,11 +103,11 @@ export default function ProfissionalScreen() {
           : current
       );
       queryClient.invalidateQueries({ queryKey: ['recommendations', id] });
-      showSnackbar(added ? 'Indicação registrada. Obrigado!' : 'Indicação removida.');
+      showSnackbar(added ? t("app.provider.recommended") : t("app.provider.unrecommended"));
     },
     onError: (error) =>
       showSnackbar(
-        error instanceof Error ? error.message : 'Não foi possível registrar a indicação.'
+        error instanceof Error ? tv(error.message) : t("app.provider.recommendError")
       ),
   });
   const connected = Boolean(me?.contacts?.includes(id));
@@ -127,9 +125,9 @@ export default function ProfissionalScreen() {
           : current
       );
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      showSnackbar(next ? 'Adicionado aos contatos.' : 'Removido dos contatos.');
+      showSnackbar(next ? t("app.provider.contactAdded") : t("app.provider.contactRemoved"));
     },
-    onError: () => showSnackbar('Não foi possível atualizar seus contatos.'),
+    onError: () => showSnackbar(t("app.provider.contactError")),
   });
   const rate = useMutation({
     mutationFn: ({ score, comment }: { score: number; comment: string }) =>
@@ -148,7 +146,7 @@ export default function ProfissionalScreen() {
         };
       });
       queryClient.invalidateQueries({ queryKey: ['ratings', id] });
-      showSnackbar('Avaliação enviada. Obrigado!');
+      showSnackbar(t("app.provider.rated"));
     },
   });
 
@@ -162,19 +160,19 @@ export default function ProfissionalScreen() {
       }),
     onSuccess: () => {
       setReportOpen(false);
-      showSnackbar('Denúncia enviada. A equipe da Skillsy vai analisar.');
+      showSnackbar(t("app.provider.reported"));
     },
   });
 
   if (isPending || !provider) {
     return (
       <View className="flex-1 bg-background">
-        <AppHeader title="Perfil" back />
+        <AppHeader title={t("app.provider.title")} back />
         {isPending ? (
           <ActivityIndicator className="mt-12" />
         ) : (
           <Text className="p-8 text-center text-muted-foreground">
-            Este perfil não está disponível.
+            {t("app.provider.unavailable")}
           </Text>
         )}
       </View>
@@ -192,7 +190,9 @@ export default function ProfissionalScreen() {
 
   // Signed-out members are sent to Perfil to sign in, like the FAB.
   const shareProfile = () =>
-    Share.share({ message: `${title} na Skillsy: ${SITE_URL}/profile/${provider.uid}` });
+    Share.share({
+      message: t("app.provider.shareMessage", { name: title, url: siteUrl(`/profile/${provider.uid}`) }),
+    });
 
   const requireUser = (action: () => void, message: string) => {
     if (user) return action();
@@ -223,24 +223,24 @@ export default function ProfissionalScreen() {
             {provider.companyName ? (
               <Text className="text-sm text-muted-foreground">{provider.name}</Text>
             ) : null}
-            <Text className="text-base text-muted-foreground">{providerRoleLabel(provider)}</Text>
+            <Text className="text-base text-muted-foreground">{format.role(provider)}</Text>
           </View>
 
           <View className="flex-row flex-wrap items-center gap-x-4 gap-y-2">
             {reviewCount > 0 ? (
               <View className="flex-row items-center gap-1">
                 <Star size={16} className="text-highlight" fill="currentColor" />
-                <Text className="font-semibold">{formatRating(provider.rating)}</Text>
-                <Text className="text-muted-foreground">({formatReviewCount(reviewCount)})</Text>
+                <Text className="font-semibold">{format.rating(provider.rating)}</Text>
+                <Text className="text-muted-foreground">({format.reviews(reviewCount)})</Text>
               </View>
             ) : (
-              <Text className="text-muted-foreground">Novo na comunidade</Text>
+              <Text className="text-muted-foreground">{t("app.provider.newMember")}</Text>
             )}
             {recommendationCount > 0 ? (
               <View className="flex-row items-center gap-1.5">
                 <ThumbsUp size={16} className="text-primary" />
                 <Text className="font-semibold text-primary">
-                  {formatRecommendationCount(recommendationCount)}
+                  {format.recommendations(recommendationCount)}
                 </Text>
               </View>
             ) : null}
@@ -256,7 +256,7 @@ export default function ProfissionalScreen() {
             <WhatsAppButton url={whatsapp} size="lg" />
           ) : (
             <Text className="text-sm text-muted-foreground">
-              Este profissional ainda não informou um WhatsApp.
+              {t("app.provider.noWhatsapp")}
             </Text>
           )}
 
@@ -264,70 +264,70 @@ export default function ProfissionalScreen() {
             {isOwn ? (
               <ActionButton
                 icon={Pencil}
-                label="Editar perfil"
+                label={t("app.provider.edit")}
                 onPress={() => router.push('/editar-perfil')}
               />
             ) : (
               <>
                 <ActionButton
                   icon={connected ? UserMinus : UserPlus}
-                  label={connected ? 'Desconectar' : 'Conectar'}
+                  label={connected ? t("app.provider.disconnect") : t("app.provider.connect")}
                   active={connected}
                   disabled={connect.isPending}
                   onPress={() =>
                     requireUser(
                       () => connect.mutate(!connected),
-                      'Entre na sua conta para salvar contatos.'
+                      t("app.provider.signInContacts")
                     )
                   }
                 />
                 <ActionButton
                   icon={ThumbsUp}
-                  label={recommended ? 'Indicado' : 'Indicar'}
+                  label={recommended ? t("app.provider.recommendedLabel") : t("app.provider.recommend")}
                   active={Boolean(recommended)}
                   disabled={recommend.isPending}
                   onPress={() =>
                     requireUser(
                       () => recommend.mutate(),
-                      'Entre na sua conta para indicar profissionais.'
+                      t("app.provider.signInRecommend")
                     )
                   }
                 />
                 <ActionButton
                   icon={Star}
-                  label={myRating ? 'Avaliado' : 'Avaliar'}
+                  label={myRating ? t("app.provider.ratedLabel") : t("app.provider.rate")}
                   active={Boolean(myRating)}
                   disabled={Boolean(myRating)}
                   onPress={() =>
                     requireUser(() => {
                       rate.reset();
                       setRatingOpen(true);
-                    }, 'Entre na sua conta para avaliar profissionais.')
+                    }, t("app.provider.signInRate"))
                   }
                 />
               </>
             )}
-            <ActionButton icon={Share2} label="Compartilhar" onPress={shareProfile} />
+            <ActionButton icon={Share2} label={t("app.provider.share")} onPress={shareProfile} />
           </View>
           {isOwn ? (
             <Text className="text-sm text-muted-foreground">
-              Este é o seu perfil. Indicações e avaliações vêm de outros membros.
+              {t("app.provider.ownProfile")}
             </Text>
           ) : null}
 
           {provider.bio ? (
-            <Section title="Sobre">
+            <Section title={t("app.provider.about")}>
               <Text className="leading-6 text-muted-foreground">{provider.bio}</Text>
             </Section>
           ) : null}
 
           {provider.serviceHours || provider.availability?.length || provider.experienceYears ? (
-            <Section title="Atendimento">
+            <Section title={t("app.provider.service")}>
               {provider.availability?.length ? (
                 <View className="flex-row flex-wrap gap-2">
                   {provider.availability.map((day) => (
                     <Badge key={day} variant="secondary">
-                      <Text>{day}</Text>
+                      <Text>{labels.day(day)}</Text>
                     </Badge>
                   ))}
                 </View>
@@ -340,15 +340,14 @@ export default function ProfissionalScreen() {
               ) : null}
               {provider.experienceYears ? (
                 <Text className="text-muted-foreground">
-                  {provider.experienceYears}{' '}
-                  {Number(provider.experienceYears) === 1 ? 'ano' : 'anos'} de experiência
+                  {t('app.provider.experience', { count: Number(provider.experienceYears) })}
                 </Text>
               ) : null}
             </Section>
           ) : null}
 
           {gallery.length ? (
-            <Section title="Galeria">
+            <Section title={t("app.provider.gallery")}>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -371,16 +370,16 @@ export default function ProfissionalScreen() {
             </Section>
           ) : null}
 
-          <Section title="Avaliações">
+          <Section title={t("app.provider.reviews")}>
             {reviewCount > 0 ? (
               <View className="flex-row items-center gap-3">
                 <Text className="font-heading text-4xl font-bold">
-                  {formatRating(provider.rating)}
+                  {format.rating(provider.rating)}
                 </Text>
                 <View className="gap-1">
                   <Stars value={Math.round(provider.rating || 0)} />
                   <Text className="text-sm text-muted-foreground">
-                    {formatReviewCount(reviewCount)}
+                    {format.reviews(reviewCount)}
                   </Text>
                 </View>
               </View>
@@ -393,7 +392,7 @@ export default function ProfissionalScreen() {
                       {rating.authorName}
                     </Text>
                     <Text className="text-xs text-muted-foreground">
-                      {formatFirestoreDate(rating.createdAt)}
+                      {format.date(rating.createdAt)}
                     </Text>
                   </View>
                   <Stars value={rating.score} size={14} />
@@ -406,13 +405,13 @@ export default function ProfissionalScreen() {
               ))
             ) : (
               <Text className="text-sm text-muted-foreground">
-                Ainda sem avaliações. Contratou este profissional? Conte como foi.
+                {t("app.provider.noReviews")}
               </Text>
             )}
           </Section>
 
           {recommendations?.length ? (
-            <Section title="Indicado por">
+            <Section title={t("app.provider.recommendedBy")}>
               {recommendations.map((item) => (
                 <View key={item.recommenderId} className="flex-row items-center gap-3">
                   <ProfileAvatar
@@ -421,7 +420,7 @@ export default function ProfissionalScreen() {
                     className="size-8"
                     iconSize={16}
                   />
-                  <Text className="flex-1">{item.recommenderName || 'Membro Skillsy'}</Text>
+                  <Text className="flex-1">{item.recommenderName || t("app.provider.skillsyMember")}</Text>
                 </View>
               ))}
             </Section>
@@ -434,12 +433,12 @@ export default function ProfissionalScreen() {
               requireUser(() => {
                 report.reset();
                 setReportOpen(true);
-              }, 'Entre na sua conta para denunciar um perfil.')
+              }, t("app.provider.signInReport"))
             }
             accessibilityRole="button"
             className="mx-4 mt-6 min-h-12 flex-row items-center justify-center gap-2 active:bg-accent">
             <Flag size={16} className="text-destructive" />
-            <Text className="text-sm font-medium text-destructive">Denunciar perfil</Text>
+            <Text className="text-sm font-medium text-destructive">{t("app.provider.report")}</Text>
           </Pressable>
         )}
 
@@ -447,7 +446,7 @@ export default function ProfissionalScreen() {
           visible={reportOpen}
           name={provider.name.split(' ')[0]}
           submitting={report.isPending}
-          error={report.error instanceof Error ? report.error.message : undefined}
+          error={report.error instanceof Error ? tv(report.error.message) : undefined}
           onSubmit={(reason, details) => report.mutate({ reason, details })}
           onClose={() => setReportOpen(false)}
         />
@@ -455,7 +454,7 @@ export default function ProfissionalScreen() {
           visible={ratingOpen}
           providerName={provider.name.split(' ')[0]}
           submitting={rate.isPending}
-          error={rate.error instanceof Error ? rate.error.message : undefined}
+          error={rate.error instanceof Error ? tv(rate.error.message) : undefined}
           onSubmit={(score, comment) => rate.mutate({ score, comment })}
           onClose={() => setRatingOpen(false)}
         />

@@ -283,10 +283,13 @@ Ordem: (1) layout, navbar, rodapé, Início · (2) Busca, perfil público, cards
 
 ### E7 — App (2–3 dias)
 
-- [ ] `expo-localization`; `LocaleProvider` com AsyncStorage + `preferredLanguage`; seletor em Perfil (junto de Aparência)
-- [ ] `useT()` com os JSON do `packages/shared` (Metro já resolve `packages/shared`)
-- [ ] Extrair ~400 textos de `apps/mobile/src`, rótulos das abas (`app-tabs.tsx`, `app-tabs.web.tsx`), `accessibilityLabel`s
-- [ ] `openSite` e compartilhamentos com prefixo do idioma; `auth.languageCode`
+- [x] `LocaleProvider` (`apps/mobile/src/lib/i18n.tsx`): escolha salva no aparelho (AsyncStorage), depois `preferredLanguage` da conta, depois o idioma do celular (`Intl`, sem `expo-localization`), dentro de `EXPO_PUBLIC_ENABLED_LOCALES` (padrão `pt`, então nada muda até o lançamento). Seletor de idioma em Perfil, junto de Aparência (some com um idioma só)
+- [x] `useT()`, `useLabels()`, `useValidationMessage()` e `useFormat()` (datas, notas, contadores com plural, função do profissional) com os mesmos dicionários do site. Textos do app na área `app.<tela>` (cerca de 400 mensagens); o que já existia no site é reaproveitado (urgência, status e categorias de publicação, acompanhamento de 20 dias)
+- [x] Todas as telas, abas e componentes, `accessibilityLabel`s e avisos. Erros das bibliotecas e dos esquemas compartilhados passam por `useValidationMessage()`
+- [x] Oportunidades e publicações criadas no app gravam o idioma do app; listas de artigos e da Início seguem a origem (`byOrigin`); selo de idioma (`LanguageBadge`) em cartões e no artigo
+- [x] `openSite` e compartilhamentos com o prefixo do idioma (`siteUrl`); `auth.languageCode` no e-mail de nova senha
+- [x] Conferido: português idêntico ao do commit base (cada texto do `app` existe no código antigo, exceto três plurais que eram montados em pedaços); en/es no navegador (`localhost:8081`) sem chaves cruas em Início, Buscar, Oportunidades, Perfil, Artigos e perfil do profissional
+- [ ] Emulador Android com a fonte do sistema maior (no próximo APK, quando o responsável pedir)
 
 **Pronto quando:** app inteiro em en/es no navegador (`localhost:8081`) e no emulador Android, com a fonte do sistema maior.
 

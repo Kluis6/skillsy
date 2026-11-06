@@ -6,6 +6,7 @@ import { Sheet } from '@/components/sheet';
 import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n';
 
 export type SheetOption = { value: string; label: string };
 
@@ -35,6 +36,7 @@ export function OptionSheet({
   onClose,
 }: OptionSheetProps) {
   const [query, setQuery] = useState('');
+  const t = useT();
   const rows = useMemo(() => {
     const term = normalize(query.trim());
     const matches = term ? options.filter((o) => normalize(o.label).includes(term)) : options;
@@ -58,10 +60,10 @@ export function OptionSheet({
             <Input
               value={query}
               onChangeText={setQuery}
-              placeholder="Buscar"
+              placeholder={t("app.optionSheet.search")}
               className="h-12 pl-10"
               autoCorrect={false}
-              accessibilityLabel={`Buscar em ${title}`}
+              accessibilityLabel={t("app.optionSheet.searchIn", { title })}
             />
             <Search size={18} className="absolute left-3 text-muted-foreground" />
           </View>
@@ -90,7 +92,7 @@ export function OptionSheet({
           );
         }}
         ListEmptyComponent={
-          <Text className="px-4 py-6 text-center text-muted-foreground">Nada encontrado.</Text>
+          <Text className="px-4 py-6 text-center text-muted-foreground">{t("app.optionSheet.empty")}</Text>
         }
       />
     </Sheet>

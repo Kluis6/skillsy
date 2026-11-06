@@ -1,7 +1,6 @@
 import {
   OPPORTUNITY_FIELDS,
   OPPORTUNITY_URGENCIES,
-  OPPORTUNITY_URGENCY,
   type OpportunityFormInput,
 } from '@skillsy/shared/opportunities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -22,12 +21,27 @@ import { Text } from '@/components/ui/text';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/lib/auth';
 import { categoryIcon, POPULAR_CATEGORIES } from '@/lib/category-icons';
-import { CATEGORY_OPTIONS, STATE_OPTIONS } from '@/lib/filters';
+import { STATE_OPTIONS, useCategoryOptions } from '@/lib/filters';
+import type { MessageKey } from '@skillsy/shared/i18n/keys';
 import { createOpportunity } from '@/lib/opportunities';
 import { getOwnProfile } from '@/lib/providers';
 import { cn } from '@/lib/utils';
+import { useLabels, useLocale, useT, useValidationMessage } from '@/lib/i18n';
 
-const STEPS = ['Serviço', 'O que precisa', 'Onde', 'Urgência', 'Revisar'] as const;
+const STEPS = [
+  'app.newOpportunity.stepService',
+  'app.newOpportunity.stepWhat',
+  'app.newOpportunity.stepWhere',
+  'app.newOpportunity.stepUrgency',
+  'app.newOpportunity.stepReview',
+] as const satisfies readonly MessageKey[];
+
+/** Urgency labels and help, shared with the site's dictionary. */
+const URGENCY_TEXT = {
+  normal: { label: 'opportunities.urgencyNormal', help: 'opportunities.urgencyNormalHelp' },
+  soon: { label: 'opportunities.urgencySoon', help: 'opportunities.urgencySoonHelp' },
+  urgent: { label: 'opportunities.urgencyUrgent', help: 'opportunities.urgencyUrgentHelp' },
+} as const satisfies Record<string, { label: MessageKey; help: MessageKey }>;
 
 const fits = (value: string, field: keyof typeof OPPORTUNITY_FIELDS) => {
   const { min, max } = OPPORTUNITY_FIELDS[field];
@@ -39,6 +53,11 @@ const fits = (value: string, field: keyof typeof OPPORTUNITY_FIELDS) => {
  * request flow), with the same limits the site and firestore.rules check. */
 export default function NovaOportunidadeScreen() {
   const { user } = useAuth();
+  const t = useT();
+  const tv = useValidationMessage();
+  const labels = useLabels();
+  const { locale } = useLocale();
+  const categoryOptions = useCategoryOptions();
   const queryClient = useQueryClient();
   const showSnackbar = useSnackbar();
   const [step, setStep] = useState(0);
@@ -51,6 +70,8 @@ export default function NovaOportunidadeScreen() {
     description: '',
     neighborhood: '',
     urgency: 'normal',
+    // Written in the app's language (notifications and lists use it).
+    language: locale,
   });
   const update = (patch: Partial<Draft>) => setDraft((current) => ({ ...current, ...patch }));
 
@@ -77,9 +98,7 @@ export default function NovaOportunidadeScreen() {
       queryClient.invalidateQueries({ queryKey: ['my-opportunities'] });
       if (router.canGoBack()) router.back();
       else router.replace('/oportunidades');
-      showSnackbar(
-        'Oportunidade publicada. Profissionais do mesmo serviço e estado serão avisados.'
-      );
+            showSnackbar(t("app.newOpportunity.published"));
     },
   });
 
@@ -95,10 +114,10 @@ export default function NovaOportunidadeScreen() {
 
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
-      <AppHeader title="Nova oportunidade" back />
+      <AppHeader title={t("app.newOpportunity.title")} back />
       <View className="gap-2 bg-card px-4 pb-3 pt-3">
         <Text className="text-sm text-muted-foreground">
-          Passo {step + 1} de {STEPS.length} · {STEPS[step]}
+          {t("app.newOpportunity.stepOf", { step: step + 1, total: STEPS.length, name: t(STEPS[step]) })}
         </Text>
         <View className="h-1 bg-muted" accessibilityRole="progressbar">
           <View
@@ -112,12 +131,12 @@ export default function NovaOportunidadeScreen() {
         <ScrollView contentContainerClassName="gap-5 p-4" keyboardShouldPersistTaps="handled">
           {step === 0 ? (
             <>
-              <Heading title="Que serviço você precisa?" />
+              <Heading title={t("app.newOpportunity.whichService")} />
               <View className="flex-row flex-wrap">
                 {POPULAR_CATEGORIES.map((category) => (
                   <ServiceOption
                     key={category}
-                    label={category}
+                    label={labels.category(category)}
                     icon={categoryIcon(category)}
                     selected={form.category === category}
                     onPress={() => update({ category })}
@@ -126,8 +145,8 @@ export default function NovaOportunidadeScreen() {
                 <ServiceOption
                   label={
                     form.category && !POPULAR_CATEGORIES.includes(form.category as never)
-                      ? form.category
-                      : 'Outros serviços'
+                                            ? labels.category(form.category)
+                      : t("app.newOpportunity.otherServices")
                   }
                   icon={LayoutGrid}
                   selected={
@@ -142,28 +161,28 @@ export default function NovaOportunidadeScreen() {
           {step === 1 ? (
             <>
               <Heading
-                title="Conte o que você precisa"
-                description="Quanto mais detalhes, mais fácil para o profissional entender e responder."
+                title={t("app.newOpportunity.tellUs")}
+                description={t("app.newOpportunity.tellUsText")}
               />
-              <Field label="Título" hint={`${form.title.trim().length}/120`}>
+              <Field label={t("app.newOpportunity.titleLabel")} hint={`${form.title.trim().length}/120`}>
                 <Input
                   value={form.title}
                   onChangeText={(title) => update({ title })}
-                  placeholder="Ex.: Instalar dois ventiladores de teto"
+                  placeholder={t("app.newOpportunity.titlePlaceholder")}
                   maxLength={120}
                 />
               </Field>
               <Field
-                label="Descrição"
+                label={t("app.newOpportunity.description")}
                 hint={
                   form.description.trim().length < 20
-                    ? `Mínimo de 20 caracteres (${form.description.trim().length}/20)`
+                    ? t("app.newOpportunity.descriptionMin", { count: form.description.trim().length })
                     : `${form.description.trim().length}/2000`
                 }>
                 <Textarea
                   value={form.description}
                   onChangeText={(description) => update({ description })}
-                  placeholder="O que precisa ser feito, detalhes importantes e quando você gostaria de fazer."
+                  placeholder={t("app.newOpportunity.descriptionPlaceholder")}
                   maxLength={2000}
                   textAlignVertical="top"
                 />
@@ -174,27 +193,27 @@ export default function NovaOportunidadeScreen() {
           {step === 2 ? (
             <>
               <Heading
-                title="Onde vai ser o serviço?"
-                description="Os profissionais do mesmo estado são avisados."
+                title={t("app.newOpportunity.where")}
+                description={t("app.newOpportunity.whereText")}
               />
-              <Field label="Estado">
+              <Field label={t("app.newOpportunity.state")}>
                 <View className="flex-row">
                   <Chip
-                    label={stateLabel || 'Escolher estado'}
+                    label={stateLabel || t("app.newOpportunity.chooseState")}
                     selected={Boolean(form.state)}
                     menu
                     onPress={() => setSheet('state')}
                   />
                 </View>
               </Field>
-              <Field label="Cidade">
+              <Field label={t("app.newOpportunity.city")}>
                 <Input
                   value={form.city}
                   onChangeText={(city) => update({ city })}
                   maxLength={100}
                 />
               </Field>
-              <Field label="Bairro">
+              <Field label={t("app.newOpportunity.neighborhood")}>
                 <Input
                   value={form.neighborhood}
                   onChangeText={(neighborhood) => update({ neighborhood })}
@@ -206,7 +225,7 @@ export default function NovaOportunidadeScreen() {
 
           {step === 3 ? (
             <>
-              <Heading title="Qual a urgência?" />
+              <Heading title={t("app.newOpportunity.urgencyQuestion")} />
               {OPPORTUNITY_URGENCIES.map((urgency) => {
                 const selected = form.urgency === urgency;
                 return (
@@ -230,10 +249,10 @@ export default function NovaOportunidadeScreen() {
                     </View>
                     <View className="flex-1 gap-1">
                       <Text className={cn('font-semibold', selected && 'text-primary')}>
-                        {OPPORTUNITY_URGENCY[urgency].label}
+                        {t(URGENCY_TEXT[urgency].label)}
                       </Text>
                       <Text className="text-sm text-muted-foreground">
-                        {OPPORTUNITY_URGENCY[urgency].help}
+                        {t(URGENCY_TEXT[urgency].help)}
                       </Text>
                     </View>
                   </Pressable>
@@ -244,38 +263,36 @@ export default function NovaOportunidadeScreen() {
 
           {step === 4 ? (
             <>
-              <Heading title="Revise antes de publicar" />
+              <Heading title={t("app.newOpportunity.review")} />
               <View className="gap-3 border border-border-subtle bg-card p-4">
-                <Summary label="Serviço" value={form.category} onEdit={() => setStep(0)} />
-                <Summary label="Título" value={form.title} onEdit={() => setStep(1)} />
-                <Summary label="Descrição" value={form.description} onEdit={() => setStep(1)} />
+                <Summary label={t("app.newOpportunity.stepService")} value={labels.category(form.category)} onEdit={() => setStep(0)} />
+                <Summary label={t("app.newOpportunity.titleLabel")} value={form.title} onEdit={() => setStep(1)} />
+                <Summary label={t("app.newOpportunity.description")} value={form.description} onEdit={() => setStep(1)} />
                 <Summary
-                  label="Onde"
+                  label={t("app.newOpportunity.stepWhere")}
                   value={`${form.neighborhood}, ${form.city} · ${form.state}`}
                   onEdit={() => setStep(2)}
                 />
                 <Summary
-                  label="Urgência"
-                  value={OPPORTUNITY_URGENCY[form.urgency].label}
+                  label={t("app.newOpportunity.stepUrgency")}
+                  value={t(URGENCY_TEXT[form.urgency].label)}
                   onEdit={() => setStep(3)}
                 />
               </View>
               {me?.whatsapp ? (
                 <Text className="text-sm leading-5 text-muted-foreground">
-                  Seu WhatsApp aparece só como contato desta oportunidade. Ela fica ativa por 30
-                  dias e você pode encerrar antes. Não substitui canais de emergência.
+                  {t("app.newOpportunity.whatsappNotice")}
                 </Text>
               ) : (
                 <Text className="text-sm leading-5 text-destructive">
-                  Cadastre um WhatsApp em Perfil → Editar perfil para os profissionais poderem
-                  responder. Sem ele, não é possível publicar.
+                  {t("app.newOpportunity.whatsappMissing")}
                 </Text>
               )}
               {publish.error ? (
                 <Text className="text-sm text-destructive">
                   {publish.error instanceof Error
-                    ? publish.error.message
-                    : 'Não foi possível publicar. Tente de novo.'}
+                    ? tv(publish.error.message)
+                    : t("app.newOpportunity.publishError")}
                 </Text>
               ) : null}
             </>
@@ -285,33 +302,33 @@ export default function NovaOportunidadeScreen() {
         <View className="flex-row gap-3 border-t border-border-subtle bg-card p-4">
           {step > 0 ? (
             <Button variant="outline" className="flex-1" onPress={() => setStep(step - 1)}>
-              <Text>Voltar</Text>
+              <Text>{t("app.newOpportunity.back")}</Text>
             </Button>
           ) : null}
           <Button
             className="flex-1"
             disabled={!stepValid || publish.isPending}
             onPress={() => (last ? publish.mutate() : setStep(step + 1))}>
-            <Text>{last ? (publish.isPending ? 'Publicando…' : 'Publicar') : 'Continuar'}</Text>
+            <Text>{last ? (publish.isPending ? t("app.newOpportunity.publishing") : t("app.newOpportunity.publish")) : t("app.newOpportunity.continue")}</Text>
           </Button>
         </View>
       </KeyboardAvoidingView>
 
       <OptionSheet
         visible={sheet === 'category'}
-        title="Serviço"
-        options={CATEGORY_OPTIONS}
+        title={t("app.newOpportunity.stepService")}
+        options={categoryOptions}
         value={form.category}
-        allLabel="Escolher depois"
+        allLabel={t("app.newOpportunity.chooseLater")}
         onSelect={(category) => update({ category })}
         onClose={() => setSheet(null)}
       />
       <OptionSheet
         visible={sheet === 'state'}
-        title="Estado"
+        title={t("app.newOpportunity.state")}
         options={STATE_OPTIONS}
         value={form.state}
-        allLabel="Escolher depois"
+        allLabel={t("app.newOpportunity.chooseLater")}
         onSelect={(state) => update({ state })}
         onClose={() => setSheet(null)}
       />
@@ -347,14 +364,15 @@ function Field({
 }
 
 function Summary({ label, value, onEdit }: { label: string; value: string; onEdit: () => void }) {
+  const t = useT();
   return (
     <View className="flex-row items-start justify-between gap-3">
       <View className="flex-1 gap-0.5">
         <Text className="text-xs font-semibold text-muted-foreground">{label}</Text>
         <Text>{value}</Text>
       </View>
-      <Button variant="ghost" size="sm" onPress={onEdit} accessibilityLabel={`Editar ${label}`}>
-        <Text className="text-primary">Editar</Text>
+      <Button variant="ghost" size="sm" onPress={onEdit} accessibilityLabel={t("app.newOpportunity.editAria", { label })}>
+        <Text className="text-primary">{t("app.newOpportunity.edit")}</Text>
       </Button>
     </View>
   );

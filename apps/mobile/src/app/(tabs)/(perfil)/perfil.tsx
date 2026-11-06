@@ -1,5 +1,4 @@
 import { sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from '@firebase/auth';
-import { providerRoleLabel } from '@skillsy/shared/format';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FirebaseError } from 'firebase/app';
 import { router } from 'expo-router';
@@ -22,6 +21,9 @@ import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, View } 
 import { ProfileAvatar } from '@/components/profile-avatar';
 import { AppHeader } from '@/components/app-header';
 import { AppearancePicker } from '@/components/appearance-picker';
+import { LanguagePicker } from '@/components/language-picker';
+import { HTML_LANG } from '@skillsy/shared/i18n/locales';
+import type { TranslateFn } from '@skillsy/shared/i18n/keys';
 import { GoogleButton } from '@/components/google-button';
 import { useSnackbar } from '@/components/snackbar';
 import { Button } from '@/components/ui/button';
@@ -37,29 +39,31 @@ import { getOwnProfile } from '@/lib/providers';
 import { openSite } from '@/lib/site';
 import { MINIMUM_AGE } from '@skillsy/shared/terms';
 import { cn } from '@/lib/utils';
+import { useFormat, useLocale, useT } from '@/lib/i18n';
 
-function signInErrorMessage(error: unknown) {
+function signInErrorMessage(error: unknown, t: TranslateFn) {
   const code = error instanceof FirebaseError ? error.code : '';
   if (
     code === 'auth/invalid-credential' ||
     code === 'auth/wrong-password' ||
     code === 'auth/user-not-found'
   ) {
-    return 'E-mail ou senha incorretos.';
+    return t("app.profile.wrongCredentials");
   }
-  if (code === 'auth/invalid-email') return 'Confira o e-mail digitado.';
+  if (code === 'auth/invalid-email') return t("app.profile.checkEmail");
   if (code === 'auth/too-many-requests')
-    return 'Muitas tentativas. Aguarde um pouco e tente de novo.';
-  if (code === 'auth/network-request-failed') return 'Sem conexão. Confira sua internet.';
-  return 'Não foi possível entrar. Tente de novo.';
+    return t("app.profile.tooMany");
+  if (code === 'auth/network-request-failed') return t("app.profile.offline");
+  return t("app.profile.signInError");
 }
 
 export default function PerfilScreen() {
   const { user, loading } = useAuth();
+  const t = useT();
 
   return (
     <View className="flex-1 bg-background">
-      <AppHeader title={user ? 'Perfil' : 'Entrar'} />
+      <AppHeader title={user ? t("app.profile.title") : t("app.profile.signInTitle")} />
       <KeyboardAvoidingView className="flex-1" behavior="padding">
         <ScrollView contentContainerClassName="gap-card p-4" keyboardShouldPersistTaps="handled">
           {loading ? (
@@ -74,6 +78,7 @@ export default function PerfilScreen() {
             <SignInForm />
           )}
           {loading ? null : <AppearancePicker />}
+          {loading ? null : <LanguagePicker />}
           {loading ? null : <LegalLinks />}
         </ScrollView>
       </KeyboardAvoidingView>
@@ -91,8 +96,10 @@ function Account({
   fallbackName: string;
 }) {
   const queryClient = useQueryClient();
+  const t = useT();
+  const format = useFormat();
   const { data: me } = useQuery({ queryKey: ['me', uid], queryFn: () => getOwnProfile(uid) });
-  const name = me?.name || fallbackName || 'Sua conta';
+  const name = me?.name || fallbackName || t("app.profile.yourAccount");
 
   const signOutAndClear = async () => {
     // This phone stops getting the account's notifications.
@@ -120,7 +127,7 @@ function Account({
           </Text>
           {me?.isProvider ? (
             <Text className="text-sm text-primary" numberOfLines={1}>
-              {providerRoleLabel(me)}
+              {format.role(me)}
             </Text>
           ) : null}
         </View>
@@ -130,37 +137,37 @@ function Account({
         {me?.isProvider ? (
           <ListRow
             icon={User}
-            label="Ver meu perfil público"
+            label={t("app.profile.viewPublic")}
             onPress={() => router.push({ pathname: '/profissional/[id]', params: { id: uid } })}
           />
         ) : null}
-        <ListRow icon={BookUser} label="Meus contatos" onPress={() => router.push('/contatos')} />
+        <ListRow icon={BookUser} label={t("app.profile.contacts")} onPress={() => router.push('/contatos')} />
         <ListRow
           icon={BriefcaseBusiness}
-          label="Minhas oportunidades"
+          label={t("app.profile.opportunities")}
           onPress={() => router.navigate('/oportunidades')}
         />
         <ListRow
           icon={Newspaper}
-          label="Meus artigos e vagas"
-          description="Escrever, publicar e acompanhar"
+          label={t("app.profile.posts")}
+          description={t("app.profile.postsText")}
           onPress={() => router.push('/meus-artigos')}
         />
         {me?.role === 'admin' ? (
           <ListRow
             icon={ShieldCheck}
-            label="Moderar artigos"
-            description="Publicar, rejeitar e destacar"
+            label={t("app.profile.moderate")}
+            description={t("app.profile.moderateText")}
             onPress={() => router.push('/moderar-artigos')}
           />
         ) : null}
         <ListRow
           icon={Pencil}
-          label="Editar perfil"
-          description="Foto, serviço, WhatsApp e galeria"
+          label={t("app.profile.edit")}
+          description={t("app.profile.editText")}
           onPress={() => router.push('/editar-perfil')}
         />
-        <ListRow icon={LogOut} label="Sair" destructive last onPress={signOutAndClear} />
+        <ListRow icon={LogOut} label={t("app.profile.signOut")} destructive last onPress={signOutAndClear} />
       </View>
     </>
   );
@@ -168,12 +175,13 @@ function Account({
 
 /** Terms and privacy, on the site (signed in or not). */
 function LegalLinks() {
+  const t = useT();
   return (
     <View className="border border-border-subtle bg-card">
-      <ListRow icon={FileText} label="Termos de uso" external onPress={() => openSite('/termos')} />
+      <ListRow icon={FileText} label={t("app.profile.terms")} external onPress={() => openSite('/termos')} />
       <ListRow
         icon={ShieldCheck}
-        label="Política de privacidade"
+        label={t("app.profile.privacy")}
         external
         last
         onPress={() => openSite('/privacidade')}
@@ -223,6 +231,8 @@ function ListRow({
 
 function SignInForm() {
   const showSnackbar = useSnackbar();
+  const t = useT();
+  const { locale } = useLocale();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -234,7 +244,7 @@ function SignInForm() {
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
     } catch (err) {
-      setError(signInErrorMessage(err));
+      setError(signInErrorMessage(err, t));
     } finally {
       setSubmitting(false);
     }
@@ -246,7 +256,7 @@ function SignInForm() {
     try {
       await signInWithGoogle();
     } catch {
-      setError('Não foi possível entrar com o Google. Tente de novo.');
+      setError(t("app.profile.googleError"));
     } finally {
       setSubmitting(false);
     }
@@ -254,51 +264,51 @@ function SignInForm() {
 
   const resetPassword = async () => {
     if (!email.trim()) {
-      setError('Digite seu e-mail para receber o link de nova senha.');
+      setError(t("app.profile.resetNeedsEmail"));
       return;
     }
     setError('');
     try {
+      // The e-mail goes out in the app's language.
+      auth.languageCode = HTML_LANG[locale];
       await sendPasswordResetEmail(auth, email.trim());
     } catch {
       // Same message either way, so the form does not reveal which e-mails exist.
     }
-    showSnackbar(
-      'Se houver uma conta com esse e-mail, enviamos um link para criar uma nova senha.'
-    );
+        showSnackbar(t("app.profile.resetSent"));
   };
 
   return (
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading text-xl">Acesse sua conta</CardTitle>
-          <CardDescription>Use a mesma conta do site.</CardDescription>
+          <CardTitle className="font-heading text-xl">{t("app.profile.accessTitle")}</CardTitle>
+          <CardDescription>{t("app.profile.accessText")}</CardDescription>
         </CardHeader>
         <CardContent className="gap-4">
           <GoogleButton onPress={google} disabled={submitting} />
           <Text className="text-xs leading-5 text-muted-foreground">
-            Ao continuar, você declara ter {MINIMUM_AGE} anos ou mais e concorda com os{' '}
+            {t("app.profile.consentStart", { age: MINIMUM_AGE })}{' '}
             <Text
               className="text-xs font-semibold text-primary"
               onPress={() => openSite('/termos')}>
-              Termos de uso
+                            {t("app.profile.terms")}
             </Text>{' '}
-            e a{' '}
+            {t("app.profile.and")}{' '}
             <Text
               className="text-xs font-semibold text-primary"
               onPress={() => openSite('/privacidade')}>
-              Política de privacidade
+                            {t("app.profile.privacy")}
             </Text>
             .
           </Text>
           <View className="flex-row items-center gap-3">
             <View className="h-px flex-1 bg-border" />
-            <Text className="text-sm text-muted-foreground">ou</Text>
+            <Text className="text-sm text-muted-foreground">{t("app.profile.or")}</Text>
             <View className="h-px flex-1 bg-border" />
           </View>
           <View className="gap-1.5">
-            <Label nativeID="email">E-mail</Label>
+            <Label nativeID="email">{t("app.profile.email")}</Label>
             <Input
               aria-labelledby="email"
               value={email}
@@ -311,7 +321,7 @@ function SignInForm() {
             />
           </View>
           <View className="gap-1.5">
-            <Label nativeID="password">Senha</Label>
+            <Label nativeID="password">{t("app.profile.password")}</Label>
             <Input
               aria-labelledby="password"
               value={password}
@@ -325,27 +335,27 @@ function SignInForm() {
           </View>
           {error ? <Text className="text-sm text-destructive">{error}</Text> : null}
           <Button onPress={submit} disabled={submitting || !email || !password}>
-            <Text>{submitting ? 'Entrando…' : 'Entrar'}</Text>
+            <Text>{submitting ? t("app.profile.signingIn") : t("app.profile.signInTitle")}</Text>
           </Button>
           <Button variant="ghost" onPress={resetPassword}>
-            <Text className="text-primary">Esqueci minha senha</Text>
+            <Text className="text-primary">{t("app.profile.forgot")}</Text>
           </Button>
           {usingEmulators ? (
             <Text className="text-xs text-muted-foreground">
-              Ambiente local: use o e-mail de uma conta real com a senha skillsy123.
+              {t("app.profile.emulatorHint")}
             </Text>
           ) : null}
         </CardContent>
       </Card>
 
       <View className="gap-3 border border-border-subtle bg-card p-4">
-        <Text className="font-semibold">Ainda não tem conta?</Text>
+        <Text className="font-semibold">{t("app.profile.noAccount")}</Text>
         <Text className="text-sm text-muted-foreground">
-          Use Continuar com Google para criar sua conta na hora, ou crie com e-mail e senha no site.
+          {t("app.profile.noAccountText")}
         </Text>
         <Button variant="outline" onPress={() => openSite('/signin')}>
           <ExternalLink size={16} className="text-foreground" />
-          <Text>Criar conta com e-mail no site</Text>
+          <Text>{t("app.profile.createOnSite")}</Text>
         </Button>
       </View>
     </>

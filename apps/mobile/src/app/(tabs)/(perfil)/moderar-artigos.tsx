@@ -1,4 +1,4 @@
-import { formatFirestoreDate } from '@skillsy/shared/opportunities';
+import type { MessageKey } from '@skillsy/shared/i18n/keys';
 import type { Post, PostStatus } from '@skillsy/shared/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
@@ -21,14 +21,15 @@ import { useAuth } from '@/lib/auth';
 import { Newspaper, ShieldAlert, Star } from '@/lib/icons';
 import { getAllPostsForAdmin, reviewPost } from '@/lib/my-posts';
 import { getOwnProfile } from '@/lib/providers';
+import { useFormat, useT } from '@/lib/i18n';
 
 type Filter = 'all' | PostStatus;
-const FILTERS: { value: Filter; label: string }[] = [
-  { value: 'all', label: 'Todos' },
-  { value: 'published', label: 'Publicados' },
-  { value: 'pending_review', label: 'Em revisão' },
-  { value: 'draft', label: 'Rascunhos' },
-  { value: 'rejected', label: 'Rejeitados' },
+const FILTERS: { value: Filter; label: MessageKey }[] = [
+  { value: 'all', label: 'posts.filterAll' },
+  { value: 'published', label: 'app.moderate.published' },
+  { value: 'pending_review', label: 'posts.statusPendingReview' },
+  { value: 'draft', label: 'app.moderate.drafts' },
+  { value: 'rejected', label: 'app.moderate.rejected' },
 ];
 
 /** Admin moderation of articles/jobs, like Painel → Artigos on the site:
@@ -37,6 +38,8 @@ export default function ModerarArtigosScreen() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const showSnackbar = useSnackbar();
+  const t = useT();
+  const format = useFormat();
   const [filter, setFilter] = useState<Filter>('all');
   const [rejecting, setRejecting] = useState<Post | null>(null);
   const [reason, setReason] = useState('');
@@ -67,13 +70,13 @@ export default function ModerarArtigosScreen() {
       setReason('');
       showSnackbar(
         input.status === 'rejected'
-          ? 'Publicação rejeitada.'
+          ? t("app.moderate.rejectedDone")
           : input.isFeatured
-            ? 'Publicação em destaque.'
-            : 'Publicação no ar.'
+            ? t("app.moderate.featuredDone")
+            : t("app.moderate.publishedDone")
       );
     },
-    onError: () => showSnackbar('Não foi possível atualizar. Tente de novo.'),
+    onError: () => showSnackbar(t("app.moderate.error")),
   });
 
   const visible = (posts ?? []).filter((post) => filter === 'all' || post.status === filter);
@@ -81,15 +84,15 @@ export default function ModerarArtigosScreen() {
   if (!loadingMe && !isAdmin) {
     return (
       <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
-        <AppHeader title="Moderar artigos" back />
-        <EmptyState icon={ShieldAlert} title="Acesso restrito a administradores" />
+        <AppHeader title={t("app.moderate.title")} back />
+        <EmptyState icon={ShieldAlert} title={t("app.moderate.restricted")} />
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
-      <AppHeader title="Moderar artigos" back>
+      <AppHeader title={t("app.moderate.title")} back>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -97,7 +100,7 @@ export default function ModerarArtigosScreen() {
           {FILTERS.map((item) => (
             <Chip
               key={item.value}
-              label={item.label}
+              label={t(item.label)}
               selected={filter === item.value}
               onPress={() => setFilter(item.value)}
             />
@@ -116,7 +119,7 @@ export default function ModerarArtigosScreen() {
           contentContainerClassName="grow gap-card p-4"
           onRefresh={refetch}
           refreshing={isRefetching}
-          ListEmptyComponent={<EmptyState icon={Newspaper} title="Nada nesta lista" />}
+          ListEmptyComponent={<EmptyState icon={Newspaper} title={t("app.moderate.empty")} />}
           renderItem={({ item }) => (
             <View className="gap-3 border border-border-subtle bg-card p-4 shadow-sm shadow-black/5">
               <View className="flex-row flex-wrap items-center gap-2">
@@ -128,10 +131,10 @@ export default function ModerarArtigosScreen() {
               </View>
               <Text className="font-heading text-lg font-semibold leading-snug">{item.title}</Text>
               <Text className="text-xs text-muted-foreground">
-                {item.authorName} · {formatFirestoreDate(item.updatedAt)}
+                {item.authorName} · {format.date(item.updatedAt)}
               </Text>
               {item.status === 'rejected' && item.rejectionReason ? (
-                <Text className="text-sm text-destructive">Motivo: {item.rejectionReason}</Text>
+                <Text className="text-sm text-destructive">{t("app.myPosts.reason", { reason: item.rejectionReason })}</Text>
               ) : null}
               <View className="flex-row flex-wrap gap-2">
                 {item.status === 'published' ? (
@@ -142,7 +145,7 @@ export default function ModerarArtigosScreen() {
                       onPress={() =>
                         router.push({ pathname: '/artigo/[slug]', params: { slug: item.slug } })
                       }>
-                      <Text>Ver</Text>
+                      <Text>{t("app.moderate.view")}</Text>
                     </Button>
                     <Button
                       size="sm"
@@ -155,10 +158,10 @@ export default function ModerarArtigosScreen() {
                           isFeatured: !item.isFeatured,
                         })
                       }>
-                      <Text>{item.isFeatured ? 'Tirar destaque' : 'Destacar'}</Text>
+                      <Text>{item.isFeatured ? t("app.moderate.unfeature") : t("app.moderate.feature")}</Text>
                     </Button>
                     <Button size="sm" variant="outline" onPress={() => setRejecting(item)}>
-                      <Text className="text-destructive">Rejeitar</Text>
+                      <Text className="text-destructive">{t("app.moderate.reject")}</Text>
                     </Button>
                   </>
                 ) : (
@@ -173,11 +176,11 @@ export default function ModerarArtigosScreen() {
                           isFeatured: Boolean(item.isFeatured),
                         })
                       }>
-                      <Text>Publicar</Text>
+                      <Text>{t("app.moderate.publish")}</Text>
                     </Button>
                     {item.status !== 'rejected' ? (
                       <Button size="sm" variant="outline" onPress={() => setRejecting(item)}>
-                        <Text className="text-destructive">Rejeitar</Text>
+                        <Text className="text-destructive">{t("app.moderate.reject")}</Text>
                       </Button>
                     ) : null}
                   </>
@@ -190,17 +193,16 @@ export default function ModerarArtigosScreen() {
 
       <Sheet
         visible={Boolean(rejecting)}
-        title="Rejeitar publicação"
+        title={t("app.moderate.rejectTitle")}
         onClose={() => setRejecting(null)}>
         <View className="gap-3 px-4 pb-4">
           <Text className="text-sm text-muted-foreground">
-            “{rejecting?.title}” sai do ar. O autor vê o motivo em Meus artigos e pode corrigir e
-            publicar de novo.
+            {t("app.moderate.rejectText", { title: rejecting?.title ?? '' })}
           </Text>
           <Textarea
             value={reason}
             onChangeText={setReason}
-            placeholder="Motivo (o autor vai ler)"
+            placeholder={t("app.moderate.reasonPlaceholder")}
             maxLength={300}
             className="min-h-24"
           />
@@ -216,7 +218,7 @@ export default function ModerarArtigosScreen() {
                 isFeatured: false,
               })
             }>
-            <Text>{review.isPending ? 'Rejeitando…' : 'Rejeitar'}</Text>
+            <Text>{review.isPending ? t("app.moderate.rejecting") : t("app.moderate.reject")}</Text>
           </Button>
         </View>
       </Sheet>
