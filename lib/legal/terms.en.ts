@@ -125,7 +125,7 @@ export const TERMS_EN: Omit<LegalDocumentContent, "updatedAt"> = {
       blocks: [
         { type: "callout", tone: "info", title: "Specific consent", items: [
           "Entering your ward and baptism year is optional. This information shows religious affiliation and is considered sensitive personal data under the LGPD.",
-          "By entering it in your profile, you specifically consent to Skillsy processing it to confirm the verified member badge and to show it on your profile, which is public when you advertise services.",
+          "By entering it in your profile, you specifically consent to Skillsy processing it to confirm the verified member badge and to show your ward on your profile, visible only to people signed in to the platform.",
           "You can withdraw this consent at any time by deleting your ward and baptism year in Edit profile. The verified member badge then stops appearing.",
         ] },
         { type: "p", text: "The verified member badge only confirms the information provided by the user. It isn't a certification of competence, integrity or service quality." },

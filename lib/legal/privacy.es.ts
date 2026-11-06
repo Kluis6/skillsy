@@ -65,7 +65,8 @@ export const PRIVACY_ES: Omit<LegalDocumentContent, "updatedAt"> = {
       title: "Qué es público",
       blocks: [
         { type: "callout", tone: "warning", title: "Los perfiles de quienes anuncian servicios son públicos", items: [
-          "Nombre, foto, portada, servicio, empresa, ciudad y estado, biografía, galería, horarios de atención, contactos informados (incluido el WhatsApp), barrio e insignia de miembro verificado, reseñas y recomendaciones recibidas.",
+          "Nombre, foto, portada, servicio, empresa, ciudad y estado, biografía, galería, horarios de atención, contactos informados (incluido el WhatsApp), insignia de miembro verificado, reseñas y recomendaciones recibidas.",
+          "El barrio solo se muestra a quienes iniciaron sesión en la plataforma.",
           "Cualquier persona puede ver estos perfiles, incluso sin cuenta, y pueden aparecer en buscadores como Google.",
           "Para dejar de tener un perfil público, desactiva \"Anunciar mis servicios\" en Editar perfil o cancela tu cuenta.",
         ] },

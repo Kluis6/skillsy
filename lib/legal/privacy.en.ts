@@ -65,7 +65,8 @@ export const PRIVACY_EN: Omit<LegalDocumentContent, "updatedAt"> = {
       title: "What is public",
       blocks: [
         { type: "callout", tone: "warning", title: "Profiles of people who advertise services are public", items: [
-          "Name, photo, cover, service, company, city and state, bio, gallery, service hours, contacts provided (including WhatsApp), ward and verified member badge, and the reviews and recommendations received.",
+          "Name, photo, cover, service, company, city and state, bio, gallery, service hours, contacts provided (including WhatsApp), verified member badge, and the reviews and recommendations received.",
+          "The ward is only shown to people signed in to the platform.",
           "Anyone can see these profiles, even without an account, and they may appear in search engines such as Google.",
           "To stop having a public profile, turn off \"Advertise my services\" in Edit profile or cancel your account.",
         ] },

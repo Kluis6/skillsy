@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { HomeClient } from "@/components/home-client";
-import { createPublicMetadata } from "@/lib/public-metadata";
+import { createPublicMetadata, withoutWard } from "@/lib/public-metadata";
 import { UserService } from "@/services/user-service";
 import { getLocale, getMessages, getT } from "@/lib/i18n/server";
 import { byOrigin } from "@skillsy/shared/i18n/origin";
@@ -58,7 +58,7 @@ export default async function Home() {
     getLocale(),
   ]);
   // Professionals from the visitor's country, in the page's language first.
-  const initialProviders = byOrigin(providers, { language: locale });
+  const initialProviders = byOrigin(providers, { language: locale }).map(withoutWard);
 
   return (
     <I18nProvider messages={messages}>

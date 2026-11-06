@@ -124,7 +124,7 @@ export const TERMS: LegalDocumentContent = {
       blocks: [
         { type: "callout", tone: "info", title: "Consentimento específico", items: [
           "Informar a ala e o ano de batismo é opcional. Esses dados indicam filiação religiosa e são considerados dados pessoais sensíveis pela LGPD.",
-          "Ao informá-los no seu perfil, você consente, de forma específica, que a Skillsy os trate para confirmar o selo de membro verificado e para exibi-los no seu perfil, que é público quando você anuncia serviços.",
+          "Ao informá-los no seu perfil, você consente, de forma específica, que a Skillsy os trate para confirmar o selo de membro verificado e para exibir a ala no seu perfil, visível apenas para quem está logado na plataforma.",
           "Você pode retirar esse consentimento a qualquer momento, apagando a ala e o ano de batismo em Editar perfil. O selo de membro verificado deixa de aparecer.",
         ] },
         { type: "p", text: "O selo de membro verificado confirma apenas os dados informados pelo próprio usuário. Ele não é uma certificação de competência, idoneidade ou qualidade do serviço." },

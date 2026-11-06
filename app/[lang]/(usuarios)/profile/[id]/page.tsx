@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { cache } from 'react';
 import { ProfileDetailClient } from '@/components/profile-detail-client';
-import { createPublicMetadata } from '@/lib/public-metadata';
+import { createPublicMetadata, withoutWard } from '@/lib/public-metadata';
 import { UserService } from '@/services/user-service';
 import { getMessages, getT } from '@/lib/i18n/server';
 import { I18nProvider } from '@/lib/i18n/provider';
@@ -53,10 +53,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PublicProfilePage({ params }: Props) {
   const { id } = await params;
-  const [initialProfile, messages] = await Promise.all([
+  const [profile, messages] = await Promise.all([
     getPublicProfile(id),
     getMessages('profile'),
   ]);
+  // The ward is only shown to signed-in members: it is left out of the page
+  // sent to everyone and loaded on the client after sign-in.
+  const initialProfile = profile ? withoutWard(profile) : null;
 
   return (
     <I18nProvider messages={messages}>

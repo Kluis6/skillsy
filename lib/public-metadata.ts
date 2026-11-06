@@ -138,3 +138,11 @@ export function createPrivateMetadata({
     },
   };
 }
+
+/**
+ * Public profile data for pages everyone receives: the ward is only shown to
+ * signed-in members, so it never goes into the server-rendered page.
+ */
+export function withoutWard<T extends { ward?: string }>(profile: T): T {
+  return { ...profile, ward: undefined };
+}

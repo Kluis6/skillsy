@@ -126,7 +126,7 @@ export const TERMS_ES: Omit<LegalDocumentContent, "updatedAt"> = {
       blocks: [
         { type: "callout", tone: "info", title: "Consentimiento específico", items: [
           "Informar el barrio y el año de bautismo es opcional. Estos datos indican afiliación religiosa y la LGPD los considera datos personales sensibles.",
-          "Al informarlos en tu perfil, das tu consentimiento específico para que Skillsy los trate para confirmar la insignia de miembro verificado y para mostrarlos en tu perfil, que es público cuando anuncias servicios.",
+          "Al informarlos en tu perfil, das tu consentimiento específico para que Skillsy los trate para confirmar la insignia de miembro verificado y para mostrar el barrio en tu perfil, visible solo para quienes iniciaron sesión en la plataforma.",
           "Puedes retirar este consentimiento en cualquier momento borrando el barrio y el año de bautismo en Editar perfil. La insignia de miembro verificado deja de aparecer.",
         ] },
         { type: "p", text: "La insignia de miembro verificado solo confirma los datos informados por el propio usuario. No es una certificación de competencia, honradez ni calidad del servicio." },

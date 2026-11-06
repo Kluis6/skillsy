@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { SearchClient } from "@/components/search-client";
-import { createPublicMetadata } from "@/lib/public-metadata";
+import { createPublicMetadata, withoutWard } from "@/lib/public-metadata";
 import { UserService } from "@/services/user-service";
 import { UserProfile } from "@/models/types";
 import { getLocale, getMessages, getSearchSynonyms, getT } from "@/lib/i18n/server";
@@ -60,8 +60,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         initialCity={city}
         initialState={state}
         initialCategory={category}
-        initialResults={results}
-        initialSuggestions={suggestions}
+        initialResults={results.map(withoutWard)}
+        initialSuggestions={suggestions.map(withoutWard)}
       />
     </I18nProvider>
   );

@@ -64,7 +64,8 @@ export const PRIVACY: LegalDocumentContent = {
       title: "O que fica público",
       blocks: [
         { type: "callout", tone: "warning", title: "Perfis de quem anuncia serviços são públicos", items: [
-          "Nome, foto, capa, serviço, empresa, cidade e estado, biografia, galeria, atendimento, contatos informados (inclusive o WhatsApp), ala e selo de membro verificado, avaliações e indicações recebidas.",
+          "Nome, foto, capa, serviço, empresa, cidade e estado, biografia, galeria, atendimento, contatos informados (inclusive o WhatsApp), selo de membro verificado, avaliações e indicações recebidas.",
+          "A ala só aparece para quem está logado na plataforma.",
           "Esses perfis podem ser vistos por qualquer pessoa, mesmo sem conta, e podem aparecer em buscadores como o Google.",
           "Para deixar de ter um perfil público, desative \"Anunciar meus serviços\" em Editar perfil ou cancele a conta.",
         ] },

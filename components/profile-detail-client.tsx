@@ -241,6 +241,22 @@ export function ProfileDetailClient({
       .catch(() => setRecommendations([]));
   }, [targetProfile?.uid, targetProfile?.isProvider]);
 
+  // The ward is only for signed-in members, so the server leaves it out of the
+  // page; load it once the visitor is signed in.
+  const [ward, setWard] = useState<string | undefined>();
+  useEffect(() => {
+    if (!user || !targetProfile?.uid || targetProfile.isProvider) return;
+    let active = true;
+    UserService.getPublicProfile(targetProfile.uid)
+      .then((profile) => {
+        if (active) setWard(profile?.ward || undefined);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [user, targetProfile?.uid, targetProfile?.isProvider]);
+
   const isContact = currentUserProfile?.contacts?.includes(id);
 
   const handleToggleContact = async () => {
@@ -1010,11 +1026,11 @@ export function ProfileDetailClient({
                       </div>
                     )}
 
-                    {!targetProfile.isProvider && targetProfile.ward && (
+                    {user && !targetProfile.isProvider && ward && (
                       <div className="flex items-center space-x-2">
                         <Church size={18} className="text-text-main" />
                         <p className="text-sm text-text-main font-normal">
-                          {targetProfile.ward}
+                          {ward}
                         </p>
                       </div>
                     )}
