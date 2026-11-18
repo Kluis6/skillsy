@@ -139,6 +139,161 @@ describe("users: leitura", () => {
   });
 });
 
+test("o dono não grava Ala/Ramo num perfil público novo nem existente", async () => {
+  const newUid = "new-public-provider";
+  const newProfile = doc(dbAs(newUid), "public_profiles", newUid);
+  await assertFails(setDoc(newProfile, publicProfileDoc(newUid, { ward: "Ala Centro" })));
+  await assertSucceeds(setDoc(newProfile, publicProfileDoc(newUid)));
+
+  const currentProfile = doc(dbAs(PROVIDER), "public_profiles", PROVIDER);
+  await assertFails(updateDoc(currentProfile, { ward: "Ala Centro" }));
+});
+
+test("a galeria privada e pública aceita até cinco fotos e descrições de até 200 caracteres", async () => {
+  const db = dbAs(PROVIDER);
+  const image = { url: "https://example.test/foto.webp", description: "x".repeat(200) };
+  const gallery = Array.from({ length: 5 }, () => image);
+
+  for (const collectionName of ["users", "public_profiles"]) {
+    const profile = doc(db, collectionName, PROVIDER);
+    await assertSucceeds(updateDoc(profile, { gallery }));
+    await assertFails(updateDoc(profile, { gallery: [...gallery, image] }));
+    await assertFails(updateDoc(profile, { gallery: [{ ...image, description: "x".repeat(201) }] }));
+    await assertFails(updateDoc(profile, { gallery: [...gallery.slice(0, 4), { url: 123 }] }));
+    await assertSucceeds(updateDoc(profile, { gallery: [] }));
+  }
+});
+
+test("a disponibilidade privada e pública aceita somente dias da semana do formulário", async () => {
+  const db = dbAs(PROVIDER);
+  const week = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+
+  for (const collectionName of ["users", "public_profiles"]) {
+    const profile = doc(db, collectionName, PROVIDER);
+    await assertSucceeds(updateDoc(profile, { availability: week }));
+    await assertFails(updateDoc(profile, { availability: [...week, "Seg"] }));
+    await assertFails(updateDoc(profile, { availability: ["Seg", "Feriado"] }));
+    await assertSucceeds(updateDoc(profile, { availability: [] }));
+  }
+});
+
+test("o perfil público completo pode ser salvo com cinco fotos", async () => {
+  const profile = doc(dbAs(PROVIDER), "public_profiles", PROVIDER);
+  const details = {
+    name: "Profissional Completo",
+    photoURL: "https://example.test/avatar.webp",
+    bannerURL: "https://example.test/capa.webp",
+    bio: "Perfil completo.",
+    category: "Cozinha",
+    serviceType: "Confeitaria",
+    publicCity: "São Paulo",
+    publicState: "SP",
+    memberVerified: true,
+    communityFriend: false,
+    searchTokens: ["profissional", "confeitaria"],
+    companyName: "Empresa",
+    gallery: Array.from({ length: 5 }, (_, index) => ({
+      url: `https://example.test/${index}.webp`,
+      description: "x".repeat(200),
+    })),
+    availability: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+    serviceHours: "08h às 18h",
+    whatsapp: "11999999999",
+    instagram: "profissional",
+    facebook: "https://example.test/facebook",
+    linkedin: "https://example.test/linkedin",
+    website: "https://example.test",
+    phone: "11998888888",
+    phones: ["11998888888"],
+    isBlocked: false,
+    isDeleted: false,
+    createdAt: Timestamp.now(),
+    language: "pt",
+    country: "BR",
+  };
+  await assertSucceeds(setDoc(profile, details, { merge: true }));
+  const newUid = "complete-new-provider";
+  const newProfile = doc(dbAs(newUid), "public_profiles", newUid);
+  await assertSucceeds(setDoc(newProfile, { ...publicProfileDoc(newUid), ...details }));
+});
+
+describe("catálogo de produtos", () => {
+  const revision = "a".repeat(36);
+  const nextRevision = "b".repeat(36);
+  const product = { name: "Bolo", description: "Chocolate\ncom morango", revision };
+  const catalog = (db, uid = PROVIDER) => collection(db, "public_profiles", uid, "products");
+  const item = (db, id = "1", uid = PROVIDER) => doc(catalog(db, uid), id);
+
+  test("o anunciante pode criar sem foto nem preço, editar e excluir", async () => {
+    const ownerItem = item(dbAs(PROVIDER));
+    const visitorItem = item(env.unauthenticatedContext().firestore());
+
+    await assertSucceeds(setDoc(ownerItem, product));
+    await assertSucceeds(getDocs(catalog(env.unauthenticatedContext().firestore())));
+    await assertSucceeds(getDoc(visitorItem));
+    await assertSucceeds(updateDoc(ownerItem, {
+      revision: nextRevision,
+      priceCents: 0,
+      imageName: `${revision}.webp`,
+    }));
+    await assertSucceeds(deleteDoc(ownerItem));
+  });
+
+  test("somente o próprio anunciante ativo pode publicar e alterar", async () => {
+    const ownerItem = item(dbAs(PROVIDER));
+    await assertSucceeds(setDoc(ownerItem, product));
+    await assertFails(setDoc(item(dbAs(RATER), "2", RATER), product));
+    await assertFails(setDoc(item(dbAs(RATER), "2"), product));
+    await assertFails(updateDoc(item(dbAs(RATER)), { name: "Alterado", revision: nextRevision }));
+    await assertFails(deleteDoc(item(dbAs(RATER))));
+
+    await env.withSecurityRulesDisabled((context) =>
+      updateDoc(doc(context.firestore(), "users", PROVIDER), { isBlocked: true }),
+    );
+    await assertFails(setDoc(item(dbAs(PROVIDER), "2"), product));
+    await assertFails(updateDoc(ownerItem, { name: "Alterado", revision: nextRevision }));
+    await assertFails(getDocs(catalog(env.unauthenticatedContext().firestore())));
+  });
+
+  test("um perfil privado mantém seu catálogo acessível somente ao dono", async () => {
+    await env.withSecurityRulesDisabled((context) =>
+      updateDoc(doc(context.firestore(), "users", PROVIDER), { hasPublicProfile: false }),
+    );
+    await assertSucceeds(setDoc(item(dbAs(PROVIDER)), product));
+    await assertSucceeds(getDocs(catalog(dbAs(PROVIDER))));
+    await assertFails(getDocs(catalog(env.unauthenticatedContext().firestore())));
+  });
+
+  test("valida campos obrigatórios e opcionais também nas atualizações", async () => {
+    const ownerItem = item(dbAs(PROVIDER));
+    for (const invalid of [
+      { name: "" }, { name: "  \n" }, { name: "x".repeat(101) },
+      { description: "" }, { description: "x".repeat(1001) },
+      { priceCents: -1 }, { priceCents: 1.5 }, { priceCents: "200" },
+      { imageName: "https://example.com/other.webp" }, { imageName: [`${revision}.webp`] },
+      { ownerId: RATER },
+    ]) {
+      await assertFails(setDoc(ownerItem, { ...product, ...invalid }));
+    }
+    await assertSucceeds(setDoc(ownerItem, product));
+    await assertFails(updateDoc(ownerItem, { description: deleteField(), revision: nextRevision }));
+    await assertFails(updateDoc(ownerItem, { name: "Sem revisão nova" }));
+  });
+
+  test("o catálogo tem exatamente 50 posições possíveis", async () => {
+    const db = dbAs(PROVIDER);
+    const batch = writeBatch(db);
+    for (let slot = 1; slot <= 50; slot++) {
+      batch.set(item(db, String(slot)), product);
+    }
+    await assertSucceeds(batch.commit());
+    for (const invalid of ["0", "01", "51", "produto-extra"]) {
+      await assertFails(setDoc(item(db, invalid), product));
+    }
+    await assertSucceeds(updateDoc(item(db, "50"), { name: "Último produto", revision: nextRevision }));
+  });
+});
+
 describe("admin", () => {
   beforeEach(async () => {
     await env.withSecurityRulesDisabled(async (context) => {

@@ -1,13 +1,14 @@
 // Cloud Storage security rules tests. Run with `npm run test:rules`, which
 // starts the Storage emulator next to Firestore.
 import { readFileSync } from "node:fs";
+import assert from "node:assert/strict";
 import { after, before, describe, test } from "node:test";
 import {
   assertFails,
   assertSucceeds,
   initializeTestEnvironment,
 } from "@firebase/rules-unit-testing";
-import { getBytes, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getBytes, listAll, ref, uploadBytes } from "firebase/storage";
 
 const OWNER = "owner";
 const OTHER = "other";
@@ -66,5 +67,32 @@ describe("imagens dos membros", () => {
       await uploadBytes(ref(context.storage(), `users/${OWNER}/avatar/public.webp`), IMAGE, webp);
     });
     await assertSucceeds(getBytes(ref(storageFor(null), `users/${OWNER}/avatar/public.webp`)));
+  });
+});
+
+describe("fotos dos produtos", () => {
+  test("o dono envia e remove a foto e visitantes baixam pela URL do catálogo", async () => {
+    const path = `users/${OWNER}/products/${"a".repeat(36)}.webp`;
+    const ownerFile = ref(storageFor(OWNER), path);
+    await assertFails(uploadBytes(ref(storageFor(OTHER), path), IMAGE, webp));
+    await assertSucceeds(uploadBytes(ownerFile, IMAGE, webp));
+    await assertFails(uploadBytes(ownerFile, IMAGE, webp));
+    await assertFails(listAll(ref(storageFor(null), `users/${OWNER}/products`)));
+    await assertFails(deleteObject(ref(storageFor(OTHER), path)));
+
+    const host = process.env.FIREBASE_STORAGE_EMULATOR_HOST;
+    const response = await fetch(`http://${host}/v0/b/${ownerFile.bucket}/o/${encodeURIComponent(path)}?alt=media`);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("content-type"), "image/webp");
+    assert.deepEqual(new Uint8Array(await response.arrayBuffer()), IMAGE);
+    await assertSucceeds(deleteObject(ownerFile));
+  });
+
+  test("recusa nomes e tipos de arquivo inválidos", async () => {
+    const storage = storageFor(OWNER);
+    await assertFails(uploadBytes(ref(storage, `users/${OWNER}/products/nome.webp`), IMAGE, webp));
+    const file = ref(storage, `users/${OWNER}/products/${"b".repeat(36)}.webp`);
+    await assertFails(uploadBytes(file, IMAGE, { contentType: "application/pdf" }));
+    await assertFails(uploadBytes(file, new Uint8Array(2 * 1024 * 1024), webp));
   });
 });

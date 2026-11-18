@@ -9,6 +9,35 @@ z.config({ jitless: true });
 
 const currentYear = new Date().getFullYear();
 
+export const PROFILE_LIMITS = {
+  nameMin: 2,
+  name: 50,
+  location: 100,
+  ward: 100,
+  baptismYearMin: 1830,
+  baptismYearDigits: 4,
+  bio: 500,
+  serviceTypeMin: 2,
+  serviceType: 100,
+  companyName: 100,
+  address: 150,
+  addressNumber: 20,
+  neighborhood: 100,
+  state: 100,
+  complement: 100,
+  whatsappDigitsMin: 10,
+  whatsappDigitsMax: 15,
+  phoneDigitsMax: 15,
+  socialHandle: 50,
+  socialUrl: 100,
+  website: 150,
+  serviceHours: 100,
+  galleryMaxItems: 5,
+  galleryDescription: 200,
+};
+
+export const SIGN_UP_LIMITS = { email: 100, passwordMin: 6, passwordMax: 50 };
+
 const optionalTextField = (max: number, message: string) =>
   z.string().trim().max(max, message);
 
@@ -34,25 +63,25 @@ export const profileSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, 'Nome deve ter pelo menos 2 caracteres')
-    .max(50, 'Nome deve ter no máximo 50 caracteres'),
-  bio: optionalTextField(500, 'Bio deve ter no máximo 500 caracteres'),
-  location: optionalTextField(100, 'Localização deve ter no máximo 100 caracteres'),
+    .min(PROFILE_LIMITS.nameMin, 'Nome deve ter pelo menos 2 caracteres')
+    .max(PROFILE_LIMITS.name, 'Nome deve ter no máximo 50 caracteres'),
+  bio: optionalTextField(PROFILE_LIMITS.bio, 'Bio deve ter no máximo 500 caracteres'),
+  location: optionalTextField(PROFILE_LIMITS.location, 'Localização deve ter no máximo 100 caracteres'),
   membershipType: z.union([z.literal(''), z.literal('member'), z.literal('friend')]),
   language: z.enum(['pt', 'en', 'es']).optional(),
-  ward: optionalTextField(100, 'Ala/Ramo deve ter no máximo 100 caracteres'),
-  serviceType: optionalTextField(100, 'Serviço deve ter no máximo 100 caracteres'),
+  ward: optionalTextField(PROFILE_LIMITS.ward, 'Ala/Ramo deve ter no máximo 100 caracteres'),
+  serviceType: optionalTextField(PROFILE_LIMITS.serviceType, 'Serviço deve ter no máximo 100 caracteres'),
   category: z.union([z.literal(''), z.enum(PROVIDER_CATEGORIES)]),
-  companyName: optionalTextField(100, 'Nome da empresa deve ter no máximo 100 caracteres'),
-  businessAddress: optionalTextField(150, 'Endereço deve ter no máximo 150 caracteres'),
-  businessAddressNumber: optionalTextField(20, 'Número deve ter no máximo 20 caracteres'),
-  businessNeighborhood: optionalTextField(100, 'Bairro deve ter no máximo 100 caracteres'),
-  businessState: optionalTextField(100, 'Estado deve ter no máximo 100 caracteres'),
-  businessComplement: optionalTextField(100, 'Complemento deve ter no máximo 100 caracteres'),
+  companyName: optionalTextField(PROFILE_LIMITS.companyName, 'Nome da empresa deve ter no máximo 100 caracteres'),
+  businessAddress: optionalTextField(PROFILE_LIMITS.address, 'Endereço deve ter no máximo 150 caracteres'),
+  businessAddressNumber: optionalTextField(PROFILE_LIMITS.addressNumber, 'Número deve ter no máximo 20 caracteres'),
+  businessNeighborhood: optionalTextField(PROFILE_LIMITS.neighborhood, 'Bairro deve ter no máximo 100 caracteres'),
+  businessState: optionalTextField(PROFILE_LIMITS.state, 'Estado deve ter no máximo 100 caracteres'),
+  businessComplement: optionalTextField(PROFILE_LIMITS.complement, 'Complemento deve ter no máximo 100 caracteres'),
   isProvider: z.boolean(),
   whatsapp: optionalDigitsField(
-    10,
-    15,
+    PROFILE_LIMITS.whatsappDigitsMin,
+    PROFILE_LIMITS.whatsappDigitsMax,
     'WhatsApp deve ter pelo menos 10 dígitos (DDD + Número)',
     'Número de WhatsApp deve ter no máximo 15 dígitos',
   ),
@@ -63,12 +92,12 @@ export const profileSchema = z.object({
         .string()
         .trim()
         .regex(/^\d+$/, 'Apenas números são permitidos')
-        .max(15, 'Número de telefone deve ter no máximo 15 dígitos'),
+        .max(PROFILE_LIMITS.phoneDigitsMax, 'Número de telefone deve ter no máximo 15 dígitos'),
     ])
     ,
-  instagram: optionalTextField(50, 'Usuário de Instagram deve ter no máximo 50 caracteres'),
-  facebook: optionalTextField(100, 'Link de Facebook deve ter no máximo 100 caracteres'),
-  linkedin: optionalTextField(100, 'Link de LinkedIn deve ter no máximo 100 caracteres'),
+  instagram: optionalTextField(PROFILE_LIMITS.socialHandle, 'Usuário de Instagram deve ter no máximo 50 caracteres'),
+  facebook: optionalTextField(PROFILE_LIMITS.socialUrl, 'Link de Facebook deve ter no máximo 100 caracteres'),
+  linkedin: optionalTextField(PROFILE_LIMITS.socialUrl, 'Link de LinkedIn deve ter no máximo 100 caracteres'),
   website: z
     .union([
       z.literal(''),
@@ -76,7 +105,7 @@ export const profileSchema = z.object({
         .string()
         .trim()
         .url('Formato de URL inválido (use https://...)')
-        .max(150, 'Link do site muito longo'),
+        .max(PROFILE_LIMITS.website, 'Link do site muito longo'),
     ])
     ,
   baptismYear: z
@@ -89,24 +118,24 @@ export const profileSchema = z.object({
         .refine(
           (value) => {
             const year = Number(value);
-            return year >= 1830 && year <= currentYear;
+            return year >= PROFILE_LIMITS.baptismYearMin && year <= currentYear;
           },
           `Ano deve estar entre 1830 e ${currentYear}`,
         ),
     ])
     ,
   availability: z.array(z.enum(AVAILABILITY_OPTIONS)),
-  serviceHours: optionalTextField(100, 'Horário muito longo'),
+  serviceHours: optionalTextField(PROFILE_LIMITS.serviceHours, 'Horário muito longo'),
   photoURL: z.string(),
   bannerURL: z.string(),
   gallery: z
     .array(
       z.object({
         url: z.string().trim().min(1, 'A foto precisa ter uma URL válida'),
-        description: z.string().max(200, 'Descrição da foto muito longa')
+        description: z.string().max(PROFILE_LIMITS.galleryDescription, 'Descrição da foto muito longa')
       }),
     )
-    .max(5, 'Você pode enviar no máximo 5 fotos para a galeria'),
+    .max(PROFILE_LIMITS.galleryMaxItems, 'Você pode enviar no máximo 5 fotos para a galeria'),
 }).superRefine((data, ctx) => {
   if (!data.isProvider) {
     return;
@@ -120,7 +149,7 @@ export const profileSchema = z.object({
     });
   }
 
-  if (!data.serviceType || data.serviceType.trim().length < 2) {
+  if (!data.serviceType || data.serviceType.trim().length < PROFILE_LIMITS.serviceTypeMin) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ['serviceType'],
@@ -146,11 +175,11 @@ export const signUpSchema = z.object({
   email: z.string()
     .min(1, 'E-mail é obrigatório')
     .email('E-mail inválido')
-    .max(100, 'O e-mail deve ter no máximo 100 caracteres'),
+    .max(SIGN_UP_LIMITS.email, 'O e-mail deve ter no máximo 100 caracteres'),
   password: z.string()
     .min(1, 'Senha é obrigatória')
-    .min(6, 'A senha deve ter pelo menos 6 caracteres')
-    .max(50, 'A senha deve ter no máximo 50 caracteres'),
+    .min(SIGN_UP_LIMITS.passwordMin, 'A senha deve ter pelo menos 6 caracteres')
+    .max(SIGN_UP_LIMITS.passwordMax, 'A senha deve ter no máximo 50 caracteres'),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;

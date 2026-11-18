@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { FieldDescription, FieldError } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
@@ -43,8 +44,8 @@ import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { uploadImage } from "@/lib/image-upload";
-import { profileSchema, type ProfileFormData } from "@/lib/validations";
+import { MAX_STORED_IMAGE_MB, uploadImage } from "@/lib/image-upload";
+import { PROFILE_LIMITS, profileSchema, type ProfileFormData } from "@/lib/validations";
 import {
   AVAILABILITY_OPTIONS,
   PROVIDER_CATEGORIES,
@@ -63,34 +64,15 @@ import { useLabels } from "@/lib/i18n/labels";
 import { ContentLanguageSelect } from "@/components/content-language-select";
 import type { MessageKey } from "@skillsy/shared/i18n/keys";
 
-const MAX_IMAGE_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
-const SUPPORTED_IMAGE_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-]);
-const PROFILE_LIMITS = {
-  name: 50,
-  location: 100,
-  ward: 100,
-  bio: 500,
-  serviceType: 100,
-  companyName: 100,
-  address: 150,
-  addressNumber: 20,
-  neighborhood: 100,
-  state: 100,
-  complement: 100,
-  whatsappDigitsMin: 10,
-  whatsappDigitsMax: 15,
-  phoneDigitsMax: 15,
-  socialHandle: 50,
-  socialUrl: 100,
-  website: 150,
-  serviceHours: 100,
-  galleryMaxItems: 5,
-  galleryDescription: 200,
-};
+const MAX_PROFILE_IMAGE_MB = 10;
+const MAX_IMAGE_UPLOAD_SIZE_BYTES = MAX_PROFILE_IMAGE_MB * 1024 * 1024;
+const PROFILE_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const PROFILE_IMAGE_ACCEPT = PROFILE_IMAGE_TYPES.join(",");
+const USE_STORAGE_EMULATOR = process.env.NEXT_PUBLIC_USE_EMULATORS === "1";
+
+function profileFieldId(field: keyof ProfileFormData) {
+  return `profile-${field}`;
+}
 
 type OnboardingIntent = "find" | "offer" | "both";
 
@@ -203,6 +185,29 @@ export function ProfileSettingsClient() {
   });
 
   const formData = useWatch({ control }) as ProfileFormData;
+  const fieldProps = (field: keyof ProfileFormData) => {
+    const id = profileFieldId(field);
+    return {
+      id,
+      "aria-invalid": Boolean(errors[field]),
+      "aria-describedby": errors[field] ? `${id}-help ${id}-error` : `${id}-help`,
+    };
+  };
+  const fieldFeedback = (field: keyof ProfileFormData, help: string) => {
+    const id = profileFieldId(field);
+    const error = errors[field]?.message;
+    return (
+      <>
+        <FieldDescription id={`${id}-help`}>{help}</FieldDescription>
+        {error && <FieldError id={`${id}-error`}>{tv(error)}</FieldError>}
+      </>
+    );
+  };
+  const imageHelp = t("settings.imagesRule", {
+    size: MAX_PROFILE_IMAGE_MB,
+    formats: t("settings.imageFormats"),
+  });
+  const galleryFull = formData.gallery.length >= PROFILE_LIMITS.galleryMaxItems;
   const readinessItems = [
     {
       label: t("settings.readyName"),
@@ -298,6 +303,20 @@ export function ProfileSettingsClient() {
     }
   }, [profile, reset]);
 
+  useEffect(() => {
+    if (!isDirty) return;
+    function warnBeforeLeaving(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      event.returnValue = true;
+    }
+    window.addEventListener("beforeunload", warnBeforeLeaving);
+    return () => window.removeEventListener("beforeunload", warnBeforeLeaving);
+  }, [isDirty]);
+
+  function confirmNavigation(event: { preventDefault: () => void }) {
+    if (isDirty && !window.confirm(t("settings.unsavedChanges"))) event.preventDefault();
+  }
+
   const [detectingLocation, setDetectingLocation] = useState(false);
 
   const handleDetectLocation = async () => {
@@ -384,7 +403,7 @@ export function ProfileSettingsClient() {
     type: "avatar" | "banner" | "gallery",
   ) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || uploading !== null) return;
 
     if (!file.type.startsWith("image/")) {
       toast.error(t("settings.invalidFile"), {
@@ -394,7 +413,7 @@ export function ProfileSettingsClient() {
       return;
     }
 
-    if (!SUPPORTED_IMAGE_TYPES.has(file.type)) {
+    if (!PROFILE_IMAGE_TYPES.includes(file.type)) {
       toast.error(t("settings.unsupportedFormat"), {
         description: t("settings.unsupportedFormatText"),
       });
@@ -404,7 +423,7 @@ export function ProfileSettingsClient() {
 
     if (file.size > MAX_IMAGE_UPLOAD_SIZE_BYTES) {
       toast.error(t("settings.imageTooLarge"), {
-        description: t("settings.imageTooLargeText"),
+        description: t("settings.imageTooLargeText", { size: MAX_PROFILE_IMAGE_MB }),
       });
       e.target.value = "";
       return;
@@ -412,10 +431,10 @@ export function ProfileSettingsClient() {
 
     setUploading(type);
     try {
-      if (type === "gallery" && formData.gallery.length >= 5) {
+      if (type === "gallery" && getValues("gallery").length >= PROFILE_LIMITS.galleryMaxItems) {
         toast.error(t("settings.galleryLimit"), {
-        description: t("settings.galleryLimitText"),
-      });
+          description: t("settings.galleryLimitText"),
+        });
         return;
       }
       const url = await uploadImage(file, type);
@@ -428,7 +447,7 @@ export function ProfileSettingsClient() {
       } else if (type === "gallery") {
         setValue(
           "gallery",
-          [...formData.gallery, { url, description: "" }],
+          [...getValues("gallery"), { url, description: "" }],
           {
             shouldDirty: true,
             shouldValidate: true,
@@ -444,16 +463,6 @@ export function ProfileSettingsClient() {
       setUploading(null);
       e.target.value = ""; // Reset input
     }
-  };
-
-  const handleAddPhoto = () => {
-    if (formData.gallery.length >= 5) {
-      toast.error(t("settings.galleryLimit"), {
-        description: t("settings.galleryLimitText"),
-      });
-      return;
-    }
-    galleryInputRef.current?.click();
   };
 
   const removePhoto = (index: number) => {
@@ -511,7 +520,7 @@ export function ProfileSettingsClient() {
       <div className="sticky top-0 z-50 bg-card/85 backdrop-blur-md border-b border-border-subtle">
         <nav className="mx-auto container px-4 py-1 md:py-2 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/" onNavigate={confirmNavigation} className="flex items-center space-x-2">
               <ArrowLeft size={16} className="text-text-muted" />{" "}
               <p className="hidden text-sm md:flex text-text-muted font-medium">
                 {t("settings.back")}
@@ -538,7 +547,7 @@ export function ProfileSettingsClient() {
       </div>
 
       <main className="md:container md:mx-auto md:px-4 mb-6">
-        <form id="profile-settings-form" onSubmit={handleSubmit(onFormSubmit)}>
+        <form id="profile-settings-form" onSubmit={handleSubmit(onFormSubmit)} noValidate>
           {!onboardingDismissed &&
             (onboardingIntent === null || nextOnboardingItem) && (
               <SurfacePanel className="mb-3 space-y-4 p-4 md:p-6">
@@ -695,6 +704,8 @@ export function ProfileSettingsClient() {
                       src={formData.bannerURL!}
                       alt={t("settings.coverAlt")}
                       fill
+                      sizes="(min-width: 1024px) 33vw, 100vw"
+                      unoptimized={USE_STORAGE_EMULATOR}
                       className="object-cover"
                       referrerPolicy="no-referrer"
                     />
@@ -703,10 +714,12 @@ export function ProfileSettingsClient() {
                     type="button"
                     size="icon-lg"
                     onClick={() => bannerInputRef.current?.click()}
-                    disabled={uploading === "banner"}
+                    disabled={uploading !== null}
                     className="absolute top-4 right-4 bg-primary text-primary-foreground shadow-md hover:bg-primary/90 active:bg-primary/80"
                     title={t("settings.changeCover")}
                     aria-label={t("settings.changeCoverAria")}
+                    aria-describedby="profile-banner-help profile-image-storage-help"
+                    aria-busy={uploading === "banner"}
                   >
                     {uploading === "banner" ? (
                       <Loader2 size={18} className="animate-spin" />
@@ -718,14 +731,14 @@ export function ProfileSettingsClient() {
                     type="file"
                     ref={bannerInputRef}
                     className="hidden"
-                    accept="image/*"
+                    accept={PROFILE_IMAGE_ACCEPT}
                     onChange={(e) => handleFileChange(e, "banner")}
                   />
                 </div>
                 <div className="pt-10 pb-4 px-4 flex flex-col items-center -mt-16">
                   <div className="relative group mb-6">
                     <Avatar className="w-32 h-32 border-4 border-surface shadow-sm">
-                      <AvatarImage src={formData.photoURL || undefined} />
+                      <AvatarImage src={formData.photoURL || undefined} alt="" />
                       <AvatarFallback className="bg-primary/5 text-primary text-4xl font-bold">
                         {formData.name[0]}
                       </AvatarFallback>
@@ -734,8 +747,10 @@ export function ProfileSettingsClient() {
                       type="button"
                       size="icon"
                       onClick={() => avatarInputRef.current?.click()}
-                      disabled={uploading === "avatar"}
+                      disabled={uploading !== null}
                       aria-label={t("settings.changePhoto")}
+                      aria-describedby="profile-avatar-help profile-image-storage-help"
+                      aria-busy={uploading === "avatar"}
                       className="absolute bottom-0 right-0 size-10 shadow-sm hover:scale-105"
                     >
                       {uploading === "avatar" ? (
@@ -748,7 +763,7 @@ export function ProfileSettingsClient() {
                       type="file"
                       ref={avatarInputRef}
                       className="hidden"
-                      accept="image/*"
+                      accept={PROFILE_IMAGE_ACCEPT}
                       onChange={(e) => handleFileChange(e, "avatar")}
                     />
                   </div>
@@ -763,7 +778,20 @@ export function ProfileSettingsClient() {
                       }
                     />
                   </h2>
-                  <p className="text-sm text-text-muted mb-4">{user.email}</p>
+                  <p className="mb-4 break-all text-sm text-text-muted">{user.email}</p>
+                  <dl className="grid w-full gap-3 border-t border-border-subtle pt-3 text-xs sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                    <div>
+                      <dt className="font-semibold text-text-main">{t("settings.avatarLabel")}</dt>
+                      <dd id="profile-avatar-help" className="text-text-muted">{imageHelp}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-text-main">{t("settings.coverAlt")}</dt>
+                      <dd id="profile-banner-help" className="text-text-muted">{imageHelp}</dd>
+                    </div>
+                  </dl>
+                  <p id="profile-image-storage-help" className="mt-2 w-full text-xs text-text-muted">
+                    {t("settings.imageStoredLimit", { size: MAX_STORED_IMAGE_MB })}
+                  </p>
                 </div>
               </div>
               <SurfacePanel className="space-y-4 p-4 md:p-4">
@@ -816,9 +844,6 @@ export function ProfileSettingsClient() {
                     </li>
                   ))}
                 </ul>
-                <p className="bg-surface p-3 text-xs text-text-muted">
-                  {t("settings.imagesRule", { formats: t("settings.imageFormats") })}
-                </p>
               </SurfacePanel>
             </div>
 
@@ -836,12 +861,16 @@ export function ProfileSettingsClient() {
                 <section className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label className="text-xs md:text-sm font-medium text-text-muted flex items-center gap-1">
-                        {t("settings.fullName")} <span className="text-destructive">*</span>
+                      <Label htmlFor={profileFieldId("name")} className="text-xs md:text-sm font-medium text-text-muted flex items-center gap-1">
+                        {t("settings.fullName")} <span className="text-destructive" aria-hidden="true">*</span>
                       </Label>
                       <div className="relative">
                         <Input
+                          {...fieldProps("name")}
                           {...register("name")}
+                          required
+                          minLength={PROFILE_LIMITS.nameMin}
+                          autoComplete="name"
                           maxLength={PROFILE_LIMITS.name}
                           className={`bg-surface focus:bg-card text-sm h-12 transition-all ${
                             errors.name
@@ -862,22 +891,17 @@ export function ProfileSettingsClient() {
                           ) : null}
                         </div>
                       </div>
-                      <p className="text-xs text-text-muted ml-1">
-                        {t("settings.nameHint", { max: PROFILE_LIMITS.name })}
-                      </p>
-                      {errors.name && (
-                        <p className="text-xs text-destructive font-bold ml-1">
-                          {tv(errors.name.message)}
-                        </p>
-                      )}
+                      {fieldFeedback("name", t("settings.nameHint", { min: PROFILE_LIMITS.nameMin, max: PROFILE_LIMITS.name }))}
                     </div>
                     <div ref={locationSectionRef} className="space-y-2">
-                      <Label className="text-xs md:text-sm font-medium text-text-muted flex items-center gap-1">
+                      <Label htmlFor={profileFieldId("location")} className="text-xs md:text-sm font-medium text-text-muted flex items-center gap-1">
                         {t("settings.location")}
                       </Label>
                       <div className="flex gap-2">
                         <Input
+                          {...fieldProps("location")}
                           {...register("location")}
+                          autoComplete="address-level2"
                           placeholder={t("settings.locationPlaceholder")}
                           maxLength={PROFILE_LIMITS.location}
                           className={`bg-surface focus:bg-card transition-all text-sm h-12 flex-grow ${errors.location ? "ring-2 ring-destructive" : ""}`}
@@ -898,14 +922,7 @@ export function ProfileSettingsClient() {
                           )}
                         </Button>
                       </div>
-                      {errors.location && (
-                        <p className="text-xs text-destructive font-bold ml-1">
-                          {tv(errors.location.message)}
-                        </p>
-                      )}
-                      <p className="text-xs text-text-muted ml-1">
-                        {t("settings.locationHint", { max: PROFILE_LIMITS.location })}
-                      </p>
+                      {fieldFeedback("location", t("settings.locationHint", { max: PROFILE_LIMITS.location }))}
                     </div>
                     <div className="md:col-span-2 space-y-4 border border-border-subtle p-4">
                       <div className="space-y-1">
@@ -967,48 +984,41 @@ export function ProfileSettingsClient() {
                           </p>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                              <Label
-                                htmlFor="profile-ward"
+                              <Label htmlFor={profileFieldId("ward")}
                                 className="text-xs md:text-sm font-medium text-text-muted"
                               >
                                 {t("settings.ward")}
                               </Label>
                               <Input
-                                id="profile-ward"
+                                {...fieldProps("ward")}
                                 {...register("ward")}
+                                autoComplete="off"
                                 placeholder={t("settings.wardPlaceholder")}
                                 maxLength={PROFILE_LIMITS.ward}
                                 className={`bg-surface focus:bg-card transition-all text-sm h-12 ${errors.ward ? "ring-2 ring-destructive" : ""}`}
                               />
-                              <p className="text-xs text-text-muted ml-1">
-                                {t("settings.upTo", { max: PROFILE_LIMITS.ward })}
-                              </p>
-                              {errors.ward && (
-                                <p className="text-xs text-destructive font-bold ml-1">
-                                  {tv(errors.ward.message)}
-                                </p>
-                              )}
+                              {fieldFeedback("ward", t("settings.upTo", { max: PROFILE_LIMITS.ward }))}
                             </div>
                             <div className="space-y-2">
-                              <Label
-                                htmlFor="profile-baptism-year"
+                              <Label htmlFor={profileFieldId("baptismYear")}
                                 className="text-xs md:text-sm font-medium text-text-muted"
                               >
                                 {t("settings.baptismYear")}
                               </Label>
                               <Input
-                                id="profile-baptism-year"
+                                {...fieldProps("baptismYear")}
                                 {...register("baptismYear")}
+                                autoComplete="off"
                                 placeholder={t("settings.baptismPlaceholder")}
                                 inputMode="numeric"
-                                maxLength={4}
+                                maxLength={PROFILE_LIMITS.baptismYearDigits}
                                 className={`bg-surface focus:bg-card transition-all text-sm h-12 ${errors.baptismYear ? "ring-2 ring-destructive" : ""}`}
                               />
-                              {errors.baptismYear && (
-                                <p className="text-xs text-destructive font-bold ml-1">
-                                  {tv(errors.baptismYear.message)}
-                                </p>
-                              )}
+                              {fieldFeedback("baptismYear", t("settings.baptismYearHint", {
+                                digits: PROFILE_LIMITS.baptismYearDigits,
+                                min: String(PROFILE_LIMITS.baptismYearMin),
+                                max: String(new Date().getFullYear()),
+                              }))}
                             </div>
                           </div>
                           {/* LGPD art. 11: specific consent for religious data
@@ -1040,29 +1050,24 @@ export function ProfileSettingsClient() {
 
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <Label className="text-xs md:text-sm font-medium text-text-muted">
+                      <Label htmlFor={profileFieldId("bio")} className="text-xs md:text-sm font-medium text-text-muted">
                         {t("settings.bio")}
                       </Label>
                       <span
-                        className={`text-xs font-semibold ${formData.bio && formData.bio.length > 500 ? "text-destructive" : "text-text-muted"}`}
+                        className={`text-xs font-semibold ${formData.bio && formData.bio.length > PROFILE_LIMITS.bio ? "text-destructive" : "text-text-muted"}`}
                       >
-                        {formData.bio?.length || 0} / 500
+                        {formData.bio?.length || 0} / {PROFILE_LIMITS.bio}
                       </span>
                     </div>
                     <Textarea
+                      {...fieldProps("bio")}
                       {...register("bio")}
+                      autoComplete="off"
                       placeholder={t("settings.bioPlaceholder")}
                       className={`bg-surface focus:bg-card transition-all text-sm min-h-[150px] p-4 focus:ring-2 focus:ring-primary/20 ${errors.bio ? "ring-2 ring-destructive" : ""}`}
                       maxLength={PROFILE_LIMITS.bio}
                     />
-                    <p className="text-xs text-text-muted ml-1">
-                      {t("settings.upTo", { max: PROFILE_LIMITS.bio })}
-                    </p>
-                    {errors.bio && (
-                      <p className="text-xs text-destructive font-bold ml-1">
-                        {tv(errors.bio.message)}
-                      </p>
-                    )}
+                    {fieldFeedback("bio", t("settings.upTo", { max: PROFILE_LIMITS.bio }))}
                   </div>
                   <div className="space-y-2">
                     <Label
@@ -1128,6 +1133,11 @@ export function ProfileSettingsClient() {
                 </div>
 
                 <div className="space-y-6">
+                  {profile?.isProvider && formData.isProvider && (
+                    <Link href="/profile/produtos" onNavigate={confirmNavigation} className={buttonVariants({ variant: "outline" })}>
+                      {t("products.manage")}
+                    </Link>
+                  )}
                   {!formData.isProvider ? (
                     <div className="border border-border-subtle bg-surface p-4 text-sm text-text-muted">
                       {rich(t("settings.advertiseOff"), {
@@ -1142,7 +1152,7 @@ export function ProfileSettingsClient() {
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                       <div className="space-y-2">
                         <Label
-                          htmlFor="profile-category"
+                          htmlFor={profileFieldId("category")}
                           className="text-xs md:text-sm font-medium text-text-muted"
                         >
                           {t("settings.category")}
@@ -1159,10 +1169,10 @@ export function ProfileSettingsClient() {
                               }
                             >
                               <SelectTrigger
-                                id="profile-category"
+                                {...fieldProps("category")}
                                 ref={field.ref}
                                 onBlur={field.onBlur}
-                                aria-invalid={Boolean(errors.category)}
+                                aria-required="true"
                                 className="h-12 w-full bg-surface px-4 text-sm"
                               >
                                 <SelectValue placeholder={t("settings.selectCategory")} />
@@ -1177,60 +1187,48 @@ export function ProfileSettingsClient() {
                             </Select>
                           )}
                         />
-                        {errors.category && (
-                          <p className="text-xs text-destructive font-bold ml-1">
-                            {tv(errors.category.message)}
-                          </p>
-                        )}
-                        <p className="text-xs text-text-muted ml-1">
-                          {t("settings.categoryHint")}
-                        </p>
+                        {fieldFeedback("category", t("settings.categoryHint"))}
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-xs md:text-sm font-medium text-text-muted">
-                          {t("settings.specialty")}
+                        <Label htmlFor={profileFieldId("serviceType")} className="text-xs md:text-sm font-medium text-text-muted">
+                          {t("settings.specialty")} <span className="text-destructive" aria-hidden="true">*</span>
                         </Label>
                         <Input
+                          {...fieldProps("serviceType")}
                           {...register("serviceType")}
+                          required
+                          minLength={PROFILE_LIMITS.serviceTypeMin}
+                          autoComplete="off"
                           placeholder={t("settings.specialtyPlaceholder")}
                           maxLength={PROFILE_LIMITS.serviceType}
                           className={`bg-surface focus:bg-card text-sm transition-all h-12 ${errors.serviceType ? "ring-2 ring-destructive" : ""}`}
                         />
-                        <p className="text-xs text-text-muted ml-1">
-                          {t("settings.upTo", { max: PROFILE_LIMITS.serviceType })}
-                        </p>
-                        {errors.serviceType && (
-                          <p className="text-xs text-destructive font-bold ml-1">
-                            {tv(errors.serviceType.message)}
-                          </p>
-                        )}
+                        {fieldFeedback("serviceType", t("settings.specialtyLengthHint", { min: PROFILE_LIMITS.serviceTypeMin, max: PROFILE_LIMITS.serviceType }))}
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-xs md:text-sm font-medium text-text-muted">
+                        <Label htmlFor={profileFieldId("companyName")} className="text-xs md:text-sm font-medium text-text-muted">
                           {t("settings.company")}
                           <span className="text-xs text-text-main">
                             {t("settings.optional")}
                           </span>
                         </Label>
                         <Input
+                          {...fieldProps("companyName")}
                           {...register("companyName")}
+                          autoComplete="organization"
                           placeholder={t("settings.companyPlaceholder")}
                           maxLength={PROFILE_LIMITS.companyName}
                           className={`bg-surface focus:bg-card transition-all text-sm h-12 ${errors.companyName ? "ring-2 ring-destructive" : ""}`}
                         />
-                        {errors.companyName && (
-                          <p className="text-xs text-destructive font-bold ml-1">
-                            {tv(errors.companyName.message)}
-                          </p>
-                        )}
+                        {fieldFeedback("companyName", t("settings.upTo", { max: PROFILE_LIMITS.companyName }))}
                       </div>
 
                       <div className="space-y-4 pt-2">
-                        <Label className="text-xs md:text-sm font-medium text-text-muted">
+                        <p id="profile-availability-label" className="text-xs md:text-sm font-medium text-text-muted">
                           {t("settings.availability")}
-                        </Label>
-                        <div className="flex flex-wrap gap-2">
+                        </p>
+                        <div role="group" aria-labelledby="profile-availability-label" className="flex flex-wrap gap-2">
                           {AVAILABILITY_OPTIONS.map((day) => {
                             const isSelected =
                               formData.availability?.includes(day);
@@ -1238,6 +1236,7 @@ export function ProfileSettingsClient() {
                               <Button
                                 key={day}
                                 type="button"
+                                aria-pressed={isSelected}
                                 onClick={() => {
                                   const current = formData.availability || [];
                                   const next = isSelected
@@ -1262,23 +1261,18 @@ export function ProfileSettingsClient() {
                       </div>
 
                       <div className="space-y-2 pt-2">
-                        <Label className="text-xs md:text-sm font-medium text-text-muted">
+                        <Label htmlFor={profileFieldId("serviceHours")} className="text-xs md:text-sm font-medium text-text-muted">
                           {t("settings.serviceHours")}
                         </Label>
                         <Input
+                          {...fieldProps("serviceHours")}
                           {...register("serviceHours")}
+                          autoComplete="off"
                           placeholder={t("settings.hoursPlaceholder")}
                           maxLength={PROFILE_LIMITS.serviceHours}
                           className={`bg-surface focus:bg-card transition-all text-sm h-12 ${errors.serviceHours ? "ring-2 ring-destructive" : ""}`}
                         />
-                        <p className="text-xs text-text-muted ml-1">
-                          {t("settings.hoursHint", { max: PROFILE_LIMITS.serviceHours })}
-                        </p>
-                        {errors.serviceHours && (
-                          <p className="text-xs text-destructive font-bold ml-1">
-                            {tv(errors.serviceHours.message)}
-                          </p>
-                        )}
+                        {fieldFeedback("serviceHours", t("settings.hoursHint", { max: PROFILE_LIMITS.serviceHours }))}
                       </div>
                     </div>
                   )}
@@ -1298,59 +1292,74 @@ export function ProfileSettingsClient() {
                         </h4>
                       </div>
                       <div className="col-span-3 md:col-span-2 space-y-2">
-                        <Label className="text-xs md:text-sm font-medium text-text-muted">
+                        <Label htmlFor={profileFieldId("businessAddress")} className="text-xs md:text-sm font-medium text-text-muted">
                           {t("settings.street")}
                         </Label>
                         <Input
+                          {...fieldProps("businessAddress")}
                           {...register("businessAddress")}
+                          autoComplete="address-line1"
                           placeholder={t("settings.streetPlaceholder")}
                           maxLength={PROFILE_LIMITS.address}
                           className={`bg-surface focus:bg-card transition-all h-12 ${errors.businessAddress ? "ring-2 ring-destructive" : ""}`}
                         />
+                        {fieldFeedback("businessAddress", t("settings.upTo", { max: PROFILE_LIMITS.address }))}
                       </div>
                       <div className="space-y-2 col-span-1">
-                        <Label className="text-xs md:text-sm font-medium text-text-muted">
+                        <Label htmlFor={profileFieldId("businessAddressNumber")} className="text-xs md:text-sm font-medium text-text-muted">
                           {t("settings.number")}
                         </Label>
                         <Input
+                          {...fieldProps("businessAddressNumber")}
                           {...register("businessAddressNumber")}
+                          autoComplete="off"
                           placeholder={t("settings.numberPlaceholder")}
                           maxLength={PROFILE_LIMITS.addressNumber}
                           className={`bg-surface focus:bg-card transition-all h-12 ${errors.businessAddressNumber ? "ring-2 ring-destructive" : ""}`}
                         />
+                        {fieldFeedback("businessAddressNumber", t("settings.upTo", { max: PROFILE_LIMITS.addressNumber }))}
                       </div>
                       <div className="space-y-2 col-span-2">
-                        <Label className="text-xs md:text-sm font-medium text-text-muted">
+                        <Label htmlFor={profileFieldId("businessNeighborhood")} className="text-xs md:text-sm font-medium text-text-muted">
                           {t("settings.neighborhood")}
                         </Label>
                         <Input
+                          {...fieldProps("businessNeighborhood")}
                           {...register("businessNeighborhood")}
+                          autoComplete="address-level3"
                           placeholder={t("settings.neighborhoodPlaceholder")}
                           maxLength={PROFILE_LIMITS.neighborhood}
                           className={`bg-surface focus:bg-card transition-all h-12 ${errors.businessNeighborhood ? "ring-2 ring-destructive" : ""}`}
                         />
+                        {fieldFeedback("businessNeighborhood", t("settings.upTo", { max: PROFILE_LIMITS.neighborhood }))}
                       </div>
                       <div className="space-y-2 col-span-1">
-                        <Label className="text-xs md:text-sm font-medium text-text-muted">
+                        <Label htmlFor={profileFieldId("businessState")} className="text-xs md:text-sm font-medium text-text-muted">
                           {t("settings.state")}
                         </Label>
                         <Input
+                          {...fieldProps("businessState")}
                           {...register("businessState")}
+                          autoComplete="address-level1"
                           placeholder={t("settings.statePlaceholder")}
                           maxLength={PROFILE_LIMITS.state}
                           className={`focus:bg-card bg-surface text-sm h-12 ${errors.businessState ? "ring-2 ring-destructive" : ""}`}
                         />
+                        {fieldFeedback("businessState", t("settings.upTo", { max: PROFILE_LIMITS.state }))}
                       </div>
                       <div className="space-y-2 col-span-2">
-                        <Label className="text-xs md:text-sm font-medium text-text-muted">
+                        <Label htmlFor={profileFieldId("businessComplement")} className="text-xs md:text-sm font-medium text-text-muted">
                           {t("settings.complement")}
                         </Label>
                         <Input
+                          {...fieldProps("businessComplement")}
                           {...register("businessComplement")}
+                          autoComplete="address-line2"
                           placeholder={t("settings.complementPlaceholder")}
                           maxLength={PROFILE_LIMITS.complement}
                           className={`focus:bg-card bg-surface text-sm h-12 ${errors.businessComplement ? "ring-2 ring-destructive" : ""}`}
                         />
+                        {fieldFeedback("businessComplement", t("settings.upTo", { max: PROFILE_LIMITS.complement }))}
                       </div>
                     </div>
                   )}
@@ -1371,126 +1380,108 @@ export function ProfileSettingsClient() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2 col-span-2 md:col-span-1">
-                    <Label className="text-xs md:text-sm font-medium text-text-muted">
+                    <Label htmlFor={profileFieldId("whatsapp")} className="text-xs md:text-sm font-medium text-text-muted">
                       WhatsApp
                     </Label>
                     <Input
+                      {...fieldProps("whatsapp")}
                       {...register("whatsapp")}
+                      type="tel"
+                      autoComplete="tel"
                       placeholder={t("settings.whatsappPlaceholder")}
                       inputMode="numeric"
                       maxLength={PROFILE_LIMITS.whatsappDigitsMax}
                       className={`bg-surface text-sm h-12 ${errors.whatsapp ? "ring-2 ring-destructive" : ""}`}
                     />
-                    <p className="text-xs text-text-muted ml-1">
-                      {t("settings.whatsappHint", {
-                        min: PROFILE_LIMITS.whatsappDigitsMin,
-                        max: PROFILE_LIMITS.whatsappDigitsMax,
-                      })}
-                    </p>
-                    {errors.whatsapp && (
-                      <p className="text-xs text-destructive font-bold ml-1">
-                        {tv(errors.whatsapp.message)}
-                      </p>
-                    )}
+                    {fieldFeedback("whatsapp", t("settings.whatsappHint", { min: PROFILE_LIMITS.whatsappDigitsMin, max: PROFILE_LIMITS.whatsappDigitsMax }))}
                   </div>
                   <div className="space-y-2 md:col-span-1 col-span-2">
-                    <Label className="text-xs md:text-sm font-medium text-text-muted">
+                    <Label htmlFor={profileFieldId("phone")} className="text-xs md:text-sm font-medium text-text-muted">
                       {t("settings.phone")}
                       <span className="text-text-main text-xs font-normal">
                         {t("settings.optional")}
                       </span>
                     </Label>
                     <Input
+                      {...fieldProps("phone")}
                       {...register("phone")}
+                      type="tel"
+                      autoComplete="tel"
                       placeholder={t("settings.phonePlaceholder")}
                       inputMode="numeric"
                       maxLength={PROFILE_LIMITS.phoneDigitsMax}
                       className={`bg-surface text-sm h-12 ${errors.phone ? "ring-2 ring-destructive" : ""}`}
                     />
-                    <p className="text-xs text-text-muted ml-1">
-                      {t("settings.phoneHint", { max: PROFILE_LIMITS.phoneDigitsMax })}
-                    </p>
-                    {errors.phone && (
-                      <p className="text-xs text-destructive font-bold ml-1">
-                        {tv(errors.phone.message)}
-                      </p>
-                    )}
+                    {fieldFeedback("phone", t("settings.phoneHint", { max: PROFILE_LIMITS.phoneDigitsMax }))}
                   </div>
                   <div className="space-y-2 col-span-2">
-                    <Label className="text-xs md:text-sm font-medium text-text-muted">
+                    <Label htmlFor={profileFieldId("instagram")} className="text-xs md:text-sm font-medium text-text-muted">
                       Instagram
                     </Label>
                     <Input
+                      {...fieldProps("instagram")}
                       {...register("instagram")}
+                      autoComplete="off"
+                      spellCheck={false}
                       placeholder={t("settings.instagramPlaceholder")}
                       maxLength={PROFILE_LIMITS.socialHandle}
                       className={`bg-surface text-sm h-12 ${errors.instagram ? "ring-2 ring-destructive" : ""}`}
                     />
-                    <p className="text-xs text-text-muted ml-1">
-                      {t("settings.instagramHint", { max: PROFILE_LIMITS.socialHandle })}
-                    </p>
-                    {errors.instagram && (
-                      <p className="text-xs text-destructive font-bold ml-1">
-                        {tv(errors.instagram.message)}
-                      </p>
-                    )}
+                    {fieldFeedback("instagram", t("settings.instagramHint", { max: PROFILE_LIMITS.socialHandle }))}
                   </div>
                   <div className="space-y-2 col-span-2">
-                    <Label className="text-xs md:text-sm font-medium text-text-muted">
+                    <Label htmlFor={profileFieldId("facebook")} className="text-xs md:text-sm font-medium text-text-muted">
                       Facebook
                     </Label>
                     <Input
+                      {...fieldProps("facebook")}
                       {...register("facebook")}
+                      type="url"
+                      autoComplete="off"
+                      spellCheck={false}
                       placeholder={t("settings.profileLink")}
                       maxLength={PROFILE_LIMITS.socialUrl}
                       className={`bg-surface text-sm h-12 ${errors.facebook ? "ring-2 ring-destructive" : ""}`}
                     />
-                    {errors.facebook && (
-                      <p className="text-xs text-destructive font-bold ml-1">
-                        {tv(errors.facebook.message)}
-                      </p>
-                    )}
+                    {fieldFeedback("facebook", t("settings.upTo", { max: PROFILE_LIMITS.socialUrl }))}
                   </div>
                   <div className="space-y-2 col-span-2">
-                    <Label className="text-xs md:text-sm font-medium text-text-muted">
+                    <Label htmlFor={profileFieldId("linkedin")} className="text-xs md:text-sm font-medium text-text-muted">
                       LinkedIn
                     </Label>
                     <Input
+                      {...fieldProps("linkedin")}
                       {...register("linkedin")}
+                      type="url"
+                      autoComplete="off"
+                      spellCheck={false}
                       placeholder={t("settings.profileLink")}
                       maxLength={PROFILE_LIMITS.socialUrl}
                       className={`bg-surface text-sm h-12 ${errors.linkedin ? "ring-2 ring-destructive" : ""}`}
                     />
-                    {errors.linkedin && (
-                      <p className="text-xs text-destructive font-bold ml-1">
-                        {tv(errors.linkedin.message)}
-                      </p>
-                    )}
+                    {fieldFeedback("linkedin", t("settings.upTo", { max: PROFILE_LIMITS.socialUrl }))}
                   </div>
                   <div className="space-y-2 col-span-2">
-                    <Label className="text-xs md:text-sm font-medium text-text-muted">
+                    <Label htmlFor={profileFieldId("website")} className="text-xs md:text-sm font-medium text-text-muted">
                       {t("settings.website")}
                     </Label>
                     <Input
+                      {...fieldProps("website")}
                       {...register("website")}
+                      type="url"
+                      autoComplete="url"
+                      spellCheck={false}
                       placeholder={t("settings.websitePlaceholder")}
                       maxLength={PROFILE_LIMITS.website}
                       className={`bg-surface h-12 text-sm  ${errors.website ? "ring-2 ring-destructive" : ""}`}
                     />
-                    <p className="text-xs text-text-muted ml-1">
-                      {t("settings.websiteHint", { max: PROFILE_LIMITS.website })}
-                    </p>
-                    {errors.website && (
-                      <p className="text-xs text-destructive font-bold ml-1">
-                        {tv(errors.website.message)}
-                      </p>
-                    )}
+                    {fieldFeedback("website", t("settings.websiteHint", { max: PROFILE_LIMITS.website }))}
                   </div>
                 </div>
               </div>
 
               <div className="bg-card md:border border-y md:p-8 p-4 space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <h3 className="md:text-xl text-base font-semibold text-text-main">
                       {t("settings.media")}
@@ -1504,9 +1495,11 @@ export function ProfileSettingsClient() {
                   <Button
                     type="button"
                     variant="default"
-                    onClick={handleAddPhoto}
-                    disabled={uploading === "gallery"}
-                    className="hidden md:flex h-10 text-sm bg-primary px-4 hover:bg-primary/90 active:bg-primary/80 text-primary-foreground font-bold disabled:opacity-50"
+                    onClick={() => galleryInputRef.current?.click()}
+                    disabled={uploading !== null || galleryFull}
+                    aria-describedby="profile-gallery-help"
+                    aria-busy={uploading === "gallery"}
+                    className="h-10 px-4 font-bold"
                   >
                     {uploading === "gallery" ? (
                       <Loader2 size={16} className="mr-2 animate-spin" />
@@ -1519,11 +1512,11 @@ export function ProfileSettingsClient() {
                     type="file"
                     ref={galleryInputRef}
                     className="hidden"
-                    accept="image/*"
+                    accept={PROFILE_IMAGE_ACCEPT}
                     onChange={(e) => handleFileChange(e, "gallery")}
                   />
                 </div>
-                <div className="border border-primary/20 bg-primary/5 p-4 text-xs text-text-muted space-y-1">
+                <div id="profile-gallery-help" className="border border-primary/20 bg-primary/5 p-4 text-xs text-text-muted space-y-1">
                   <p className="font-semibold text-text-main">
                     {t("settings.galleryRules")}
                   </p>
@@ -1531,8 +1524,10 @@ export function ProfileSettingsClient() {
                     {t("settings.galleryRuleCount", {
                       max: PROFILE_LIMITS.galleryMaxItems,
                       formats: t("settings.imageFormats"),
+                      size: MAX_PROFILE_IMAGE_MB,
                     })}
                   </p>
+                  <p>{t("settings.imageStoredLimit", { size: MAX_STORED_IMAGE_MB })}</p>
                   <p>
                     {t("settings.galleryRuleDescription", {
                       max: PROFILE_LIMITS.galleryDescription,
@@ -1541,53 +1536,64 @@ export function ProfileSettingsClient() {
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {formData.gallery.map((photo, index) => (
-                    <div key={index} className="flex flex-col gap-2">
-                      <div className="relative aspect-square overflow-hidden group border border-border-subtle">
-                        <Image
-                          src={photo.url}
-                          alt={t("settings.galleryAlt", { n: index })}
-                          fill
-                          className="object-cover transition-transform group-hover:scale-110"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  {formData.gallery.map((photo, index) => {
+                    const id = `profile-gallery-description-${index + 1}`;
+                    const error = errors.gallery?.[index]?.description?.message;
+                    return (
+                      <div key={index} className="flex flex-col gap-2">
+                        <div className="relative aspect-square overflow-hidden border border-border-subtle">
+                          <Image
+                            src={photo.url}
+                            alt={t("settings.galleryAlt", { n: index + 1 })}
+                            fill
+                            sizes="(min-width: 1024px) 20vw, 50vw"
+                            unoptimized={USE_STORAGE_EMULATOR}
+                            className="object-cover"
+                            referrerPolicy="no-referrer"
+                          />
                           <Button
-                            variant="destructive"
+                            variant="outline"
                             size="icon"
                             type="button"
                             onClick={() => removePhoto(index)}
                             aria-label={t("settings.removePhoto", { n: index + 1 })}
-                            className="w-8 h-8"
+                            className="absolute right-2 top-2 text-destructive"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={14} aria-hidden="true" />
                           </Button>
                         </div>
+                        <Label htmlFor={id} className="text-xs text-text-muted">
+                          {t("settings.galleryDescriptionLabel", { n: index + 1 })}
+                        </Label>
+                        <Textarea
+                          id={id}
+                          name={`gallery.${index}.description`}
+                          aria-invalid={Boolean(error)}
+                          aria-describedby={error ? `${id}-help ${id}-error` : `${id}-help`}
+                          placeholder={t("settings.commentPlaceholder")}
+                          value={photo.description || ""}
+                          maxLength={PROFILE_LIMITS.galleryDescription}
+                          onChange={(e) => {
+                            const newGallery = [...formData.gallery];
+                            const photoItem = formData.gallery[index];
+                            newGallery[index] = {
+                              ...photoItem,
+                              description: e.target.value,
+                            };
+                            setValue("gallery", newGallery, {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            });
+                          }}
+                          className="text-xs min-h-[50px] h-auto p-2 bg-surface border border-border-subtle resize-none"
+                        />
+                        <FieldDescription id={`${id}-help`} className="tabular-nums">
+                          {t("settings.charactersUsed", { count: (photo.description || "").length, max: PROFILE_LIMITS.galleryDescription })}
+                        </FieldDescription>
+                        {error && <FieldError id={`${id}-error`}>{tv(error)}</FieldError>}
                       </div>
-                      <Textarea
-                        placeholder={t("settings.commentPlaceholder")}
-                        value={photo.description || ""}
-                        maxLength={PROFILE_LIMITS.galleryDescription}
-                        onChange={(e) => {
-                          const newGallery = [...formData.gallery];
-                          const photoItem = formData.gallery[index];
-                          newGallery[index] = {
-                            ...photoItem,
-                            description: e.target.value,
-                          };
-                          setValue("gallery", newGallery, {
-                            shouldDirty: true,
-                            shouldValidate: true,
-                          });
-                        }}
-                        className="text-xs min-h-[50px] h-auto p-2 bg-surface border border-border-subtle resize-none"
-                      />
-                      <p className="text-xs text-text-muted ml-1">
-                        {(photo.description || "").length}/
-                        {PROFILE_LIMITS.galleryDescription}
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                   {formData.gallery.length === 0 && (
                     <div className="col-span-full py-12 text-center bg-surface border-2 border-dashed border-border-subtle">
                       <Camera className="mx-auto h-10 w-10 text-text-muted/20 mb-3" />
@@ -1598,22 +1604,6 @@ export function ProfileSettingsClient() {
                   )}
                 </div>
 
-                <div className="flex justify-end">
-                  <Button
-                    type="button"
-                    variant="default"
-                    onClick={handleAddPhoto}
-                    disabled={uploading === "gallery"}
-                    className="md:hidden flex h-10 text-sm bg-primary px-4 hover:bg-primary/90 active:bg-primary/80 text-primary-foreground font-bold disabled:opacity-50"
-                  >
-                    {uploading === "gallery" ? (
-                      <Loader2 size={16} className="mr-2 animate-spin" />
-                    ) : (
-                      <Plus size={16} className="mr-2 text-white" />
-                    )}{" "}
-                    {t("settings.addPhoto")}
-                  </Button>
-                </div>
               </div>
 
               <div className="bg-card md:border border-y md:p-8 p-4 space-y-6">

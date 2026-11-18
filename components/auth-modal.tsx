@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   loginSchema,
+  SIGN_UP_LIMITS,
   signUpSchema,
   type LoginFormData,
   type SignUpFormData,
@@ -24,12 +25,6 @@ import { MINIMUM_AGE } from "@skillsy/shared/terms";
 import { useT, useValidationMessage } from "@/lib/i18n/provider";
 import { rich } from "@/lib/i18n/rich";
 import type { MessageKey, TranslateFn } from "@skillsy/shared/i18n/keys";
-
-const profileLimits = {
-  avatarAndBannerMaxSizeMb: 10,
-  galleryMaxItems: 5,
-  supportedFormats: "JPG, PNG ou WEBP",
-};
 
 function getSignUpErrorMessage(error: unknown, t: TranslateFn) {
   if (
@@ -316,6 +311,8 @@ export function AuthModal({
                       <Input
                         id="email"
                         type="email"
+                        autoComplete="username"
+                        spellCheck={false}
                         placeholder={t("auth.emailPlaceholder")}
                         aria-invalid={Boolean(loginErrors.email)}
                         aria-describedby={
@@ -343,6 +340,7 @@ export function AuthModal({
                       <Input
                         id="password"
                         type="password"
+                        autoComplete="current-password"
                         aria-invalid={Boolean(loginErrors.password)}
                         aria-describedby={
                           loginErrors.password
@@ -400,11 +398,15 @@ export function AuthModal({
                       <Input
                         id="signup-email"
                         type="email"
+                        autoComplete="email"
+                        spellCheck={false}
+                        required
+                        maxLength={SIGN_UP_LIMITS.email}
                         placeholder={t("auth.emailPlaceholder")}
                         aria-invalid={Boolean(signUpErrors.email)}
                         aria-describedby={
                           signUpErrors.email
-                            ? "signup-email-error"
+                            ? "signup-email-help signup-email-error"
                             : "signup-email-help"
                         }
                         className={`h-10 border-input focus-visible:ring-accent ${signUpErrors.email ? "ring-2 ring-destructive" : ""}`}
@@ -414,11 +416,12 @@ export function AuthModal({
                         id="signup-email-help"
                         className="text-xs text-muted-foreground ml-1"
                       >
-                        {t("auth.emailHelp")}
+                        {t("auth.emailHelp", { max: SIGN_UP_LIMITS.email })}
                       </p>
                       {signUpErrors.email && (
                         <p
                           id="signup-email-error"
+                          role="alert"
                           className="text-xs text-destructive font-bold ml-1"
                         >
                           {tv(signUpErrors.email.message)}
@@ -436,11 +439,15 @@ export function AuthModal({
                         <Input
                           id="signup-password"
                           type="password"
+                          autoComplete="new-password"
+                          required
+                          minLength={SIGN_UP_LIMITS.passwordMin}
+                          maxLength={SIGN_UP_LIMITS.passwordMax}
                           placeholder={t("auth.passwordPlaceholder")}
                           aria-invalid={Boolean(signUpErrors.password)}
                           aria-describedby={
                             signUpErrors.password
-                              ? "signup-password-error"
+                              ? "signup-password-help signup-password-error"
                               : "signup-password-help"
                           }
                           className={`h-10 border-input focus-visible:ring-accent ${signUpErrors.password ? "ring-2 ring-destructive" : ""}`}
@@ -451,11 +458,12 @@ export function AuthModal({
                         id="signup-password-help"
                         className="text-xs text-muted-foreground ml-1"
                       >
-                        {t("auth.passwordHelp")}
+                        {t("auth.passwordHelp", { min: SIGN_UP_LIMITS.passwordMin, max: SIGN_UP_LIMITS.passwordMax })}
                       </p>
                       {signUpErrors.password && (
                         <p
                           id="signup-password-error"
+                          role="alert"
                           className="text-xs text-destructive font-bold ml-1"
                         >
                           {tv(signUpErrors.password.message)}

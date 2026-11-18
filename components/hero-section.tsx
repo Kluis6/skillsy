@@ -169,17 +169,9 @@ export function HeroSection({
                   <Button
                     type="button"
                     variant="ghost"
-                    className="h-auto w-full justify-between px-0 sm:px-4 py-3 text-left text-primary hover:bg-accent"
+                    className="h-12 w-full text-base font-medium normal-case text-primary hover:bg-accent"
                   >
-                    <span>
-                      <span className="block text-xs font-bold text-primary">
-                        {t("home.signupTitle")}
-                      </span>
-                      <span className="block text-xs text-text-muted">
-                        {t("home.signupHint")}
-                      </span>
-                    </span>
-                    <ArrowRight className="size-4 text-primary" />
+                    {t("home.signupTitle")}
                   </Button>
                 </AuthModal>
               ) : (

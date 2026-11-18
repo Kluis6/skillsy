@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { UserService } from "@/services/user-service";
 import { CommunityRecommendation, Rating, UserProfile } from "@/models/types";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -1165,9 +1165,20 @@ export function ProfileDetailClient({
           {/* About Section */}
           <section className="bg-card border-y border-border-subtle">
             <div className="mx-auto container p-4 space-y-4">
-              <h3 className="md:text-xl text-base font-semibold text-text-main">
-                {t("profile.about")}
-              </h3>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h3 className="md:text-xl text-base font-semibold text-text-main">
+                  {t("profile.about")}
+                </h3>
+                {targetProfile.isProvider && (
+                  <Link
+                    href={`/profile/${targetProfile.uid}/produtos`}
+                    prefetch={false}
+                    className={buttonVariants({ variant: "outline" })}
+                  >
+                    {t("products.view")}
+                  </Link>
+                )}
+              </div>
               <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap max-w-3xl">
                 {targetProfile.bio || t("profile.noBio")}
               </p>

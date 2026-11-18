@@ -6,7 +6,7 @@ service firebase.storage {
   match /b/{bucket}/o {
     match /users/{userId}/{kind}/{fileName} {
       // Public profiles and articles are public; the URLs carry a token anyway.
-      allow read: if true;
+      allow read: if kind != 'products';
 
       // Only the owner writes their own folder: images up to 2 MB in the
       // folders the site and app use (lib/image-upload.ts).
@@ -16,6 +16,17 @@ service firebase.storage {
                                request.resource.size < 2 * 1024 * 1024 &&
                                request.resource.contentType.matches('image/(jpeg|png|webp)');
 
+      allow delete: if kind != 'products' && request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId}/products/{fileName} {
+      allow get: if fileName.matches('^[a-f0-9-]{36}[.](jpg|png|webp)$');
+      allow create: if request.auth != null &&
+                       request.auth.uid == userId &&
+                       resource == null &&
+                       fileName.matches('^[a-f0-9-]{36}[.](jpg|png|webp)$') &&
+                       request.resource.size < 2 * 1024 * 1024 &&
+                       request.resource.contentType.matches('image/(jpeg|png|webp)');
       allow delete: if request.auth != null && request.auth.uid == userId;
     }
   }

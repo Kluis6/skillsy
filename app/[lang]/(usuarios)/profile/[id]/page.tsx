@@ -55,7 +55,7 @@ export default async function PublicProfilePage({ params }: Props) {
   const { id } = await params;
   const [profile, messages] = await Promise.all([
     getPublicProfile(id),
-    getMessages('profile'),
+    getMessages('profile', 'products'),
   ]);
   // The ward is only shown to signed-in members: it is left out of the page
   // sent to everyone and loaded on the client after sign-in.

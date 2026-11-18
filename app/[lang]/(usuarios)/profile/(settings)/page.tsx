@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ProfilePage() {
   return (
-    <I18nProvider messages={await getMessages('settings')}>
+    <I18nProvider messages={await getMessages('settings', 'products')}>
       <ProfileSettingsClient />
     </I18nProvider>
   );

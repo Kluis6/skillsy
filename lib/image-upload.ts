@@ -3,7 +3,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, storage } from "@/lib/firebase";
 
 /** Folders under users/{uid}/ that storage.rules accept. */
-export type ImageKind = "avatar" | "banner" | "gallery" | "posts";
+export type ImageKind = "avatar" | "banner" | "gallery" | "posts" | "products";
 
 // Images live in Cloud Storage and documents keep only the download URL:
 // base64 inside documents made a profile with a gallery weigh over 1 MB.
@@ -12,10 +12,12 @@ const LIMITS: Record<ImageKind, { maxWidthOrHeight: number; maxSizeMB: number }>
   banner: { maxWidthOrHeight: 1600, maxSizeMB: 0.35 },
   gallery: { maxWidthOrHeight: 1280, maxSizeMB: 0.3 },
   posts: { maxWidthOrHeight: 1600, maxSizeMB: 0.4 },
+  products: { maxWidthOrHeight: 1280, maxSizeMB: 0.3 },
 };
 
-/** storage.rules reject files over 2 MB. */
-const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
+/** storage.rules require the stored file to be smaller than this. */
+export const MAX_STORED_IMAGE_MB = 2;
+const MAX_UPLOAD_BYTES = MAX_STORED_IMAGE_MB * 1024 * 1024;
 
 async function compress(file: File, kind: ImageKind): Promise<Blob> {
   const options = { ...LIMITS[kind], fileType: "image/webp", initialQuality: 0.82 };
@@ -25,7 +27,7 @@ async function compress(file: File, kind: ImageKind): Promise<Blob> {
     try {
       return await imageCompression(file, { ...options, useWebWorker: false });
     } catch {
-      if (file.size <= MAX_UPLOAD_BYTES) return file;
+      if (file.size < MAX_UPLOAD_BYTES) return file;
       throw new Error(
         "Não foi possível comprimir a imagem. Tente uma foto JPG, PNG ou WEBP menor.",
       );
@@ -35,6 +37,11 @@ async function compress(file: File, kind: ImageKind): Promise<Blob> {
 
 /** Compresses the image, uploads it to users/{uid}/{kind}/ and returns its URL. */
 export async function uploadImage(file: File, kind: ImageKind): Promise<string> {
+  return getDownloadURL(await uploadImageFile(file, kind));
+}
+
+/** Catalog entries keep the filename so their images can be replaced and removed. */
+export async function uploadImageFile(file: File, kind: ImageKind) {
   const uid = auth.currentUser?.uid;
   if (!uid) throw new Error("Entre na sua conta para enviar imagens.");
 
@@ -47,5 +54,5 @@ export async function uploadImage(file: File, kind: ImageKind): Promise<string> 
     // Each upload gets a new name, so browsers and the app can cache forever.
     cacheControl: "public, max-age=31536000, immutable",
   });
-  return getDownloadURL(fileRef);
+  return fileRef;
 }

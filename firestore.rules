@@ -158,40 +158,32 @@ service cloud.firestore {
       ];
     }
 
-    function isValidAvailabilityItem(day) {
-      return day in ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-    }
-
     function isValidAvailabilityList(items) {
       return items is list &&
              items.size() <= 7 &&
-             (!((0 in items)) || isValidAvailabilityItem(items[0])) &&
-             (!((1 in items)) || isValidAvailabilityItem(items[1])) &&
-             (!((2 in items)) || isValidAvailabilityItem(items[2])) &&
-             (!((3 in items)) || isValidAvailabilityItem(items[3])) &&
-             (!((4 in items)) || isValidAvailabilityItem(items[4])) &&
-             (!((5 in items)) || isValidAvailabilityItem(items[5])) &&
-             (!((6 in items)) || isValidAvailabilityItem(items[6]));
+             items.hasOnly(['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']);
     }
 
     function isValidGalleryItem(item) {
+      let url = item.get('url', '');
+      let description = item.get('description', null);
       return item is map &&
-             item.keys().hasAll(['url']) &&
              item.keys().hasOnly(['url', 'description']) &&
-             item.url is string &&
-             item.url.size() > 0 &&
-             item.url.size() <= 1000000 &&
-             (!('description' in item) || item.description == null || (item.description is string && item.description.size() <= 200));
+             url is string &&
+             url.size() > 0 &&
+             url.size() <= 1000000 &&
+             (description == null || (description is string && description.size() <= 200));
     }
 
     function isValidGallery(items) {
+      let count = items.size();
       return items is list &&
-             items.size() <= 5 &&
-             (!((0 in items)) || isValidGalleryItem(items[0])) &&
-             (!((1 in items)) || isValidGalleryItem(items[1])) &&
-             (!((2 in items)) || isValidGalleryItem(items[2])) &&
-             (!((3 in items)) || isValidGalleryItem(items[3])) &&
-             (!((4 in items)) || isValidGalleryItem(items[4]));
+             count <= 5 &&
+             (count <= 0 || isValidGalleryItem(items[0])) &&
+             (count <= 1 || isValidGalleryItem(items[1])) &&
+             (count <= 2 || isValidGalleryItem(items[2])) &&
+             (count <= 3 || isValidGalleryItem(items[3])) &&
+             (count <= 4 || isValidGalleryItem(items[4]));
     }
 
     function isValidUser(data) {
@@ -286,53 +278,82 @@ service cloud.firestore {
       // unknown key is fine, so this checks data.keys(), not the changes).
       let changed = data.diff(resource.data).affectedKeys();
       return data.keys().hasOnly(allowedFields) &&
-             // Validate individual fields only if they are present in the update
-             (!('uid' in changed) || !('uid' in data) || (data.uid is string)) &&
-             (!('name' in changed) || !('name' in data) || (data.name is string && data.name.size() > 0 && data.name.size() <= 100)) &&
-             (!('email' in changed) || !('email' in data) || (isValidEmail(data.email))) &&
-             (!('isProvider' in changed) || !('isProvider' in data) || (data.isProvider is bool)) &&
-             (!('role' in changed) || !('role' in data) || (data.role in ['admin', 'user'])) &&
-             (!('language' in changed) || !('language' in data) || data.language in ['pt', 'en', 'es']) &&
-             (!('preferredLanguage' in changed) || !('preferredLanguage' in data) || data.preferredLanguage in ['pt', 'en', 'es']) &&
-             (!('country' in changed) || !('country' in data) || (data.country is string && data.country.matches('^[A-Z]{2}$'))) &&
-             (!('createdAt' in changed) || !('createdAt' in data) || (data.createdAt is timestamp)) &&
-             (!('hasPublicProfile' in changed) || !('hasPublicProfile' in data) || data.hasPublicProfile is bool) &&
-             (!('photoURL' in changed) || !('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 1000000)) &&
-             (!('bannerURL' in changed) || !('bannerURL' in data) || data.bannerURL == null || (data.bannerURL is string && data.bannerURL.size() <= 1000000)) &&
-             (!('bio' in changed) || !('bio' in data) || data.bio == null || (data.bio is string && data.bio.size() <= 2000)) &&
-             (!('category' in changed) || !('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100 && isValidCategory(data.category))) &&
-             (!('contacts' in changed) || !('contacts' in data) || data.contacts == null || data.contacts is list) &&
-             (!('whatsapp' in changed) || !('whatsapp' in data) || data.whatsapp == null || (data.whatsapp is string && data.whatsapp.size() <= 30)) &&
-             (!('phone' in changed) || !('phone' in data) || data.phone == null || (data.phone is string && data.phone.size() <= 30)) &&
-             (!('instagram' in changed) || !('instagram' in data) || data.instagram == null || (data.instagram is string && data.instagram.size() <= 100)) &&
-             (!('facebook' in changed) || !('facebook' in data) || data.facebook == null || (data.facebook is string && data.facebook.size() <= 100)) &&
-             (!('linkedin' in changed) || !('linkedin' in data) || data.linkedin == null || (data.linkedin is string && data.linkedin.size() <= 100)) &&
-             (!('website' in changed) || !('website' in data) || data.website == null || (data.website is string && data.website.size() <= 200)) &&
-             (!('serviceType' in changed) || !('serviceType' in data) || data.serviceType == null || (data.serviceType is string && data.serviceType.size() <= 200)) &&
-             (!('phones' in changed) || !('phones' in data) || data.phones == null || data.phones is list) &&
-             (!('location' in changed) || !('location' in data) || data.location == null || (data.location is string && data.location.size() <= 200)) &&
-             (!('ward' in changed) || !('ward' in data) || data.ward == null || (data.ward is string && data.ward.size() <= 200)) &&
-             (!('companyName' in changed) || !('companyName' in data) || data.companyName == null || (data.companyName is string && data.companyName.size() <= 200)) &&
+             // Skip groups of unchanged fields before checking each edited field.
+             (!changed.hasAny([
+               'uid', 'name', 'email', 'isProvider', 'role',
+               'language', 'preferredLanguage', 'country', 'createdAt', 'hasPublicProfile'
+             ]) || (
+               (!('uid' in changed) || !('uid' in data) || (data.uid is string)) &&
+               (!('name' in changed) || !('name' in data) || (data.name is string && data.name.size() > 0 && data.name.size() <= 100)) &&
+               (!('email' in changed) || !('email' in data) || (isValidEmail(data.email))) &&
+               (!('isProvider' in changed) || !('isProvider' in data) || (data.isProvider is bool)) &&
+               (!('role' in changed) || !('role' in data) || (data.role in ['admin', 'user'])) &&
+               (!('language' in changed) || !('language' in data) || data.language in ['pt', 'en', 'es']) &&
+               (!('preferredLanguage' in changed) || !('preferredLanguage' in data) || data.preferredLanguage in ['pt', 'en', 'es']) &&
+               (!('country' in changed) || !('country' in data) || (data.country is string && data.country.matches('^[A-Z]{2}$'))) &&
+               (!('createdAt' in changed) || !('createdAt' in data) || (data.createdAt is timestamp)) &&
+               (!('hasPublicProfile' in changed) || !('hasPublicProfile' in data) || data.hasPublicProfile is bool)
+             )) &&
+             (!changed.hasAny([
+               'photoURL', 'bannerURL', 'bio', 'category', 'contacts'
+             ]) || (
+               (!('photoURL' in changed) || !('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 1000000)) &&
+               (!('bannerURL' in changed) || !('bannerURL' in data) || data.bannerURL == null || (data.bannerURL is string && data.bannerURL.size() <= 1000000)) &&
+               (!('bio' in changed) || !('bio' in data) || data.bio == null || (data.bio is string && data.bio.size() <= 2000)) &&
+               (!('category' in changed) || !('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100 && isValidCategory(data.category))) &&
+               (!('contacts' in changed) || !('contacts' in data) || data.contacts == null || data.contacts is list)
+             )) &&
+             (!changed.hasAny([
+               'whatsapp', 'phone', 'instagram', 'facebook', 'linkedin',
+               'website', 'serviceType', 'phones', 'location', 'ward',
+               'companyName'
+             ]) || (
+               (!('whatsapp' in changed) || !('whatsapp' in data) || data.whatsapp == null || (data.whatsapp is string && data.whatsapp.size() <= 30)) &&
+               (!('phone' in changed) || !('phone' in data) || data.phone == null || (data.phone is string && data.phone.size() <= 30)) &&
+               (!('instagram' in changed) || !('instagram' in data) || data.instagram == null || (data.instagram is string && data.instagram.size() <= 100)) &&
+               (!('facebook' in changed) || !('facebook' in data) || data.facebook == null || (data.facebook is string && data.facebook.size() <= 100)) &&
+               (!('linkedin' in changed) || !('linkedin' in data) || data.linkedin == null || (data.linkedin is string && data.linkedin.size() <= 100)) &&
+               (!('website' in changed) || !('website' in data) || data.website == null || (data.website is string && data.website.size() <= 200)) &&
+               (!('serviceType' in changed) || !('serviceType' in data) || data.serviceType == null || (data.serviceType is string && data.serviceType.size() <= 200)) &&
+               (!('phones' in changed) || !('phones' in data) || data.phones == null || data.phones is list) &&
+               (!('location' in changed) || !('location' in data) || data.location == null || (data.location is string && data.location.size() <= 200)) &&
+               (!('ward' in changed) || !('ward' in data) || data.ward == null || (data.ward is string && data.ward.size() <= 200)) &&
+               (!('companyName' in changed) || !('companyName' in data) || data.companyName == null || (data.companyName is string && data.companyName.size() <= 200))
+             )) &&
              (!('gallery' in changed) || !('gallery' in data) || data.gallery == null || isValidGallery(data.gallery)) &&
-             (!('rating' in changed) || !('rating' in data) || data.rating is number) &&
-             (!('reviewCount' in changed) || !('reviewCount' in data) || data.reviewCount is number) &&
-             (!('experienceYears' in changed) || !('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
-             (!('baptismYear' in changed) || !('baptismYear' in data) || data.baptismYear == null || data.baptismYear is number) &&
-             (!('memberVerified' in changed) || !('memberVerified' in data) || data.memberVerified is bool) &&
-             (!('membershipYears' in changed) || !('membershipYears' in data) || data.membershipYears == null || data.membershipYears is number) &&
-             (!('communityFriend' in changed) || !('communityFriend' in data) || data.communityFriend is bool) &&
-             (!('availability' in changed) || !('availability' in data) || data.availability == null || isValidAvailabilityList(data.availability)) &&
-             (!('serviceHours' in changed) || !('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200)) &&
-             (!('businessAddress' in changed) || !('businessAddress' in data) || data.businessAddress == null || (data.businessAddress is string && data.businessAddress.size() <= 200)) &&
-             (!('businessAddressNumber' in changed) || !('businessAddressNumber' in data) || data.businessAddressNumber == null || (data.businessAddressNumber is string && data.businessAddressNumber.size() <= 20)) &&
-             (!('businessNeighborhood' in changed) || !('businessNeighborhood' in data) || data.businessNeighborhood == null || (data.businessNeighborhood is string && data.businessNeighborhood.size() <= 100)) &&
-             (!('businessState' in changed) || !('businessState' in data) || data.businessState == null || (data.businessState is string && data.businessState.size() <= 100)) &&
-             (!('showPublicLocation' in changed) || !('showPublicLocation' in data) || data.showPublicLocation is bool) &&
-             (!('businessComplement' in changed) || !('businessComplement' in data) || data.businessComplement == null || (data.businessComplement is string && data.businessComplement.size() <= 100)) &&
-             (!('isBlocked' in changed) || !('isBlocked' in data) || data.isBlocked is bool) &&
-             (!('isDeleted' in changed) || !('isDeleted' in data) || data.isDeleted is bool) &&
-             (!('deletedByUser' in changed) || !('deletedByUser' in data) || data.deletedByUser is bool) &&
-             (!('deletedAt' in changed) || !('deletedAt' in data) || data.deletedAt is timestamp) &&
+             (!changed.hasAny([
+               'rating', 'reviewCount', 'experienceYears', 'baptismYear', 'memberVerified',
+               'membershipYears', 'communityFriend', 'availability', 'serviceHours'
+             ]) || (
+               (!('rating' in changed) || !('rating' in data) || data.rating is number) &&
+               (!('reviewCount' in changed) || !('reviewCount' in data) || data.reviewCount is number) &&
+               (!('experienceYears' in changed) || !('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
+               (!('baptismYear' in changed) || !('baptismYear' in data) || data.baptismYear == null || data.baptismYear is number) &&
+               (!('memberVerified' in changed) || !('memberVerified' in data) || data.memberVerified is bool) &&
+               (!('membershipYears' in changed) || !('membershipYears' in data) || data.membershipYears == null || data.membershipYears is number) &&
+               (!('communityFriend' in changed) || !('communityFriend' in data) || data.communityFriend is bool) &&
+               (!('availability' in changed) || !('availability' in data) || data.availability == null || isValidAvailabilityList(data.availability)) &&
+               (!('serviceHours' in changed) || !('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200))
+             )) &&
+             (!changed.hasAny([
+               'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'showPublicLocation',
+               'businessComplement'
+             ]) || (
+               (!('businessAddress' in changed) || !('businessAddress' in data) || data.businessAddress == null || (data.businessAddress is string && data.businessAddress.size() <= 200)) &&
+               (!('businessAddressNumber' in changed) || !('businessAddressNumber' in data) || data.businessAddressNumber == null || (data.businessAddressNumber is string && data.businessAddressNumber.size() <= 20)) &&
+               (!('businessNeighborhood' in changed) || !('businessNeighborhood' in data) || data.businessNeighborhood == null || (data.businessNeighborhood is string && data.businessNeighborhood.size() <= 100)) &&
+               (!('businessState' in changed) || !('businessState' in data) || data.businessState == null || (data.businessState is string && data.businessState.size() <= 100)) &&
+               (!('showPublicLocation' in changed) || !('showPublicLocation' in data) || data.showPublicLocation is bool) &&
+               (!('businessComplement' in changed) || !('businessComplement' in data) || data.businessComplement == null || (data.businessComplement is string && data.businessComplement.size() <= 100))
+             )) &&
+             (!changed.hasAny([
+               'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt'
+             ]) || (
+               (!('isBlocked' in changed) || !('isBlocked' in data) || data.isBlocked is bool) &&
+               (!('isDeleted' in changed) || !('isDeleted' in data) || data.isDeleted is bool) &&
+               (!('deletedByUser' in changed) || !('deletedByUser' in data) || data.deletedByUser is bool) &&
+               (!('deletedAt' in changed) || !('deletedAt' in data) || data.deletedAt is timestamp)
+             )) &&
              // Accepting a new version of the Terms of Use stamps the time now.
              (!('termsVersion' in changed) || (data.termsVersion is string && data.termsVersion.size() <= 20)) &&
              (!('termsAcceptedAt' in changed) || data.termsAcceptedAt == request.time) &&
@@ -341,54 +362,60 @@ service cloud.firestore {
              !('blockedAt' in changed);
     }
 
+    function isOptionalBoundedText(value, max) {
+      return value == null || (value is string && value.size() <= max);
+    }
+
     function isValidPublicProfile(data, userId) {
       let allowedFields = [
         'uid', 'name', 'photoURL', 'bannerURL', 'bio', 'category',
-        'isProvider', 'serviceType', 'publicCity', 'publicState', 'ward', 'memberVerified', 'communityFriend', 'searchTokens', 'companyName', 'gallery',
+        'isProvider', 'serviceType', 'publicCity', 'publicState', 'memberVerified', 'communityFriend', 'searchTokens', 'companyName', 'gallery',
         'rating', 'ratingSum', 'reviewCount', 'recommendationCount', 'experienceYears', 'availability',
         'serviceHours', 'whatsapp', 'instagram', 'facebook', 'linkedin',
         'website', 'phone', 'phones', 'isBlocked', 'isDeleted', 'createdAt',
         'language', 'country'
       ];
+      let country = data.get('country', 'BR');
+      let state = data.get('publicState', null);
+      let category = data.get('category', null);
+      let tokens = data.get('searchTokens', []);
+      let gallery = data.get('gallery', null);
+      let availability = data.get('availability', null);
+      let experience = data.get('experienceYears', null);
+      let phones = data.get('phones', null);
 
-      return data.keys().hasAll(['uid', 'name', 'isProvider']) &&
-             data.keys().hasOnly(allowedFields) &&
+      return data.keys().hasOnly(allowedFields) &&
              data.uid == userId &&
              data.name is string &&
              data.name.size() > 0 &&
              data.name.size() <= 100 &&
              data.isProvider is bool &&
-             (!('language' in data) || data.language in ['pt', 'en', 'es']) &&
-             (!('country' in data) || (data.country is string && data.country.matches('^[A-Z]{2}$'))) &&
-             (!('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 1000000)) &&
-             (!('bannerURL' in data) || data.bannerURL == null || (data.bannerURL is string && data.bannerURL.size() <= 1000000)) &&
-             (!('bio' in data) || data.bio == null || (data.bio is string && data.bio.size() <= 2000)) &&
-             (!('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100 && isValidCategory(data.category))) &&
-             (!('serviceType' in data) || data.serviceType == null || (data.serviceType is string && data.serviceType.size() <= 200)) &&
-             (!('publicCity' in data) || data.publicCity == null || (data.publicCity is string && data.publicCity.size() <= 100)) &&
-             (!('publicState' in data) || data.publicState == null || (data.publicState is string && data.publicState.matches('^[A-Z]{2}$'))) &&
-             (!('ward' in data) || data.ward == null || (data.ward is string && data.ward.size() <= 200)) &&
-             (!('memberVerified' in data) || data.memberVerified is bool) &&
-             (!('communityFriend' in data) || data.communityFriend is bool) &&
-             (!('searchTokens' in data) || (data.searchTokens is list && data.searchTokens.size() <= 400)) &&
-             (!('companyName' in data) || data.companyName == null || (data.companyName is string && data.companyName.size() <= 200)) &&
-             (!('gallery' in data) || data.gallery == null || isValidGallery(data.gallery)) &&
-             (!('rating' in data) || data.rating is number) &&
-             (!('reviewCount' in data) || data.reviewCount is number) &&
-             (!('recommendationCount' in data) || (data.recommendationCount is number && data.recommendationCount >= 0)) &&
-             (!('ratingSum' in data) || (data.ratingSum is number && data.ratingSum >= 0)) &&
-             (!('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
-             (!('availability' in data) || data.availability == null || isValidAvailabilityList(data.availability)) &&
-             (!('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200)) &&
-             (!('whatsapp' in data) || data.whatsapp == null || (data.whatsapp is string && data.whatsapp.size() <= 30)) &&
-             (!('instagram' in data) || data.instagram == null || (data.instagram is string && data.instagram.size() <= 100)) &&
-             (!('facebook' in data) || data.facebook == null || (data.facebook is string && data.facebook.size() <= 100)) &&
-             (!('linkedin' in data) || data.linkedin == null || (data.linkedin is string && data.linkedin.size() <= 100)) &&
-             (!('website' in data) || data.website == null || (data.website is string && data.website.size() <= 200)) &&
-             (!('phone' in data) || data.phone == null || (data.phone is string && data.phone.size() <= 30)) &&
-             (!('phones' in data) || data.phones == null || data.phones is list) &&
-             (!('isBlocked' in data) || data.isBlocked is bool) &&
-             (!('isDeleted' in data) || data.isDeleted is bool) &&
+             data.get('language', 'pt') in ['pt', 'en', 'es'] &&
+             country is string && country.matches('^[A-Z]{2}$') &&
+             isOptionalBoundedText(data.get('photoURL', null), 1000000) &&
+             isOptionalBoundedText(data.get('bannerURL', null), 1000000) &&
+             isOptionalBoundedText(data.get('bio', null), 2000) &&
+             (category == null || isValidCategory(category)) &&
+             isOptionalBoundedText(data.get('serviceType', null), 200) &&
+             isOptionalBoundedText(data.get('publicCity', null), 100) &&
+             (state == null || (state is string && state.matches('^[A-Z]{2}$'))) &&
+             data.get('memberVerified', false) is bool &&
+             data.get('communityFriend', false) is bool &&
+             tokens is list && tokens.size() <= 400 &&
+             isOptionalBoundedText(data.get('companyName', null), 200) &&
+             (gallery == null || isValidGallery(gallery)) &&
+             (experience == null || experience is number) &&
+             (availability == null || isValidAvailabilityList(availability)) &&
+             isOptionalBoundedText(data.get('serviceHours', null), 200) &&
+             isOptionalBoundedText(data.get('whatsapp', null), 30) &&
+             isOptionalBoundedText(data.get('instagram', null), 100) &&
+             isOptionalBoundedText(data.get('facebook', null), 100) &&
+             isOptionalBoundedText(data.get('linkedin', null), 100) &&
+             isOptionalBoundedText(data.get('website', null), 200) &&
+             isOptionalBoundedText(data.get('phone', null), 30) &&
+             (phones == null || phones is list) &&
+             data.get('isBlocked', false) is bool &&
+             data.get('isDeleted', false) is bool &&
              (!('createdAt' in data) || data.createdAt is timestamp);
     }
 
@@ -431,14 +458,38 @@ service cloud.firestore {
                get(publicProfilePath(targetUserId)).data.isBlocked == false);
     }
 
+    function isActiveCatalogProvider(userId, requirePublicProfile) {
+      let profile = get(/databases/$(database)/documents/users/$(userId)).data;
+      return profile.isProvider == true &&
+             profile.get('isBlocked', false) == false &&
+             profile.get('isDeleted', false) == false &&
+             (!requirePublicProfile || profile.get('hasPublicProfile', true) == true);
+    }
+
+    function isValidCatalogProduct(data, productId) {
+      // Only these 50 document IDs can exist in a provider's catalog.
+      return productId.matches('^([1-9]|[1-4][0-9]|50)$') &&
+             data.keys().hasAll(['name', 'description', 'revision']) &&
+             data.keys().hasOnly(['name', 'description', 'revision', 'priceCents', 'imageName']) &&
+             data.name is string && data.name.size() <= 100 && data.name.matches('(?s).*[^[:space:]].*') &&
+             data.description is string && data.description.size() <= 1000 &&
+             data.description.matches('(?s).*[^[:space:]].*') &&
+             data.revision is string && data.revision.matches('^[a-f0-9-]{36}$') &&
+             (!('priceCents' in data) ||
+              (data.priceCents is int && data.priceCents >= 0 && data.priceCents <= 999999999)) &&
+             (!('imageName' in data) ||
+              (data.imageName is string && data.imageName.matches('^[a-f0-9-]{36}[.](jpg|png|webp)$')));
+    }
+
     // Aggregates on public_profiles: ratingSum + reviewCount (the average is
     // derived on read) and recommendationCount. Owners can never set or change
     // them; other members can only add or remove their own contribution.
     function startsWithEmptyStats(data) {
-      return data.get('rating', 0) == 0 &&
-             data.get('ratingSum', 0) == 0 &&
-             data.get('reviewCount', 0) == 0 &&
-             data.get('recommendationCount', 0) == 0;
+      return !data.keys().hasAny(['rating', 'ratingSum', 'reviewCount', 'recommendationCount']) ||
+             (data.get('rating', 0) == 0 &&
+              data.get('ratingSum', 0) == 0 &&
+              data.get('reviewCount', 0) == 0 &&
+              data.get('recommendationCount', 0) == 0);
     }
 
     function keepsAggregateStats(data) {
@@ -925,18 +976,30 @@ service cloud.firestore {
       allow read: if isPublicProfileVisible() || isAdmin();
 
       allow create: if (isOwner(userId) &&
-                        isValidPublicProfile(request.resource.data, userId) &&
-                        startsWithEmptyStats(request.resource.data)) ||
+                        startsWithEmptyStats(request.resource.data) &&
+                        isValidPublicProfile(request.resource.data, userId)) ||
                        isAdmin();
 
       allow update: if (isOwner(userId) &&
-                        isValidPublicProfile(request.resource.data, userId) &&
-                        keepsAggregateStats(request.resource.data)) ||
+                        !request.resource.data.diff(resource.data).affectedKeys()
+                          .hasAny(['rating', 'ratingSum', 'reviewCount', 'recommendationCount']) &&
+                        isValidPublicProfile(request.resource.data, userId)) ||
                     isAllowedRatingAggregateUpdate(userId) ||
                     isAllowedRecommendationAggregateUpdate(userId) ||
                     isAdmin();
 
       allow delete: if isOwner(userId) || isAdmin();
+
+      match /products/{productId} {
+        allow read: if isOwner(userId) ||
+                       (canReceiveRatings(userId) && isActiveCatalogProvider(userId, true));
+        allow create: if isOwner(userId) && isActiveCatalogProvider(userId, false) &&
+                         isValidCatalogProduct(request.resource.data, productId);
+        allow update: if isOwner(userId) && isActiveCatalogProvider(userId, false) &&
+                         isValidCatalogProduct(request.resource.data, productId) &&
+                         request.resource.data.revision != resource.data.revision;
+        allow delete: if isOwner(userId);
+      }
 
       match /recommendations/{recommenderId} {
         allow read: if canReceiveRatings(userId) || isAdmin();
