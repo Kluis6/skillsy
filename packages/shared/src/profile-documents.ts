@@ -713,10 +713,22 @@ export function createProfileDocuments(fs: FirestoreAdapter) {
       immutableKeys,
       allowedUserFields,
     );
+    const gallery = sanitizedPrivateProfile.gallery;
+    const storedGallery = Array.isArray(rawCurrentData.gallery) ? rawCurrentData.gallery : [];
+    const galleryToValidate = gallery?.length && (
+      gallery.length !== storedGallery.length ||
+      gallery.some((image, index) => {
+        const stored = storedGallery[index];
+        return !isPlainObject(stored) ||
+          Object.keys(stored).length !== Object.keys(image).length ||
+          stored.url !== image.url || stored.description !== image.description;
+      })
+    ) ? gallery : undefined;
 
     return {
       privatePatch,
       privateProfile: sanitizedPrivateProfile as Partial<UserProfile>,
+      galleryToValidate,
       publicProfile: publicProfileData as Partial<UserProfile>,
     };
   }

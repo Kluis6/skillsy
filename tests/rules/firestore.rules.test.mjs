@@ -523,6 +523,52 @@ describe("users: edição do próprio perfil", () => {
     await assertSucceeds(updateDoc(doc(dbAs(COMPLETE), "users", COMPLETE), { bio: "Nova bio" }));
   });
 
+  function newAdvertiserFields() {
+    const { uid, email, createdAt, role, rating, reviewCount, ...details } = completeProfile;
+    return {
+      ...details,
+      name: "Anunciante de Teste",
+      category: "Cozinha",
+      serviceType: "Pizzaria",
+      companyName: "Pizzaria de Teste",
+      availability: ["Seg", "Qua", "Qui", "Sex", "Sáb"],
+      businessAddress: "Rua de Teste",
+      businessAddressNumber: "10",
+      businessNeighborhood: "Centro",
+      businessComplement: "Loja 1",
+      language: "pt",
+    };
+  }
+
+  test("membro pode ativar o anúncio e preencher várias seções num único salvamento", async () => {
+    const db = dbAs(RATER);
+    const profile = doc(db, "users", RATER);
+    const changes = newAdvertiserFields();
+    const batch = writeBatch(db);
+    batch.set(doc(profile, "profile_validation", "gallery"), {
+      gallery: changes.gallery,
+      validatedAt: serverTimestamp(),
+    });
+    batch.update(profile, changes);
+    await assertSucceeds(batch.commit());
+  });
+
+  test("a validação da galeria exige fotos válidas e pertence ao titular", async () => {
+    const { gallery } = newAdvertiserFields();
+    const validationPath = ["users", RATER, "profile_validation", "gallery"];
+    await assertFails(setDoc(doc(dbAs(PROVIDER), ...validationPath), {
+      gallery,
+      validatedAt: serverTimestamp(),
+    }));
+
+    const db = dbAs(RATER);
+    const invalid = [{ url: "https://example.com/foto.webp", description: "x".repeat(201) }];
+    const batch = writeBatch(db);
+    batch.set(doc(db, ...validationPath), { gallery: invalid, validatedAt: serverTimestamp() });
+    batch.update(doc(db, "users", RATER), { ...newAdvertiserFields(), gallery: invalid });
+    await assertFails(batch.commit());
+  });
+
   test("dono cancela a própria conta completa", async () => {
     // Mirrors UserService.cancelOwnAccount: flags + deleted personal data.
     const removed = Object.fromEntries(

@@ -320,14 +320,24 @@ export const UserService = {
 
       // Normalization, merge and the patch live in @skillsy/shared so the
       // app saves profiles exactly like the site.
-      const { privatePatch, privateProfile } =
+      const { privatePatch, privateProfile, galleryToValidate } =
         profileDocuments.prepareProfileUpdate({
           uid,
           current: currentSnapshot.data() as Record<string, unknown>,
           changes: data,
           authUser: auth.currentUser,
         });
-      await updateDoc(docRef, privatePatch);
+      if (galleryToValidate) {
+        const batch = writeBatch(db);
+        batch.set(doc(docRef, "profile_validation", "gallery"), {
+          gallery: galleryToValidate,
+          validatedAt: serverTimestamp(),
+        });
+        batch.update(docRef, privatePatch);
+        await batch.commit();
+      } else {
+        await updateDoc(docRef, privatePatch);
+      }
 
       try {
         await syncPublicProfileDocument(uid, privateProfile);

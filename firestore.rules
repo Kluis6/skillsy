@@ -256,7 +256,75 @@ service cloud.firestore {
              !('blockedAt' in data);
     }
 
-    function isValidUserUpdate(data) {
+    function isCombinedProfileEdit(changed, updated) {
+      return (changed.size() >= 10 || ('gallery' in updated && updated.size() > 1)) &&
+             !changed.hasAny([
+               'role', 'uid', 'createdAt', 'isBlocked', 'isDeleted', 'deletedByUser',
+               'rating', 'ratingSum', 'reviewCount', 'recommendationCount',
+               'termsVersion', 'termsAcceptedAt', 'blockedReason', 'blockedAt'
+             ]) &&
+             updated.hasOnly([
+        'name', 'isProvider', 'hasPublicProfile', 'language', 'country',
+        'photoURL', 'bannerURL', 'bio', 'category', 'contacts',
+        'whatsapp', 'phone', 'instagram', 'facebook', 'linkedin',
+        'website', 'serviceType', 'phones', 'location', 'ward', 'companyName',
+        'gallery', 'experienceYears', 'baptismYear', 'memberVerified',
+        'membershipYears', 'communityFriend', 'availability', 'serviceHours',
+        'businessAddress', 'businessAddressNumber', 'businessNeighborhood',
+        'businessState', 'showPublicLocation', 'businessComplement'
+      ]);
+    }
+
+    // Validate the combined form without a document-diff membership test
+    // per field. The field mask above excludes role and moderation settings.
+    function isValidCombinedProfileEdit(data, userId, changed) {
+      let name = data.get('name', '-');
+      let category = data.get('category', null);
+      let country = data.get('country', 'BR');
+      let phones = data.get('phones', null);
+      let contacts = data.get('contacts', null);
+      let gallery = data.get('gallery', null);
+      let availability = data.get('availability', null);
+      let experience = data.get('experienceYears', null);
+      let baptismYear = data.get('baptismYear', null);
+      let membershipYears = data.get('membershipYears', null);
+      return name is string && name.size() > 0 && name.size() <= 100 &&
+             country is string && country.matches('^[A-Z]{2}$') &&
+             data.get('language', 'pt') in ['pt', 'en', 'es'] &&
+             [data.get('isProvider', false), data.get('hasPublicProfile', false),
+              data.get('memberVerified', false), data.get('communityFriend', false),
+              data.get('showPublicLocation', false)].hasOnly([true, false]) &&
+             (category == null || isValidCategory(category)) &&
+             (phones == null || phones is list) &&
+             (contacts == null || contacts is list) &&
+             (experience == null || experience is number) &&
+             (baptismYear == null || baptismYear is number) &&
+             (membershipYears == null || membershipYears is number) &&
+             (availability == null || isValidAvailabilityList(availability)) &&
+             isOptionalBoundedText(data.get('photoURL', null), 1000000) &&
+             isOptionalBoundedText(data.get('bannerURL', null), 1000000) &&
+             isOptionalBoundedText(data.get('bio', null), 2000) &&
+             isOptionalBoundedText(data.get('whatsapp', null), 30) &&
+             isOptionalBoundedText(data.get('phone', null), 30) &&
+             isOptionalBoundedText(data.get('instagram', null), 100) &&
+             isOptionalBoundedText(data.get('facebook', null), 100) &&
+             isOptionalBoundedText(data.get('linkedin', null), 100) &&
+             isOptionalBoundedText(data.get('website', null), 200) &&
+             isOptionalBoundedText(data.get('serviceType', null), 200) &&
+             isOptionalBoundedText(data.get('location', null), 200) &&
+             isOptionalBoundedText(data.get('ward', null), 200) &&
+             isOptionalBoundedText(data.get('companyName', null), 200) &&
+             isOptionalBoundedText(data.get('serviceHours', null), 200) &&
+             isOptionalBoundedText(data.get('businessAddress', null), 200) &&
+             isOptionalBoundedText(data.get('businessAddressNumber', null), 20) &&
+             isOptionalBoundedText(data.get('businessNeighborhood', null), 100) &&
+             isOptionalBoundedText(data.get('businessState', null), 100) &&
+             isOptionalBoundedText(data.get('businessComplement', null), 100) &&
+             (!('gallery' in changed) || gallery == null ||
+              matchesValidatedGallery(userId, gallery) || isValidGallery(gallery));
+    }
+
+    function isValidUserUpdate(data, userId) {
       let allowedFields = [
         'id', 'uid', 'name', 'email', 'photoURL', 'bannerURL', 'bio', 
         'category', 'isProvider', 'hasPublicProfile', 'role', 'contacts', 'whatsapp', 
@@ -277,89 +345,109 @@ service cloud.firestore {
       // The resulting document may only hold allowed keys (removing an old,
       // unknown key is fine, so this checks data.keys(), not the changes).
       let changed = data.diff(resource.data).affectedKeys();
+      let updated = changed.intersection(data.keys().toSet());
       return data.keys().hasOnly(allowedFields) &&
+             (isCombinedProfileEdit(changed, updated)
+               ? isValidCombinedProfileEdit(data, userId, changed)
+               : isValidPartialUserUpdate(data, userId, changed, updated));
+    }
+
+    // The companion write validates the gallery in the same atomic commit.
+    function matchesValidatedGallery(userId, gallery) {
+      let path = /databases/$(database)/documents/users/$(userId)/profile_validation/gallery;
+      return existsAfter(path) && getAfter(path).data.validatedAt == request.time &&
+             getAfter(path).data.gallery == gallery;
+    }
+
+    function isValidPartialUserUpdate(data, userId, changed, updated) {
+      return (!('role' in updated) || keepsSameUserRole(data)) &&
+             (!('uid' in updated) || keepsSameUid(userId, data)) &&
+             (!('createdAt' in updated) || keepsSafeCreatedAt(data)) &&
+             (!('isBlocked' in updated) || keepsSameBlockedStatus(data)) &&
+             (!changed.hasAny(['rating', 'ratingSum', 'reviewCount', 'recommendationCount']) ||
+              keepsAggregateStats(data)) &&
              // Skip groups of unchanged fields before checking each edited field.
              (!changed.hasAny([
                'uid', 'name', 'email', 'isProvider', 'role',
                'language', 'preferredLanguage', 'country', 'createdAt', 'hasPublicProfile'
              ]) || (
-               (!('uid' in changed) || !('uid' in data) || (data.uid is string)) &&
-               (!('name' in changed) || !('name' in data) || (data.name is string && data.name.size() > 0 && data.name.size() <= 100)) &&
-               (!('email' in changed) || !('email' in data) || (isValidEmail(data.email))) &&
-               (!('isProvider' in changed) || !('isProvider' in data) || (data.isProvider is bool)) &&
-               (!('role' in changed) || !('role' in data) || (data.role in ['admin', 'user'])) &&
-               (!('language' in changed) || !('language' in data) || data.language in ['pt', 'en', 'es']) &&
-               (!('preferredLanguage' in changed) || !('preferredLanguage' in data) || data.preferredLanguage in ['pt', 'en', 'es']) &&
-               (!('country' in changed) || !('country' in data) || (data.country is string && data.country.matches('^[A-Z]{2}$'))) &&
-               (!('createdAt' in changed) || !('createdAt' in data) || (data.createdAt is timestamp)) &&
-               (!('hasPublicProfile' in changed) || !('hasPublicProfile' in data) || data.hasPublicProfile is bool)
+               (!('uid' in updated) || (data.uid is string)) &&
+               (!('name' in updated) || (data.name is string && data.name.size() > 0 && data.name.size() <= 100)) &&
+               (!('email' in updated) || (isValidEmail(data.email))) &&
+               (!('isProvider' in updated) || (data.isProvider is bool)) &&
+               (!('role' in updated) || (data.role in ['admin', 'user'])) &&
+               (!('language' in updated) || data.language in ['pt', 'en', 'es']) &&
+               (!('preferredLanguage' in updated) || data.preferredLanguage in ['pt', 'en', 'es']) &&
+               (!('country' in updated) || (data.country is string && data.country.matches('^[A-Z]{2}$'))) &&
+               (!('createdAt' in updated) || (data.createdAt is timestamp)) &&
+               (!('hasPublicProfile' in updated) || data.hasPublicProfile is bool)
              )) &&
              (!changed.hasAny([
                'photoURL', 'bannerURL', 'bio', 'category', 'contacts'
              ]) || (
-               (!('photoURL' in changed) || !('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 1000000)) &&
-               (!('bannerURL' in changed) || !('bannerURL' in data) || data.bannerURL == null || (data.bannerURL is string && data.bannerURL.size() <= 1000000)) &&
-               (!('bio' in changed) || !('bio' in data) || data.bio == null || (data.bio is string && data.bio.size() <= 2000)) &&
-               (!('category' in changed) || !('category' in data) || data.category == null || (data.category is string && data.category.size() <= 100 && isValidCategory(data.category))) &&
-               (!('contacts' in changed) || !('contacts' in data) || data.contacts == null || data.contacts is list)
+               (!('photoURL' in updated) || isOptionalBoundedText(data.photoURL, 1000000)) &&
+               (!('bannerURL' in updated) || isOptionalBoundedText(data.bannerURL, 1000000)) &&
+               (!('bio' in updated) || isOptionalBoundedText(data.bio, 2000)) &&
+               (!('category' in updated) || data.category == null || (isValidCategory(data.category))) &&
+               (!('contacts' in updated) || data.contacts == null || data.contacts is list)
              )) &&
              (!changed.hasAny([
                'whatsapp', 'phone', 'instagram', 'facebook', 'linkedin',
                'website', 'serviceType', 'phones', 'location', 'ward',
                'companyName'
              ]) || (
-               (!('whatsapp' in changed) || !('whatsapp' in data) || data.whatsapp == null || (data.whatsapp is string && data.whatsapp.size() <= 30)) &&
-               (!('phone' in changed) || !('phone' in data) || data.phone == null || (data.phone is string && data.phone.size() <= 30)) &&
-               (!('instagram' in changed) || !('instagram' in data) || data.instagram == null || (data.instagram is string && data.instagram.size() <= 100)) &&
-               (!('facebook' in changed) || !('facebook' in data) || data.facebook == null || (data.facebook is string && data.facebook.size() <= 100)) &&
-               (!('linkedin' in changed) || !('linkedin' in data) || data.linkedin == null || (data.linkedin is string && data.linkedin.size() <= 100)) &&
-               (!('website' in changed) || !('website' in data) || data.website == null || (data.website is string && data.website.size() <= 200)) &&
-               (!('serviceType' in changed) || !('serviceType' in data) || data.serviceType == null || (data.serviceType is string && data.serviceType.size() <= 200)) &&
-               (!('phones' in changed) || !('phones' in data) || data.phones == null || data.phones is list) &&
-               (!('location' in changed) || !('location' in data) || data.location == null || (data.location is string && data.location.size() <= 200)) &&
-               (!('ward' in changed) || !('ward' in data) || data.ward == null || (data.ward is string && data.ward.size() <= 200)) &&
-               (!('companyName' in changed) || !('companyName' in data) || data.companyName == null || (data.companyName is string && data.companyName.size() <= 200))
+               (!('whatsapp' in updated) || isOptionalBoundedText(data.whatsapp, 30)) &&
+               (!('phone' in updated) || isOptionalBoundedText(data.phone, 30)) &&
+               (!('instagram' in updated) || isOptionalBoundedText(data.instagram, 100)) &&
+               (!('facebook' in updated) || isOptionalBoundedText(data.facebook, 100)) &&
+               (!('linkedin' in updated) || isOptionalBoundedText(data.linkedin, 100)) &&
+               (!('website' in updated) || isOptionalBoundedText(data.website, 200)) &&
+               (!('serviceType' in updated) || isOptionalBoundedText(data.serviceType, 200)) &&
+               (!('phones' in updated) || data.phones == null || data.phones is list) &&
+               (!('location' in updated) || isOptionalBoundedText(data.location, 200)) &&
+               (!('ward' in updated) || isOptionalBoundedText(data.ward, 200)) &&
+               (!('companyName' in updated) || isOptionalBoundedText(data.companyName, 200))
              )) &&
-             (!('gallery' in changed) || !('gallery' in data) || data.gallery == null || isValidGallery(data.gallery)) &&
              (!changed.hasAny([
                'rating', 'reviewCount', 'experienceYears', 'baptismYear', 'memberVerified',
                'membershipYears', 'communityFriend', 'availability', 'serviceHours'
              ]) || (
-               (!('rating' in changed) || !('rating' in data) || data.rating is number) &&
-               (!('reviewCount' in changed) || !('reviewCount' in data) || data.reviewCount is number) &&
-               (!('experienceYears' in changed) || !('experienceYears' in data) || data.experienceYears == null || data.experienceYears is number) &&
-               (!('baptismYear' in changed) || !('baptismYear' in data) || data.baptismYear == null || data.baptismYear is number) &&
-               (!('memberVerified' in changed) || !('memberVerified' in data) || data.memberVerified is bool) &&
-               (!('membershipYears' in changed) || !('membershipYears' in data) || data.membershipYears == null || data.membershipYears is number) &&
-               (!('communityFriend' in changed) || !('communityFriend' in data) || data.communityFriend is bool) &&
-               (!('availability' in changed) || !('availability' in data) || data.availability == null || isValidAvailabilityList(data.availability)) &&
-               (!('serviceHours' in changed) || !('serviceHours' in data) || data.serviceHours == null || (data.serviceHours is string && data.serviceHours.size() <= 200))
+               (!('rating' in updated) || data.rating is number) &&
+               (!('reviewCount' in updated) || data.reviewCount is number) &&
+               (!('experienceYears' in updated) || data.experienceYears == null || data.experienceYears is number) &&
+               (!('baptismYear' in updated) || data.baptismYear == null || data.baptismYear is number) &&
+               (!('memberVerified' in updated) || data.memberVerified is bool) &&
+               (!('membershipYears' in updated) || data.membershipYears == null || data.membershipYears is number) &&
+               (!('communityFriend' in updated) || data.communityFriend is bool) &&
+               (!('availability' in updated) || data.availability == null || isValidAvailabilityList(data.availability)) &&
+               (!('serviceHours' in updated) || isOptionalBoundedText(data.serviceHours, 200))
              )) &&
              (!changed.hasAny([
                'businessAddress', 'businessAddressNumber', 'businessNeighborhood', 'businessState', 'showPublicLocation',
                'businessComplement'
              ]) || (
-               (!('businessAddress' in changed) || !('businessAddress' in data) || data.businessAddress == null || (data.businessAddress is string && data.businessAddress.size() <= 200)) &&
-               (!('businessAddressNumber' in changed) || !('businessAddressNumber' in data) || data.businessAddressNumber == null || (data.businessAddressNumber is string && data.businessAddressNumber.size() <= 20)) &&
-               (!('businessNeighborhood' in changed) || !('businessNeighborhood' in data) || data.businessNeighborhood == null || (data.businessNeighborhood is string && data.businessNeighborhood.size() <= 100)) &&
-               (!('businessState' in changed) || !('businessState' in data) || data.businessState == null || (data.businessState is string && data.businessState.size() <= 100)) &&
-               (!('showPublicLocation' in changed) || !('showPublicLocation' in data) || data.showPublicLocation is bool) &&
-               (!('businessComplement' in changed) || !('businessComplement' in data) || data.businessComplement == null || (data.businessComplement is string && data.businessComplement.size() <= 100))
+               (!('businessAddress' in updated) || isOptionalBoundedText(data.businessAddress, 200)) &&
+               (!('businessAddressNumber' in updated) || isOptionalBoundedText(data.businessAddressNumber, 20)) &&
+               (!('businessNeighborhood' in updated) || isOptionalBoundedText(data.businessNeighborhood, 100)) &&
+               (!('businessState' in updated) || isOptionalBoundedText(data.businessState, 100)) &&
+               (!('showPublicLocation' in updated) || data.showPublicLocation is bool) &&
+               (!('businessComplement' in updated) || isOptionalBoundedText(data.businessComplement, 100))
              )) &&
              (!changed.hasAny([
                'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt'
              ]) || (
-               (!('isBlocked' in changed) || !('isBlocked' in data) || data.isBlocked is bool) &&
-               (!('isDeleted' in changed) || !('isDeleted' in data) || data.isDeleted is bool) &&
-               (!('deletedByUser' in changed) || !('deletedByUser' in data) || data.deletedByUser is bool) &&
-               (!('deletedAt' in changed) || !('deletedAt' in data) || data.deletedAt is timestamp)
+               (!('isBlocked' in updated) || data.isBlocked is bool) &&
+               (!('isDeleted' in updated) || data.isDeleted is bool) &&
+               (!('deletedByUser' in updated) || data.deletedByUser is bool) &&
+               (!('deletedAt' in updated) || data.deletedAt is timestamp)
              )) &&
              // Accepting a new version of the Terms of Use stamps the time now.
              (!('termsVersion' in changed) || (data.termsVersion is string && data.termsVersion.size() <= 20)) &&
              (!('termsAcceptedAt' in changed) || data.termsAcceptedAt == request.time) &&
              // Why and when an account was blocked are written by admins only.
              !('blockedReason' in changed) &&
-             !('blockedAt' in changed);
+             !('blockedAt' in changed) &&
+             (!('gallery' in updated) || data.gallery == null || isValidGallery(data.gallery));
     }
 
     function isOptionalBoundedText(value, max) {
@@ -915,16 +1003,18 @@ service cloud.firestore {
                        isAdmin();
       
       // Update: Owner can update their info (never the rating aggregates), Admin anything
-      allow update: if (isOwner(userId) && isValidUserUpdate(request.resource.data) && 
-                        (!('role' in request.resource.data) || keepsSameUserRole(request.resource.data)) &&
-                        (!('isBlocked' in request.resource.data) || keepsSameBlockedStatus(request.resource.data)) &&
-                        (!('uid' in request.resource.data) || keepsSameUid(userId, request.resource.data)) &&
-                        (!('createdAt' in request.resource.data) || keepsSafeCreatedAt(request.resource.data)) &&
-                        keepsAggregateStats(request.resource.data))
-                    || isAdmin();
+      allow update: if (isOwner(userId) && isValidUserUpdate(request.resource.data, userId)) ||
+                    isAdmin();
       
       // Delete: Only Admin
       allow delete: if isAdmin();
+
+      match /profile_validation/gallery {
+        allow create, update: if isOwner(userId) &&
+                              request.resource.data.keys().hasOnly(['gallery', 'validatedAt']) &&
+                              request.resource.data.validatedAt == request.time &&
+                              isValidGallery(request.resource.data.gallery);
+      }
 
       // Private data subcollection
       match /votes/{providerId} {
