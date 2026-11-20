@@ -164,6 +164,24 @@ test("a galeria privada e pública aceita até cinco fotos e descrições de at�
   }
 });
 
+test("bio da empresa aceita texto opcional de até 500 caracteres somente nas escritas autorizadas", async () => {
+  const uid = "company-bio-provider";
+  const owner = dbAs(uid);
+  const companyBio = "x".repeat(500);
+  for (const [collectionName, buildDoc] of [
+    ["users", userDoc],
+    ["public_profiles", publicProfileDoc],
+  ]) {
+    const ref = doc(owner, collectionName, uid);
+    await assertFails(setDoc(ref, buildDoc(uid, { isProvider: true, companyBio: companyBio + "x" })));
+    await assertSucceeds(setDoc(ref, buildDoc(uid, { isProvider: true, companyBio })));
+    await assertFails(updateDoc(ref, { companyBio: companyBio + "x" }));
+    await assertFails(updateDoc(ref, { companyBio: { text: "Inválido" } }));
+    await assertFails(updateDoc(doc(dbAs(RATER), collectionName, uid), { companyBio: "Terceiro" }));
+    await assertSucceeds(updateDoc(ref, { companyBio: deleteField() }));
+  }
+});
+
 test("a disponibilidade privada e pública aceita somente dias da semana do formulário", async () => {
   const db = dbAs(PROVIDER);
   const week = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -531,6 +549,7 @@ describe("users: edição do próprio perfil", () => {
       category: "Cozinha",
       serviceType: "Pizzaria",
       companyName: "Pizzaria de Teste",
+      companyBio: "Pizza artesanal preparada no dia.",
       availability: ["Seg", "Qua", "Qui", "Sex", "Sáb"],
       businessAddress: "Rua de Teste",
       businessAddressNumber: "10",

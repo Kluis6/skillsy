@@ -24,6 +24,7 @@ service cloud.firestore {
     //   - location: string (optional)
     //   - ward: string (optional, max 100 chars)
     //   - companyName: string (optional, max 100 chars)
+    //   - companyBio: string (optional, max 500 chars)
     //   - socialLinks: map (optional)
     //   - gallery: list (optional, max 5 strings)
     //   - rating: number (optional)
@@ -191,7 +192,7 @@ service cloud.firestore {
         'id', 'uid', 'name', 'email', 'photoURL', 'bannerURL', 'bio', 
         'category', 'isProvider', 'hasPublicProfile', 'role', 'contacts', 'whatsapp', 
         'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 'phone', 
-        'phones', 'location', 'ward', 'companyName', 'gallery', 
+        'phones', 'location', 'ward', 'companyName', 'companyBio', 'gallery',
         'rating', 'reviewCount', 'experienceYears', 'baptismYear',
         'memberVerified', 'membershipYears', 'communityFriend',
         'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
@@ -228,6 +229,7 @@ service cloud.firestore {
              (!('location' in data) || data.location == null || (data.location is string && data.location.size() <= 200)) &&
              (!('ward' in data) || data.ward == null || (data.ward is string && data.ward.size() <= 200)) &&
              (!('companyName' in data) || data.companyName == null || (data.companyName is string && data.companyName.size() <= 200)) &&
+             isOptionalBoundedText(data.get('companyBio', null), 500) &&
              (!('gallery' in data) || data.gallery == null || isValidGallery(data.gallery)) &&
              (!('rating' in data) || data.rating is number) &&
              (!('reviewCount' in data) || data.reviewCount is number) &&
@@ -267,7 +269,7 @@ service cloud.firestore {
         'name', 'isProvider', 'hasPublicProfile', 'language', 'country',
         'photoURL', 'bannerURL', 'bio', 'category', 'contacts',
         'whatsapp', 'phone', 'instagram', 'facebook', 'linkedin',
-        'website', 'serviceType', 'phones', 'location', 'ward', 'companyName',
+        'website', 'serviceType', 'phones', 'location', 'ward', 'companyName', 'companyBio',
         'gallery', 'experienceYears', 'baptismYear', 'memberVerified',
         'membershipYears', 'communityFriend', 'availability', 'serviceHours',
         'businessAddress', 'businessAddressNumber', 'businessNeighborhood',
@@ -314,6 +316,7 @@ service cloud.firestore {
              isOptionalBoundedText(data.get('location', null), 200) &&
              isOptionalBoundedText(data.get('ward', null), 200) &&
              isOptionalBoundedText(data.get('companyName', null), 200) &&
+             isOptionalBoundedText(data.get('companyBio', null), 500) &&
              isOptionalBoundedText(data.get('serviceHours', null), 200) &&
              isOptionalBoundedText(data.get('businessAddress', null), 200) &&
              isOptionalBoundedText(data.get('businessAddressNumber', null), 20) &&
@@ -329,7 +332,7 @@ service cloud.firestore {
         'id', 'uid', 'name', 'email', 'photoURL', 'bannerURL', 'bio', 
         'category', 'isProvider', 'hasPublicProfile', 'role', 'contacts', 'whatsapp', 
         'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 'phone', 
-        'phones', 'location', 'ward', 'companyName', 'gallery', 
+        'phones', 'location', 'ward', 'companyName', 'companyBio', 'gallery',
         'rating', 'reviewCount', 'experienceYears', 'baptismYear',
         'memberVerified', 'membershipYears', 'communityFriend',
         'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
@@ -394,7 +397,7 @@ service cloud.firestore {
              (!changed.hasAny([
                'whatsapp', 'phone', 'instagram', 'facebook', 'linkedin',
                'website', 'serviceType', 'phones', 'location', 'ward',
-               'companyName'
+               'companyName', 'companyBio'
              ]) || (
                (!('whatsapp' in updated) || isOptionalBoundedText(data.whatsapp, 30)) &&
                (!('phone' in updated) || isOptionalBoundedText(data.phone, 30)) &&
@@ -406,7 +409,8 @@ service cloud.firestore {
                (!('phones' in updated) || data.phones == null || data.phones is list) &&
                (!('location' in updated) || isOptionalBoundedText(data.location, 200)) &&
                (!('ward' in updated) || isOptionalBoundedText(data.ward, 200)) &&
-               (!('companyName' in updated) || isOptionalBoundedText(data.companyName, 200))
+               (!('companyName' in updated) || isOptionalBoundedText(data.companyName, 200)) &&
+               (!('companyBio' in updated) || isOptionalBoundedText(data.companyBio, 500))
              )) &&
              (!changed.hasAny([
                'rating', 'reviewCount', 'experienceYears', 'baptismYear', 'memberVerified',
@@ -457,7 +461,7 @@ service cloud.firestore {
     function isValidPublicProfile(data, userId) {
       let allowedFields = [
         'uid', 'name', 'photoURL', 'bannerURL', 'bio', 'category',
-        'isProvider', 'serviceType', 'publicCity', 'publicState', 'memberVerified', 'communityFriend', 'searchTokens', 'companyName', 'gallery',
+        'isProvider', 'serviceType', 'publicCity', 'publicState', 'memberVerified', 'communityFriend', 'searchTokens', 'companyName', 'companyBio', 'gallery',
         'rating', 'ratingSum', 'reviewCount', 'recommendationCount', 'experienceYears', 'availability',
         'serviceHours', 'whatsapp', 'instagram', 'facebook', 'linkedin',
         'website', 'phone', 'phones', 'isBlocked', 'isDeleted', 'createdAt',
@@ -491,6 +495,7 @@ service cloud.firestore {
              data.get('communityFriend', false) is bool &&
              tokens is list && tokens.size() <= 400 &&
              isOptionalBoundedText(data.get('companyName', null), 200) &&
+             isOptionalBoundedText(data.get('companyBio', null), 500) &&
              (gallery == null || isValidGallery(gallery)) &&
              (experience == null || experience is number) &&
              (availability == null || isValidAvailabilityList(availability)) &&
