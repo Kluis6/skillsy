@@ -1,5 +1,5 @@
 import { LOCALE_NAMES } from '@skillsy/shared/i18n/locales';
-import { Pressable, View } from 'react-native';
+import { Platform, Pressable, View } from 'react-native';
 
 import { Text } from '@/components/ui/text';
 import { ENABLED_LOCALES, useLocale, useT } from '@/lib/i18n';
@@ -30,7 +30,10 @@ export function LanguagePicker() {
             )}>
             <Languages size={20} className={selected ? 'text-primary' : 'text-muted-foreground'} />
             <Text
-              lang={value}
+              {...Platform.select<{ lang: string } | { accessibilityLanguage: string }>({
+                web: { lang: value },
+                ios: { accessibilityLanguage: value },
+              })}
               className={cn('flex-1 text-base', selected && 'font-semibold text-primary')}>
               {LOCALE_NAMES[value]}
             </Text>
