@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
-import { ArrowLeft, Plus } from "lucide-react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { Plus } from "lucide-react";
 import { deleteObject, ref } from "firebase/storage";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/profile/product-card";
-import { ProductCatalogLoading } from "@/components/profile/product-catalog-loading";
+import { ProductGridLoading } from "@/components/profile/product-catalog-loading";
+import { ProfileToolbar } from "@/components/profile/profile-toolbar";
 import {
   AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
   AlertDialogHeader, AlertDialogTitle,
@@ -15,6 +16,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EmptyState, PageHeader } from "@/components/ui/page-layout";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
 import { auth, storage } from "@/lib/firebase";
@@ -36,30 +38,45 @@ async function removeImage(uid: string, imageName: string) {
   }
 }
 
+function ProductManagerLayout({ action, children }: { action?: ReactNode; children: ReactNode }) {
+  const t = useT();
+
+  return (
+    <>
+      <ProfileToolbar backHref="/profile" backLabel={t("products.back")}>{action}</ProfileToolbar>
+      <main className="container mx-auto w-full px-4 pb-6">
+        <PageHeader title={t("products.manage")} description={t("products.manageDescription")} />
+        {children}
+      </main>
+    </>
+  );
+}
+
 export function ProductManager() {
   const { user, profile, loading } = useAuth();
   const t = useT();
-  if (loading) return <ProductCatalogLoading />;
+
+  if (loading) {
+    return (
+      <ProductManagerLayout action={<Skeleton className="h-10 w-36" />}>
+        <ProductGridLoading />
+      </ProductManagerLayout>
+    );
+  }
+
+  if (user && profile?.uid === user.uid && isActiveProvider(profile)) {
+    return <CatalogEditor key={user.uid} uid={user.uid} />;
+  }
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-6xl px-4 py-6 sm:px-6">
-      <Link href="/profile" className={buttonVariants({ variant: "outline", size: "sm" })}>
-        <ArrowLeft aria-hidden="true" /> {t("products.back")}
-      </Link>
-      {user && profile?.uid === user.uid && isActiveProvider(profile) ? (
-        <CatalogEditor key={user.uid} uid={user.uid} />
-      ) : (
-        <>
-          <PageHeader title={t("products.manage")} />
-          <EmptyState
-            title={t(user ? "products.providerRequired" : "products.signIn")}
-            action={!user && (
-              <Link href="/signin" className={buttonVariants()}>{t("common.signIn")}</Link>
-            )}
-          />
-        </>
-      )}
-    </main>
+    <ProductManagerLayout>
+      <EmptyState
+        title={t(user ? "products.providerRequired" : "products.signIn")}
+        action={!user && (
+          <Link href="/signin" className={buttonVariants()}>{t("common.signIn")}</Link>
+        )}
+      />
+    </ProductManagerLayout>
   );
 }
 
@@ -148,16 +165,13 @@ function CatalogEditor({ uid }: { uid: string }) {
   const originalPrice = editor?.product?.priceCents;
 
   return (
-    <>
-      <PageHeader
-        title={t("products.manage")}
-        description={t("products.manageDescription")}
-        action={items && !loadFailed && (
+    <ProductManagerLayout
+      action={!loadFailed && (items ? (
           <Button type="button" onClick={() => openEditor()} disabled={full}>
             <Plus aria-hidden="true" /> {t("products.add")}
           </Button>
-        )}
-      />
+        ) : <Skeleton className="h-10 w-36" />)}
+    >
       {loadFailed ? (
         <EmptyState
           title={t("products.loadError")}
@@ -197,7 +211,7 @@ function CatalogEditor({ uid }: { uid: string }) {
             <EmptyState title={t("products.empty")} description={t("products.emptyDescription")} />
           )}
         </>
-      ) : <ProductCatalogLoading />}
+      ) : <ProductGridLoading />}
 
       <Dialog open={editor !== null} onOpenChange={(open) => {
         if (!open && !working) setEditor(null);
@@ -268,6 +282,6 @@ function CatalogEditor({ uid }: { uid: string }) {
           </AlertDialogContent>
         )}
       </AlertDialog>
-    </>
+    </ProductManagerLayout>
   );
 }

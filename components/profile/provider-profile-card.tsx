@@ -42,43 +42,22 @@ function getRoleLabel(provider: UserProfile, t: TranslateFn, category: (value?: 
   );
 }
 
-/**
- * Trust signals for listings: the average rating when there are reviews and
- * recommendations when there are any. Zeros are not shown as metrics.
- */
-function ProviderSignals({
+function ProviderRating({
   rating,
   reviewCount,
-  recommendationCount,
 }: {
   rating?: number;
   reviewCount: number;
-  recommendationCount: number;
 }) {
   const t = useT();
   const locale = useLocale();
-  if (reviewCount === 0 && recommendationCount === 0) {
-    return <span className="text-sm text-text-muted">{t("card.newInCommunity")}</span>;
-  }
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      {reviewCount > 0 ? (
-        <span className="inline-flex items-center gap-1 text-sm font-semibold text-text-main">
-          <Star className="size-3.5 text-highlight" fill="currentColor" aria-hidden="true" />
-          {formatRating(rating, INTL_LOCALE[locale])}
-          <span className="font-normal text-text-muted">
-            ({t("common.reviews", { count: reviewCount })})
-          </span>
-        </span>
-      ) : null}
-      {recommendationCount > 0 ? (
-        <RecommendationCount
-          recommendationCount={recommendationCount}
-          className="text-sm"
-        />
-      ) : null}
-    </div>
+    <span className="inline-flex flex-wrap items-center gap-x-1 text-xs text-text-muted">
+      <Star className="size-3.5" aria-hidden="true" />
+      {formatRating(rating, INTL_LOCALE[locale])}
+      <span>({t("common.reviews", { count: reviewCount })})</span>
+    </span>
   );
 }
 
@@ -98,6 +77,16 @@ export function ProviderProfileCard({
   const reviewCount = provider.reviewCount || 0;
   const recommendationCount = provider.recommendationCount || 0;
   const initial = getInitial(provider.name);
+  const recommendations = recommendationCount > 0 ? (
+    <Badge variant="outline" className="h-auto shrink-0 border-primary/25 bg-card py-1 ps-1 pe-2.5">
+      <RecommendationCount recommendationCount={recommendationCount} compact withAvatar className="gap-2 text-sm font-bold" />
+    </Badge>
+  ) : null;
+  const secondarySignal = reviewCount > 0 ? (
+    <ProviderRating rating={provider.rating} reviewCount={reviewCount} />
+  ) : recommendationCount === 0 ? (
+    <span className="text-sm text-text-muted">{t("card.newInCommunity")}</span>
+  ) : null;
 
   if (variant === "list") {
     return (
@@ -107,7 +96,7 @@ export function ProviderProfileCard({
       >
         <article className="grid p-4 md:grid-cols-[auto_1fr_auto] md:p-6">
           <div className="flex flex-col space-y-2">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-start gap-2">
               <div className="flex items-center">
                 <Avatar className="size-12">
                   <AvatarImage src={provider.photoURL} />
@@ -117,10 +106,10 @@ export function ProviderProfileCard({
                 </Avatar>
               </div>
 
-              <div className="space-y-2">
+              <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex flex-col">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-heading text-lg font-bold leading-tight text-text-main">
+                    <h3 className="font-heading text-lg font-bold leading-tight wrap-anywhere text-text-main">
                       {provider.name}
                     </h3>
                     <MembershipMark profile={provider} />
@@ -134,6 +123,7 @@ export function ProviderProfileCard({
                   </p>
                 </div>
               </div>
+              {recommendations}
             </div>
             <div className="">
               <p className="line-clamp-2 max-w-3xl text-sm leading-relaxed text-text-muted">
@@ -141,11 +131,7 @@ export function ProviderProfileCard({
               </p>
 
               <div className="flex flex-wrap items-center gap-2 pt-1">
-                <ProviderSignals
-                  rating={provider.rating}
-                  reviewCount={reviewCount}
-                  recommendationCount={recommendationCount}
-                />
+                {secondarySignal}
                 {location ? (
                   <span className="inline-flex items-center px-3 py-1 text-xs font-medium">
                     <MapPin className="mr-1 size-3.5" />
@@ -200,14 +186,8 @@ export function ProviderProfileCard({
           ) : null}
         </div>
 
-        {recommendationCount > 0 ? (
-          <Badge className="absolute right-4 top-4 z-30 bg-black/90 text-sm shadow">
-            <RecommendationCount
-              recommendationCount={recommendationCount}
-              compact
-              className="text-white"
-            />
-          </Badge>
+        {recommendations ? (
+          <div className="absolute end-4 top-4 z-30">{recommendations}</div>
         ) : null}
 
         <CardHeader className="rounded-t-none w-full">
@@ -240,12 +220,8 @@ export function ProviderProfileCard({
           </CardDescription>
         </CardHeader>
         <CardFooter className="mt-auto flex items-center justify-between gap-2">
-          <ProviderSignals
-            rating={provider.rating}
-            reviewCount={reviewCount}
-            recommendationCount={recommendationCount}
-          />
-          <span className="inline-flex items-center text-sm font-semibold text-primary">
+          {secondarySignal}
+          <span className="ms-auto inline-flex shrink-0 items-center text-sm font-semibold text-primary">
             {t("card.viewProfile")}
             <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" />
           </span>

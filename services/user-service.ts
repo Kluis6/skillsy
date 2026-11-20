@@ -129,7 +129,7 @@ function handleFirestoreError(
 const CANCELLED_ACCOUNT_REMOVED_FIELDS = [
   "photoURL", "bannerURL", "bio", "category", "contacts", "location",
   "whatsapp", "instagram", "facebook", "linkedin", "website", "serviceType",
-  "phone", "phones", "ward", "companyName", "businessAddress",
+  "phone", "phones", "ward", "companyName", "companyBio", "businessAddress",
   "businessAddressNumber", "businessNeighborhood", "businessState",
   "businessComplement", "gallery", "availability", "serviceHours",
   "membershipYears", "socialLinks",
@@ -509,14 +509,12 @@ export const UserService = {
 
   async getCommunityRecommendations(
     professionalId: string,
-    maxItems = 8,
   ): Promise<CommunityRecommendation[]> {
     const path = `public_profiles/${professionalId}/recommendations`;
     try {
       const recommendationsQuery = query(
         collection(db, "public_profiles", professionalId, "recommendations"),
         orderBy("createdAt", "desc"),
-        limit(maxItems),
       );
       const snapshot = await getDocs(recommendationsQuery);
       const recommendations = snapshot.docs.map((item) =>

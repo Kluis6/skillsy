@@ -3,6 +3,8 @@
 export function whatsappUrl(phone: string, message?: string) {
   const digits = phone.replace(/\D/g, "");
   if (!digits) return null;
-  const number = digits.startsWith("55") ? digits : `55${digits}`;
+  // Domestic numbers can also start with 55, the area code for part of RS.
+  const hasCountryCode = digits.startsWith("55") && digits.length >= 12;
+  const number = hasCountryCode ? digits : `55${digits}`;
   return `https://wa.me/${number}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
 }

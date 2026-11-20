@@ -36,6 +36,7 @@ export interface UserProfile {
   phones?: string[];
   ward?: string;
   companyName?: string;
+  companyBio?: string;
   businessAddress?: string;
   businessAddressNumber?: string;
   businessNeighborhood?: string;

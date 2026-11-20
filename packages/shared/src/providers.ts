@@ -48,6 +48,7 @@ export function toPublicProfileModel(
     communityFriend: raw.communityFriend ?? false,
     searchTokens: raw.searchTokens || [],
     companyName: raw.companyName || "",
+    companyBio: raw.companyBio || "",
     gallery: raw.gallery || [],
     rating: getAverageRating(raw),
     reviewCount: raw.reviewCount,

@@ -21,6 +21,7 @@ const publicFieldNames = [
   "communityFriend",
   "searchTokens",
   "companyName",
+  "companyBio",
   "gallery",
   "rating",
   "reviewCount",

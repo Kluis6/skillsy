@@ -1,4 +1,5 @@
 import firebaseConfig from "@/firebase-applet-config.json";
+import { INTL_LOCALE, type Locale } from "@skillsy/shared/i18n/locales";
 
 export const MAX_PRODUCTS = 50;
 export const PRODUCT_NAME_LIMIT = 100;
@@ -24,6 +25,13 @@ export function productImageUrl(uid: string, imageName: string) {
     : "https://firebasestorage.googleapis.com";
   const path = encodeURIComponent(`users/${uid}/products/${imageName}`);
   return `${origin}/v0/b/${firebaseConfig.storageBucket}/o/${path}?alt=media`;
+}
+
+export function formatProductPrice(priceCents: number, locale: Locale) {
+  return new Intl.NumberFormat(INTL_LOCALE[locale], {
+    style: "currency",
+    currency: "BRL",
+  }).format(priceCents / 100);
 }
 
 export function parseProductPrice(price: string) {

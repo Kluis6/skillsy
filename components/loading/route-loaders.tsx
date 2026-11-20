@@ -50,13 +50,13 @@ export function PublicIntroCardLoading({ cards = 3 }: { cards?: number }) {
 
 /** Mirrors the default ("grid") variant of ProviderProfileCard: banner with a
  * floating recommendation badge, an avatar that overlaps the banner, then
- * title/bio and a footer split between recommendations+reviews and "Ver perfil". */
+ * title/bio and a footer with the rating and "Ver perfil". */
 function ProviderCardSkeleton() {
   return (
     <div className="relative h-full overflow-hidden  border border-border-subtle bg-card shadow-xs">
       <div className="relative w-full">
         <Skeleton className="h-30 w-full " />
-        <Skeleton className="absolute right-4 top-4 h-7 w-16 " />
+        <Skeleton className="absolute end-4 top-4 h-8 w-16" />
       </div>
       <div className="space-y-4 p-6 pt-0">
         <div className="-mt-13 flex items-end justify-between">
@@ -72,10 +72,7 @@ function ProviderCardSkeleton() {
           <Skeleton className="h-4 w-10/12" />
         </div>
         <div className="flex items-center justify-between gap-2 pt-2">
-          <div className="space-y-1.5">
-            <Skeleton className="h-3 w-20" />
-            <Skeleton className="h-3 w-24" />
-          </div>
+          <Skeleton className="h-3 w-24" />
           <Skeleton className="h-4 w-16" />
         </div>
       </div>
@@ -84,17 +81,17 @@ function ProviderCardSkeleton() {
 }
 
 /** Mirrors the "list" variant of ProviderProfileCard used by search results:
- * a horizontal row (avatar + name/role, bio, then recommendation count and
- * location/category/review pills), not a boxed grid card. */
+ * an identity row with recommendations, followed by bio and secondary details. */
 function ProviderListRowSkeleton() {
   return (
     <div className="space-y-3 border border-border-subtle p-4 md:p-6">
-      <div className="flex items-center gap-2">
+      <div className="flex items-start gap-2">
         <Skeleton className="size-12 " />
-        <div className="space-y-2">
-          <Skeleton className="h-5 w-40" />
-          <Skeleton className="h-4 w-32" />
+        <div className="min-w-0 flex-1 space-y-2">
+          <Skeleton className="h-5 w-40 max-w-full" />
+          <Skeleton className="h-4 w-32 max-w-full" />
         </div>
+        <Skeleton className="h-8 w-16 shrink-0" />
       </div>
       <div className="space-y-2">
         <Skeleton className="h-4 w-full" />
@@ -531,23 +528,21 @@ export function ProfilePublicPageLoading() {
           <Skeleton className="h-26 w-full rounded-none md:h-52" />
           <div className="container mx-auto px-4 pb-4">
             <div className="relative flex flex-col">
-              <div className="flex items-center justify-end py-2 md:py-4">
-                <div className="hidden gap-2 sm:flex">
-                  <Skeleton className="size-10 " />
-                  <Skeleton className="size-10 " />
-                  <Skeleton className="h-10 w-32 " />
-                  <Skeleton className="h-10 w-28 " />
+              <div className="flex min-h-12 items-center justify-end py-2 md:py-4">
+                <div className="hidden gap-2 md:flex">
+                  <Skeleton className="size-11" />
+                  <Skeleton className="size-11" />
+                  <Skeleton className="size-11" />
+                  <Skeleton className="h-11 w-48" />
                 </div>
-                <Skeleton className="h-9 w-16 sm:hidden" />
               </div>
 
               <Skeleton className="relative z-10 mb-4 -mt-28 size-28  border-6 border-card shadow-sm sm:-mt-34 sm:size-32 md:-mt-38 md:size-40" />
 
-              <div className="flex flex-col items-start justify-between gap-6 sm:flex-row">
-                <div className="space-y-3">
+              <div className="flex items-start justify-between gap-3 md:gap-6">
+                <div className="min-w-0 space-y-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Skeleton className="h-8 w-56 md:h-10 md:w-72" />
-                    <Skeleton className="h-7 w-36 " />
+                    <Skeleton className="h-8 w-56 max-w-full md:h-10 md:w-72" />
                   </div>
                   <Skeleton className="h-5 w-full max-w-md" />
                   <div className="flex flex-wrap items-center gap-2">
@@ -558,38 +553,15 @@ export function ProfilePublicPageLoading() {
                   <Skeleton className="h-5 w-40" />
                 </div>
 
-                <div className="w-full sm:w-auto">
-                  <div className="hidden border bg-surface p-4 sm:block">
-                    <Skeleton className="mx-auto mb-3 h-4 w-20" />
-                    <Skeleton className="mx-auto h-10 w-24" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 sm:hidden">
-                    <Skeleton className="h-10 " />
-                    <Skeleton className="h-10 " />
-                  </div>
+                <Skeleton className="h-11 w-18 shrink-0" />
+              </div>
+              <div className="mt-4 space-y-2 md:hidden">
+                <div className="flex justify-end gap-2">
+                  <Skeleton className="size-11" />
+                  <Skeleton className="size-11" />
                 </div>
+                <Skeleton className="h-11 w-full" />
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Indicado pela comunidade */}
-        <section className="border-b border-border-subtle bg-card">
-          <div className="container mx-auto flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-2">
-              <Skeleton className="h-5 w-48" />
-              <Skeleton className="h-4 w-full max-w-md" />
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="flex -space-x-2">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <Skeleton
-                    key={index}
-                    className="size-10 ring-2 ring-card"
-                  />
-                ))}
-              </div>
-              <Skeleton className="h-10 w-32 " />
             </div>
           </div>
         </section>

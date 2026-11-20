@@ -1,8 +1,6 @@
 "use client";
 
-import {
-  ThumbsUp,
-} from "lucide-react";
+import { BsHandThumbsUpFill } from "react-icons/bs";
 import {
   Avatar,
   AvatarFallback,
@@ -29,6 +27,7 @@ interface RecommendationCountProps {
   size?: number;
   /** Only the number, for tight spots like the card corner badge. */
   compact?: boolean;
+  withAvatar?: boolean;
   className?: string;
 }
 
@@ -38,23 +37,29 @@ export function RecommendationCount({
   recommendationCount,
   size = 14,
   compact = false,
+  withAvatar = false,
   className,
 }: RecommendationCountProps) {
   const t = useT();
   const label = t("common.recommendations", { count: recommendationCount });
+  const icon = <BsHandThumbsUpFill size={size} aria-hidden="true" className="shrink-0" />;
 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 font-semibold text-primary",
+        "inline-flex items-center gap-1.5 font-semibold tabular-nums text-primary",
         className,
       )}
       title={compact ? label : undefined}
     >
-      <ThumbsUp size={size} aria-hidden="true" className="shrink-0" />
+      {withAvatar ? (
+        <Avatar size="sm" className="after:border-transparent" aria-hidden="true">
+          <AvatarFallback className="bg-primary text-primary-foreground">{icon}</AvatarFallback>
+        </Avatar>
+      ) : icon}
       {compact ? (
         <>
-          <span>{recommendationCount}</span>
+          <span aria-hidden="true">{recommendationCount}</span>
           <span className="sr-only">{label}</span>
         </>
       ) : (

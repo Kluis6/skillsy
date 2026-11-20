@@ -16,11 +16,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SurfacePanel } from "@/components/ui/page-layout";
+import { ProfileToolbar } from "@/components/profile/profile-toolbar";
 import { MembershipMark } from "@/components/ui/trust-signals";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   AlertCircle,
-  ArrowLeft,
   Camera,
   CheckCircle2,
   Eye,
@@ -516,35 +516,22 @@ export function ProfileSettingsClient() {
 
   return (
     <div className="min-h-screen bg-surface w-full md:space-y-2">
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-card/85 backdrop-blur-md border-b border-border-subtle">
-        <nav className="mx-auto container px-4 py-1 md:py-2 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Link href="/" onNavigate={confirmNavigation} className="flex items-center space-x-2">
-              <ArrowLeft size={16} className="text-text-muted" />{" "}
-              <p className="hidden text-sm md:flex text-text-muted font-medium">
-                {t("settings.back")}
-              </p>
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button
-              type="submit"
-              form="profile-settings-form"
-              disabled={loading || uploading !== null || !isDirty}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 transition-colors px-6 font-bold h-10"
-            >
-              {loading ? (
-                t("settings.saving")
-              ) : (
-                <>
-                  <Save size={16} className="mr-2" /> {t("settings.save")}
-                </>
-              )}
-            </Button>
-          </div>
-        </nav>
-      </div>
+      <ProfileToolbar backHref="/" backLabel={t("settings.back")} onBackNavigate={confirmNavigation}>
+        <Button
+          type="submit"
+          form="profile-settings-form"
+          disabled={loading || uploading !== null || !isDirty}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 transition-colors px-6 font-bold h-10"
+        >
+          {loading ? (
+            t("settings.saving")
+          ) : (
+            <>
+              <Save size={16} className="mr-2" /> {t("settings.save")}
+            </>
+          )}
+        </Button>
+      </ProfileToolbar>
 
       <main className="md:container md:mx-auto md:px-4 mb-6">
         <form id="profile-settings-form" onSubmit={handleSubmit(onFormSubmit)} noValidate>
@@ -745,13 +732,13 @@ export function ProfileSettingsClient() {
                     </Avatar>
                     <Button
                       type="button"
-                      size="icon"
+                      size="icon-lg"
                       onClick={() => avatarInputRef.current?.click()}
                       disabled={uploading !== null}
                       aria-label={t("settings.changePhoto")}
                       aria-describedby="profile-avatar-help profile-image-storage-help"
                       aria-busy={uploading === "avatar"}
-                      className="absolute bottom-0 right-0 size-10 shadow-sm hover:scale-105"
+                      className="absolute bottom-0 right-0 shadow-sm hover:scale-105"
                     >
                       {uploading === "avatar" ? (
                         <Loader2 size={18} className="animate-spin" />
@@ -1135,7 +1122,7 @@ export function ProfileSettingsClient() {
                 <div className="space-y-6">
                   {profile?.isProvider && formData.isProvider && (
                     <Link href="/profile/produtos" onNavigate={confirmNavigation} className={buttonVariants({ variant: "outline" })}>
-                      {t("products.manage")}
+                      {t("products.manageButton")}
                     </Link>
                   )}
                   {!formData.isProvider ? (
@@ -1222,6 +1209,20 @@ export function ProfileSettingsClient() {
                           className={`bg-surface focus:bg-card transition-all text-sm h-12 ${errors.companyName ? "ring-2 ring-destructive" : ""}`}
                         />
                         {fieldFeedback("companyName", t("settings.upTo", { max: PROFILE_LIMITS.companyName }))}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor={profileFieldId("companyBio")} className="text-xs md:text-sm font-medium text-text-muted">
+                          {t("settings.companyBio")}
+                          <span className="text-xs text-text-main">{t("settings.optional")}</span>
+                        </Label>
+                        <Textarea
+                          {...fieldProps("companyBio")}
+                          {...register("companyBio")}
+                          maxLength={PROFILE_LIMITS.companyBio}
+                          className="min-h-24 bg-surface text-sm focus:bg-card"
+                        />
+                        {fieldFeedback("companyBio", t("settings.companyBioHelp", { max: PROFILE_LIMITS.companyBio }))}
                       </div>
 
                       <div className="space-y-4 pt-2">

@@ -1,17 +1,15 @@
 "use client";
 
 import { whatsappUrl } from "@skillsy/shared/contact";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { UserService } from "@/services/user-service";
-import { CommunityRecommendation, Rating, UserProfile } from "@/models/types";
+import { Rating, UserProfile } from "@/models/types";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  RecommendationCount,
-  RecommendationSummary,
-} from "@/components/profile/recommendation-summary";
+import { ProfileRecommendationsDialog } from "@/components/profile/profile-recommendations-dialog";
 import { useLocale, useT, useValidationMessage } from "@/lib/i18n/provider";
 import { rich } from "@/lib/i18n/rich";
 import { useLabels } from "@/lib/i18n/labels";
@@ -30,7 +28,6 @@ import {
   Info,
   MessageSquareText,
   Star,
-  ThumbsUp,
   UserPlus,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -79,7 +76,7 @@ import {
   FaWhatsapp,
 } from "react-icons/fa";
 import { PiShareFat } from "react-icons/pi";
-import { BsWhatsapp } from "react-icons/bs";
+import { BsHandThumbsUp, BsHandThumbsUpFill, BsWhatsapp } from "react-icons/bs";
 import { FaTelegramPlane } from "react-icons/fa";
 import { AVAILABILITY_OPTIONS } from "@/lib/profile-form";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -91,11 +88,16 @@ import { REPORT_REASON_OPTIONS } from "@/lib/reporting";
 interface ProfileDetailClientProps {
   id: string;
   initialProfile: UserProfile | null;
+  children?: ReactNode;
 }
+
+// Web Share support is fixed for the lifetime of the page.
+const subscribeToShareSupport = () => () => {};
 
 export function ProfileDetailClient({
   id,
   initialProfile,
+  children,
 }: ProfileDetailClientProps) {
   const {
     user,
@@ -116,12 +118,8 @@ export function ProfileDetailClient({
   const [ratingHover, setRatingHover] = useState(0);
   const [ratingComment, setRatingComment] = useState("");
   const [ratings, setRatings] = useState<Rating[]>([]);
-  const [loadingRatings, setLoadingRatings] = useState(false);
   const [submittingRating, setSubmittingRating] = useState(false);
   const [recommendedState, setIsRecommended] = useState(false);
-  const [loadedRecommendations, setRecommendations] = useState<
-    CommunityRecommendation[]
-  >([]);
   const [recommendationLoading, setRecommendationLoading] = useState(false);
   // Recommendations only apply to providers (and never to your own profile);
   // derive that here instead of resetting state inside the effects below.
@@ -130,9 +128,6 @@ export function ProfileDetailClient({
     Boolean(targetProfile?.isProvider) &&
     user?.uid !== targetProfile?.uid &&
     recommendedState;
-  const recommendations = targetProfile?.isProvider
-    ? loadedRecommendations
-    : [];
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
@@ -155,8 +150,11 @@ export function ProfileDetailClient({
       : `${window.location.origin}/profile/${targetProfile.uid}`
     : "";
 
-  const canUseNativeShare =
-    typeof navigator !== "undefined" && "share" in navigator;
+  const canUseNativeShare = useSyncExternalStore(
+    subscribeToShareSupport,
+    () => typeof navigator.share === "function",
+    () => false,
+  );
   const canReportProfile = Boolean(
     user && targetProfile && targetProfile.uid !== user.uid,
   );
@@ -202,15 +200,12 @@ export function ProfileDetailClient({
         return;
       }
 
-      setLoadingRatings(true);
       try {
         const nextRatings = await UserService.getRatings(targetProfile.uid);
         setRatings(nextRatings);
       } catch (error) {
         console.error("Error fetching ratings:", error);
         toast.error(t("profile.ratingsLoadError"));
-      } finally {
-        setLoadingRatings(false);
       }
     };
 
@@ -226,20 +221,17 @@ export function ProfileDetailClient({
       return;
     }
 
-    UserService.getCommunityRecommendation(targetProfile.uid, user.uid)
-      .then((recommendation) => setIsRecommended(Boolean(recommendation)))
-      .catch(() => setIsRecommended(false));
+    let active = true;
+    UserService.getCommunityRecommendation(targetProfile.uid, user.uid).then(
+      (recommendation) => {
+        if (active) setIsRecommended(Boolean(recommendation));
+      },
+      () => {
+        if (active) setIsRecommended(false);
+      },
+    );
+    return () => { active = false; };
   }, [targetProfile?.uid, targetProfile?.isProvider, user?.uid]);
-
-  useEffect(() => {
-    if (!targetProfile?.uid || !targetProfile.isProvider) {
-      return;
-    }
-
-    UserService.getCommunityRecommendations(targetProfile.uid, 8)
-      .then(setRecommendations)
-      .catch(() => setRecommendations([]));
-  }, [targetProfile?.uid, targetProfile?.isProvider]);
 
   // The ward is only for signed-in members, so the server leaves it out of the
   // page; load it once the visitor is signed in.
@@ -286,7 +278,7 @@ export function ProfileDetailClient({
       });
       return;
     }
-    if (!targetProfile || user.uid === targetProfile.uid) return;
+    if (!targetProfile?.isProvider || user.uid === targetProfile.uid) return;
 
     setRecommendationLoading(true);
     try {
@@ -318,31 +310,6 @@ export function ProfileDetailClient({
             }
           : current,
       );
-      setRecommendations((current) => {
-        if (added) {
-          const nextRecommendation: CommunityRecommendation = {
-            recommenderId: user.uid,
-            recommenderName:
-              currentUserProfile?.name ||
-              profile?.name ||
-              user.displayName ||
-              "Membro Skillsy",
-            recommenderPhotoURL:
-              currentUserProfile?.photoURL ||
-              profile?.photoURL ||
-              user.photoURL ||
-              "",
-            createdAt: new Date(),
-          };
-
-          return [
-            nextRecommendation,
-            ...current.filter((item) => item.recommenderId !== user.uid),
-          ].slice(0, 8);
-        }
-
-        return current.filter((item) => item.recommenderId !== user.uid);
-      });
       toast.success(added ? t("profile.recommendationAdded") : t("profile.recommendationRemoved"), {
         description: added
           ? t("profile.recommendationAddedText")
@@ -526,24 +493,25 @@ export function ProfileDetailClient({
     </SheetContent>
   );
 
-  const renderShareButton = (className?: string) => {
+  const renderShareButton = () => {
+    const label = t("profile.share");
     if (canUseNativeShare) {
       return (
         <Tooltip>
           <TooltipTrigger
             render={
               <Button
-                variant="outline"
-                size="icon"
-                className={className}
+                variant="secondary"
+                size="icon-lg"
+                aria-label={label}
                 onClick={handleNativeShare}
               />
             }
           >
-            <PiShareFat className="text-text-muted" />
+            <PiShareFat aria-hidden="true" />
           </TooltipTrigger>
           <TooltipContent>
-            <p>{t("profile.share")}</p>
+            <p>{label}</p>
           </TooltipContent>
         </Tooltip>
       );
@@ -556,18 +524,15 @@ export function ProfileDetailClient({
             render={
               <TooltipTrigger
                 render={
-                  <Button
-                    variant="outline"
-                    className={` ${className || "size-10"}`}
-                  />
+                  <Button variant="secondary" size="icon-lg" aria-label={label} />
                 }
               >
-                <PiShareFat className="text-text-muted" />
+                <PiShareFat aria-hidden="true" />
               </TooltipTrigger>
             }
           />
           <TooltipContent>
-            <p>{t("profile.share")}</p>
+            <p>{label}</p>
           </TooltipContent>
         </Tooltip>
         {renderShareSheet()}
@@ -861,6 +826,47 @@ export function ProfileDetailClient({
     targetProfile.serviceType ||
     labels.category(targetProfile.category) ||
     t("profile.communityMember");
+  const recommendationCount = targetProfile.recommendationCount || 0;
+  const comments = ratings.filter((rating) => rating.comment?.trim());
+  const editProfileLabel = t("profile.editProfile");
+  const editProfileAction = (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <Link
+            href="/profile"
+            aria-label={editProfileLabel}
+            className={buttonVariants({ variant: "outline", size: "icon-lg" })}
+          >
+            <LuPencil aria-hidden="true" className="text-text-muted" />
+          </Link>
+        }
+      />
+      <TooltipContent>{editProfileLabel}</TooltipContent>
+    </Tooltip>
+  );
+  const RecommendIcon = isRecommended ? BsHandThumbsUpFill : BsHandThumbsUp;
+  const recommendationAction = targetProfile.isProvider && user?.uid !== targetProfile.uid ? (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <Button
+            variant="secondary"
+            size="icon-lg"
+            aria-label={t("profile.recommend")}
+            aria-pressed={isRecommended}
+            disabled={recommendationLoading}
+            onClick={handleToggleRecommendation}
+          />
+        }
+      >
+        <RecommendIcon aria-hidden="true" className={isRecommended ? "text-primary" : undefined} />
+      </TooltipTrigger>
+      <TooltipContent>
+        {t(isRecommended ? "profile.removeRecommendation" : "profile.recommend")}
+      </TooltipContent>
+    </Tooltip>
+  ) : null;
   return (
     <>
       <Navbar user={user} profile={profile} logout={logout} />
@@ -893,34 +899,13 @@ export function ProfileDetailClient({
             <section className="mx-auto container px-4 pb-4">
               <div className="relative flex flex-col">
                 {/* Avatar Overlap */}
-                <div className="flex items-center md:py-4 py-2 justify-end">
-                  <div className="flex border px-2 py-1 sm:hidden">
-                    <RecommendationCount
-                      recommendationCount={
-                        targetProfile.recommendationCount || 0
-                      }
-                      className="text-sm"
-                    />
-                  </div>
-                  <div className="sm:flex space-x-2 hidden">
-                    {renderShareButton("size-10")}
+                <div className="flex min-h-12 items-center justify-end py-2 md:py-4">
+                  <div className="hidden gap-2 md:flex">
+                    {renderShareButton()}
+                    {recommendationAction}
                     {renderReportButton("size-10")}
                     {user?.uid === targetProfile.uid ? (
-                      <Tooltip>
-                        <TooltipTrigger
-                          render={
-                            <Link
-                              className="size-9 flex border justify-center items-center hover:bg-muted transition-colors"
-                              href="/profile"
-                            >
-                              <LuPencil className="text-text-muted" />
-                            </Link>
-                          }
-                        />
-                        <TooltipContent>
-                          <p>{t("profile.editProfile")}</p>
-                        </TooltipContent>
-                      </Tooltip>
+                      editProfileAction
                     ) : (
                       <>
                         {canToggleContact && (
@@ -952,19 +937,6 @@ export function ProfileDetailClient({
                     >
                       <FaWhatsapp /> <p>{t("profile.whatsapp")}</p>
                     </Button>
-                    {user?.uid !== targetProfile.uid &&
-                      !targetProfile.isProvider && (
-                        <Button
-                          size="lg"
-                          onClick={handleToggleRecommendation}
-                          disabled={recommendationLoading}
-                          variant="outline"
-                          className="px-5 font-semibold rounded-none"
-                        >
-                          <ThumbsUp className="size-4" />
-                          {isRecommended ? t("profile.youRecommended") : t("profile.recommend")}
-                        </Button>
-                      )}
                   </div>
                 </div>
                 <div className="-mt-28 sm:-mt-34 md:-mt-38 mb-4 relative z-10 size-28 sm:size-32 md:size-40">
@@ -978,10 +950,10 @@ export function ProfileDetailClient({
                     </AvatarFallback>
                   </Avatar>
                 </div>
-                <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
-                  <div className="md:space-y-2 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-xl md:text-3xl font-bold text-text-main leading-tight">
+                <div className="flex items-start justify-between gap-3 md:gap-6">
+                  <div className="min-w-0 space-y-1 md:space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-xl font-bold leading-tight wrap-anywhere text-text-main md:text-3xl">
                         {targetProfile.name}
                       </h2>
                       <MembershipMark profile={targetProfile} size={20} />
@@ -1036,154 +1008,70 @@ export function ProfileDetailClient({
                     )}
                   </div>
 
-                  <div className="flex flex-col w-full sm:w-auto">
-                    <div className="hidden space-y-1 border bg-surface p-4 text-center sm:block">
-                      <div className="flex items-center justify-center gap-2 text-primary">
-                        <ThumbsUp size={22} aria-hidden="true" />
-                        <p className="text-3xl font-bold">
-                          {targetProfile.recommendationCount || 0}
-                        </p>
-                      </div>
-                      <p className="text-xs font-bold text-text-muted">
-                        {t("profile.recommendationsLabel", {
-                          count: targetProfile.recommendationCount || 0,
-                        })}
-                      </p>
-                    </div>
-                    <div className="flex flex-col gap-2 sm:hidden">
-                      <div className="flex gap-2 justify-end">
-                        {renderShareButton("size-9")}
-                        {renderReportButton("size-9")}
-                        {user?.uid === targetProfile.uid ? (
-                          <Tooltip>
-                            <TooltipTrigger
-                              render={
-                                <Link
-                                  className="size-9 flex border justify-center items-center hover:bg-muted transition-colors"
-                                  href="/profile"
-                                >
-                                  <LuPencil className="text-text-muted" />
-                                </Link>
-                              }
-                            />
-                            <TooltipContent>
-                              <p>{t("profile.editProfile")}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        ) : (
-                          <>
-                            {canToggleContact && (
-                              <Button
-                                size="lg"
-                                variant={isContact ? "destructive" : "outline"}
-                                onClick={handleToggleContact}
-                                className="flex-1 px-5 font-semibold"
-                              >
-                                {isContact ? (
-                                  <>
-                                    <LuUserMinus /> {t("profile.disconnect")}
-                                  </>
-                                ) : (
-                                  <>
-                                    <UserPlus size={18} className="mr-2" />
-                                    {t("profile.connect")}
-                                  </>
-                                )}
-                              </Button>
-                            )}
-                          </>
-                        )}
-                      </div>
-
-                      <Button
-                        onClick={handleWhatsApp}
-                        variant="default"
-                        size="lg"
-                        className="w-full bg-success px-6 font-bold text-success-foreground hover:bg-success/90 active:bg-success/80"
-                      >
-                        <FaWhatsapp /> <p>{t("profile.whatsapp")}</p>
-                      </Button>
-                      {user?.uid !== targetProfile.uid &&
-                        !targetProfile.isProvider && (
+                  {targetProfile.isProvider && (
+                    <ProfileRecommendationsDialog
+                      profileId={targetProfile.uid}
+                      count={recommendationCount}
+                    />
+                  )}
+                </div>
+                <div className="mt-4 w-full space-y-2 md:hidden">
+                  <div className="flex flex-wrap justify-end gap-2">
+                    {renderShareButton()}
+                    {recommendationAction}
+                    {renderReportButton("size-9")}
+                    {user?.uid === targetProfile.uid ? (
+                      editProfileAction
+                    ) : (
+                      <>
+                        {canToggleContact && (
                           <Button
-                            onClick={handleToggleRecommendation}
-                            disabled={recommendationLoading}
-                            variant="outline"
                             size="lg"
-                            className="w-full font-semibold"
+                            variant={isContact ? "destructive" : "outline"}
+                            onClick={handleToggleContact}
+                            className="flex-1 px-5 font-semibold"
                           >
-                            <ThumbsUp className="size-4" />
-                            {isRecommended ? t("profile.youRecommended") : t("profile.recommend")}
+                            {isContact ? (
+                              <>
+                                <LuUserMinus /> {t("profile.disconnect")}
+                              </>
+                            ) : (
+                              <>
+                                <UserPlus size={18} className="mr-2" />
+                                {t("profile.connect")}
+                              </>
+                            )}
                           </Button>
                         )}
-                    </div>
+                      </>
+                    )}
                   </div>
+
+                  <Button
+                    onClick={handleWhatsApp}
+                    variant="default"
+                    size="lg"
+                    className="w-full bg-success px-6 font-bold text-success-foreground hover:bg-success/90 active:bg-success/80"
+                  >
+                    <FaWhatsapp /> <p>{t("profile.whatsapp")}</p>
+                    </Button>
                 </div>
               </div>
             </section>
           </section>
 
-          {targetProfile.isProvider ? (
-            <section className="border-b border-border-subtle bg-card">
-              <div className="container mx-auto flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
-                <div className="space-y-1">
-                  <h3 className="text-base font-semibold text-text-main">
-                    {t("profile.recommendedByCommunity")}
-                  </h3>
-                  <p className="max-w-2xl text-sm leading-relaxed text-text-muted">
-                    {t("profile.recommendOnce")}
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <RecommendationSummary
-                    recommendationCount={targetProfile.recommendationCount || 0}
-                    recommenders={recommendations.map((recommendation) => ({
-                      id: recommendation.recommenderId,
-                      name: recommendation.recommenderName,
-                      photoURL: recommendation.recommenderPhotoURL,
-                    }))}
-                    avatarSize="lg"
-                  />
-
-                  {user?.uid !== targetProfile.uid ? (
-                    <Button
-                      onClick={handleToggleRecommendation}
-                      disabled={recommendationLoading}
-                      variant={isRecommended ? "outline" : "default"}
-                      className="w-full sm:w-auto"
-                    >
-                      <ThumbsUp className="size-4" />
-                      {isRecommended ? t("profile.youRecommended") : t("profile.recommend")}
-                    </Button>
-                  ) : null}
-                </div>
-              </div>
-            </section>
-          ) : null}
-
           {/* About Section */}
           <section className="bg-card border-y border-border-subtle">
             <div className="mx-auto container p-4 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <h3 className="md:text-xl text-base font-semibold text-text-main">
-                  {t("profile.about")}
-                </h3>
-                {targetProfile.isProvider && (
-                  <Link
-                    href={`/profile/${targetProfile.uid}/produtos`}
-                    prefetch={false}
-                    className={buttonVariants({ variant: "outline" })}
-                  >
-                    {t("products.view")}
-                  </Link>
-                )}
-              </div>
+              <h2 className="md:text-xl text-base font-semibold text-text-main">
+                {t("profile.about")}
+              </h2>
               <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap max-w-3xl">
                 {targetProfile.bio || t("profile.noBio")}
               </p>
             </div>
           </section>
+          {children}
 
           {/* disponibilidade e avaliações */}
           <div className="w-full flex flex-col md:flex-row gap-2">
@@ -1367,7 +1255,7 @@ export function ProfileDetailClient({
             )}
           </div>
 
-          {targetProfile.isProvider && (
+          {targetProfile.isProvider && comments.length > 0 && (
             <section className="bg-card border-y border-border-subtle">
               <div className="mx-auto container p-4 space-y-4">
                 <div className="flex items-center gap-2">
@@ -1377,26 +1265,10 @@ export function ProfileDetailClient({
                   </h3>
                 </div>
 
-                {loadingRatings ? (
-                  <p className="text-sm text-text-muted">
-                    {t("profile.loadingComments")}
-                  </p>
-                ) : ratings.length === 0 ? (
-                  <div className="border border-dashed border-border-subtle bg-surface p-4">
-                    <p className="text-sm text-text-muted">
-                      {t("profile.noComments")}
-                    </p>
-                    <p className="mt-1 text-xs text-text-muted">
-                      {t("profile.noCommentsText")}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {ratings.map((rating) => (
-                      <article
-                        key={rating.id}
-                        className="border border-border-subtle bg-surface p-4 space-y-3"
-                      >
+                <div className="space-y-3">
+                  {comments.map((rating) => (
+                    <Card key={rating.id} role="article" className="border border-border-subtle bg-surface py-0 ring-0">
+                      <CardContent className="space-y-3 p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div className="space-y-1">
                             <div className="flex items-center gap-1 text-highlight">
@@ -1425,19 +1297,13 @@ export function ProfileDetailClient({
                             {formatRatingDate(rating.createdAt)}
                           </p>
                         </div>
-                        {rating.comment?.trim() ? (
-                          <p className="text-sm leading-relaxed text-text-main whitespace-pre-wrap">
-                            {rating.comment}
-                          </p>
-                        ) : (
-                          <p className="text-sm text-text-muted">
-                            {t("profile.noComment")}
-                          </p>
-                        )}
-                      </article>
-                    ))}
-                  </div>
-                )}
+                        <p className="text-sm leading-relaxed text-text-main whitespace-pre-wrap">
+                          {rating.comment}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
             </section>
           )}

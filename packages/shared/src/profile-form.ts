@@ -31,6 +31,7 @@ export interface ProfileFormValues {
   serviceType: string;
   category: ProviderCategory;
   companyName: string;
+  companyBio: string;
   isProvider: boolean;
   whatsapp: string;
   phone: string;
@@ -53,6 +54,7 @@ export interface ProfileFormValues {
 
 const PROVIDER_ONLY_FIELDS = [
   'companyName',
+  'companyBio',
   'category',
   'serviceType',
   'serviceHours',
@@ -130,6 +132,7 @@ export const getProfileFormDefaults = (): ProfileFormValues => ({
   serviceType: '',
   category: '',
   companyName: '',
+  companyBio: '',
   isProvider: false,
   whatsapp: '',
   phone: '',
@@ -164,6 +167,7 @@ export const profileToFormValues = (profile: UserProfile | null): ProfileFormVal
     serviceType: profile.serviceType || '',
     category: normalizeCategory(profile.category),
     companyName: profile.companyName || '',
+    companyBio: profile.companyBio || '',
     isProvider: profile.isProvider || false,
     whatsapp: profile.whatsapp || '',
     phone: profile.phone || '',
@@ -224,6 +228,7 @@ export const toProfileUpdatePayload = (values: ProfileFormValues): Partial<UserP
     })),
     category: normalizeOptionalText(providerValues.category),
     companyName: normalizeOptionalText(providerValues.companyName),
+    companyBio: normalizeOptionalText(providerValues.companyBio),
     serviceType: normalizeOptionalText(providerValues.serviceType),
     availability: isProvider ? normalizeAvailability(providerValues.availability) : [],
     serviceHours: normalizeOptionalText(providerValues.serviceHours),

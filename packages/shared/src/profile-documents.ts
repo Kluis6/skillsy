@@ -41,6 +41,7 @@ export const USER_PROFILE_FIELDS: ReadonlySet<string> = new Set([
   "location",
   "ward",
   "companyName",
+  "companyBio",
   "gallery",
   "rating",
   "reviewCount",
@@ -374,6 +375,7 @@ export function buildPublicProfileData(source: Partial<UserProfile>) {
       source.bio,
     ),
     companyName: source.companyName || "",
+    companyBio: source.isProvider ? source.companyBio || "" : "",
     gallery: source.gallery || [],
     // Aggregates (ratingSum, reviewCount, recommendationCount) are only changed
     // by the rating/recommendation flows the rules validate; merge writes keep them.
@@ -514,6 +516,7 @@ export function createProfileDocuments(fs: FirestoreAdapter) {
       1000000,
     );
     normalized.bio = normalizeBoundedString(normalized.bio, 2000);
+    normalized.companyBio = normalizeBoundedString(normalized.companyBio, 500);
     normalized.whatsapp = normalizeBoundedString(normalized.whatsapp, 30);
     normalized.phone = normalizeBoundedString(normalized.phone, 30);
     normalized.instagram = normalizeBoundedString(normalized.instagram, 100);

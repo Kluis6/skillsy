@@ -1,48 +1,55 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { INTL_LOCALE, type Locale } from "@skillsy/shared/i18n";
-import { productImageUrl, USE_STORAGE_EMULATOR, type ProductDetails } from "@/lib/product-catalog";
+import type { Locale } from "@skillsy/shared/i18n/locales";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatProductPrice, productImageUrl, USE_STORAGE_EMULATOR, type ProductDetails } from "@/lib/product-catalog";
+import { cn } from "@/lib/utils";
 
 export function ProductCard({
   uid,
   product,
   locale,
   actions,
+  preview = false,
+  heading: Heading = preview ? "h3" : "h2",
 }: {
   uid: string;
   product: ProductDetails;
   locale: Locale;
   actions?: ReactNode;
+  preview?: boolean;
+  heading?: "h2" | "h3";
 }) {
   return (
-    <article className="flex h-full min-w-0 flex-col border border-border-subtle bg-card">
-      {product.imageName && (
-        <div className="relative aspect-[4/3] border-b border-border-subtle bg-surface">
+    <Card className="h-full min-w-0 border border-border-subtle pt-0 ring-0">
+      <div className="relative h-30 shrink-0 bg-radial-[at_25%_25%] from-primary/70 to-primary">
+        {product.imageName && (
           <Image
             src={productImageUrl(uid, product.imageName)}
             alt={product.name}
             fill
-            sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             unoptimized={USE_STORAGE_EMULATOR}
-            className="object-contain"
+            className="object-cover"
           />
-        </div>
-      )}
-      <div className="flex flex-1 flex-col gap-2 p-4 sm:p-5">
-        <h2 className="text-lg font-semibold wrap-anywhere text-text-main">{product.name}</h2>
+        )}
+      </div>
+      <CardHeader className="gap-2">
+        <CardTitle className="text-lg font-semibold text-text-main">
+          <Heading className={cn("wrap-anywhere", preview && "line-clamp-2")}>
+            {product.name}
+          </Heading>
+        </CardTitle>
         {product.priceCents !== undefined && (
           <p className="font-semibold tabular-nums text-primary">
-            {new Intl.NumberFormat(INTL_LOCALE[locale], {
-              style: "currency",
-              currency: "BRL",
-            }).format(product.priceCents / 100)}
+            {formatProductPrice(product.priceCents, locale)}
           </p>
         )}
-        <p className="text-sm leading-relaxed whitespace-pre-wrap wrap-anywhere text-text-muted">
+        <CardDescription className={cn("whitespace-pre-wrap wrap-anywhere", preview && "line-clamp-3")}>
           {product.description}
-        </p>
-        {actions && <div className="mt-auto flex flex-wrap gap-2 pt-3">{actions}</div>}
-      </div>
-    </article>
+        </CardDescription>
+      </CardHeader>
+      {actions && <CardFooter className="mt-auto flex-wrap gap-2 border-border-subtle">{actions}</CardFooter>}
+    </Card>
   );
 }

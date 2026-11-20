@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
-import { cache } from 'react';
+import { cache, Suspense } from 'react';
 import { ProfileDetailClient } from '@/components/profile-detail-client';
+import { ProfileProductsSection } from '@/components/profile/profile-products-section';
 import { createPublicMetadata, withoutWard } from '@/lib/public-metadata';
-import { UserService } from '@/services/user-service';
+import { isActiveProvider, UserService } from '@/services/user-service';
 import { getMessages, getT } from '@/lib/i18n/server';
 import { I18nProvider } from '@/lib/i18n/provider';
 
@@ -55,7 +56,7 @@ export default async function PublicProfilePage({ params }: Props) {
   const { id } = await params;
   const [profile, messages] = await Promise.all([
     getPublicProfile(id),
-    getMessages('profile', 'products'),
+    getMessages('profile'),
   ]);
   // The ward is only shown to signed-in members: it is left out of the page
   // sent to everyone and loaded on the client after sign-in.
@@ -63,7 +64,13 @@ export default async function PublicProfilePage({ params }: Props) {
 
   return (
     <I18nProvider messages={messages}>
-      <ProfileDetailClient id={id} initialProfile={initialProfile} />
+      <ProfileDetailClient id={id} initialProfile={initialProfile}>
+        {isActiveProvider(initialProfile) && (
+          <Suspense fallback={null}>
+            <ProfileProductsSection uid={id} whatsapp={initialProfile.whatsapp} />
+          </Suspense>
+        )}
+      </ProfileDetailClient>
     </I18nProvider>
   );
 }
