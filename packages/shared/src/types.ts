@@ -37,6 +37,8 @@ export interface UserProfile {
   ward?: string;
   companyName?: string;
   companyBio?: string;
+  companyLogoImageName?: string;
+  companyBannerImageName?: string;
   businessAddress?: string;
   businessAddressNumber?: string;
   businessNeighborhood?: string;

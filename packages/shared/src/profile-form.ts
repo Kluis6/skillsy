@@ -32,6 +32,8 @@ export interface ProfileFormValues {
   category: ProviderCategory;
   companyName: string;
   companyBio: string;
+  companyLogoImageName: string;
+  companyBannerImageName: string;
   isProvider: boolean;
   whatsapp: string;
   phone: string;
@@ -133,6 +135,8 @@ export const getProfileFormDefaults = (): ProfileFormValues => ({
   category: '',
   companyName: '',
   companyBio: '',
+  companyLogoImageName: '',
+  companyBannerImageName: '',
   isProvider: false,
   whatsapp: '',
   phone: '',
@@ -168,6 +172,8 @@ export const profileToFormValues = (profile: UserProfile | null): ProfileFormVal
     category: normalizeCategory(profile.category),
     companyName: profile.companyName || '',
     companyBio: profile.companyBio || '',
+    companyLogoImageName: profile.companyLogoImageName || '',
+    companyBannerImageName: profile.companyBannerImageName || '',
     isProvider: profile.isProvider || false,
     whatsapp: profile.whatsapp || '',
     phone: profile.phone || '',

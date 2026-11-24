@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "@/lib/i18n/navigation";
+import { companyProfilePath } from "@/lib/company-profile";
 import { toast } from "sonner";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
@@ -826,6 +827,7 @@ export function ProfileDetailClient({
     targetProfile.serviceType ||
     labels.category(targetProfile.category) ||
     t("profile.communityMember");
+  const companyName = targetProfile.companyName?.trim();
   const recommendationCount = targetProfile.recommendationCount || 0;
   const comments = ratings.filter((rating) => rating.comment?.trim());
   const editProfileLabel = t("profile.editProfile");
@@ -963,17 +965,20 @@ export function ProfileDetailClient({
                     <p className="text-base text-text-muted font-normal">
                       {profileRoleLabel}
                     </p>
-                    {(targetProfile.companyName || targetProfile.category) && (
+                    {(companyName || targetProfile.category) && (
                       <div className="flex flex-wrap items-center gap-2">
-                        {targetProfile.companyName && (
-                          <div className="flex items-center space-x-2">
-                            <Building2 size={18} className="text-text-main" />
-                            <p className="text-sm font-normal text-text-main">
-                              {targetProfile.companyName}
-                            </p>
-                          </div>
+                        {companyName && targetProfile.isProvider && (
+                          <Link
+                            href={companyProfilePath(id)}
+                            className="inline-flex min-h-8 items-center gap-2 text-sm font-medium text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring"
+                          >
+                            <Building2 size={18} aria-hidden="true" />
+                            <span className="wrap-anywhere">
+                              {companyName}
+                            </span>
+                          </Link>
                         )}
-                        {targetProfile.companyName && targetProfile.category ? (
+                        {companyName && targetProfile.isProvider && targetProfile.category ? (
                           <span className="font-bold block text-text-main">
                             ·
                           </span>

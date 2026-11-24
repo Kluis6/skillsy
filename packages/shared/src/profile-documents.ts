@@ -3,7 +3,7 @@
 // different copies of the Firebase SDK: the few Firestore values needed
 // (timestamps, deleteField, serverTimestamp) come in through an adapter.
 import type { UserProfile } from "./types";
-import { AVAILABILITY_OPTIONS, PROVIDER_CATEGORIES } from "./profile-options";
+import { AVAILABILITY_OPTIONS, normalizeCompanyImageName, PROVIDER_CATEGORIES } from "./profile-options";
 import { deriveMemberVerification } from "./member-verification";
 import { toSearchTokens } from "./search";
 
@@ -42,6 +42,8 @@ export const USER_PROFILE_FIELDS: ReadonlySet<string> = new Set([
   "ward",
   "companyName",
   "companyBio",
+  "companyLogoImageName",
+  "companyBannerImageName",
   "gallery",
   "rating",
   "reviewCount",
@@ -376,6 +378,8 @@ export function buildPublicProfileData(source: Partial<UserProfile>) {
     ),
     companyName: source.companyName || "",
     companyBio: source.isProvider ? source.companyBio || "" : "",
+    companyLogoImageName: source.isProvider ? normalizeCompanyImageName(source.companyLogoImageName) : undefined,
+    companyBannerImageName: source.isProvider ? normalizeCompanyImageName(source.companyBannerImageName) : undefined,
     gallery: source.gallery || [],
     // Aggregates (ratingSum, reviewCount, recommendationCount) are only changed
     // by the rating/recommendation flows the rules validate; merge writes keep them.
@@ -517,6 +521,8 @@ export function createProfileDocuments(fs: FirestoreAdapter) {
     );
     normalized.bio = normalizeBoundedString(normalized.bio, 2000);
     normalized.companyBio = normalizeBoundedString(normalized.companyBio, 500);
+    normalized.companyLogoImageName = normalizeCompanyImageName(normalized.companyLogoImageName);
+    normalized.companyBannerImageName = normalizeCompanyImageName(normalized.companyBannerImageName);
     normalized.whatsapp = normalizeBoundedString(normalized.whatsapp, 30);
     normalized.phone = normalizeBoundedString(normalized.phone, 30);
     normalized.instagram = normalizeBoundedString(normalized.instagram, 100);

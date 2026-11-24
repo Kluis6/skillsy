@@ -1,5 +1,7 @@
-import firebaseConfig from "@/firebase-applet-config.json";
 import { INTL_LOCALE, type Locale } from "@skillsy/shared/i18n/locales";
+import { storageImageUrl } from "@/lib/storage-images";
+
+export { USE_STORAGE_EMULATOR } from "@/lib/storage-images";
 
 export const MAX_PRODUCTS = 50;
 export const PRODUCT_NAME_LIMIT = 100;
@@ -17,14 +19,8 @@ export type CatalogProduct = ProductDetails & {
   revision: string;
 };
 
-export const USE_STORAGE_EMULATOR = process.env.NEXT_PUBLIC_USE_EMULATORS === "1";
-
 export function productImageUrl(uid: string, imageName: string) {
-  const origin = USE_STORAGE_EMULATOR
-    ? "http://127.0.0.1:9199"
-    : "https://firebasestorage.googleapis.com";
-  const path = encodeURIComponent(`users/${uid}/products/${imageName}`);
-  return `${origin}/v0/b/${firebaseConfig.storageBucket}/o/${path}?alt=media`;
+  return storageImageUrl(uid, "products", imageName);
 }
 
 export function formatProductPrice(priceCents: number, locale: Locale) {

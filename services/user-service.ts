@@ -160,9 +160,15 @@ function syncPublicProfileBatch(
     return;
   }
 
+  const publicData = buildPublicProfileData(source);
   batch.set(
     publicDocRef,
-    { ...buildPublicProfileData(source), ward: deleteField() },
+    {
+      ...publicData,
+      ward: deleteField(),
+      companyLogoImageName: publicData.companyLogoImageName ?? deleteField(),
+      companyBannerImageName: publicData.companyBannerImageName ?? deleteField(),
+    },
     { merge: true },
   );
 }
@@ -327,17 +333,23 @@ export const UserService = {
           changes: data,
           authUser: auth.currentUser,
         });
-      if (galleryToValidate) {
+      const updatesCompanyImages = "companyLogoImageName" in data || "companyBannerImageName" in data;
+      if (galleryToValidate || updatesCompanyImages) {
         const batch = writeBatch(db);
-        batch.set(doc(docRef, "profile_validation", "gallery"), {
-          gallery: galleryToValidate,
-          validatedAt: serverTimestamp(),
-        });
+        if (galleryToValidate) {
+          batch.set(doc(docRef, "profile_validation", "gallery"), {
+            gallery: galleryToValidate,
+            validatedAt: serverTimestamp(),
+          });
+        }
         batch.update(docRef, privatePatch);
+        if (updatesCompanyImages) syncPublicProfileBatch(batch, uid, privateProfile);
         await batch.commit();
       } else {
         await updateDoc(docRef, privatePatch);
       }
+
+      if (updatesCompanyImages) return;
 
       try {
         await syncPublicProfileDocument(uid, privateProfile);

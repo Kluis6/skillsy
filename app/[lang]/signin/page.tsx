@@ -11,6 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default function Page() {
-  return <AuthPage defaultTab="signup" />;
+export default async function Page({ searchParams }: PageProps<"/[lang]/signin">) {
+  const { tab } = await searchParams;
+  return <AuthPage defaultTab={tab === "login" ? "login" : "signup"} />;
 }

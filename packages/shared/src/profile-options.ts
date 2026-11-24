@@ -36,3 +36,11 @@ export const AVAILABILITY_OPTIONS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 
 
 export type ProviderCategory = '' | (typeof PROVIDER_CATEGORIES)[number];
 export type AvailabilityOption = (typeof AVAILABILITY_OPTIONS)[number];
+
+export const COMPANY_IMAGE_NAME_PATTERN = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.(jpg|png|webp)$/;
+
+export function normalizeCompanyImageName(value: unknown): string | undefined {
+  return typeof value === "string" && COMPANY_IMAGE_NAME_PATTERN.test(value)
+    ? value
+    : undefined;
+}

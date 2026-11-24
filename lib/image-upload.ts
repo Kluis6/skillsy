@@ -1,9 +1,10 @@
 import imageCompression from "browser-image-compression";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, storage } from "@/lib/firebase";
+import type { CompanyImageKind } from "@/lib/storage-images";
 
 /** Folders under users/{uid}/ that storage.rules accept. */
-export type ImageKind = "avatar" | "banner" | "gallery" | "posts" | "products";
+export type ImageKind = "avatar" | "banner" | "gallery" | "posts" | "products" | CompanyImageKind;
 
 // Images live in Cloud Storage and documents keep only the download URL:
 // base64 inside documents made a profile with a gallery weigh over 1 MB.
@@ -13,6 +14,8 @@ const LIMITS: Record<ImageKind, { maxWidthOrHeight: number; maxSizeMB: number }>
   gallery: { maxWidthOrHeight: 1280, maxSizeMB: 0.3 },
   posts: { maxWidthOrHeight: 1600, maxSizeMB: 0.4 },
   products: { maxWidthOrHeight: 1280, maxSizeMB: 0.3 },
+  "company-logo": { maxWidthOrHeight: 512, maxSizeMB: 0.15 },
+  "company-banner": { maxWidthOrHeight: 1600, maxSizeMB: 0.35 },
 };
 
 /** storage.rules require the stored file to be smaller than this. */
@@ -40,7 +43,7 @@ export async function uploadImage(file: File, kind: ImageKind): Promise<string> 
   return getDownloadURL(await uploadImageFile(file, kind));
 }
 
-/** Catalog entries keep the filename so their images can be replaced and removed. */
+/** Catalog and company images are published by their filename in the owner's folder. */
 export async function uploadImageFile(file: File, kind: ImageKind) {
   const uid = auth.currentUser?.uid;
   if (!uid) throw new Error("Entre na sua conta para enviar imagens.");

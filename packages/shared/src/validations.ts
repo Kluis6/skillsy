@@ -75,6 +75,8 @@ export const profileSchema = z.object({
   category: z.union([z.literal(''), z.enum(PROVIDER_CATEGORIES)]),
   companyName: optionalTextField(PROFILE_LIMITS.companyName, 'Nome da empresa deve ter no máximo 100 caracteres'),
   companyBio: optionalTextField(PROFILE_LIMITS.companyBio, 'A bio da empresa deve ter no máximo 500 caracteres'),
+  companyLogoImageName: z.string(),
+  companyBannerImageName: z.string(),
   businessAddress: optionalTextField(PROFILE_LIMITS.address, 'Endereço deve ter no máximo 150 caracteres'),
   businessAddressNumber: optionalTextField(PROFILE_LIMITS.addressNumber, 'Número deve ter no máximo 20 caracteres'),
   businessNeighborhood: optionalTextField(PROFILE_LIMITS.neighborhood, 'Bairro deve ter no máximo 100 caracteres'),
@@ -143,6 +145,14 @@ export const profileSchema = z.object({
     return;
   }
 
+  if (!data.companyName) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['companyName'],
+      message: 'Informe o nome da empresa para anunciar',
+    });
+  }
+
   if (!data.category) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -151,11 +161,11 @@ export const profileSchema = z.object({
     });
   }
 
-  if (!data.serviceType || data.serviceType.trim().length < PROFILE_LIMITS.serviceTypeMin) {
+  if (data.serviceType && data.serviceType.length < PROFILE_LIMITS.serviceTypeMin) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ['serviceType'],
-      message: 'Descreva sua especialidade para aparecer nas buscas',
+      message: `A especialidade deve ter pelo menos ${PROFILE_LIMITS.serviceTypeMin} caracteres`,
     });
   }
 });

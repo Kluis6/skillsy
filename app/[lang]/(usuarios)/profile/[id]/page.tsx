@@ -67,7 +67,11 @@ export default async function PublicProfilePage({ params }: Props) {
       <ProfileDetailClient id={id} initialProfile={initialProfile}>
         {isActiveProvider(initialProfile) && (
           <Suspense fallback={null}>
-            <ProfileProductsSection uid={id} whatsapp={initialProfile.whatsapp} />
+            <ProfileProductsSection
+              uid={id}
+              whatsapp={initialProfile.whatsapp}
+              hasCompany={Boolean(initialProfile.companyName?.trim())}
+            />
           </Suspense>
         )}
       </ProfileDetailClient>

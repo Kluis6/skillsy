@@ -260,6 +260,7 @@ export function SearchClient({
                 <DrawerNavigation
                   pathname={pathname}
                   user={user}
+                  profile={profile}
                   handleLogout={handleLogout}
                 />
               </DrawerContent>
@@ -320,6 +321,7 @@ export function SearchClient({
                 <DrawerNavigation
                   pathname={pathname}
                   user={user}
+                  profile={profile}
                   handleLogout={handleLogout}
                 />
               </DrawerContent>

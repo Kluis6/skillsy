@@ -1,12 +1,13 @@
 import { whatsappUrl } from "@skillsy/shared/contact";
 import { buttonVariants } from "@/components/ui/button";
+import { companyProfilePath } from "@/lib/company-profile";
 import Link from "@/lib/i18n/navigation";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { ProductService } from "@/services/product-service";
 import { ProductCard } from "./product-card";
 import { ProductWhatsAppLink } from "./product-whatsapp-link";
 
-export async function ProfileProductsSection({ uid, whatsapp }: { uid: string; whatsapp?: string }) {
+export async function ProfileProductsSection({ uid, whatsapp, hasCompany }: { uid: string; whatsapp?: string; hasCompany: boolean }) {
   const [products, locale, t] = await Promise.all([
     ProductService.listPublic(uid).catch(() => null),
     getLocale(),
@@ -23,7 +24,7 @@ export async function ProfileProductsSection({ uid, whatsapp }: { uid: string; w
             {t("products.profileTitle")}
           </h2>
           <Link
-            href={`/profile/${uid}/produtos`}
+            href={hasCompany ? companyProfilePath(uid) : `/profile/${uid}/produtos`}
             prefetch={false}
             className={buttonVariants({ variant: "outline" })}
           >

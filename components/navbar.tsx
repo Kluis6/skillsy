@@ -5,8 +5,9 @@ import { BsList, BsXLg } from "react-icons/bs";
 import Link from "@/lib/i18n/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { ArrowLeft, User as UserIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePathname, useRouter } from "@/lib/i18n/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AuthModal } from "@/components/auth-modal";
@@ -70,21 +71,97 @@ export function DrawerLink({
 }) {
   return (
     <li>
-      <DrawerClose className="w-full">
-        <Link
-          href={href}
-          aria-current={active ? "page" : undefined}
-          className={cn(
-            "flex min-h-10 w-full items-center px-3 text-sm font-medium transition-colors border-s-4 border-transparent",
-            active
-              ? "border-primary bg-primary/10 text-primary hover:bg-primary/15"
-              : "text-text-main hover:border-transparent hover:bg-muted dark:hover:bg-muted/50",
-          )}
-        >
-          {label}
-        </Link>
+      <DrawerClose
+        nativeButton={false}
+        render={
+          <Link
+            href={href}
+            role="link"
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "flex min-h-10 w-full items-center border-s-4 border-transparent px-3 text-sm font-medium transition-colors",
+              active
+                ? "border-primary bg-primary/10 text-primary hover:bg-primary/15"
+                : "text-text-main hover:bg-muted dark:hover:bg-muted/50",
+            )}
+          />
+        }
+      >
+        {label}
       </DrawerClose>
     </li>
+  );
+}
+
+function DrawerAccount({
+  pathname,
+  user,
+  profile,
+  handleLogout,
+}: {
+  pathname: string | null;
+  user: User | null;
+  profile: UserProfile | null;
+  handleLogout: () => Promise<void>;
+}) {
+  const t = useT();
+  const title = t(user ? "nav.myAccount" : "nav.welcome");
+  const name = user && (profile?.name?.trim() || user.displayName?.trim());
+  const description = user ? name : t("nav.welcomeText");
+  const authButton = "h-auto min-h-10 w-full whitespace-normal px-2 py-2 text-center";
+
+  return (
+    <Card size="sm" role="region" aria-label={title} className="gap-3 border border-primary/15 bg-primary/5 ring-0">
+      <CardHeader className="flex items-center gap-3">
+        <Avatar size="lg" aria-hidden="true">
+          {user && <AvatarImage src={profile?.photoURL || user.photoURL || undefined} alt="" />}
+          <AvatarFallback className="bg-primary/10 font-semibold text-primary">
+            {name ? name.charAt(0).toUpperCase() : <UserIcon className="size-5" />}
+          </AvatarFallback>
+        </Avatar>
+        <div className="min-w-0">
+          <CardTitle className="font-semibold text-text-main">{title}</CardTitle>
+          {description && <CardDescription className="wrap-anywhere">{description}</CardDescription>}
+        </div>
+      </CardHeader>
+      <CardContent>
+        {user ? (
+          <ul>
+            <DrawerLink href="/contacts" label={t("nav.myContacts")} active={isActivePath(pathname, "/contacts")} />
+            <DrawerLink href="/profile" label={t("nav.profileSettings")} active={isActivePath(pathname, "/profile")} />
+            <DrawerLink
+              href="/profile#perfil-de-servico"
+              label={t(profile?.companyName?.trim() ? "nav.myCompany" : "nav.registerCompany")}
+              active={false}
+            />
+            <li>
+              <DrawerClose
+                render={
+                  <Button variant="ghost" className="w-full justify-start ps-4 text-text-main" onClick={handleLogout} />
+                }
+              >
+                {t("common.signOut")}
+              </DrawerClose>
+            </li>
+          </ul>
+        ) : (
+          <div className="grid grid-cols-2 gap-2">
+            <DrawerClose
+              nativeButton={false}
+              render={<Link href="/signin?tab=login" role="link" className={buttonVariants({ className: authButton })} />}
+            >
+              {t("common.signIn")}
+            </DrawerClose>
+            <DrawerClose
+              nativeButton={false}
+              render={<Link href="/signin" role="link" className={buttonVariants({ variant: "outline", className: authButton })} />}
+            >
+              {t("auth.createAccountButton")}
+            </DrawerClose>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -92,10 +169,12 @@ export function DrawerLink({
 export function DrawerNavigation({
   pathname,
   user,
+  profile,
   handleLogout,
 }: {
   pathname: string | null;
   user: User | null;
+  profile: UserProfile | null;
   handleLogout: () => Promise<void>;
 }) {
   const t = useT();
@@ -126,6 +205,7 @@ export function DrawerNavigation({
       </DrawerHeader>
 
       <div className="space-y-4 px-4 overflow-y-auto">
+        <DrawerAccount pathname={pathname} user={user} profile={profile} handleLogout={handleLogout} />
         <div className="space-y-2">
           <h3 className="text-sm font-semibold text-text-main">
             {t("nav.findWhatYouNeed")}
@@ -158,45 +238,15 @@ export function DrawerNavigation({
           </ul>
         </div>
 
-        {user ? (
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-text-main">
-              {t("nav.myAccount")}
-            </h3>
-            <ul className="space-y-1">
-              <DrawerLink
-                href="/contacts"
-                label={t("nav.myContacts")}
-                active={isActivePath(pathname, "/contacts")}
-              />
-              <DrawerLink
-                href="/profile"
-                label={t("nav.profileSettings")}
-                active={isActivePath(pathname, "/profile")}
-              />
-              <li className="mb-4">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start font-medium px-3 h-10 text-sm text-text-main normal-case"
-                  onClick={handleLogout}
-                >
-                  {t("common.signOut")}
-                </Button>
-              </li>
-            </ul>
-          </div>
-        ) : null}
       </div>
 
       <DrawerFooter>
         <LanguageSwitcher />
-        <DrawerClose>
-          <Link
-            className="flex h-10 items-center justify-center bg-primary text-center text-sm font-medium text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
-            href="/donation"
-          >
-            {t("nav.supportProject")}
-          </Link>
+        <DrawerClose
+          nativeButton={false}
+          render={<Link href="/donation" role="link" className={buttonVariants({ className: "w-full" })} />}
+        >
+          {t("nav.supportProject")}
         </DrawerClose>
       </DrawerFooter>
     </>
@@ -263,6 +313,7 @@ export function Navbar({
                 <DrawerNavigation
                   pathname={pathname}
                   user={user}
+                  profile={profile}
                   handleLogout={handleLogout}
                 />
               </DrawerContent>
@@ -325,6 +376,7 @@ export function Navbar({
                 <DrawerNavigation
                   pathname={pathname}
                   user={user}
+                  profile={profile}
                   handleLogout={handleLogout}
                 />
               </DrawerContent>

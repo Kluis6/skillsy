@@ -1,4 +1,5 @@
 import type { UserProfile } from "./types";
+import { normalizeCompanyImageName } from "./profile-options";
 import { toSearchStemGroups, toSearchStems, toSearchTokens } from "./search";
 
 const publicProfileDefaults: Pick<UserProfile, "email" | "role" | "contacts"> =
@@ -49,6 +50,8 @@ export function toPublicProfileModel(
     searchTokens: raw.searchTokens || [],
     companyName: raw.companyName || "",
     companyBio: raw.companyBio || "",
+    companyLogoImageName: normalizeCompanyImageName(raw.companyLogoImageName),
+    companyBannerImageName: normalizeCompanyImageName(raw.companyBannerImageName),
     gallery: raw.gallery || [],
     rating: getAverageRating(raw),
     reviewCount: raw.reviewCount,
