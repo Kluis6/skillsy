@@ -4,9 +4,17 @@ rules_version = '2';
 // download URL; uploads go to users/{uid}/{kind}/{random name}.
 service firebase.storage {
   match /b/{bucket}/o {
+    function isCompanyImage(kind) {
+      return kind in ['company-logo', 'company-banner'];
+    }
+
+    function isCompanyImageName(fileName) {
+      return fileName.matches('^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}[.](jpg|png|webp)$');
+    }
+
     match /users/{userId}/{kind}/{fileName} {
       // Public profiles and articles are public; the URLs carry a token anyway.
-      allow read: if kind != 'products';
+      allow read: if kind != 'products' && !isCompanyImage(kind);
 
       // Only the owner writes their own folder: images up to 2 MB in the
       // folders the site and app use (lib/image-upload.ts).
@@ -16,7 +24,17 @@ service firebase.storage {
                                request.resource.size < 2 * 1024 * 1024 &&
                                request.resource.contentType.matches('image/(jpeg|png|webp)');
 
-      allow delete: if kind != 'products' && request.auth != null && request.auth.uid == userId;
+      allow delete: if kind != 'products' && !isCompanyImage(kind) &&
+                       request.auth != null && request.auth.uid == userId;
+
+      allow get: if isCompanyImage(kind) && isCompanyImageName(fileName);
+      allow create: if isCompanyImage(kind) && isCompanyImageName(fileName) &&
+                       request.auth != null && request.auth.uid == userId &&
+                       resource == null &&
+                       request.resource.size < 2 * 1024 * 1024 &&
+                       request.resource.contentType.matches('image/(jpeg|png|webp)');
+      allow delete: if isCompanyImage(kind) && isCompanyImageName(fileName) &&
+                       request.auth != null && request.auth.uid == userId;
     }
 
     match /users/{userId}/products/{fileName} {

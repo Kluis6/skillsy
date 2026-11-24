@@ -25,6 +25,7 @@ service cloud.firestore {
     //   - ward: string (optional, max 100 chars)
     //   - companyName: string (optional, max 100 chars)
     //   - companyBio: string (optional, max 500 chars)
+    //   - companyLogoImageName, companyBannerImageName: owner-folder image filenames (optional)
     //   - socialLinks: map (optional)
     //   - gallery: list (optional, max 5 strings)
     //   - rating: number (optional)
@@ -167,12 +168,12 @@ service cloud.firestore {
 
     function isValidGalleryItem(item) {
       let url = item.get('url', '');
+      let urlSize = url.size();
       let description = item.get('description', null);
-      return item is map &&
-             item.keys().hasOnly(['url', 'description']) &&
+      return item.keys().hasOnly(['url', 'description']) &&
              url is string &&
-             url.size() > 0 &&
-             url.size() <= 1000000 &&
+             urlSize > 0 &&
+             urlSize <= 1000000 &&
              (description == null || (description is string && description.size() <= 200));
     }
 
@@ -193,6 +194,7 @@ service cloud.firestore {
         'category', 'isProvider', 'hasPublicProfile', 'role', 'contacts', 'whatsapp', 
         'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 'phone', 
         'phones', 'location', 'ward', 'companyName', 'companyBio', 'gallery',
+        'companyLogoImageName', 'companyBannerImageName',
         'rating', 'reviewCount', 'experienceYears', 'baptismYear',
         'memberVerified', 'membershipYears', 'communityFriend',
         'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
@@ -230,6 +232,7 @@ service cloud.firestore {
              (!('ward' in data) || data.ward == null || (data.ward is string && data.ward.size() <= 200)) &&
              (!('companyName' in data) || data.companyName == null || (data.companyName is string && data.companyName.size() <= 200)) &&
              isOptionalBoundedText(data.get('companyBio', null), 500) &&
+             isValidCompanyImages(data) &&
              (!('gallery' in data) || data.gallery == null || isValidGallery(data.gallery)) &&
              (!('rating' in data) || data.rating is number) &&
              (!('reviewCount' in data) || data.reviewCount is number) &&
@@ -270,6 +273,7 @@ service cloud.firestore {
         'photoURL', 'bannerURL', 'bio', 'category', 'contacts',
         'whatsapp', 'phone', 'instagram', 'facebook', 'linkedin',
         'website', 'serviceType', 'phones', 'location', 'ward', 'companyName', 'companyBio',
+        'companyLogoImageName', 'companyBannerImageName',
         'gallery', 'experienceYears', 'baptismYear', 'memberVerified',
         'membershipYears', 'communityFriend', 'availability', 'serviceHours',
         'businessAddress', 'businessAddressNumber', 'businessNeighborhood',
@@ -333,6 +337,7 @@ service cloud.firestore {
         'category', 'isProvider', 'hasPublicProfile', 'role', 'contacts', 'whatsapp', 
         'instagram', 'facebook', 'linkedin', 'website', 'serviceType', 'phone', 
         'phones', 'location', 'ward', 'companyName', 'companyBio', 'gallery',
+        'companyLogoImageName', 'companyBannerImageName',
         'rating', 'reviewCount', 'experienceYears', 'baptismYear',
         'memberVerified', 'membershipYears', 'communityFriend',
         'isBlocked', 'isDeleted', 'deletedByUser', 'deletedAt', 'createdAt', 'socialLinks', 'availability', 'serviceHours',
@@ -350,6 +355,7 @@ service cloud.firestore {
       let changed = data.diff(resource.data).affectedKeys();
       let updated = changed.intersection(data.keys().toSet());
       return data.keys().hasOnly(allowedFields) &&
+             (!changed.hasAny(['companyLogoImageName', 'companyBannerImageName']) || isValidCompanyImages(data)) &&
              (isCombinedProfileEdit(changed, updated)
                ? isValidCombinedProfileEdit(data, userId, changed)
                : isValidPartialUserUpdate(data, userId, changed, updated));
@@ -458,10 +464,21 @@ service cloud.firestore {
       return value == null || (value is string && value.size() <= max);
     }
 
+    function isOptionalCompanyImageName(value) {
+      return value == null || (value is string &&
+        value.matches('^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}[.](jpg|png|webp)$'));
+    }
+
+    function isValidCompanyImages(data) {
+      return isOptionalCompanyImageName(data.get('companyLogoImageName', null)) &&
+             isOptionalCompanyImageName(data.get('companyBannerImageName', null));
+    }
+
     function isValidPublicProfile(data, userId) {
       let allowedFields = [
         'uid', 'name', 'photoURL', 'bannerURL', 'bio', 'category',
         'isProvider', 'serviceType', 'publicCity', 'publicState', 'memberVerified', 'communityFriend', 'searchTokens', 'companyName', 'companyBio', 'gallery',
+        'companyLogoImageName', 'companyBannerImageName',
         'rating', 'ratingSum', 'reviewCount', 'recommendationCount', 'experienceYears', 'availability',
         'serviceHours', 'whatsapp', 'instagram', 'facebook', 'linkedin',
         'website', 'phone', 'phones', 'isBlocked', 'isDeleted', 'createdAt',
@@ -475,12 +492,13 @@ service cloud.firestore {
       let availability = data.get('availability', null);
       let experience = data.get('experienceYears', null);
       let phones = data.get('phones', null);
+      let nameSize = data.name.size();
 
       return data.keys().hasOnly(allowedFields) &&
              data.uid == userId &&
              data.name is string &&
-             data.name.size() > 0 &&
-             data.name.size() <= 100 &&
+             nameSize > 0 &&
+             nameSize <= 100 &&
              data.isProvider is bool &&
              data.get('language', 'pt') in ['pt', 'en', 'es'] &&
              country is string && country.matches('^[A-Z]{2}$') &&
@@ -491,11 +509,12 @@ service cloud.firestore {
              isOptionalBoundedText(data.get('serviceType', null), 200) &&
              isOptionalBoundedText(data.get('publicCity', null), 100) &&
              (state == null || (state is string && state.matches('^[A-Z]{2}$'))) &&
-             data.get('memberVerified', false) is bool &&
-             data.get('communityFriend', false) is bool &&
+             [data.get('memberVerified', false), data.get('communityFriend', false),
+              data.get('isBlocked', false), data.get('isDeleted', false)].hasOnly([true, false]) &&
              tokens is list && tokens.size() <= 400 &&
              isOptionalBoundedText(data.get('companyName', null), 200) &&
              isOptionalBoundedText(data.get('companyBio', null), 500) &&
+             isValidCompanyImages(data) &&
              (gallery == null || isValidGallery(gallery)) &&
              (experience == null || experience is number) &&
              (availability == null || isValidAvailabilityList(availability)) &&
@@ -507,9 +526,7 @@ service cloud.firestore {
              isOptionalBoundedText(data.get('website', null), 200) &&
              isOptionalBoundedText(data.get('phone', null), 30) &&
              (phones == null || phones is list) &&
-             data.get('isBlocked', false) is bool &&
-             data.get('isDeleted', false) is bool &&
-             (!('createdAt' in data) || data.createdAt is timestamp);
+             data.get('createdAt', request.time) is timestamp;
     }
 
     function keepsSameUserRole(data) {

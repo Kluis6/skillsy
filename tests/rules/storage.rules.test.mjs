@@ -96,3 +96,22 @@ describe("fotos dos produtos", () => {
     await assertFails(uploadBytes(file, new Uint8Array(2 * 1024 * 1024), webp));
   });
 });
+
+test("empresa tem logo e capa públicas em arquivos separados gravados apenas pelo dono", async () => {
+  const storage = storageFor(OWNER);
+  const filename = "12345678-1234-1234-1234-123456789abc.webp";
+  for (const kind of ["company-logo", "company-banner"]) {
+    const folder = `users/${OWNER}/${kind}`;
+    const path = `${folder}/${filename}`;
+    const ownerFile = ref(storage, path);
+    await assertFails(uploadBytes(ref(storageFor(OTHER), path), IMAGE, webp));
+    await assertFails(uploadBytes(ref(storage, `${folder}/nome.webp`), IMAGE, webp));
+    await assertFails(uploadBytes(ownerFile, IMAGE, { contentType: "image/svg+xml" }));
+    await assertSucceeds(uploadBytes(ownerFile, IMAGE, webp));
+    await assertFails(uploadBytes(ownerFile, IMAGE, webp));
+    await assertSucceeds(getBytes(ref(storageFor(null), path)));
+    await assertFails(listAll(ref(storageFor(null), folder)));
+    await assertFails(deleteObject(ref(storageFor(OTHER), path)));
+    await assertSucceeds(deleteObject(ownerFile));
+  }
+});

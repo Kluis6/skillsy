@@ -182,6 +182,25 @@ test("bio da empresa aceita texto opcional de até 500 caracteres somente nas es
   }
 });
 
+test("logo e capa da empresa aceitam apenas nomes de arquivos válidos gravados pelo dono", async () => {
+  const uid = "company-images-provider";
+  const owner = dbAs(uid);
+  const logo = "12345678-1234-1234-1234-123456789abc.webp";
+  const cover = "01234567-0123-0123-0123-0123456789ab.jpg";
+  for (const [collectionName, buildDoc] of [
+    ["users", userDoc],
+    ["public_profiles", publicProfileDoc],
+  ]) {
+    const ref = doc(owner, collectionName, uid);
+    await assertFails(setDoc(ref, buildDoc(uid, { isProvider: true, companyLogoImageName: "../avatar/a.jpg" })));
+    await assertSucceeds(setDoc(ref, buildDoc(uid, { isProvider: true, companyLogoImageName: logo })));
+    await assertSucceeds(updateDoc(ref, { companyBannerImageName: cover }));
+    await assertFails(updateDoc(ref, { companyBannerImageName: { name: cover } }));
+    await assertFails(updateDoc(doc(dbAs(RATER), collectionName, uid), { companyLogoImageName: cover }));
+    await assertSucceeds(updateDoc(ref, { companyLogoImageName: deleteField() }));
+  }
+});
+
 test("a disponibilidade privada e pública aceita somente dias da semana do formulário", async () => {
   const db = dbAs(PROVIDER);
   const week = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -210,6 +229,9 @@ test("o perfil público completo pode ser salvo com cinco fotos", async () => {
     communityFriend: false,
     searchTokens: ["profissional", "confeitaria"],
     companyName: "Empresa",
+    companyBio: "Uma empresa da comunidade.",
+    companyLogoImageName: "12345678-1234-1234-1234-123456789abc.webp",
+    companyBannerImageName: "01234567-0123-0123-0123-0123456789ab.jpg",
     gallery: Array.from({ length: 5 }, (_, index) => ({
       url: `https://example.test/${index}.webp`,
       description: "x".repeat(200),
@@ -550,6 +572,8 @@ describe("users: edição do próprio perfil", () => {
       serviceType: "Pizzaria",
       companyName: "Pizzaria de Teste",
       companyBio: "Pizza artesanal preparada no dia.",
+      companyLogoImageName: "12345678-1234-1234-1234-123456789abc.webp",
+      companyBannerImageName: "01234567-0123-0123-0123-0123456789ab.jpg",
       availability: ["Seg", "Qua", "Qui", "Sex", "Sáb"],
       businessAddress: "Rua de Teste",
       businessAddressNumber: "10",
