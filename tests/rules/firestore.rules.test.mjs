@@ -1,5 +1,6 @@
 // Firestore security rules tests. Run with `npm run test:rules`, which starts
 // the Firestore emulator (requires Java) and executes this file with node:test.
+import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { after, before, beforeEach, describe, test } from "node:test";
 import {
@@ -263,6 +264,14 @@ describe("catálogo de produtos", () => {
   const product = { name: "Bolo", description: "Chocolate\ncom morango", revision };
   const catalog = (db, uid = PROVIDER) => collection(db, "public_profiles", uid, "products");
   const item = (db, id = "1", uid = PROVIDER) => doc(catalog(db, uid), id);
+  const vote = (db, raterId = RATER, uid = PROVIDER) => doc(item(db, "1", uid), "votes", raterId);
+
+  function rateProduct(db, { raterId, score, ratingSum, ratingCount, createdAt = serverTimestamp(), changes, fields, uid = PROVIDER }) {
+    const batch = writeBatch(db);
+    batch.set(vote(db, raterId, uid), { score, productCreatedAt: createdAt, ...fields });
+    batch.update(item(db, "1", uid), { ratingSum, ratingCount, createdAt, ...changes });
+    return batch.commit();
+  }
 
   test("o anunciante pode criar sem foto nem preço, editar e excluir", async () => {
     const ownerItem = item(dbAs(PROVIDER));
@@ -331,6 +340,85 @@ describe("catálogo de produtos", () => {
       await assertFails(setDoc(item(db, invalid), product));
     }
     await assertSucceeds(updateDoc(item(db, "50"), { name: "Último produto", revision: nextRevision }));
+  });
+
+  test("classifica produtos antigos, mantém uma nota por membro e publica apenas a média calculável", async () => {
+    const ownerItem = item(dbAs(PROVIDER));
+    const visitor = env.unauthenticatedContext().firestore();
+    const rater = dbAs(RATER);
+    const secondRater = dbAs(RECOMMENDER);
+    await assertSucceeds(setDoc(ownerItem, product));
+    await assertSucceeds(rateProduct(rater, { score: 3, ratingSum: 3, ratingCount: 1 }));
+    const { createdAt } = (await getDoc(ownerItem)).data();
+    await assertSucceeds(rateProduct(secondRater, { raterId: RECOMMENDER, score: 2, ratingSum: 5, ratingCount: 2, createdAt }));
+    await assertSucceeds(rateProduct(rater, { score: 5, ratingSum: 7, ratingCount: 2, createdAt }));
+    const publicData = (await assertSucceeds(getDoc(item(visitor)))).data();
+    assert.equal(publicData.ratingCount, 2);
+    assert.equal(publicData.ratingSum / publicData.ratingCount, 3.5);
+    assert.equal((await assertSucceeds(getDoc(vote(rater)))).data().score, 5);
+    await assertFails(getDoc(vote(visitor)));
+    await assertFails(getDoc(vote(dbAs(PROVIDER))));
+    await assertFails(getDoc(vote(secondRater)));
+    await assertFails(getDocs(collection(item(rater), "votes")));
+  });
+
+  test("rejeita notas inválidas, alteração de totais e gravações sem par atômico", async () => {
+    const ownerItem = item(dbAs(PROVIDER));
+    const rater = dbAs(RATER);
+    await assertFails(setDoc(ownerItem, { ...product, ratingSum: 5, ratingCount: 1 }));
+    await assertFails(setDoc(ownerItem, { ...product, createdAt: Timestamp.fromMillis(0) }));
+    await assertSucceeds(setDoc(ownerItem, { ...product, createdAt: serverTimestamp() }));
+    const { createdAt } = (await getDoc(ownerItem)).data();
+    const rating = { score: 5, ratingSum: 5, ratingCount: 1, createdAt };
+    for (const score of [0, 6, 2.5, "5"]) {
+      await assertFails(rateProduct(rater, { ...rating, score, ratingSum: score }));
+    }
+    await assertFails(rateProduct(rater, { ...rating, ratingCount: 2 }));
+    await assertFails(rateProduct(rater, { ...rating, ratingSum: 25 }));
+    await assertFails(rateProduct(rater, { ...rating, changes: { name: "Alterado" } }));
+    await assertFails(rateProduct(rater, { ...rating, fields: { comment: "texto" } }));
+    await assertFails(rateProduct(rater, { ...rating, raterId: RECOMMENDER }));
+    await assertFails(setDoc(vote(rater), { score: 5, productCreatedAt: createdAt }));
+    await assertFails(updateDoc(item(rater), { ratingSum: 5, ratingCount: 1 }));
+    await assertSucceeds(rateProduct(rater, rating));
+    await assertFails(rateProduct(rater, { ...rating, ratingCount: 2, ratingSum: 10 }));
+    await assertFails(updateDoc(ownerItem, { revision: nextRevision, ratingSum: 15, ratingCount: 3 }));
+    await assertFails(deleteDoc(vote(rater)));
+  });
+
+  test("impede avaliar sem conta ativa, o próprio produto e produtos indisponíveis", async () => {
+    const ownerItem = item(dbAs(PROVIDER));
+    const rating = { score: 5, ratingSum: 5, ratingCount: 1 };
+    await assertFails(rateProduct(dbAs(RATER), rating));
+    await assertSucceeds(setDoc(ownerItem, product));
+    await assertFails(rateProduct(env.unauthenticatedContext().firestore(), rating));
+    await assertFails(rateProduct(dbAs("sem-perfil"), { ...rating, raterId: "sem-perfil" }));
+    await assertFails(rateProduct(dbAs(PROVIDER), { ...rating, raterId: PROVIDER }));
+    await assertFails(rateProduct(dbAs(BLOCKED), { ...rating, raterId: BLOCKED }));
+    await env.withSecurityRulesDisabled((context) =>
+      updateDoc(doc(context.firestore(), "users", PROVIDER), { hasPublicProfile: false }),
+    );
+    await assertFails(rateProduct(dbAs(RATER), rating));
+  });
+
+  test("edições preservam as notas e reutilizar a posição reinicia a classificação", async () => {
+    const ownerItem = item(dbAs(PROVIDER));
+    const rater = dbAs(RATER);
+    await assertSucceeds(setDoc(ownerItem, { ...product, createdAt: serverTimestamp() }));
+    const { createdAt } = (await getDoc(ownerItem)).data();
+    await assertSucceeds(rateProduct(rater, { score: 4, ratingSum: 4, ratingCount: 1, createdAt }));
+    await assertFails(updateDoc(ownerItem, { revision: nextRevision, createdAt: serverTimestamp() }));
+    await assertSucceeds(setDoc(ownerItem, {
+      ...product, name: "Bolo decorado", revision: nextRevision, createdAt, ratingSum: 4, ratingCount: 1,
+    }));
+    await assertSucceeds(rateProduct(rater, { score: 3, ratingSum: 3, ratingCount: 1, createdAt }));
+    await assertSucceeds(deleteDoc(ownerItem));
+    await assertFails(setDoc(ownerItem, { ...product, createdAt }));
+    await assertSucceeds(setDoc(ownerItem, { ...product, name: "Torta", createdAt: serverTimestamp() }));
+    const replacement = (await getDoc(ownerItem)).data();
+    assert.equal(replacement.ratingCount ?? 0, 0);
+    await assertFails(rateProduct(rater, { score: 2, ratingSum: 2, ratingCount: 1, createdAt }));
+    await assertSucceeds(rateProduct(rater, { score: 2, ratingSum: 2, ratingCount: 1, createdAt: replacement.createdAt }));
   });
 });
 

@@ -580,15 +580,67 @@ service cloud.firestore {
       // Only these 50 document IDs can exist in a provider's catalog.
       return productId.matches('^([1-9]|[1-4][0-9]|50)$') &&
              data.keys().hasAll(['name', 'description', 'revision']) &&
-             data.keys().hasOnly(['name', 'description', 'revision', 'priceCents', 'imageName']) &&
+             data.keys().hasOnly(['name', 'description', 'revision', 'priceCents', 'imageName', 'createdAt', 'ratingSum', 'ratingCount']) &&
              data.name is string && data.name.size() <= 100 && data.name.matches('(?s).*[^[:space:]].*') &&
              data.description is string && data.description.size() <= 1000 &&
              data.description.matches('(?s).*[^[:space:]].*') &&
              data.revision is string && data.revision.matches('^[a-f0-9-]{36}$') &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             data.get('ratingSum', 0) is int && data.get('ratingCount', 0) is int &&
              (!('priceCents' in data) ||
               (data.priceCents is int && data.priceCents >= 0 && data.priceCents <= 999999999)) &&
              (!('imageName' in data) ||
               (data.imageName is string && data.imageName.matches('^[a-f0-9-]{36}[.](jpg|png|webp)$')));
+    }
+
+    function catalogItemPath(userId, productId) {
+      return /databases/$(database)/documents/public_profiles/$(userId)/products/$(productId);
+    }
+
+    function catalogVotePath(userId, productId, raterId) {
+      return /databases/$(database)/documents/public_profiles/$(userId)/products/$(productId)/votes/$(raterId);
+    }
+
+    function canRateCatalogItem(userId) {
+      let account = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return request.auth.uid != userId &&
+             account.get('isBlocked', false) == false && account.get('isDeleted', false) == false &&
+             canReceiveRatings(userId) && isActiveCatalogProvider(userId, true);
+    }
+
+    function keepsCatalogRating(before, after) {
+      return after.get('createdAt', null) == before.get('createdAt', null) &&
+             after.get('ratingSum', 0) == before.get('ratingSum', 0) &&
+             after.get('ratingCount', 0) == before.get('ratingCount', 0);
+    }
+
+    // Slot IDs may be reused. The timestamp ties a vote to the item that occupied
+    // the slot when it was cast. Items without a timestamp get one on the first vote.
+    function catalogVoteChangesAggregate(before, after, previous, next) {
+      let createdAt = before.get('createdAt', request.time);
+      let previousScore = previous != null && previous.productCreatedAt == before.get('createdAt', null)
+        ? previous.score : 0;
+      return after.createdAt == createdAt &&
+             next.keys().hasOnly(['score', 'productCreatedAt']) && next.productCreatedAt == createdAt &&
+             next.score is int && next.score >= 1 && next.score <= 5 && next.score != previousScore &&
+             after.ratingCount is int && after.ratingSum is int &&
+             after.ratingCount == before.get('ratingCount', 0) + (previousScore == 0 ? 1 : 0) &&
+             after.ratingSum == before.get('ratingSum', 0) + next.score - previousScore;
+    }
+
+    function isAllowedCatalogRatingUpdate(userId, productId) {
+      let vote = catalogVotePath(userId, productId, request.auth.uid);
+      return canRateCatalogItem(userId) &&
+             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ratingSum', 'ratingCount', 'createdAt']) &&
+             catalogVoteChangesAggregate(
+               resource.data, request.resource.data, exists(vote) ? get(vote).data : null, getAfter(vote).data
+             );
+    }
+
+    function catalogVoteUpdatesItem(userId, productId, previous) {
+      let item = catalogItemPath(userId, productId);
+      return canRateCatalogItem(userId) && exists(item) &&
+             catalogVoteChangesAggregate(get(item).data, getAfter(item).data, previous, request.resource.data);
     }
 
     // Aggregates on public_profiles: ratingSum + reviewCount (the average is
@@ -1106,11 +1158,22 @@ service cloud.firestore {
         allow read: if isOwner(userId) ||
                        (canReceiveRatings(userId) && isActiveCatalogProvider(userId, true));
         allow create: if isOwner(userId) && isActiveCatalogProvider(userId, false) &&
-                         isValidCatalogProduct(request.resource.data, productId);
-        allow update: if isOwner(userId) && isActiveCatalogProvider(userId, false) &&
                          isValidCatalogProduct(request.resource.data, productId) &&
-                         request.resource.data.revision != resource.data.revision;
+                         request.resource.data.get('createdAt', request.time) == request.time &&
+                         request.resource.data.get('ratingSum', 0) == 0 &&
+                         request.resource.data.get('ratingCount', 0) == 0;
+        allow update: if (isOwner(userId) && isActiveCatalogProvider(userId, false) &&
+                          isValidCatalogProduct(request.resource.data, productId) &&
+                          keepsCatalogRating(resource.data, request.resource.data) &&
+                          request.resource.data.revision != resource.data.revision) ||
+                         (isAuthenticated() && isAllowedCatalogRatingUpdate(userId, productId));
         allow delete: if isOwner(userId);
+
+        match /votes/{raterId} {
+          allow get: if isOwner(raterId) && canRateCatalogItem(userId) && exists(catalogItemPath(userId, productId));
+          allow create: if isOwner(raterId) && catalogVoteUpdatesItem(userId, productId, null);
+          allow update: if isOwner(raterId) && catalogVoteUpdatesItem(userId, productId, resource.data);
+        }
       }
 
       match /recommendations/{recommenderId} {
