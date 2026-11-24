@@ -618,7 +618,7 @@ service cloud.firestore {
     // the slot when it was cast. Items without a timestamp get one on the first vote.
     function catalogVoteChangesAggregate(before, after, previous, next) {
       let createdAt = before.get('createdAt', request.time);
-      let previousScore = previous != null && previous.productCreatedAt == before.get('createdAt', null)
+      let previousScore = 'productCreatedAt' in previous && previous.productCreatedAt == before.get('createdAt', null)
         ? previous.score : 0;
       return after.createdAt == createdAt &&
              next.keys().hasOnly(['score', 'productCreatedAt']) && next.productCreatedAt == createdAt &&
@@ -633,7 +633,7 @@ service cloud.firestore {
       return canRateCatalogItem(userId) &&
              request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ratingSum', 'ratingCount', 'createdAt']) &&
              catalogVoteChangesAggregate(
-               resource.data, request.resource.data, exists(vote) ? get(vote).data : null, getAfter(vote).data
+               resource.data, request.resource.data, exists(vote) ? get(vote).data : {}, getAfter(vote).data
              );
     }
 
@@ -1171,7 +1171,7 @@ service cloud.firestore {
 
         match /votes/{raterId} {
           allow get: if isOwner(raterId) && canRateCatalogItem(userId) && exists(catalogItemPath(userId, productId));
-          allow create: if isOwner(raterId) && catalogVoteUpdatesItem(userId, productId, null);
+          allow create: if isOwner(raterId) && catalogVoteUpdatesItem(userId, productId, {});
           allow update: if isOwner(raterId) && catalogVoteUpdatesItem(userId, productId, resource.data);
         }
       }
