@@ -1,7 +1,7 @@
 "use client";
 
 import { whatsappUrl } from "@skillsy/shared/contact";
-import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { UserService } from "@/services/user-service";
 import { Rating, UserProfile } from "@/models/types";
@@ -9,9 +9,9 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PublicShareButton } from "@/components/profile/public-share-button";
 import { ProfileRecommendationsDialog } from "@/components/profile/profile-recommendations-dialog";
 import { useLocale, useT, useValidationMessage } from "@/lib/i18n/provider";
-import { rich } from "@/lib/i18n/rich";
 import { useLabels } from "@/lib/i18n/labels";
 import { DATE_FNS_LOCALE } from "@/lib/i18n/date-fns";
 import { formatRating } from "@skillsy/shared/i18n/format";
@@ -22,7 +22,6 @@ import {
   Camera,
   Church,
   Clock,
-  Copy,
   Flag,
   Globe,
   Info,
@@ -56,15 +55,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { Navbar } from "./navbar";
 import { AuthModal } from "./auth-modal";
 import { LuMapPin, LuPencil, LuUserMinus } from "react-icons/lu";
@@ -76,9 +66,7 @@ import {
   FaPhone,
   FaWhatsapp,
 } from "react-icons/fa";
-import { PiShareFat } from "react-icons/pi";
-import { BsHandThumbsUp, BsHandThumbsUpFill, BsWhatsapp } from "react-icons/bs";
-import { FaTelegramPlane } from "react-icons/fa";
+import { BsHandThumbsUp, BsHandThumbsUpFill } from "react-icons/bs";
 import { AVAILABILITY_OPTIONS } from "@/lib/profile-form";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -91,9 +79,6 @@ interface ProfileDetailClientProps {
   initialProfile: UserProfile | null;
   children?: ReactNode;
 }
-
-// Web Share support is fixed for the lifetime of the page.
-const subscribeToShareSupport = () => () => {};
 
 export function ProfileDetailClient({
   id,
@@ -145,17 +130,6 @@ export function ProfileDetailClient({
     name: "details",
   });
 
-  const shareUrl = targetProfile
-    ? typeof window === "undefined"
-      ? `/profile/${targetProfile.uid}`
-      : `${window.location.origin}/profile/${targetProfile.uid}`
-    : "";
-
-  const canUseNativeShare = useSyncExternalStore(
-    subscribeToShareSupport,
-    () => typeof navigator.share === "function",
-    () => false,
-  );
   const canReportProfile = Boolean(
     user && targetProfile && targetProfile.uid !== user.uid,
   );
@@ -340,33 +314,6 @@ export function ProfileDetailClient({
     window.open(whatsappUrl(targetProfile.whatsapp) ?? undefined, "_blank");
   };
 
-  const handleCopyLink = async () => {
-    if (!shareUrl) return;
-
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      toast.success(t("profile.linkCopied"), {
-        description: t("profile.linkCopiedText"),
-      });
-    } catch {
-      toast.error(t("profile.copyError"));
-    }
-  };
-
-  const handleNativeShare = async () => {
-    if (!targetProfile || !shareUrl || !canUseNativeShare) return;
-
-    try {
-      await navigator.share({
-        title: targetProfile.name,
-        text: t("profile.shareText", { name: targetProfile.name }),
-        url: shareUrl,
-      });
-    } catch {
-      // Usuario cancelou ou o navegador bloqueou a acao.
-    }
-  };
-
   const handleSubmitReport = async (data: ReportUserFormData) => {
     if (!user) {
       toast.error(t("profile.loginRequired"), {
@@ -402,143 +349,6 @@ export function ProfileDetailClient({
       console.error("Error submitting report:", error);
       toast.error(t("profile.reportError"));
     }
-  };
-
-  const handleWhatsAppShare = () => {
-    if (!targetProfile || !shareUrl) return;
-
-    const message = t("profile.shareMessage", { name: targetProfile.name, url: shareUrl });
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(message)}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
-  };
-
-  const handleTelegramShare = () => {
-    if (!targetProfile || !shareUrl) return;
-
-    const message = t("profile.shareMessage", { name: targetProfile.name, url: shareUrl });
-    window.open(
-      `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(message)}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
-  };
-
-  const shareActions = [
-    {
-      label: t("profile.shareWhatsapp"),
-      description: t("profile.shareWhatsappText"),
-      icon: BsWhatsapp,
-      onClick: handleWhatsAppShare,
-      className: "text-success",
-    },
-    {
-      label: t("profile.shareTelegram"),
-      description: t("profile.shareTelegramText"),
-      icon: FaTelegramPlane,
-      onClick: handleTelegramShare,
-      className: "text-sky-500",
-    },
-    {
-      label: t("profile.copyLink"),
-      description: t("profile.copyLinkText"),
-      icon: Copy,
-      onClick: handleCopyLink,
-      className: "text-sky-600",
-    },
-  ];
-
-  const renderShareSheet = () => (
-    <SheetContent side="bottom" className="">
-      <SheetHeader className="text-left">
-        <SheetTitle>{t("profile.shareProfile")}</SheetTitle>
-        <SheetDescription>
-          {rich(t("profile.shareProfileText"), {
-            name: <strong>{targetProfile?.name}</strong>,
-          })}
-        </SheetDescription>
-      </SheetHeader>
-      <div className="flex w-full flex-col gap-2 p-4 md:flex-row">
-        {shareActions.map((action) => {
-          const Icon = action.icon;
-
-          return (
-            <SheetClose
-              key={action.label}
-              render={
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-auto w-full justify-start gap-3 p-4 text-left md:w-1/3"
-                  onClick={action.onClick}
-                />
-              }
-            >
-              <span className={action.className}>
-                <Icon className="size-5" />
-              </span>
-              <span className="flex min-w-0 flex-col items-start">
-                <span className="font-semibold text-text-main">
-                  {action.label}
-                </span>
-                <span className="whitespace-normal text-xs text-muted-foreground">
-                  {action.description}
-                </span>
-              </span>
-            </SheetClose>
-          );
-        })}
-      </div>
-    </SheetContent>
-  );
-
-  const renderShareButton = () => {
-    const label = t("profile.share");
-    if (canUseNativeShare) {
-      return (
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <Button
-                variant="secondary"
-                size="icon-lg"
-                aria-label={label}
-                onClick={handleNativeShare}
-              />
-            }
-          >
-            <PiShareFat aria-hidden="true" />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{label}</p>
-          </TooltipContent>
-        </Tooltip>
-      );
-    }
-
-    return (
-      <Sheet>
-        <Tooltip>
-          <SheetTrigger
-            render={
-              <TooltipTrigger
-                render={
-                  <Button variant="secondary" size="icon-lg" aria-label={label} />
-                }
-              >
-                <PiShareFat aria-hidden="true" />
-              </TooltipTrigger>
-            }
-          />
-          <TooltipContent>
-            <p>{label}</p>
-          </TooltipContent>
-        </Tooltip>
-        {renderShareSheet()}
-      </Sheet>
-    );
   };
 
   const renderReportButton = (className?: string) => {
@@ -903,7 +713,7 @@ export function ProfileDetailClient({
                 {/* Avatar Overlap */}
                 <div className="flex min-h-12 items-center justify-end py-2 md:py-4">
                   <div className="hidden gap-2 md:flex">
-                    {renderShareButton()}
+                    <PublicShareButton name={targetProfile.name} href={`/profile/${targetProfile.uid}`} />
                     {recommendationAction}
                     {renderReportButton("size-10")}
                     {user?.uid === targetProfile.uid ? (
@@ -1022,7 +832,7 @@ export function ProfileDetailClient({
                 </div>
                 <div className="mt-4 w-full space-y-2 md:hidden">
                   <div className="flex flex-wrap justify-end gap-2">
-                    {renderShareButton()}
+                    <PublicShareButton name={targetProfile.name} href={`/profile/${targetProfile.uid}`} />
                     {recommendationAction}
                     {renderReportButton("size-9")}
                     {user?.uid === targetProfile.uid ? (

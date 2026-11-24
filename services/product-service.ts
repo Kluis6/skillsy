@@ -1,14 +1,18 @@
 import {
   collection,
   doc,
+  getDocFromServer,
   getDocsFromServer,
   onSnapshot,
   runTransaction,
+  serverTimestamp,
   type DocumentData,
+  type DocumentSnapshot,
   type QuerySnapshot,
+  type Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { MAX_PRODUCTS, type CatalogProduct, type ProductDetails } from "@/lib/product-catalog";
+import { MAX_PRODUCTS, productRatingTotals, type CatalogProduct, type ProductDetails, type ProductRatingScore } from "@/lib/product-catalog";
 
 const slots = Array.from({ length: MAX_PRODUCTS }, (_, index) => String(index + 1));
 
@@ -22,6 +26,11 @@ function readProducts(snapshot: QuerySnapshot<DocumentData>): CatalogProduct[] {
     .sort((first, second) => Number(first.id) - Number(second.id));
 }
 
+function ratingScore(snapshot: DocumentSnapshot, productCreatedAt: string | undefined): number {
+  const vote = snapshot.data() as { productCreatedAt: Timestamp; score: number } | undefined;
+  return vote && productCreatedAt && vote.productCreatedAt.valueOf() === productCreatedAt ? vote.score : 0;
+}
+
 export class CatalogError extends Error {
   constructor(readonly reason: "limit" | "stale") {
     super(reason);
@@ -29,8 +38,46 @@ export class CatalogError extends Error {
 }
 
 export const ProductService = {
+  async getPublic(uid: string, productId: string): Promise<CatalogProduct | null> {
+    if (!slots.includes(productId)) return null;
+
+    const item = await getDocFromServer(doc(products(uid), productId));
+    return item.exists() ? { ...(item.data() as Omit<CatalogProduct, "id">), id: item.id } : null;
+  },
+
   async listPublic(uid: string) {
     return readProducts(await getDocsFromServer(products(uid)));
+  },
+
+  async getOwnRating(uid: string, productId: string, raterId: string, createdAt: string | undefined) {
+    if (!createdAt) return 0;
+
+    const vote = doc(products(uid), productId, "votes", raterId);
+    return ratingScore(await getDocFromServer(vote), createdAt);
+  },
+
+  async rate(uid: string, product: Pick<CatalogProduct, "id" | "revision">, raterId: string, score: ProductRatingScore) {
+    const item = doc(products(uid), product.id);
+    const vote = doc(item, "votes", raterId);
+
+    return runTransaction(db, async (transaction) => {
+      const snapshot = await transaction.get(item);
+      const saved = snapshot.data() as Omit<CatalogProduct, "id"> | undefined;
+      if (!saved || saved.revision !== product.revision) throw new CatalogError("stale");
+
+      const previousScore = ratingScore(await transaction.get(vote), saved.createdAt?.valueOf());
+      const totals = productRatingTotals(saved);
+      if (score === previousScore) return totals;
+
+      const createdAt = saved.createdAt ?? serverTimestamp();
+      const nextTotals = {
+        ratingSum: totals.ratingSum + score - previousScore,
+        ratingCount: totals.ratingCount + (previousScore === 0 ? 1 : 0),
+      };
+      transaction.update(item, { ...nextTotals, createdAt });
+      transaction.set(vote, { score, productCreatedAt: createdAt });
+      return nextTotals;
+    });
   },
 
   watch(uid: string, receive: (items: CatalogProduct[]) => void, onError: (error: Error) => void) {
@@ -44,8 +91,13 @@ export const ProductService = {
       const item = doc(catalog, current.id);
       await runTransaction(db, async (transaction) => {
         const snapshot = await transaction.get(item);
-        if (snapshot.data()?.revision !== current.revision) throw new CatalogError("stale");
-        transaction.set(item, { ...details, revision });
+        const saved = snapshot.data() as Omit<CatalogProduct, "id"> | undefined;
+        if (!saved || saved.revision !== current.revision) throw new CatalogError("stale");
+        transaction.set(item, {
+          ...details,
+          ...(saved.createdAt ? { ...productRatingTotals(saved), createdAt: saved.createdAt } : {}),
+          revision,
+        });
       });
       return;
     }

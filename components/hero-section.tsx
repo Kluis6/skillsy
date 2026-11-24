@@ -20,6 +20,7 @@ interface HeroSectionProps {
   locationFilter: { city: string; state: string } | null;
   setLocationFilter: (loc: { city: string; state: string } | null) => void;
   showSignupCta?: boolean;
+  companyHref?: string;
 }
 
 export function HeroSection({
@@ -29,6 +30,7 @@ export function HeroSection({
   locationFilter,
   setLocationFilter,
   showSignupCta = true,
+  companyHref,
 }: HeroSectionProps) {
   const t = useT();
   const href = useHref();
@@ -176,20 +178,13 @@ export function HeroSection({
                 </AuthModal>
               ) : (
                 <Button
-                  render={<Link href="/profile" />}
+                  render={<Link href={companyHref ?? "/profile"} />}
                   nativeButton={false}
                   variant="ghost"
-                  className="h-auto w-full justify-between px-4 py-3 text-left text-primary hover:bg-accent"
+                  className="h-12 w-full justify-between px-4 text-left text-base font-semibold text-primary hover:bg-accent"
                 >
-                  <span>
-                    <span className="block text-xs font-bold text-primary">
-                      {t("home.profileTitle")}
-                    </span>
-                    <span className="block text-xs text-text-muted">
-                      {t("home.profileHint")}
-                    </span>
-                  </span>
-                  <ArrowRight className="size-4 text-primary" />
+                  {t(companyHref ? "nav.myCompany" : "home.profileTitle")}
+                  <ArrowRight className="size-4" aria-hidden="true" />
                 </Button>
               )}
             </div>

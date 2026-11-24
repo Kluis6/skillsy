@@ -7,6 +7,7 @@ import {
   SearchX,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { isActiveProvider } from "@skillsy/shared/providers";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { HeroSection } from "@/components/hero-section";
@@ -18,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { UserProfile } from "@/models/types";
 import { Categorywall } from "./categorywall";
 import { ProviderProfileCard } from "@/components/profile/provider-profile-card";
+import { companyProfilePath } from "@/lib/company-profile";
 import { useT } from "@/lib/i18n/provider";
 
 export function HomeClient({
@@ -28,6 +30,10 @@ export function HomeClient({
   const { user, profile, logout } = useAuth();
   const t = useT();
   const [activeTab, setActiveTab] = useState<"explore" | "contacts">("explore");
+  const companyHref = user && profile?.uid === user.uid && isActiveProvider(profile) &&
+    profile.hasPublicProfile !== false && profile.companyName?.trim()
+    ? companyProfilePath(user.uid)
+    : undefined;
 
   // Controllers
   const {
@@ -57,6 +63,7 @@ export function HomeClient({
           locationFilter={locationFilter}
           setLocationFilter={setLocationFilter}
           showSignupCta={!user}
+          companyHref={companyHref}
         />
 
         {/* Categories Carousel */}

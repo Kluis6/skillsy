@@ -10,6 +10,7 @@ export function ProductCard({
   product,
   locale,
   actions,
+  rating,
   preview = false,
   heading: Heading = preview ? "h3" : "h2",
 }: {
@@ -17,11 +18,12 @@ export function ProductCard({
   product: ProductDetails;
   locale: Locale;
   actions?: ReactNode;
+  rating?: ReactNode;
   preview?: boolean;
   heading?: "h2" | "h3";
 }) {
   return (
-    <Card className="h-full min-w-0 border border-border-subtle pt-0 ring-0">
+    <Card className={cn("h-full min-w-0 border border-border-subtle pt-0 ring-0", preview && "relative")}>
       <div className="relative h-30 shrink-0 bg-radial-[at_25%_25%] from-primary/70 to-primary">
         {product.imageName && (
           <Image
@@ -40,6 +42,7 @@ export function ProductCard({
             {product.name}
           </Heading>
         </CardTitle>
+        {rating}
         {product.priceCents !== undefined && (
           <p className="font-semibold tabular-nums text-primary">
             {formatProductPrice(product.priceCents, locale)}

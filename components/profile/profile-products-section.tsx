@@ -1,11 +1,10 @@
 import { whatsappUrl } from "@skillsy/shared/contact";
 import { buttonVariants } from "@/components/ui/button";
-import { companyProfilePath } from "@/lib/company-profile";
 import Link from "@/lib/i18n/navigation";
 import { getLocale, getT } from "@/lib/i18n/server";
+import { publicCatalogPath } from "@/lib/product-catalog";
 import { ProductService } from "@/services/product-service";
-import { ProductCard } from "./product-card";
-import { ProductWhatsAppLink } from "./product-whatsapp-link";
+import { PublicProductCard } from "./public-product-card";
 
 export async function ProfileProductsSection({ uid, whatsapp, hasCompany }: { uid: string; whatsapp?: string; hasCompany: boolean }) {
   const [products, locale, t] = await Promise.all([
@@ -24,7 +23,7 @@ export async function ProfileProductsSection({ uid, whatsapp, hasCompany }: { ui
             {t("products.profileTitle")}
           </h2>
           <Link
-            href={hasCompany ? companyProfilePath(uid) : `/profile/${uid}/produtos`}
+            href={publicCatalogPath(uid, hasCompany)}
             prefetch={false}
             className={buttonVariants({ variant: "outline" })}
           >
@@ -34,14 +33,13 @@ export async function ProfileProductsSection({ uid, whatsapp, hasCompany }: { ui
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.slice(0, 6).map((product) => (
             <li key={product.id} className="min-w-0">
-              <ProductCard
+              <PublicProductCard
                 uid={uid}
                 product={product}
+                hasCompany={hasCompany}
                 locale={locale}
-                preview
-                actions={contactHref && (
-                  <ProductWhatsAppLink contactHref={contactHref} product={product} locale={locale} t={t} />
-                )}
+                contactHref={contactHref}
+                t={t}
               />
             </li>
           ))}

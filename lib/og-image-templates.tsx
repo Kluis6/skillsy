@@ -4,6 +4,7 @@ import path from "node:path";
 import type { ReactElement } from "react";
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
+import { storageCoverMediaUrl } from "@/lib/storage-images";
 
 // Share thumbnails (og:image) for public pages. Two layouts:
 // - createPageOgImage: the page's hero image (or the default blue "S"
@@ -103,7 +104,7 @@ export async function loadHeroOgImage(
   }
 }
 
-async function readRemoteImage(src: string): Promise<Buffer | undefined> {
+async function readRemoteImage(src: string, redirect: RequestRedirect = "follow"): Promise<Buffer | undefined> {
   if (src.startsWith("data:image/")) {
     const comma = src.indexOf(",");
     if (comma === -1 || !src.slice(0, comma).endsWith(";base64")) {
@@ -123,7 +124,7 @@ async function readRemoteImage(src: string): Promise<Buffer | undefined> {
     return undefined;
   }
 
-  const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+  const response = await fetch(url, { redirect, signal: AbortSignal.timeout(5000) });
   if (!response.ok || !isAllowedRemoteHost(new URL(response.url).hostname)) {
     return undefined;
   }
@@ -142,8 +143,36 @@ export async function loadRemoteOgImage(
     return undefined;
   }
 
+  return loadOgImage(readRemoteImage(trimmed), box);
+}
+
+export async function loadCompanyCoverOgImage(
+  src: string | undefined,
+  uid: string,
+): Promise<string | undefined> {
+  const cover = src?.trim();
+  if (!cover) return undefined;
+
+  const url = storageCoverMediaUrl(uid, cover);
+  return loadOgImage(url ? readStorageCover(url) : readRemoteImage(cover, "error"), ogSize);
+}
+
+async function readStorageCover(url: string): Promise<Buffer | undefined> {
+  const response = await fetch(url, { redirect: "error", signal: AbortSignal.timeout(5000) });
+  if (
+    !response.ok ||
+    !/^image\/(jpeg|png|webp)(;|$)/i.test(response.headers.get("content-type") ?? "") ||
+    Number(response.headers.get("content-length")) > MAX_SOURCE_IMAGE_BYTES
+  ) {
+    await response.body?.cancel();
+    return undefined;
+  }
+  return Buffer.from(await response.arrayBuffer());
+}
+
+async function loadOgImage(source: Promise<Buffer | undefined>, box: ImageBox) {
   try {
-    const input = await readRemoteImage(trimmed);
+    const input = await source;
     if (!input || input.length === 0 || input.length > MAX_SOURCE_IMAGE_BYTES) {
       return undefined;
     }

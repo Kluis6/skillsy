@@ -13,6 +13,7 @@ import { UserNotificationService } from "@/services/user-notification-service";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BsBell, BsCheckAll } from "react-icons/bs";
+import { cn } from "@/lib/utils";
 
 function timeAgo(value: unknown, locale: Locale, now: string) {
   if (!value || typeof value !== "object" || !("seconds" in value))
@@ -32,7 +33,11 @@ function notificationHref(item: UserNotification) {
     : "/oportunidades";
 }
 
-export function OpportunityNotifications() {
+export function OpportunityNotifications({
+  alignMobileToNavbar = false,
+}: {
+  alignMobileToNavbar?: boolean;
+} = {}) {
   const { user } = useAuth();
   const [subscribedItems, setItems] = useState<UserNotification[]>([]);
   const [open, setOpen] = useState(false);
@@ -62,7 +67,7 @@ export function OpportunityNotifications() {
   if (!user) return null;
 
   return (
-    <div ref={panelRef} className="relative ">
+    <div ref={panelRef} className={alignMobileToNavbar ? "md:relative" : "relative"}>
       <Button
         variant="ghost"
         size="icon"
@@ -79,7 +84,10 @@ export function OpportunityNotifications() {
         ) : null}
       </Button>
       {open ? (
-        <div className="absolute transition-discrete duration-500 md:right-0 -right-14 top-12 z-50 w-sm md:w-[min(22rem,calc(100vw-2rem))] overflow-hidden  border border-border-subtle bg-popover shadow-lg">
+        <div className={cn(
+          "absolute z-50 overflow-hidden border border-border-subtle bg-popover shadow-lg transition-discrete duration-500 md:top-12 md:right-0 md:w-[min(22rem,calc(100vw-2rem))]",
+          alignMobileToNavbar ? "top-full right-4 w-[min(24rem,calc(100vw-2rem))]" : "top-12 -right-14 w-sm",
+        )}>
           <div className="flex items-center justify-between border-b border-border-subtle bg-surface px-4 py-3">
             <p className="text-sm font-semibold text-text-main">{t("notifications.title")}</p>
             <Link

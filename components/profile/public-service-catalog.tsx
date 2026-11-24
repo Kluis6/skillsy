@@ -3,54 +3,57 @@ import { FaWhatsapp } from "react-icons/fa";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { cache } from "react";
 import { whatsappUrl } from "@skillsy/shared/contact";
 import type { MessageKey } from "@skillsy/shared/i18n/keys";
-import { CATEGORY_LABEL_KEYS, DAY_LABEL_KEYS } from "@skillsy/shared/i18n/labels";
+import { DAY_LABEL_KEYS } from "@skillsy/shared/i18n/labels";
 import { DEFAULT_LOCALE } from "@skillsy/shared/i18n/locales";
 import { localizedPath } from "@skillsy/shared/i18n/routing";
 import { AVAILABILITY_OPTIONS } from "@skillsy/shared/profile-options";
-import { ProductCard } from "@/components/profile/product-card";
-import { ProductWhatsAppLink } from "@/components/profile/product-whatsapp-link";
+import { Navbar } from "@/components/navbar";
+import { CompanyEditButton } from "@/components/profile/company-edit-button";
+import { ProfileRecommendationsDialog } from "@/components/profile/profile-recommendations-dialog";
+import { PublicProductCard } from "@/components/profile/public-product-card";
+import { PublicShareButton } from "@/components/profile/public-share-button";
 import { ProfileToolbar } from "@/components/profile/profile-toolbar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState, PageHeader } from "@/components/ui/page-layout";
-import { getLocale, getT } from "@/lib/i18n/server";
+import { I18nProvider } from "@/lib/i18n/provider";
+import { getLocale, getMessages, getT } from "@/lib/i18n/server";
 import Link from "@/lib/i18n/navigation";
-import { companyProfilePath } from "@/lib/company-profile";
+import { publicCatalogPath } from "@/lib/product-catalog";
+import { getCatalogDetails, getCatalogProvider, getCompanyCover } from "@/lib/public-catalog";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { storageImageUrl, USE_STORAGE_EMULATOR } from "@/lib/storage-images";
+import { cn } from "@/lib/utils";
 import { ProductService } from "@/services/product-service";
-import { isActiveProvider, UserService } from "@/services/user-service";
-
-const getProvider = cache((id: string) =>
-  !id || id.includes("/") || id === "." || id === ".." ? null : UserService.getPublicProfile(id)
-);
+import { isActiveProvider } from "@/services/user-service";
 
 export async function getCatalogMetadata(id: string, companyPage: boolean): Promise<Metadata> {
-  const [profile, t] = await Promise.all([getProvider(id), getT()]);
+  const [profile, t] = await Promise.all([getCatalogProvider(id), getT()]);
   const companyName = profile?.companyName?.trim();
   if (!isActiveProvider(profile) || (companyPage && !companyName)) {
     return { title: t("profile.notFound") };
   }
 
   const name = companyName || profile.name;
+  const description = companyPage ? getCatalogDetails(profile, t).bio : undefined;
   return createPublicMetadata({
     title: t("products.publicTitle", { name }),
-    description: t("products.publicDescription", { name }),
-    path: companyName ? companyProfilePath(id) : `/profile/${id}/produtos`,
+    description: description?.replace(/\s+/g, " ") || t("products.publicDescription", { name }),
+    path: publicCatalogPath(id, Boolean(companyName)),
+    useRouteOgImage: companyPage,
   });
 }
 
 export async function PublicServiceCatalog({ id, companyPage }: { id: string; companyPage: boolean }) {
-  const [profile, t, locale] = await Promise.all([getProvider(id), getT(), getLocale()]);
+  const [profile, t, locale] = await Promise.all([getCatalogProvider(id), getT(), getLocale()]);
   const companyName = profile?.companyName?.trim();
   if (!isActiveProvider(profile) || (companyPage && !companyName)) notFound();
   if (!companyPage && companyName) {
-    redirect(localizedPath(companyProfilePath(id), locale, DEFAULT_LOCALE));
+    redirect(localizedPath(publicCatalogPath(id, true), locale, DEFAULT_LOCALE));
   }
 
   const products = await ProductService.listPublic(id).catch((error: unknown) => {
@@ -61,24 +64,25 @@ export async function PublicServiceCatalog({ id, companyPage }: { id: string; co
   });
 
   const name = companyName || profile.name;
-  const serviceType = profile.serviceType?.trim();
-  const categoryKey = profile.category && CATEGORY_LABEL_KEYS[profile.category as keyof typeof CATEGORY_LABEL_KEYS];
-  const category = categoryKey ? t(`labels.category.${categoryKey}` as MessageKey) : profile.category;
-  const bio = profile.companyBio?.trim() || profile.bio?.trim();
-  const location = [profile.publicCity?.trim(), profile.publicState?.trim()].filter(Boolean).join(", ");
+  const { serviceType, category, bio, location } = getCatalogDetails(profile, t);
   const days = AVAILABILITY_OPTIONS.filter((day) => profile.availability?.includes(day));
   const hours = profile.serviceHours?.trim();
   const contactHref = profile.whatsapp ? whatsappUrl(profile.whatsapp) : null;
   const logo = profile.companyLogoImageName
     ? storageImageUrl(id, "company-logo", profile.companyLogoImageName)
     : profile.photoURL;
-  const cover = companyPage && profile.companyBannerImageName
-    ? storageImageUrl(id, "company-banner", profile.companyBannerImageName)
-    : profile.bannerURL;
+  const cover = companyPage ? getCompanyCover(profile, id) : profile.bannerURL;
+  const backLink = { href: `/profile/${id}`, label: t("products.back") };
+  const recommendationCount = profile.recommendationCount ?? 0;
+  const companyMessages = companyPage ? await getMessages("profile", "products") : {};
 
   return (
     <>
-      <ProfileToolbar backHref={`/profile/${id}`} backLabel={t("products.back")} />
+      {companyPage ? (
+        <Navbar backLink={backLink} />
+      ) : (
+        <ProfileToolbar backHref={backLink.href} backLabel={backLink.label} />
+      )}
       <main className="min-h-screen">
         <section aria-labelledby="catalog-company" className="border-b border-border-subtle bg-card">
           <div className="relative h-40 overflow-hidden bg-linear-to-r from-primary/15 via-primary/5 to-surface sm:h-56 lg:h-64">
@@ -101,14 +105,14 @@ export async function PublicServiceCatalog({ id, companyPage }: { id: string; co
               title={
                 <span id="catalog-company" className="flex items-center gap-3 wrap-anywhere md:gap-4">
                   {companyPage && (
-                    <Avatar className="size-14 rounded-none after:rounded-none md:size-16" aria-hidden="true">
+                    <Avatar className="size-20 rounded-none after:rounded-none md:size-28" aria-hidden="true">
                       <AvatarImage
                         src={logo}
                         alt=""
                         className={profile.companyLogoImageName ? "rounded-none object-contain" : "rounded-none"}
                       />
                       <AvatarFallback className="rounded-none bg-primary/10 text-primary">
-                        <Store className="size-6" />
+                        <Store className="size-8 md:size-10" />
                       </AvatarFallback>
                     </Avatar>
                   )}
@@ -131,35 +135,56 @@ export async function PublicServiceCatalog({ id, companyPage }: { id: string; co
                   )}
                   {bio && <span className="block whitespace-pre-wrap wrap-anywhere">{bio}</span>}
                   {companyPage && (
-                    <Link
-                      href={`/profile/${id}`}
-                      className="inline-flex max-w-full items-center gap-2.5 border border-border-subtle px-3 py-2 text-text-main hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-ring"
-                    >
-                      <Avatar size="sm" aria-hidden="true">
-                        <AvatarImage src={profile.photoURL} alt="" />
-                        <AvatarFallback>{profile.name.charAt(0).toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                      <span className="min-w-0 wrap-anywhere">
-                        <span className="block text-xs leading-snug text-text-muted">{t("products.companyOwner")}</span>
-                        <span className="block text-sm font-semibold leading-snug">{profile.name}</span>
-                      </span>
-                      <ArrowUpRight className="size-4 shrink-0 text-text-muted" aria-hidden="true" />
-                    </Link>
+                    <span className="flex flex-wrap items-center gap-2.5">
+                      <Link
+                        href={`/profile/${id}`}
+                        className={cn(
+                          buttonVariants({ variant: "outline" }),
+                          "h-auto min-h-11 max-w-full justify-start gap-2.5 border-border-subtle bg-card px-3 py-2 whitespace-normal text-text-main hover:border-primary/40 hover:bg-primary/5",
+                        )}
+                      >
+                        <Avatar size="sm" aria-hidden="true">
+                          <AvatarImage src={profile.photoURL} alt="" />
+                          <AvatarFallback>{profile.name.trim().charAt(0).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <span className="min-w-0 wrap-anywhere">
+                          <span className="block text-xs leading-snug text-text-muted">{t("products.companyOwner")}</span>
+                          <span className="block text-sm font-semibold leading-snug">{profile.name}</span>
+                        </span>
+                        <ArrowUpRight className="size-4 text-text-muted" aria-hidden="true" />
+                      </Link>
+                      {recommendationCount > 0 && (
+                        <I18nProvider messages={companyMessages}>
+                          <ProfileRecommendationsDialog profileId={id} count={recommendationCount} />
+                        </I18nProvider>
+                      )}
+                    </span>
                   )}
                 </span>
               )}
-              action={contactHref && (
-                <a
-                  href={contactHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={buttonVariants({
-                    className: "gap-2 bg-success text-success-foreground hover:bg-success/90",
-                  })}
-                >
-                  <FaWhatsapp aria-hidden="true" />
-                  {t("profile.whatsapp")}
-                </a>
+              action={(companyPage || contactHref) && (
+                <div className="flex flex-wrap items-center gap-2">
+                  {companyPage && (
+                    <I18nProvider messages={companyMessages}>
+                      <PublicShareButton name={name} href={publicCatalogPath(id, true)} kind="company" />
+                    </I18nProvider>
+                  )}
+                  {contactHref && (
+                    <a
+                      href={contactHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={buttonVariants({
+                        size: companyPage ? "lg" : "default",
+                        className: "gap-2 bg-success text-success-foreground hover:bg-success/90",
+                      })}
+                    >
+                      <FaWhatsapp aria-hidden="true" />
+                      {t("profile.whatsapp")}
+                    </a>
+                  )}
+                  {companyPage && <CompanyEditButton ownerId={id} label={t("products.edit")} />}
+                </div>
               )}
             />
             {(days.length > 0 || hours) && (
@@ -210,14 +235,13 @@ export async function PublicServiceCatalog({ id, companyPage }: { id: string; co
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {products.map((product) => (
                 <li key={product.id} className="min-w-0">
-                  <ProductCard
+                  <PublicProductCard
                     product={product}
                     uid={id}
+                    hasCompany={companyPage}
                     locale={locale}
-                    heading="h3"
-                    actions={contactHref && (
-                      <ProductWhatsAppLink contactHref={contactHref} product={product} locale={locale} t={t} />
-                    )}
+                    contactHref={contactHref}
+                    t={t}
                   />
                 </li>
               ))}

@@ -9,6 +9,7 @@ import {
   GoogleAuthProvider, 
   signOut,
   createUserWithEmailAndPassword,
+  getAdditionalUserInfo,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
 } from 'firebase/auth';
@@ -20,11 +21,22 @@ import { useLocale, useT } from '@/lib/i18n/provider';
 import { HTML_LANG } from '@skillsy/shared/i18n/locales';
 
 const BLOCKED_ALLOWED_PATHS = new Set(['/blocked', '/termos', '/privacidade']);
+const FIRST_SIGN_IN_UID_KEY = 'skillsy:first-sign-in-uid';
+
+function storeFirstSignIn(uid: string | null) {
+  try {
+    if (uid) window.sessionStorage.setItem(FIRST_SIGN_IN_UID_KEY, uid);
+    else window.sessionStorage.removeItem(FIRST_SIGN_IN_UID_KEY);
+  } catch {
+    // Keep the in-memory sign-in state when browser storage is unavailable.
+  }
+}
 
 interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
+  isFirstSignIn: boolean;
   signInWithGoogle: () => Promise<void>;
   signUpWithEmail: (email: string, pass: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
@@ -41,6 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [firstSignInUid, setFirstSignInUid] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
   const t = useT();
@@ -50,6 +63,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
+        try {
+          setFirstSignInUid(window.sessionStorage.getItem(FIRST_SIGN_IN_UID_KEY));
+        } catch {
+          // The sign-in action still updates the in-memory state.
+        }
         try {
           let userProfile = await UserService.getProfile(user.uid);
           
@@ -124,6 +142,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         setProfile(null);
+        setFirstSignInUid(null);
+        storeFirstSignIn(null);
       }
       setLoading(false);
     });
@@ -131,10 +151,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, [pathname, router, locale]);
 
+  const rememberFirstSignIn = (uid: string | null) => {
+    setFirstSignInUid(uid);
+    storeFirstSignIn(uid);
+  };
+
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const res = await signInWithPopup(auth, provider);
+      rememberFirstSignIn(getAdditionalUserInfo(res)?.isNewUser ? res.user.uid : null);
       // Immediate redirection attempt after login
       const profile = await UserService.getProfile(res.user.uid);
       if (profile?.role === 'admin') {
@@ -150,7 +176,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // account; creating it here as well raced with it and failed the rules.
   const signUpWithEmail = async (email: string, pass: string) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, pass);
+      const res = await createUserWithEmailAndPassword(auth, email, pass);
+      rememberFirstSignIn(res.user.uid);
     } catch (error) {
       console.error('Error signing up with email:', error);
       throw error;
@@ -166,6 +193,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithEmail = async (email: string, pass: string) => {
     try {
       const res = await signInWithEmailAndPassword(auth, email, pass);
+      rememberFirstSignIn(null);
       // Immediate redirection attempt after login
       const profile = await UserService.getProfile(res.user.uid);
       if (profile?.role === 'admin') {
@@ -238,7 +266,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, signUpWithEmail, signInWithEmail, resetPassword, toggleContact, updateProfile, cancelAccount, logout }}>
+    <AuthContext.Provider value={{ user, profile, loading, isFirstSignIn: Boolean(user && user.uid === firstSignInUid), signInWithGoogle, signUpWithEmail, signInWithEmail, resetPassword, toggleContact, updateProfile, cancelAccount, logout }}>
       {children}
     </AuthContext.Provider>
   );

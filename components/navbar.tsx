@@ -35,6 +35,7 @@ interface NavbarProps {
   logout: () => Promise<void>;
   activeTab: "explore" | "contacts";
   setActiveTab: (tab: "explore" | "contacts") => void;
+  backLink: { href: string; label: string };
 }
 
 // Shared with the search page header so both menus use the same labels.
@@ -257,6 +258,7 @@ export function Navbar({
   user: propUser,
   profile: propProfile,
   logout: propLogout,
+  backLink,
 }: Partial<NavbarProps>) {
   const auth = useAuth();
   const router = useRouter();
@@ -269,6 +271,7 @@ export function Navbar({
   const logout = propLogout !== undefined ? propLogout : auth.logout;
   const shouldShowBackButton =
     pathname === "/profile" || pathname?.startsWith("/profile/");
+  const hasBackNavigation = Boolean(backLink) || shouldShowBackButton;
 
   const handleLogout = async () => {
     setDrawerOpen(false);
@@ -277,9 +280,18 @@ export function Navbar({
 
   return (
     <nav className="sticky w-full top-0 z-50 border-b border-border-subtle bg-card/85 backdrop-blur-md">
-      <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2">
+      <div className={cn("container mx-auto flex items-center justify-between px-4 py-2", hasBackNavigation ? "gap-2 sm:gap-4" : "gap-4")}>
         <div className="flex min-w-0 items-center gap-3">
-          {shouldShowBackButton ? (
+          {backLink ? (
+            <Link
+              href={backLink.href}
+              aria-label={backLink.label}
+              className={buttonVariants({ variant: "ghost", className: "min-w-10 px-2 md:px-4" })}
+            >
+              <ArrowLeft className="size-5" aria-hidden="true" />
+              <span className="hidden md:inline">{backLink.label}</span>
+            </Link>
+          ) : shouldShowBackButton ? (
             <Button
               variant="ghost"
               className="text-foreground"
@@ -320,7 +332,7 @@ export function Navbar({
             </Drawer>
           )}
 
-          {!shouldShowBackButton ? (
+          {!hasBackNavigation ? (
             <Link href="/" className="flex items-center gap-2">
               <h1 className="font-heading text-2xl font-semibold tracking-normal text-brand">
                 {t("common.appName")}
@@ -329,7 +341,7 @@ export function Navbar({
           ) : null}
 
           {/* Main sections stay visible on large screens; the drawer keeps the rest. */}
-          {!shouldShowBackButton ? (
+          {!hasBackNavigation ? (
             <div className="hidden items-center gap-1 lg:flex">
               {primaryNavItems.map((item) => {
                 const active = isActivePath(pathname, item.href);
@@ -354,34 +366,32 @@ export function Navbar({
           ) : null}
         </div>
 
-        <div className="flex items-center justify-between space-x-2">
-          {!shouldShowBackButton ? <ThemeToggle /> : null}
-          {user && !shouldShowBackButton ? <OpportunityNotifications /> : null}
+        <div className={cn("flex items-center", hasBackNavigation ? "gap-1 sm:gap-2" : "gap-2")}>
+          <ThemeToggle />
+          {user && <OpportunityNotifications alignMobileToNavbar={hasBackNavigation} />}
 
-          {!shouldShowBackButton ? (
-            <Drawer swipeDirection="left">
-              <DrawerTrigger
-                render={
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="hidden md:flex"
-                    aria-label={t("nav.openMenu")}
-                  >
-                    <BsList className="size-4 text-text-main" />
-                  </Button>
-                }
-              ></DrawerTrigger>
-              <DrawerContent>
-                <DrawerNavigation
-                  pathname={pathname}
-                  user={user}
-                  profile={profile}
-                  handleLogout={handleLogout}
-                />
-              </DrawerContent>
-            </Drawer>
-          ) : null}
+          <Drawer swipeDirection="left">
+            <DrawerTrigger
+              render={
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className={hasBackNavigation ? undefined : "hidden md:flex"}
+                  aria-label={t("nav.openMenu")}
+                >
+                  <BsList className="size-4 text-text-main" />
+                </Button>
+              }
+            />
+            <DrawerContent className={hasBackNavigation ? "max-sm:w-screen" : undefined}>
+              <DrawerNavigation
+                pathname={pathname}
+                user={user}
+                profile={profile}
+                handleLogout={handleLogout}
+              />
+            </DrawerContent>
+          </Drawer>
 
           {user ? (
             <Avatar className="size-10">

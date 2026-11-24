@@ -125,14 +125,16 @@ function subscribeOnboarding(onChange: () => void) {
   };
 }
 
-function readOnboardingSnapshot() {
-  const intent = window.localStorage.getItem(ONBOARDING_INTENT_KEY) ?? "";
-  const dismissed = window.localStorage.getItem(ONBOARDING_DISMISSED_KEY) ?? "";
+function readOnboardingSnapshot(uid: string | undefined) {
+  if (!uid) return "|";
+
+  const intent = window.localStorage.getItem(`${ONBOARDING_INTENT_KEY}:${uid}`) ?? "";
+  const dismissed = window.localStorage.getItem(`${ONBOARDING_DISMISSED_KEY}:${uid}`) ?? "";
   return `${intent}|${dismissed}`;
 }
 
-function writeOnboarding(key: string, value: string) {
-  window.localStorage.setItem(key, value);
+function writeOnboarding(uid: string, key: string, value: string) {
+  window.localStorage.setItem(`${key}:${uid}`, value);
   window.dispatchEvent(new Event(ONBOARDING_CHANGE_EVENT));
 }
 
@@ -178,6 +180,7 @@ export function ProfileSettingsClient() {
     updateProfile,
     cancelAccount,
     loading: authLoading,
+    isFirstSignIn,
   } = useAuth();
   const t = useT();
   const tv = useValidationMessage();
@@ -185,9 +188,10 @@ export function ProfileSettingsClient() {
   const [loading, setLoading] = useState(false);
   const [cancelingAccount, setCancelingAccount] = useState(false);
   const [uploading, setUploading] = useState<ProfileImageKind | null>(null);
+  const onboardingUid = isFirstSignIn ? user?.uid : undefined;
   const onboardingSnapshot = useSyncExternalStore(
     subscribeOnboarding,
-    readOnboardingSnapshot,
+    () => readOnboardingSnapshot(onboardingUid),
     () => "|",
   );
   const [savedIntent, dismissedFlag] = onboardingSnapshot.split("|");
@@ -203,12 +207,6 @@ export function ProfileSettingsClient() {
   const locationSectionRef = useRef<HTMLDivElement>(null);
   const serviceSectionRef = useRef<HTMLElement>(null);
   const contactSectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    if (!authLoading && window.location.hash === "#perfil-de-servico") {
-      serviceSectionRef.current?.scrollIntoView();
-    }
-  }, [authLoading, user?.uid]);
 
   const {
     control,
@@ -343,6 +341,13 @@ export function ProfileSettingsClient() {
   }, [profile, reset]);
 
   useEffect(() => {
+    if (authLoading || !profile?.uid || window.location.hash !== "#perfil-de-servico") return;
+
+    const frame = requestAnimationFrame(() => serviceSectionRef.current?.scrollIntoView({ block: "start" }));
+    return () => cancelAnimationFrame(frame);
+  }, [authLoading, profile?.uid]);
+
+  useEffect(() => {
     if (!isDirty) return;
     function warnBeforeLeaving(event: BeforeUnloadEvent) {
       event.preventDefault();
@@ -418,11 +423,11 @@ export function ProfileSettingsClient() {
   };
 
   const chooseOnboardingIntent = (intent: OnboardingIntent) => {
-    writeOnboarding(ONBOARDING_INTENT_KEY, intent);
+    if (onboardingUid) writeOnboarding(onboardingUid, ONBOARDING_INTENT_KEY, intent);
   };
 
   const dismissOnboarding = () => {
-    writeOnboarding(ONBOARDING_DISMISSED_KEY, "true");
+    if (onboardingUid) writeOnboarding(onboardingUid, ONBOARDING_DISMISSED_KEY, "true");
   };
 
   const focusOnboardingStep = (stepId: string) => {
@@ -585,7 +590,7 @@ export function ProfileSettingsClient() {
 
       <main className="md:container md:mx-auto md:px-4 mb-6">
         <form id="profile-settings-form" onSubmit={handleSubmit(onFormSubmit)} noValidate>
-          {!onboardingDismissed &&
+          {onboardingUid && !onboardingDismissed &&
             (onboardingIntent === null || nextOnboardingItem) && (
               <SurfacePanel className="mb-3 space-y-4 p-4 md:p-6">
                 <div className="flex items-start justify-between gap-4">
@@ -1172,7 +1177,7 @@ export function ProfileSettingsClient() {
                   <div id="profile-service-fields" className="mt-6 space-y-6">
                     {profile?.isProvider && (
                       <div className="flex flex-wrap gap-2">
-                        <Link href="/profile/produtos" onNavigate={confirmNavigation} className={buttonVariants({ variant: "outline" })}>
+                        <Link href="/profile/produtos" onNavigate={confirmNavigation} className={buttonVariants({ variant: "default" })}>
                           {t("products.manageButton")}
                         </Link>
                         {profile.companyName?.trim() && (
