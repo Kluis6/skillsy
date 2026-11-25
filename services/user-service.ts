@@ -2,6 +2,7 @@ import {
   collection,
   query,
   getDocs,
+  getDocsFromServer,
   where,
   orderBy,
   limit,
@@ -20,6 +21,9 @@ import {
   Timestamp,
   deleteField,
   getCountFromServer,
+  type DocumentData,
+  type DocumentReference,
+  type SetOptions,
 } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { toPlainValue } from "@/lib/firestore-plain";
@@ -144,24 +148,28 @@ function memberWard(source: Partial<UserProfile>) {
   return ward && shouldSyncPublicProfile(source) && !source.isDeleted ? ward : "";
 }
 
-function syncPublicProfileBatch(
-  batch: ReturnType<typeof writeBatch>,
+function syncPublicProfile(
+  writer: {
+    set(ref: DocumentReference, data: DocumentData): unknown;
+    set(ref: DocumentReference, data: DocumentData, options: SetOptions): unknown;
+    delete(ref: DocumentReference): unknown;
+  },
   uid: string,
   source: Partial<UserProfile>,
 ) {
   const publicDocRef = doc(db, "public_profiles", uid);
   const wardDocRef = doc(db, "member_wards", uid);
   const ward = memberWard(source);
-  if (ward) batch.set(wardDocRef, { uid, ward });
-  else batch.delete(wardDocRef);
+  if (ward) writer.set(wardDocRef, { uid, ward });
+  else writer.delete(wardDocRef);
 
   if (!shouldSyncPublicProfile(source) || source.isDeleted) {
-    batch.delete(publicDocRef);
+    writer.delete(publicDocRef);
     return;
   }
 
   const publicData = buildPublicProfileData(source);
-  batch.set(
+  writer.set(
     publicDocRef,
     {
       ...publicData,
@@ -171,15 +179,6 @@ function syncPublicProfileBatch(
     },
     { merge: true },
   );
-}
-
-async function syncPublicProfileDocument(
-  uid: string,
-  source: Partial<UserProfile>,
-) {
-  const batch = writeBatch(db);
-  syncPublicProfileBatch(batch, uid, source);
-  await batch.commit();
 }
 
 function isSerializedFirestoreError(error: unknown) {
@@ -296,7 +295,7 @@ export const UserService = {
       });
 
       batch.set(privateDocRef, nextPrivateProfile);
-      syncPublicProfileBatch(batch, profile.uid, {
+      syncPublicProfile(batch, profile.uid, {
         ...nextPrivateProfile,
         uid: profile.uid,
       });
@@ -319,53 +318,28 @@ export const UserService = {
     const path = `users/${uid}`;
     try {
       const docRef = doc(db, "users", uid);
-      const currentSnapshot = await getDoc(docRef);
-      if (!currentSnapshot.exists()) {
-        throw new Error("Perfil não encontrado para atualização");
-      }
+      const authUser = auth.currentUser;
+      await runTransaction(db, async (transaction) => {
+        const currentSnapshot = await transaction.get(docRef);
+        if (!currentSnapshot.exists()) {
+          throw new Error("Perfil não encontrado para atualização");
+        }
 
-      // Normalization, merge and the patch live in @skillsy/shared so the
-      // app saves profiles exactly like the site.
-      const { privatePatch, privateProfile, galleryToValidate } =
-        profileDocuments.prepareProfileUpdate({
+        const { privatePatch, privateProfile, galleryToValidate } = profileDocuments.prepareProfileUpdate({
           uid,
           current: currentSnapshot.data() as Record<string, unknown>,
           changes: data,
-          authUser: auth.currentUser,
+          authUser,
         });
-      const updatesCompanyImages = "companyLogoImageName" in data || "companyBannerImageName" in data;
-      if (galleryToValidate || updatesCompanyImages) {
-        const batch = writeBatch(db);
         if (galleryToValidate) {
-          batch.set(doc(docRef, "profile_validation", "gallery"), {
+          transaction.set(doc(docRef, "profile_validation", "gallery"), {
             gallery: galleryToValidate,
             validatedAt: serverTimestamp(),
           });
         }
-        batch.update(docRef, privatePatch);
-        if (updatesCompanyImages) syncPublicProfileBatch(batch, uid, privateProfile);
-        await batch.commit();
-      } else {
-        await updateDoc(docRef, privatePatch);
-      }
-
-      if (updatesCompanyImages) return;
-
-      try {
-        await syncPublicProfileDocument(uid, privateProfile);
-      } catch (error) {
-        // The private profile above is the source of truth for the signed-in
-        // user's own session and already saved successfully. Don't let a
-        // failure to mirror it into public_profiles (e.g. a transient quota
-        // error) throw here — that would stop the caller from refreshing
-        // local state, making the update (a new avatar photo, for example)
-        // look like it "didn't take" anywhere in the app even though it did.
-        // The next successful save retries this sync automatically.
-        console.error(
-          `Failed to sync public_profiles/${uid} after a profile update:`,
-          error,
-        );
-      }
+        transaction.update(docRef, privatePatch);
+        syncPublicProfile(transaction, uid, privateProfile);
+      });
     } catch (error) {
       if (isSerializedFirestoreError(error)) {
         throw error;
@@ -447,7 +421,7 @@ export const UserService = {
       constraints.push(limit(60));
 
       const q = query(collection(db, "public_profiles"), ...constraints);
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocsFromServer(q);
       return pickSearchResults(
         querySnapshot.docs.map((doc) => toPlainValue(doc.data())),
         plan,
@@ -756,7 +730,7 @@ export const UserService = {
 
       const batch = writeBatch(db);
       batch.set(docRef, nextPrivateProfile);
-      syncPublicProfileBatch(
+      syncPublicProfile(
         batch,
         uid,
         nextPrivateProfile as Partial<UserProfile>,
@@ -850,8 +824,7 @@ export const UserService = {
 
       const batch = writeBatch(db);
       batch.update(docRef, patch);
-      // isDeleted: the public profile is removed (syncPublicProfileBatch).
-      syncPublicProfileBatch(batch, uid, { ...currentData, isDeleted: true });
+      syncPublicProfile(batch, uid, { ...currentData, isDeleted: true });
       await batch.commit();
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);

@@ -168,9 +168,12 @@ export function SearchClient({
 
   const handleSearch = (event: React.FormEvent) => {
     event.preventDefault();
-    const params = createRouteParams({
-      q: searchTerm.trim() || null,
-    });
+    const nextQuery = searchTerm.trim();
+    if (nextQuery === query) {
+      router.refresh();
+      return;
+    }
+    const params = createRouteParams({ q: nextQuery });
     router.push(`/search?${params.toString()}`);
   };
 

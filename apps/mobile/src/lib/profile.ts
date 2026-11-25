@@ -8,11 +8,9 @@ import type { User } from '@firebase/auth';
 import {
   deleteField,
   doc,
-  getDoc,
+  runTransaction,
   serverTimestamp,
   Timestamp,
-  updateDoc,
-  writeBatch,
 } from 'firebase/firestore';
 
 import { db } from './firebase';
@@ -29,31 +27,40 @@ const profileDocuments = createProfileDocuments({
 
 export async function saveProfile(user: User, changes: Partial<UserProfile>) {
   const ref = doc(db, 'users', user.uid);
-  const snapshot = await getDoc(ref);
-  if (!snapshot.exists()) throw new Error('Perfil não encontrado.');
-
-  const { privatePatch, privateProfile } = profileDocuments.prepareProfileUpdate({
-    uid: user.uid,
-    current: snapshot.data(),
-    changes,
-    authUser: user,
-  });
-  await updateDoc(ref, privatePatch);
-
-  // Mirror public_profiles like the site: providers (or members who chose a
-  // public profile) get it; everyone else has it removed. The ward goes to
-  // member_wards (signed-in members only) and is deleted from the public doc.
   const publicRef = doc(db, 'public_profiles', user.uid);
   const wardRef = doc(db, 'member_wards', user.uid);
-  const isPublic = shouldSyncPublicProfile(privateProfile) && !privateProfile.isDeleted;
-  const ward = typeof privateProfile.ward === 'string' ? privateProfile.ward.trim() : '';
-  const batch = writeBatch(db);
-  if (isPublic && ward) batch.set(wardRef, { uid: user.uid, ward });
-  else batch.delete(wardRef);
-  if (!isPublic) {
-    batch.delete(publicRef);
-  } else {
-    batch.set(publicRef, { ...buildPublicProfileData(privateProfile), ward: deleteField() }, { merge: true });
-  }
-  await batch.commit();
+
+  await runTransaction(db, async (transaction) => {
+    const snapshot = await transaction.get(ref);
+    if (!snapshot.exists()) throw new Error('Perfil não encontrado.');
+
+    const { privatePatch, privateProfile, galleryToValidate } = profileDocuments.prepareProfileUpdate({
+      uid: user.uid,
+      current: snapshot.data(),
+      changes,
+      authUser: user,
+    });
+    if (galleryToValidate) {
+      transaction.set(doc(ref, 'profile_validation', 'gallery'), { gallery: galleryToValidate, validatedAt: serverTimestamp() });
+    }
+
+    transaction.update(ref, privatePatch);
+    const isPublic = shouldSyncPublicProfile(privateProfile) && !privateProfile.isDeleted;
+    const ward = privateProfile.ward?.trim();
+    if (isPublic && ward) transaction.set(wardRef, { uid: user.uid, ward });
+    else transaction.delete(wardRef);
+
+    if (!isPublic) {
+      transaction.delete(publicRef);
+      return;
+    }
+
+    const publicData = buildPublicProfileData(privateProfile);
+    transaction.set(publicRef, {
+      ...publicData,
+      ward: deleteField(),
+      companyLogoImageName: publicData.companyLogoImageName ?? deleteField(),
+      companyBannerImageName: publicData.companyBannerImageName ?? deleteField(),
+    }, { merge: true });
+  });
 }
