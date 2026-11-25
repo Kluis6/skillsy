@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { cache, Suspense } from 'react';
+import { cache } from 'react';
 import { ProfileDetailClient } from '@/components/profile-detail-client';
-import { ProfileProductsSection } from '@/components/profile/profile-products-section';
+import { ProfileCompanySection } from '@/components/profile/profile-company-section';
 import { createPublicMetadata, withoutWard } from '@/lib/public-metadata';
-import { isActiveProvider, UserService } from '@/services/user-service';
+import { UserService } from '@/services/user-service';
 import { getMessages, getT } from '@/lib/i18n/server';
 import { I18nProvider } from '@/lib/i18n/provider';
 
@@ -65,15 +65,7 @@ export default async function PublicProfilePage({ params }: Props) {
   return (
     <I18nProvider messages={messages}>
       <ProfileDetailClient id={id} initialProfile={initialProfile}>
-        {isActiveProvider(initialProfile) && (
-          <Suspense fallback={null}>
-            <ProfileProductsSection
-              uid={id}
-              whatsapp={initialProfile.whatsapp}
-              hasCompany={Boolean(initialProfile.companyName?.trim())}
-            />
-          </Suspense>
-        )}
+        {initialProfile && <ProfileCompanySection profile={initialProfile} />}
       </ProfileDetailClient>
     </I18nProvider>
   );

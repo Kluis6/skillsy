@@ -1,18 +1,31 @@
 import {
   collection,
   doc,
+  documentId,
   getDocFromServer,
   getDocsFromServer,
+  limit,
   onSnapshot,
+  query,
   runTransaction,
   serverTimestamp,
+  where,
   type DocumentData,
   type DocumentSnapshot,
   type QuerySnapshot,
   type Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { MAX_PRODUCTS, productRatingTotals, type CatalogProduct, type ProductDetails, type ProductRatingScore } from "@/lib/product-catalog";
+import {
+  COMPANY_PRODUCT_PAGE_SIZE,
+  COMPANY_PRODUCT_PREVIEW_SIZE,
+  MAX_PRODUCTS,
+  productRatingTotals,
+  type CatalogProduct,
+  type ProductDetails,
+  type ProductRatingScore,
+  type PublicCatalogPage,
+} from "@/lib/product-catalog";
 
 const slots = Array.from({ length: MAX_PRODUCTS }, (_, index) => String(index + 1));
 
@@ -47,6 +60,32 @@ export const ProductService = {
 
   async listPublic(uid: string) {
     return readProducts(await getDocsFromServer(products(uid)));
+  },
+
+  async listPublicPage(
+    uid: string,
+    pageSize: typeof COMPANY_PRODUCT_PREVIEW_SIZE | typeof COMPANY_PRODUCT_PAGE_SIZE,
+    after = 0,
+  ): Promise<PublicCatalogPage> {
+    const found: CatalogProduct[] = [];
+    const scanSize = COMPANY_PRODUCT_PAGE_SIZE;
+
+    // Slot IDs are numeric strings. Query consecutive slot groups to keep
+    // numeric order without excluding older documents or skipping deleted slots.
+    for (let offset = after; offset < slots.length && found.length <= pageSize; offset += scanSize) {
+      const group = slots.slice(offset, offset + scanSize);
+      const slotsQuery = query(products(uid), where(documentId(), "in", group));
+      const snapshot = await getDocsFromServer(
+        found.length === pageSize ? query(slotsQuery, limit(1)) : slotsQuery,
+      );
+      found.push(...readProducts(snapshot));
+    }
+
+    const items = found.slice(0, pageSize).map(({ id, name, description, priceCents, imageName, ratingSum, ratingCount }) => ({
+      id, name, description, priceCents, imageName, ratingSum, ratingCount,
+    }));
+    const last = items.at(-1);
+    return { items, nextCursor: last && found.length > pageSize ? Number(last.id) : null };
   },
 
   async getOwnRating(uid: string, productId: string, raterId: string, createdAt: string | undefined) {

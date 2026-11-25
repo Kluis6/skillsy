@@ -4,29 +4,23 @@ import { whatsappUrl } from "@skillsy/shared/contact";
 import { useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { UserService } from "@/services/user-service";
-import { Rating, UserProfile } from "@/models/types";
+import { UserProfile } from "@/models/types";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProfileReviewsClient } from "@/components/profile/profile-reviews-client";
+import { PublicProfileContacts } from "@/components/profile/public-profile-contacts";
+import { PublicProfileGallery } from "@/components/profile/public-profile-gallery";
+import { PublicProfileHeader } from "@/components/profile/public-profile-header";
+import { PublicReportButton } from "@/components/profile/public-report-button";
 import { PublicShareButton } from "@/components/profile/public-share-button";
 import { ProfileRecommendationCounter, ProfileRecommendationProvider, RecommendProfileButton } from "@/components/profile/profile-recommendations";
-import { useLocale, useT, useValidationMessage } from "@/lib/i18n/provider";
+import { useT } from "@/lib/i18n/provider";
 import { useLabels } from "@/lib/i18n/labels";
-import { DATE_FNS_LOCALE } from "@/lib/i18n/date-fns";
-import { formatRating } from "@skillsy/shared/i18n/format";
-import { INTL_LOCALE } from "@skillsy/shared/i18n/locales";
 import {
   Building2,
-  CalendarDays,
-  Camera,
   Church,
-  Clock,
-  Flag,
-  Globe,
   Info,
-  MessageSquareText,
-  Star,
   UserPlus,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -34,44 +28,17 @@ import Link from "@/lib/i18n/navigation";
 import { companyProfilePath } from "@/lib/company-profile";
 import { toast } from "sonner";
 import Image from "next/image";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ProfilePublicPageLoading } from "@/components/loading/route-loaders";
 import { MembershipMark } from "@/components/ui/trust-signals";
 import { LanguageBadge } from "@/components/language-badge";
 import {
-  Dialog,
-  DialogContent,
   DialogHeader,
-  DialogDescription,
-  DialogFooter,
-  DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Navbar } from "./navbar";
 import { AuthModal } from "./auth-modal";
 import { LuMapPin, LuPencil, LuUserMinus } from "react-icons/lu";
 import { TooltipContent, Tooltip, TooltipTrigger } from "./ui/tooltip";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaPhone,
-  FaWhatsapp,
-} from "react-icons/fa";
-import { AVAILABILITY_OPTIONS } from "@/lib/profile-form";
-import { Controller, useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { formatDistanceToNow } from "date-fns";
-import { reportUserSchema, type ReportUserFormData } from "@/lib/validations";
-import { REPORT_REASON_OPTIONS } from "@/lib/reporting";
+import { FaWhatsapp } from "react-icons/fa";
 
 interface ProfileDetailClientProps {
   id: string;
@@ -92,46 +59,16 @@ export function ProfileDetailClient({
     logout,
   } = useAuth();
   const t = useT();
-  const tv = useValidationMessage();
-  const locale = useLocale();
   const labels = useLabels();
   const [targetProfile, setTargetProfile] = useState<UserProfile | null>(
     initialProfile,
   );
   const [loading, setLoading] = useState(!initialProfile);
-  const [userRating, setUserRating] = useState(0);
-  const [ratingHover, setRatingHover] = useState(0);
-  const [ratingComment, setRatingComment] = useState("");
-  const [ratings, setRatings] = useState<Rating[]>([]);
-  const [submittingRating, setSubmittingRating] = useState(false);
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
-  const reportForm = useForm<ReportUserFormData>({
-    resolver: zodResolver(reportUserSchema),
-    mode: "onBlur",
-    defaultValues: {
-      reason: "informacao_falsa",
-      details: "",
-    },
-  });
-  const reportDetails = useWatch({
-    control: reportForm.control,
-    name: "details",
-  });
-
-  const canReportProfile = Boolean(
-    user && targetProfile && targetProfile.uid !== user.uid,
-  );
   const canToggleContact = Boolean(
     user && targetProfile && targetProfile.uid !== user.uid,
   );
-  const canRateProfile = Boolean(
-    targetProfile &&
-    targetProfile.isProvider &&
-    user?.uid !== targetProfile.uid,
-  );
-  const hasReviews = (targetProfile?.reviewCount || 0) > 0;
   // Mobile keeps the main contact action on screen while scrolling.
   const showStickyWhatsApp = Boolean(
     targetProfile?.whatsapp && user?.uid !== targetProfile?.uid,
@@ -157,25 +94,6 @@ export function ProfileDetailClient({
     };
     fetchProfile();
   }, [id, initialProfile, t]);
-
-  useEffect(() => {
-    const fetchRatings = async () => {
-      if (!targetProfile?.isProvider) {
-        setRatings([]);
-        return;
-      }
-
-      try {
-        const nextRatings = await UserService.getRatings(targetProfile.uid);
-        setRatings(nextRatings);
-      } catch (error) {
-        console.error("Error fetching ratings:", error);
-        toast.error(t("profile.ratingsLoadError"));
-      }
-    };
-
-    fetchRatings();
-  }, [targetProfile?.uid, targetProfile?.isProvider, t]);
 
   // The ward is only for signed-in members, so the server leaves it out of the
   // page; load it once the visitor is signed in.
@@ -214,12 +132,6 @@ export function ProfileDetailClient({
     }
   };
 
-  const formatUrl = (url: string) => {
-    if (!url) return "";
-    if (url.startsWith("http://") || url.startsWith("https://")) return url;
-    return `https://${url}`;
-  };
-
   const handleWhatsApp = () => {
     if (!targetProfile?.whatsapp) {
       toast.error(t("profile.noWhatsapp"), {
@@ -228,304 +140,6 @@ export function ProfileDetailClient({
       return;
     }
     window.open(whatsappUrl(targetProfile.whatsapp) ?? undefined, "_blank");
-  };
-
-  const handleSubmitReport = async (data: ReportUserFormData) => {
-    if (!user) {
-      toast.error(t("profile.loginRequired"), {
-        description: t("profile.loginToReport"),
-      });
-      return;
-    }
-
-    if (!targetProfile || user.uid === targetProfile.uid) {
-      toast.error(t("profile.invalidAction"), {
-        description: t("profile.cantReportSelf"),
-      });
-      return;
-    }
-
-    try {
-      await UserService.submitUserReport({
-        reportedUserId: targetProfile.uid,
-        reportedUserName: targetProfile.name,
-        reason: data.reason,
-        details: data.details?.trim(),
-      });
-
-      toast.success(t("profile.reportSent"), {
-        description: t("profile.reportSentText"),
-      });
-      reportForm.reset({
-        reason: "informacao_falsa",
-        details: "",
-      });
-      setReportDialogOpen(false);
-    } catch (error) {
-      console.error("Error submitting report:", error);
-      toast.error(t("profile.reportError"));
-    }
-  };
-
-  const renderReportButton = (className?: string) => {
-    if (!canReportProfile) {
-      return null;
-    }
-
-    return (
-      <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <Button
-                variant="destructive"
-                size="icon-lg"
-                className={` ${className && ""}`}
-                onClick={() => setReportDialogOpen(true)}
-              />
-            }
-          >
-            <Flag className="text-destructive" />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{t("profile.reportProfile")}</p>
-          </TooltipContent>
-        </Tooltip>
-        <DialogContent className="sm:max-w-md sm:h-auto">
-          <DialogHeader>
-            <DialogTitle>{t("profile.reportProfile")}</DialogTitle>
-            <DialogDescription>
-              {t("profile.reportText")}
-            </DialogDescription>
-          </DialogHeader>
-          <form
-            onSubmit={reportForm.handleSubmit(handleSubmitReport)}
-            className="space-y-4"
-          >
-            <div className="border border-warning-border bg-warning-surface px-4 py-3 text-xs text-warning-foreground">
-              {t("profile.reportWarning")}
-            </div>
-            <div className="space-y-2">
-              <Label
-                htmlFor="profile-report-reason"
-                className="text-sm font-medium text-text-main"
-              >
-                {t("profile.reason")}
-              </Label>
-              <Controller
-                control={reportForm.control}
-                name="reason"
-                render={({ field }) => (
-                  <Select
-                    items={Object.fromEntries(REPORT_REASON_OPTIONS.map((reason) => [reason, labels.reason(reason)]))}
-                    name={field.name}
-                    value={field.value}
-                    onValueChange={(value) => value && field.onChange(value)}
-                  >
-                    <SelectTrigger
-                      id="profile-report-reason"
-                      ref={field.ref}
-                      onBlur={field.onBlur}
-                      aria-invalid={Boolean(reportForm.formState.errors.reason)}
-                      className="h-10 w-full px-3 text-sm"
-                    >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {REPORT_REASON_OPTIONS.map((reason) => (
-                        <SelectItem key={reason} value={reason}>
-                          {labels.reason(reason)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {reportForm.formState.errors.reason && (
-                <p className="text-xs font-bold text-destructive">
-                  {tv(reportForm.formState.errors.reason.message)}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label
-                htmlFor="profile-report-details"
-                className="text-sm font-medium text-text-main"
-              >
-                {t("profile.details")}
-              </Label>
-              <Textarea
-                id="profile-report-details"
-                {...reportForm.register("details")}
-                placeholder={t("profile.detailsPlaceholder")}
-                maxLength={1000}
-                className="min-h-28"
-              />
-              <div className="flex items-center justify-between text-xs text-text-muted">
-                <span>{t("profile.detailsHint")}</span>
-                <span>{(reportDetails || "").length}/1000</span>
-              </div>
-              {reportForm.formState.errors.details && (
-                <p className="text-xs font-bold text-destructive">
-                  {tv(reportForm.formState.errors.details.message)}
-                </p>
-              )}
-            </div>
-            <DialogFooter>
-              {/* <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setReportDialogOpen(false)}
-              >
-                Cancelar
-              </Button> */}
-              <Button
-                type="submit"
-                size="lg"
-                variant="default"
-                className="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-primary-foreground font-medium"
-                disabled={reportForm.formState.isSubmitting}
-              >
-                {reportForm.formState.isSubmitting
-                  ? t("profile.sending")
-                  : t("profile.sendReport")}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-    );
-  };
-
-  const handlePhoneCall = () => {
-    if (!targetProfile?.phone) return;
-    window.open(`tel:${targetProfile.phone.replace(/\D/g, "")}`, "_self");
-  };
-
-  const hasContactInfo = Boolean(
-    targetProfile?.whatsapp ||
-    targetProfile?.phone ||
-    targetProfile?.instagram ||
-    targetProfile?.facebook ||
-    targetProfile?.linkedin ||
-    targetProfile?.website,
-  );
-
-  const availabilityDays = (targetProfile?.availability || []).filter((day) =>
-    AVAILABILITY_OPTIONS.includes(day as (typeof AVAILABILITY_OPTIONS)[number]),
-  );
-
-  const hasAvailabilityInfo = Boolean(
-    availabilityDays.length || targetProfile?.serviceHours?.trim(),
-  );
-
-  const formatRatingDate = (createdAt: Rating["createdAt"]) => {
-    if (
-      !createdAt ||
-      typeof createdAt !== "object" ||
-      !("seconds" in createdAt)
-    ) {
-      return t("profile.justNow");
-    }
-
-    return formatDistanceToNow(new Date(createdAt.seconds * 1000), {
-      addSuffix: true,
-      locale: DATE_FNS_LOCALE[locale],
-    });
-  };
-
-  const handleRatingSelect = (score: number) => {
-    if (!canRateProfile || submittingRating) {
-      return;
-    }
-
-    setUserRating(score);
-  };
-
-  const handleRate = async () => {
-    if (!user) {
-      toast.error(t("profile.loginRequired"), {
-        description: t("profile.loginToRate"),
-      });
-      return;
-    }
-
-    if (user.uid === id) {
-      toast.error(t("profile.invalidAction"), {
-        description: t("profile.cantRateSelf"),
-      });
-      return;
-    }
-
-    if (!targetProfile?.isProvider) {
-      toast.error(t("profile.ratingUnavailable"), {
-        description: t("profile.ratingUnavailableText"),
-      });
-      return;
-    }
-
-    if (!userRating) {
-      toast.error(t("profile.selectRating"), {
-        description: t("profile.selectRatingText"),
-      });
-      return;
-    }
-
-    setSubmittingRating(true);
-    try {
-      await UserService.submitRating(
-        user.uid,
-        id,
-        userRating,
-        ratingComment.trim() || undefined,
-      );
-      toast.success(t("profile.ratingSent"), {
-        description: t("profile.ratingSentText"),
-      });
-      // Apply the new score locally instead of refetching the profile.
-      const updatedRatings = await UserService.getRatings(id);
-      setTargetProfile((current) => {
-        if (!current) return current;
-        const count = current.reviewCount || 0;
-        const average =
-          ((current.rating || 0) * count + userRating) / (count + 1);
-        return {
-          ...current,
-          rating: Math.round(average * 10) / 10,
-          reviewCount: count + 1,
-        };
-      });
-      setRatings(updatedRatings);
-      setRatingComment("");
-    } catch (error: any) {
-      console.error("Error submitting rating:", error);
-
-      let message = t("profile.ratingError");
-
-      // Try to parse the FirestoreErrorInfo or generic error
-      try {
-        const errorData = JSON.parse(error.message);
-        if (errorData.error) {
-          if (
-            errorData.error.toLowerCase().includes("permission") ||
-            errorData.error.toLowerCase().includes("insufficient")
-          ) {
-            message = t("profile.ratingPermissionError");
-          } else {
-            message = errorData.error;
-          }
-        }
-      } catch {
-        // Not JSON, use message directly if it's user-friendly
-        if (error.message && !error.message.includes("[object Object]")) {
-          message = tv(error.message);
-        }
-      }
-
-      toast.error(message);
-    } finally {
-      setSubmittingRating(false);
-    }
   };
 
   if (loading) {
@@ -554,7 +168,10 @@ export function ProfileDetailClient({
     labels.category(targetProfile.category) ||
     t("profile.communityMember");
   const companyName = targetProfile.companyName?.trim();
-  const comments = ratings.filter((rating) => rating.comment?.trim());
+  const hasCompanyPage = Boolean(companyName && targetProfile.isProvider);
+  const reportAction = !hasCompanyPage && user?.uid !== targetProfile.uid && (
+    <PublicReportButton ownerId={targetProfile.uid} ownerName={targetProfile.name} />
+  );
   const editProfileLabel = t("profile.editProfile");
   const editProfileAction = (
     <Tooltip>
@@ -589,10 +206,9 @@ export function ProfileDetailClient({
           animate={{ opacity: 1, y: 0 }}
           className="space-y-2"
         >
-          {/* Top Profile Card */}
-          <section className="border-border-subtle border-b bg-card">
-            <div className="relative h-26 md:h-52 bg-muted">
-              {targetProfile.bannerURL ? (
+          <PublicProfileHeader
+            cover={
+              targetProfile.bannerURL ? (
                 <Image
                   src={targetProfile.bannerURL}
                   alt={t("card.coverAlt", { name: targetProfile.name })}
@@ -600,172 +216,165 @@ export function ProfileDetailClient({
                   className="object-cover"
                   referrerPolicy="no-referrer"
                 />
-              ) : (
-                <div className="absolute inset-0 bg-linear-to-r from-primary/15 via-primary/5 to-surface" />
-              )}
-            </div>
+              ) : undefined
+            }
+            avatar={
+              <Avatar className="w-full h-full border-6 border-card bg-card shadow-sm shadow-black/30">
+                <AvatarImage
+                  src={targetProfile.photoURL}
+                  className="object-cover"
+                />
+                <AvatarFallback className="bg-surface text-primary font-bold text-4xl">
+                  {targetProfile.name[0]}
+                </AvatarFallback>
+              </Avatar>
+            }
+            identity={
+              <>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="text-xl font-bold leading-tight wrap-anywhere text-text-main md:text-3xl">
+                    {targetProfile.name}
+                  </h2>
+                  <MembershipMark profile={targetProfile} size={20} />
+                  <LanguageBadge item={targetProfile} />
+                </div>
 
-            <section className="mx-auto container px-4 pb-4">
-              <div className="relative flex flex-col">
-                {/* Avatar Overlap */}
-                <div className="flex min-h-12 items-center justify-end py-2 md:py-4">
-                  <div className="hidden gap-2 md:flex">
-                    <PublicShareButton name={targetProfile.name} href={`/profile/${targetProfile.uid}`} />
-                    <RecommendProfileButton />
-                    {renderReportButton("size-10")}
-                    {user?.uid === targetProfile.uid ? (
-                      editProfileAction
-                    ) : (
-                      <>
-                        {canToggleContact && (
-                          <Button
-                            size="lg"
-                            variant={isContact ? "destructive" : "outline"}
-                            onClick={handleToggleContact}
-                            className="px-5 font-semibold"
-                          >
-                            {isContact ? (
-                              <>
-                                <LuUserMinus /> {t("profile.disconnect")}
-                              </>
-                            ) : (
-                              <>
-                                <UserPlus size={18} className="mr-2" /> {t("profile.connect")}
-                              </>
-                            )}
-                          </Button>
-                        )}
-                      </>
+                <p className="text-base text-text-muted font-normal">
+                  {profileRoleLabel}
+                </p>
+                {(companyName || targetProfile.category) && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    {companyName && targetProfile.isProvider && (
+                      <Link
+                        href={companyProfilePath(id)}
+                        className="inline-flex min-h-8 items-center gap-2 text-sm font-medium text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring"
+                      >
+                        <Building2 size={18} aria-hidden="true" />
+                        <span className="wrap-anywhere">
+                          {companyName}
+                        </span>
+                      </Link>
                     )}
-
-                    <Button
-                      onClick={handleWhatsApp}
-                      size="lg"
-                      variant="default"
-                      className="rounded-none bg-success px-6 font-bold text-success-foreground hover:bg-success/90 active:bg-success/80"
-                    >
-                      <FaWhatsapp /> <p>{t("profile.whatsapp")}</p>
-                    </Button>
+                    {companyName && targetProfile.isProvider && targetProfile.category ? (
+                      <span className="font-bold block text-text-main">
+                        ·
+                      </span>
+                    ) : null}
+                    {targetProfile.category && (
+                      <Badge
+                        variant="secondary"
+                        className="bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                      >
+                        {labels.category(targetProfile.category)}
+                      </Badge>
+                    )}
                   </div>
-                </div>
-                <div className="-mt-28 sm:-mt-34 md:-mt-38 mb-4 relative z-10 size-28 sm:size-32 md:size-40">
-                  <Avatar className="w-full h-full border-6 border-card bg-card shadow-sm shadow-black/30">
-                    <AvatarImage
-                      src={targetProfile.photoURL}
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="bg-surface text-primary font-bold text-4xl">
-                      {targetProfile.name[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-                <div className="flex items-start justify-between gap-3 md:gap-6">
-                  <div className="min-w-0 space-y-1 md:space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-xl font-bold leading-tight wrap-anywhere text-text-main md:text-3xl">
-                        {targetProfile.name}
-                      </h2>
-                      <MembershipMark profile={targetProfile} size={20} />
-                      <LanguageBadge item={targetProfile} />
-                    </div>
+                )}
 
-                    <p className="text-base text-text-muted font-normal">
-                      {profileRoleLabel}
+                {publicLocation && (
+                  <div className="flex items-center space-x-2">
+                    <LuMapPin size={18} className="text-text-main" />
+                    <p className="text-sm text-text-main font-normal">
+                      {publicLocation}
                     </p>
-                    {(companyName || targetProfile.category) && (
-                      <div className="flex flex-wrap items-center gap-2">
-                        {companyName && targetProfile.isProvider && (
-                          <Link
-                            href={companyProfilePath(id)}
-                            className="inline-flex min-h-8 items-center gap-2 text-sm font-medium text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring"
-                          >
-                            <Building2 size={18} aria-hidden="true" />
-                            <span className="wrap-anywhere">
-                              {companyName}
-                            </span>
-                          </Link>
-                        )}
-                        {companyName && targetProfile.isProvider && targetProfile.category ? (
-                          <span className="font-bold block text-text-main">
-                            ·
-                          </span>
-                        ) : null}
-                        {targetProfile.category && (
-                          <Badge
-                            variant="secondary"
-                            className="bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
-                          >
-                            {labels.category(targetProfile.category)}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-
-                    {publicLocation && (
-                      <div className="flex items-center space-x-2">
-                        <LuMapPin size={18} className="text-text-main" />
-                        <p className="text-sm text-text-main font-normal">
-                          {publicLocation}
-                        </p>
-                      </div>
-                    )}
-
-                    {user && !targetProfile.isProvider && ward && (
-                      <div className="flex items-center space-x-2">
-                        <Church size={18} className="text-text-main" />
-                        <p className="text-sm text-text-main font-normal">
-                          {ward}
-                        </p>
-                      </div>
-                    )}
                   </div>
+                )}
 
-                  <ProfileRecommendationCounter />
-                </div>
-                <div className="mt-4 w-full space-y-2 md:hidden">
-                  <div className="flex flex-wrap justify-end gap-2">
-                    <PublicShareButton name={targetProfile.name} href={`/profile/${targetProfile.uid}`} />
-                    <RecommendProfileButton />
-                    {renderReportButton("size-9")}
-                    {user?.uid === targetProfile.uid ? (
-                      editProfileAction
-                    ) : (
-                      <>
-                        {canToggleContact && (
-                          <Button
-                            size="lg"
-                            variant={isContact ? "destructive" : "outline"}
-                            onClick={handleToggleContact}
-                            className="flex-1 px-5 font-semibold"
-                          >
-                            {isContact ? (
-                              <>
-                                <LuUserMinus /> {t("profile.disconnect")}
-                              </>
-                            ) : (
-                              <>
-                                <UserPlus size={18} className="mr-2" />
-                                {t("profile.connect")}
-                              </>
-                            )}
-                          </Button>
-                        )}
-                      </>
-                    )}
+                {user && !targetProfile.isProvider && ward && (
+                  <div className="flex items-center space-x-2">
+                    <Church size={18} className="text-text-main" />
+                    <p className="text-sm text-text-main font-normal">
+                      {ward}
+                    </p>
                   </div>
+                )}
+              </>
+            }
+            recommendations={<ProfileRecommendationCounter />}
+            desktopActions={
+              <>
+                <PublicShareButton name={targetProfile.name} href={`/profile/${targetProfile.uid}`} />
+                <RecommendProfileButton />
+                {reportAction}
+                {user?.uid === targetProfile.uid ? (
+                  editProfileAction
+                ) : (
+                  <>
+                    {canToggleContact && (
+                      <Button
+                        size="lg"
+                        variant={isContact ? "destructive" : "outline"}
+                        onClick={handleToggleContact}
+                        className="px-5 font-semibold"
+                      >
+                        {isContact ? (
+                          <>
+                            <LuUserMinus /> {t("profile.disconnect")}
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus size={18} className="mr-2" /> {t("profile.connect")}
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </>
+                )}
 
-                  <Button
-                    onClick={handleWhatsApp}
-                    variant="default"
-                    size="lg"
-                    className="w-full bg-success px-6 font-bold text-success-foreground hover:bg-success/90 active:bg-success/80"
-                  >
-                    <FaWhatsapp /> <p>{t("profile.whatsapp")}</p>
-                    </Button>
+                <Button
+                  onClick={handleWhatsApp}
+                  size="lg"
+                  variant="default"
+                  className="rounded-none bg-success px-6 font-bold text-success-foreground hover:bg-success/90 active:bg-success/80"
+                >
+                  <FaWhatsapp /> <p>{t("profile.whatsapp")}</p>
+                </Button>
+              </>
+            }
+            mobileActions={
+              <>
+                <div className="flex flex-wrap justify-end gap-2">
+                  <PublicShareButton name={targetProfile.name} href={`/profile/${targetProfile.uid}`} />
+                  <RecommendProfileButton />
+                  {reportAction}
+                  {user?.uid === targetProfile.uid ? (
+                    editProfileAction
+                  ) : (
+                    <>
+                      {canToggleContact && (
+                        <Button
+                          size="lg"
+                          variant={isContact ? "destructive" : "outline"}
+                          onClick={handleToggleContact}
+                          className="flex-1 px-5 font-semibold"
+                        >
+                          {isContact ? (
+                            <>
+                              <LuUserMinus /> {t("profile.disconnect")}
+                            </>
+                          ) : (
+                            <>
+                              <UserPlus size={18} className="mr-2" />
+                              {t("profile.connect")}
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </>
+                  )}
                 </div>
-              </div>
-            </section>
-          </section>
+
+                <Button
+                  onClick={handleWhatsApp}
+                  variant="default"
+                  size="lg"
+                  className="w-full bg-success px-6 font-bold text-success-foreground hover:bg-success/90 active:bg-success/80"
+                >
+                  <FaWhatsapp /> <p>{t("profile.whatsapp")}</p>
+                </Button>
+              </>
+            }
+          />
 
           {/* About Section */}
           <section className="bg-card border-y border-border-subtle">
@@ -780,442 +389,20 @@ export function ProfileDetailClient({
           </section>
           {children}
 
-          {/* disponibilidade e avaliações */}
-          <div className="w-full flex flex-col md:flex-row gap-2">
-            {hasAvailabilityInfo && (
-              <div className="bg-card w-full border-y border-border-subtle md:border-r border-r-0">
-                <div className="h-full w-full md:ps-7 p-4 mx-auto container space-y-4">
-                  <h3 className="text-base font-semibold text-text-main md:text-xl">
-                    {t("profile.availability")}
-                  </h3>
-
-                  {availabilityDays.length > 0 && (
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-1">
-                        <CalendarDays size={16} className="text-text-muted" />
-                        <p className="text-xs font-bold text-text-muted">
-                          {t("profile.serviceDays")}
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {AVAILABILITY_OPTIONS.filter((day) =>
-                          availabilityDays.includes(day),
-                        ).map((day) => (
-                          <Badge key={day} variant="outline" className="">
-                            {labels.day(day)}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {targetProfile?.serviceHours?.trim() && (
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-1">
-                        <Clock size={16} className="text-text-muted" />{" "}
-                        <p className="text-xs font-bold text-text-muted">
-                          {t("profile.serviceHours")}
-                        </p>
-                      </div>
-                      <div className="bg-surface px-4 py-2">
-                        <p className="text-sm font-medium text-text-main">
-                          {targetProfile.serviceHours}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-            {targetProfile.isProvider && (
-              <div className="bg-card w-full border-y border-border-subtle md:border-l border-l-0">
-                <div className="h-full w-full p-4 mx-auto container md:pe-7 space-y-4">
-                  <h3 className="md:text-xl text-base font-semibold text-text-main">
-                    {t("profile.rateTitle")}
-                  </h3>
-                  <div className="flex w-full space-x-2 md:space-x-4">
-                    <div className="text-center bg-surface border size-26 p-2 flex-none">
-                      <div className="flex flex-col items-center justify-center h-full w-full">
-                        <p className="md:text-3xl text-2xl font-bold text-text-main">
-                          {hasReviews
-                            ? formatRating(targetProfile.rating, INTL_LOCALE[locale])
-                            : "—"}
-                        </p>
-                        {hasReviews ? (
-                          <div
-                            className="flex items-center justify-center gap-0.5 py-1 text-highlight"
-                            aria-hidden="true"
-                          >
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star
-                                key={star}
-                                size={12}
-                                fill={
-                                  Math.round(targetProfile.rating || 0) >= star
-                                    ? "currentColor"
-                                    : "none"
-                                }
-                              />
-                            ))}
-                          </div>
-                        ) : null}
-                        <p className="text-xs font-bold text-text-muted">
-                          {hasReviews
-                            ? t("common.reviews", { count: targetProfile.reviewCount || 0 })
-                            : t("profile.noReviewsYet")}
-                        </p>
-                      </div>
-                    </div>
-
-                    {user?.uid === targetProfile.uid ? (
-                      <p className="text-sm text-text-muted">
-                        {t("profile.ownProfileRating")}
-                      </p>
-                    ) : (
-                      <div className="flex flex-col space-y-1.5">
-                        <p className="text-sm text-text-main font-medium">
-                          {t("profile.rateHint")}
-                        </p>
-                        <p className="text-xs text-text-muted">
-                          {t("profile.rateHintDetails")}
-                        </p>
-                        {!user ? (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="w-fit"
-                            onClick={() => setAuthModalOpen(true)}
-                          >
-                            {t("profile.signInToRate")}
-                          </Button>
-                        ) : (
-                          <div
-                            className="flex items-center gap-1.5"
-                            role="radiogroup"
-                            aria-label={t("profile.starsAria")}
-                          >
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <button
-                                key={star}
-                                type="button"
-                                role="radio"
-                                aria-checked={userRating === star}
-                                aria-label={t("profile.stars", { count: star })}
-                                disabled={!canRateProfile || submittingRating}
-                                onMouseEnter={() => setRatingHover(star)}
-                                onMouseLeave={() => setRatingHover(0)}
-                                onClick={() => handleRatingSelect(star)}
-                                className={`transition-all ${
-                                  (ratingHover || userRating || 0) >= star
-                                    ? "text-highlight"
-                                    : "text-border-subtle"
-                                } disabled:opacity-50`}
-                              >
-                                <Star
-                                  size={24}
-                                  fill={
-                                    (ratingHover || userRating || 0) >= star
-                                      ? "currentColor"
-                                      : "none"
-                                  }
-                                />
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  {user && canRateProfile && (
-                    <>
-                      <Textarea
-                        value={ratingComment}
-                        onChange={(event) =>
-                          setRatingComment(event.target.value)
-                        }
-                        placeholder={t("profile.ratingPlaceholder")}
-                        maxLength={500}
-                        disabled={!canRateProfile || submittingRating}
-                        className="min-h-24 w-full bg-background flex"
-                      />
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-xs font-medium text-text-muted">
-                          {t("profile.charCount", { count: ratingComment.length, max: 500 })}
-                        </p>
-                        <Button
-                          type="button"
-                          onClick={handleRate}
-                          disabled={
-                            !canRateProfile || submittingRating || !userRating
-                          }
-                          className="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
-                        >
-                          {submittingRating
-                            ? t("profile.sending")
-                            : t("profile.sendRating")}
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {targetProfile.isProvider && comments.length > 0 && (
-            <section className="bg-card border-y border-border-subtle">
-              <div className="mx-auto container p-4 space-y-4">
-                <div className="flex items-center gap-2">
-                  <MessageSquareText size={18} className="text-primary" />
-                  <h3 className="md:text-xl text-base font-semibold text-text-main">
-                    {t("profile.comments")}
-                  </h3>
-                </div>
-
-                <div className="space-y-3">
-                  {comments.map((rating) => (
-                    <Card key={rating.id} role="article" className="border border-border-subtle bg-surface py-0 ring-0">
-                      <CardContent className="space-y-3 p-4">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1 text-highlight">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Star
-                                  key={star}
-                                  size={14}
-                                  fill={
-                                    rating.score >= star
-                                      ? "currentColor"
-                                      : "none"
-                                  }
-                                  className={
-                                    rating.score >= star
-                                      ? "text-highlight"
-                                      : "text-border-subtle"
-                                  }
-                                />
-                              ))}
-                            </div>
-                            <p className="text-xs font-medium text-text-muted">
-                              {rating.authorName || t("card.memberFallback")}
-                            </p>
-                          </div>
-                          <p className="text-xs text-text-muted">
-                            {formatRatingDate(rating.createdAt)}
-                          </p>
-                        </div>
-                        <p className="text-sm leading-relaxed text-text-main whitespace-pre-wrap">
-                          {rating.comment}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            </section>
+          {!hasCompanyPage && targetProfile.isProvider && (
+            <ProfileReviewsClient
+              key={targetProfile.uid}
+              ownerId={targetProfile.uid}
+              initialRating={targetProfile.rating ?? 0}
+              initialCount={targetProfile.reviewCount ?? 0}
+            />
           )}
 
-          <div className="w-full flex flex-col md:flex-row gap-2">
-            <div className="bg-card w-full border-y border-border-subtle md:border-l border-l-0">
-              <div className="h-full w-full p-4 mx-auto container md:pe-7">
-                {hasContactInfo && (
-                  <div className="space-y-4">
-                    <h3 className="md:text-xl text-base font-semibold text-text-main">
-                      {t("profile.contactAndSocial")}
-                    </h3>
-                    <div className="space-y-3">
-                      {targetProfile.whatsapp && (
-                        <button
-                          type="button"
-                          onClick={handleWhatsApp}
-                          className="flex w-full items-center gap-3 border border-border-subtle bg-surface px-3 py-3 text-left transition-colors hover:border-primary/30"
-                        >
-                          <FaWhatsapp size={16} className="text-success" />
-                          <p className="text-sm font-medium text-text-main">
-                            {targetProfile.whatsapp}
-                          </p>
-                        </button>
-                      )}
-                      {targetProfile.phone && (
-                        <button
-                          type="button"
-                          onClick={handlePhoneCall}
-                          className="flex w-full items-center gap-3 border border-border-subtle bg-surface px-3 py-3 text-left transition-colors hover:border-primary/30"
-                        >
-                          <FaPhone size={16} className="text-primary" />
-                          <p className="text-sm font-medium text-text-main">
-                            {targetProfile.phone}
-                          </p>
-                        </button>
-                      )}
-                      {targetProfile.instagram && (
-                        <a
-                          href={formatUrl(
-                            `instagram.com/${targetProfile.instagram.replace(/^@/, "")}`,
-                          )}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-3 border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
-                        >
-                          <FaInstagram size={16} className="text-pink-600" />
-                          <span className="break-all text-sm font-medium text-text-main">
-                            {targetProfile.instagram}
-                          </span>
-                        </a>
-                      )}
-                      {targetProfile.facebook && (
-                        <a
-                          href={formatUrl(targetProfile.facebook)}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-3 border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
-                        >
-                          <FaFacebookF size={16} className="text-blue-600" />
-                          <p className="break-all text-sm font-medium text-text-main">
-                            {targetProfile.facebook}
-                          </p>
-                        </a>
-                      )}
-                      {targetProfile.linkedin && (
-                        <a
-                          href={formatUrl(targetProfile.linkedin)}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-3 border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
-                        >
-                          <FaLinkedinIn size={16} className="text-sky-700" />
-                          <p className="break-all text-sm font-medium text-text-main">
-                            {targetProfile.linkedin}
-                          </p>
-                        </a>
-                      )}
-                      {targetProfile.website && (
-                        <a
-                          href={formatUrl(targetProfile.website)}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-3 border border-border-subtle bg-surface px-3 py-3 transition-colors hover:border-primary/30"
-                        >
-                          <Globe size={16} className="text-primary" />
-                          <p className="break-all text-sm font-medium text-text-main">
-                            {targetProfile.website}
-                          </p>
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <PublicProfileContacts profile={targetProfile} t={t} />
 
-          {/* Gallery Section */}
-          {(targetProfile.gallery && targetProfile.gallery.length > 0) ||
-          user?.uid === targetProfile.uid ? (
-            <section className="bg-card border border-border-subtle relative overflow-hidden">
-              <div className="mx-auto container p-4 space-y-4">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="md:text-xl text-base font-semibold text-text-main">
-                    {t("profile.gallery")}
-                  </h3>
-                  {user?.uid === targetProfile.uid &&
-                  targetProfile.gallery &&
-                  targetProfile.gallery.length > 0 ? (
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-medium text-text-muted">
-                        {t("profile.galleryCount", { count: targetProfile.gallery.length, max: 5 })}
-                      </span>
-                      <Button
-                        size="sm"
-                        render={<Link href="/profile" />}
-                        nativeButton={false}
-                      >
-                        {t("profile.manageGallery")}
-                      </Button>
-                    </div>
-                  ) : null}
-                </div>
-
-                {targetProfile.gallery && targetProfile.gallery.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    {targetProfile.gallery.map((photo, index) => (
-                      <Dialog key={index}>
-                        <DialogTrigger
-                          nativeButton
-                          render={
-                            <button
-                              type="button"
-                              className={`relative overflow-hidden aspect-square cursor-pointer hover:shadow-lg transition-all ${
-                                index === 0
-                                  ? "col-span-2 md:col-span-2 md:row-span-2"
-                                  : ""
-                              }`}
-                            />
-                          }
-                        >
-                          <Image
-                            src={typeof photo === "string" ? photo : photo.url}
-                            alt={
-                              typeof photo === "object" && photo.description
-                                ? photo.description
-                                : t("profile.galleryAlt", { n: index + 1 })
-                            }
-                            fill
-                            className="object-cover"
-                            referrerPolicy="no-referrer"
-                          />
-                        </DialogTrigger>
-                        <DialogContent className="gap-0 overflow-hidden border-none bg-black/95 p-0">
-                          <DialogTitle className="sr-only">
-                            {t("profile.photoView")}
-                          </DialogTitle>
-                          <div className="relative flex h-[80vh] w-full items-center justify-center bg-black">
-                            <Image
-                              src={
-                                typeof photo === "string" ? photo : photo.url
-                              }
-                              alt={
-                                typeof photo === "object" && photo.description
-                                  ? photo.description
-                                  : t("profile.galleryAlt", { n: index + 1 })
-                              }
-                              fill
-                              className="object-contain"
-                              referrerPolicy="no-referrer"
-                            />
-                          </div>
-                          {typeof photo === "object" && photo.description && (
-                            <DialogFooter className="bg-card">
-                              <h4 className="mb-2 text-xs font-bold text-primary">
-                                {t("profile.comment")}
-                              </h4>
-                              <DialogDescription className="text-base leading-relaxed tracking-tight text-text-main">
-                                {photo.description}
-                              </DialogDescription>
-                            </DialogFooter>
-                          )}
-                        </DialogContent>
-                      </Dialog>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-border-subtle bg-surface/50">
-                    <Camera className="w-12 h-12 text-text-muted/30 mb-4" />
-                    <p className="text-sm text-text-muted font-medium mb-4">
-                      {t("profile.galleryEmpty")}
-                    </p>
-                    <Button
-                      size="sm"
-                      render={<Link href="/profile" />}
-                      nativeButton={false}
-                    >
-                      {t("profile.addPhotos")}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </section>
-          ) : null}
+          {!hasCompanyPage && (
+            <PublicProfileGallery ownerId={targetProfile.uid} photos={targetProfile.gallery} />
+          )}
         </motion.div>
       </main>
 

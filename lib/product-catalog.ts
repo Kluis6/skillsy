@@ -6,6 +6,8 @@ import { storageImageUrl } from "@/lib/storage-images";
 export { USE_STORAGE_EMULATOR } from "@/lib/storage-images";
 
 export const MAX_PRODUCTS = 50;
+export const COMPANY_PRODUCT_PREVIEW_SIZE = 3;
+export const COMPANY_PRODUCT_PAGE_SIZE = 10;
 export const PRODUCT_NAME_LIMIT = 100;
 export const PRODUCT_DESCRIPTION_LIMIT = 1000;
 export const PRODUCT_RATING_SCORES = [1, 2, 3, 4, 5] as const;
@@ -26,6 +28,13 @@ export type CatalogProduct = ProductDetails & Partial<ProductRatingTotals> & {
   createdAt?: Timestamp;
 };
 
+export type PublicCatalogProduct = Omit<CatalogProduct, "createdAt" | "revision">;
+
+export type PublicCatalogPage = {
+  items: PublicCatalogProduct[];
+  nextCursor: number | null;
+};
+
 export function productRatingTotals(product: Partial<ProductRatingTotals>): ProductRatingTotals {
   return { ratingSum: product.ratingSum ?? 0, ratingCount: product.ratingCount ?? 0 };
 }
@@ -34,9 +43,13 @@ export function publicCatalogPath(uid: string, hasCompany: boolean) {
   return hasCompany ? companyProfilePath(uid) : `/profile/${encodeURIComponent(uid)}/produtos`;
 }
 
+export function companyCatalogPath(uid: string) {
+  return `${companyProfilePath(uid)}/produtos`;
+}
+
 export function publicProductPath(uid: string, productId: string, hasCompany: boolean) {
-  const catalogPath = publicCatalogPath(uid, hasCompany);
-  return `${catalogPath}${hasCompany ? "/produtos" : ""}/${encodeURIComponent(productId)}`;
+  const catalogPath = hasCompany ? companyCatalogPath(uid) : publicCatalogPath(uid, false);
+  return `${catalogPath}/${encodeURIComponent(productId)}`;
 }
 
 export function productImageUrl(uid: string, imageName: string) {

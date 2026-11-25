@@ -106,7 +106,7 @@ function handleFirestoreError(
   error: unknown,
   operationType: OperationType,
   path: string | null,
-) {
+): never {
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
     authInfo: {
@@ -827,7 +827,7 @@ export const UserService = {
     toId: string,
     score: number,
     comment?: string,
-  ): Promise<void> {
+  ) {
     try {
       if (!Number.isInteger(score) || score < 1 || score > 5) {
         throw new Error("A nota deve ser um numero inteiro entre 1 e 5.");
@@ -835,7 +835,7 @@ export const UserService = {
 
       const normalizedComment = comment?.trim();
 
-      await runTransaction(db, async (transaction) => {
+      return await runTransaction(db, async (transaction) => {
         const voteRef = doc(db, "users", fromId, "votes", toId);
         const voteSnap = await transaction.get(voteRef);
 
@@ -903,10 +903,10 @@ export const UserService = {
           createdAt: serverTimestamp(),
         });
 
-        transaction.update(publicProfileRef, {
-          ratingSum: (publicProfileData.ratingSum || 0) + score,
-          reviewCount: currentCount + 1,
-        });
+        const ratingSum = (publicProfileData.ratingSum || 0) + score;
+        const reviewCount = currentCount + 1;
+        transaction.update(publicProfileRef, { ratingSum, reviewCount });
+        return { ratingSum, reviewCount, authorName };
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, "transaction/rating");
@@ -989,6 +989,7 @@ export const UserService = {
   async submitUserReport(data: {
     reportedUserId: string;
     reportedUserName?: string;
+    reportedCompanyName?: string;
     reason: string;
     details?: string;
   }): Promise<void> {
@@ -1001,6 +1002,7 @@ export const UserService = {
       await addDoc(collection(db, "reports"), {
         reportedUserId: data.reportedUserId,
         reportedUserName: data.reportedUserName || "",
+        ...(data.reportedCompanyName ? { reportedCompanyName: data.reportedCompanyName } : {}),
         reporterId: auth.currentUser.uid,
         reporterEmail: auth.currentUser.email || "",
         reason: data.reason,
@@ -1010,11 +1012,13 @@ export const UserService = {
       });
 
       await NotificationService.createNotification({
-        title: "Nova denúncia de perfil",
-        message: `${auth.currentUser.email || "Um usuário"} denunciou o perfil de ${data.reportedUserName || data.reportedUserId}.`,
+        title: data.reportedCompanyName ? "Nova denúncia de empresa" : "Nova denúncia de perfil",
+        message: data.reportedCompanyName
+          ? `${auth.currentUser.email || "Um usuário"} denunciou a empresa ${data.reportedCompanyName}.`
+          : `${auth.currentUser.email || "Um usuário"} denunciou o perfil de ${data.reportedUserName || data.reportedUserId}.`,
         type: "report",
         read: false,
-        link: "/admin/usuarios",
+        link: data.reportedCompanyName ? "/admin/moderacao" : "/admin/usuarios",
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);

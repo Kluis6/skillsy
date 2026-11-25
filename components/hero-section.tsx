@@ -180,10 +180,10 @@ export function HeroSection({
                 <Button
                   render={<Link href={companyHref ?? "/profile"} />}
                   nativeButton={false}
-                  variant="ghost"
+                  variant={companyHref ? "outline" : "ghost"}
                   className="h-12 w-full justify-between px-4 text-left text-base font-semibold text-primary hover:bg-accent"
                 >
-                  {t(companyHref ? "nav.myCompany" : "home.profileTitle")}
+                  {t(companyHref ? "home.goToMyCompany" : "home.profileTitle")}
                   <ArrowRight className="size-4" aria-hidden="true" />
                 </Button>
               )}

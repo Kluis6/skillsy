@@ -38,17 +38,20 @@ interface NavbarProps {
   backLink: { href: string; label: string };
 }
 
-// Shared with the search page header so both menus use the same labels.
-export const primaryNavItems = [
-  { href: "/search", label: "nav.searchProfessional" },
+const primaryNavItems = [
+  { href: "/artigosevagas", label: "nav.newsAndJobs" },
   { href: "/encontrar-ajuda", label: "nav.whatDoYouNeed" },
   { href: "/oportunidades", label: "nav.opportunities" },
 ] as const satisfies readonly { href: string; label: MessageKey }[];
 
-export const secondaryNavItems = [
+const drawerFindNavItems = [
+  { href: "/search", label: "nav.searchProfessional" },
+  ...primaryNavItems,
+] as const satisfies readonly { href: string; label: MessageKey }[];
+
+const secondaryNavItems = [
   { href: "/", label: "nav.home" },
   { href: "/weareskillsy", label: "nav.whatIsSkillsy" },
-  { href: "/artigosevagas", label: "nav.newsAndJobs" },
   { href: "/join", label: "nav.whyJoin" },
   { href: "/privacidade", label: "nav.privacy" },
   { href: "/termos", label: "nav.terms" },
@@ -212,7 +215,7 @@ export function DrawerNavigation({
             {t("nav.findWhatYouNeed")}
           </h3>
           <ul className="space-y-1">
-            {primaryNavItems.map((item) => (
+            {drawerFindNavItems.map((item) => (
               <DrawerLink
                 key={item.href}
                 href={item.href}

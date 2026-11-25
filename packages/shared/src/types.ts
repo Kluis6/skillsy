@@ -107,6 +107,7 @@ export interface UserReport {
   id?: string;
   reportedUserId: string;
   reportedUserName?: string;
+  reportedCompanyName?: string;
   reporterId: string;
   reporterEmail: string;
   reason: string;

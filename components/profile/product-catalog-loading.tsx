@@ -1,3 +1,4 @@
+import { PublicProfileHeader } from "@/components/profile/public-profile-header";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -18,14 +19,53 @@ export function ProductGridLoading() {
   );
 }
 
+function CatalogNavbarLoading() {
+  return (
+    <div className="border-b border-border-subtle bg-card">
+      <div className="container mx-auto flex h-12 items-center px-4 md:h-14">
+        <Skeleton className="h-4 w-4 md:w-28" />
+      </div>
+    </div>
+  );
+}
+
+export function CompanyCatalogLoading() {
+  return (
+    <div aria-busy="true">
+      <CatalogNavbarLoading />
+      <PublicProfileHeader
+        avatar={<Skeleton className="size-full rounded-full" />}
+        avatarBadge={<Skeleton className="h-5 w-16 rounded-full" />}
+        identity={
+          <>
+            <Skeleton className="h-7 w-48 max-w-full md:h-9 md:w-72" />
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-11 w-36" />
+          </>
+        }
+        desktopActions={<Skeleton className="h-10 w-64" />}
+        mobileActions={
+          <>
+            <Skeleton className="ml-auto h-10 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </>
+        }
+      />
+      <div className="mt-2 border-y border-border-subtle bg-card">
+        <div className="container mx-auto space-y-4 p-4">
+          <Skeleton className="h-6 w-40 md:h-7" />
+          <ProductGridLoading />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ProductCatalogLoading() {
   return (
     <div aria-busy="true">
-      <div className="border-b border-border-subtle bg-card">
-        <div className="container mx-auto flex h-12 items-center px-4 md:h-14">
-          <Skeleton className="h-4 w-4 md:w-28" />
-        </div>
-      </div>
+      <CatalogNavbarLoading />
       <div className="border-b border-border-subtle bg-card">
         <Skeleton className="h-40 w-full sm:h-56 lg:h-64" />
         <div className="container mx-auto flex flex-col gap-4 px-4 py-5 lg:flex-row lg:items-center lg:gap-10">

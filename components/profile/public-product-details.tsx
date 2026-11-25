@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import Link from "@/lib/i18n/navigation";
 import { I18nProvider } from "@/lib/i18n/provider";
 import { getLocale, getMessages, getT } from "@/lib/i18n/server";
-import { formatProductPrice, productImageUrl, productRatingTotals, publicCatalogPath, publicProductPath } from "@/lib/product-catalog";
+import { companyCatalogPath, formatProductPrice, productImageUrl, productRatingTotals, publicCatalogPath, publicProductPath } from "@/lib/product-catalog";
 import { getPublicCatalogItem } from "@/lib/public-catalog";
 import { createPublicMetadata } from "@/lib/public-metadata";
 import { storageImageUrl, USE_STORAGE_EMULATOR } from "@/lib/storage-images";
@@ -54,7 +54,7 @@ export async function PublicProductDetails({
   const productHref = publicProductPath(id, productId, Boolean(companyName));
   if (!companyPage && companyName) redirect(localizedPath(productHref, locale, DEFAULT_LOCALE));
 
-  const catalogHref = publicCatalogPath(id, companyPage);
+  const catalogHref = companyPage ? companyCatalogPath(id) : publicCatalogPath(id, false);
   const sellerName = companyName || profile.name;
   const sellerImage = companyPage && profile.companyLogoImageName
     ? storageImageUrl(id, "company-logo", profile.companyLogoImageName)

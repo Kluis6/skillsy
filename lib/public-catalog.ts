@@ -39,3 +39,9 @@ export function getCompanyCover(profile: UserProfile, id: string) {
     ? storageImageUrl(id, "company-banner", profile.companyBannerImageName)
     : profile.bannerURL;
 }
+
+export function getCompanyLogo(profile: UserProfile) {
+  return profile.companyLogoImageName
+    ? storageImageUrl(profile.uid, "company-logo", profile.companyLogoImageName)
+    : profile.photoURL;
+}

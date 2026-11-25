@@ -5,6 +5,7 @@ import { BsHandThumbsUp, BsHandThumbsUpFill } from "react-icons/bs";
 import { toast } from "sonner";
 import { AuthModal } from "@/components/auth-modal";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
 import { useT } from "@/lib/i18n/provider";
@@ -89,7 +90,7 @@ export function ProfileRecommendationProvider({ profileId, initialCount, onSignI
   );
 }
 
-export function RecommendProfileButton() {
+export function RecommendProfileButton({ withLabel = false }: { withLabel?: boolean }) {
   const t = useT();
   const { canRecommend, recommended, busy, toggle } = useContext(RecommendationContext);
   if (!canRecommend) return null;
@@ -98,12 +99,51 @@ export function RecommendProfileButton() {
   return (
     <Tooltip>
       <TooltipTrigger
-        render={<Button variant="secondary" size="icon-lg" aria-label={t("profile.recommend")} aria-pressed={recommended} disabled={busy} onClick={toggle} />}
+        render={
+          <Button
+            variant={withLabel && !recommended ? "default" : "secondary"}
+            size={withLabel ? "lg" : "icon-lg"}
+            aria-label={withLabel ? undefined : t("profile.recommend")}
+            aria-pressed={recommended}
+            disabled={busy}
+            onClick={toggle}
+          />
+        }
       >
         <Icon aria-hidden="true" className={recommended ? "text-primary" : undefined} />
+        {withLabel && t(recommended ? "profile.youRecommended" : "products.recommendCompany")}
       </TooltipTrigger>
-      <TooltipContent>{t(recommended ? "profile.removeRecommendation" : "profile.recommend")}</TooltipContent>
+      <TooltipContent>
+        {t(recommended ? "profile.removeRecommendation" : withLabel ? "products.recommendCompany" : "profile.recommend")}
+      </TooltipContent>
     </Tooltip>
+  );
+}
+
+export function CompanyRecommendationSection() {
+  const t = useT();
+  const { canRecommend, profileId, count } = useContext(RecommendationContext);
+  if (!profileId) return null;
+
+  return (
+    <section aria-labelledby="company-recommendations">
+      <Card className="border border-border-subtle bg-primary/5 ring-0">
+        <CardHeader className="gap-2">
+          <CardTitle>
+            <h2 id="company-recommendations" className="text-base font-semibold text-text-main md:text-xl">
+              {t(canRecommend ? "products.recommendCompanyTitle" : "products.companyRecommendations")}
+            </h2>
+          </CardTitle>
+          <CardDescription className="text-text-muted">
+            {t("products.companyRecommendationsValue")}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center gap-2">
+          <RecommendProfileButton withLabel />
+          <ProfileRecommendationsDialog key={profileId} profileId={profileId} count={count} compact={false} />
+        </CardContent>
+      </Card>
+    </section>
   );
 }
 

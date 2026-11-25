@@ -4,7 +4,7 @@ import { INTL_LOCALE, type Locale } from "@skillsy/shared/i18n/locales";
 import type { TranslateFn } from "@skillsy/shared/i18n/keys";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "@/lib/i18n/navigation";
-import { productRatingTotals, publicProductPath, type CatalogProduct } from "@/lib/product-catalog";
+import { productRatingTotals, publicProductPath, type PublicCatalogProduct } from "@/lib/product-catalog";
 import { ProductCard } from "./product-card";
 import { ProductWhatsAppLink } from "./product-whatsapp-link";
 
@@ -16,7 +16,7 @@ export function PublicProductCard({
   contactHref,
   t,
 }: {
-  product: CatalogProduct;
+  product: PublicCatalogProduct;
   uid: string;
   hasCompany: boolean;
   locale: Locale;

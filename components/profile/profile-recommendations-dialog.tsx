@@ -72,9 +72,11 @@ function RecommendersList({ profileId }: { profileId: string }) {
 export function ProfileRecommendationsDialog({
   profileId,
   count,
+  compact = true,
 }: {
   profileId: string;
   count: number;
+  compact?: boolean;
 }) {
   const t = useT();
   const [open, setOpen] = useState(false);
@@ -91,7 +93,12 @@ export function ProfileRecommendationsDialog({
           />
         }
       >
-        <RecommendationCount recommendationCount={count} compact withAvatar className="gap-2 text-lg font-bold" />
+        <RecommendationCount
+          recommendationCount={count}
+          compact={compact}
+          withAvatar
+          className={compact ? "gap-2 text-lg font-bold" : "gap-2 text-sm"}
+        />
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="pe-9">

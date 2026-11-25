@@ -385,7 +385,8 @@ export function AdminModerationClient() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="truncate font-medium text-text-main">
-                        {report.reportedUserName ||
+                        {report.reportedCompanyName ||
+                          report.reportedUserName ||
                           subject?.name ||
                           "Perfil sem nome"}
                       </p>
@@ -448,10 +449,16 @@ export function AdminModerationClient() {
             <div className="space-y-5">
               <div className="bg-surface p-4 text-sm">
                 <p className="font-medium text-text-main">
-                  Perfil denunciado:{" "}
-                  {selectedReport.reportedUserName ||
+                  {selectedReport.reportedCompanyName ? "Empresa denunciada" : "Perfil denunciado"}{" · "}
+                  {selectedReport.reportedCompanyName ||
+                    selectedReport.reportedUserName ||
                     selectedReport.reportedUserId}
                 </p>
+                {selectedReport.reportedCompanyName && (
+                  <p className="mt-2 text-text-muted">
+                    Responsável · {selectedReport.reportedUserName || selectedReport.reportedUserId}
+                  </p>
+                )}
                 <p className="mt-2 text-text-muted">
                   <span className="font-medium text-text-main">Motivo:</span>{" "}
                   {REPORT_REASON_LABELS[
