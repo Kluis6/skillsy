@@ -113,6 +113,16 @@ export function isActiveProvider(
   );
 }
 
+export function getProviderCompanyName(profile: UserProfile) {
+  return isActiveProvider(profile) ? profile.companyName?.trim() || "" : "";
+}
+
+export function prioritizeCompanies(profiles: UserProfile[]) {
+  return [...profiles].sort((a, b) =>
+    Number(Boolean(getProviderCompanyName(b))) - Number(Boolean(getProviderCompanyName(a))),
+  );
+}
+
 /**
  * What a professional search asks Firestore for. Firestore can only filter on
  * one array-contains, so the query uses the longest stem as `anchor` and

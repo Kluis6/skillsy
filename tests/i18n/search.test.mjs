@@ -41,9 +41,11 @@ describe("rótulos", () => {
     }
   });
 
-  test("rótulo em português é o próprio valor gravado", () => {
+  test("rótulos em português preservam os valores gravados, incluindo Alimentos", () => {
     const labels = dict("pt").labels;
-    for (const [value, key] of Object.entries(CATEGORY_LABEL_KEYS)) assert.equal(labels.category[key], value);
+    for (const [value, key] of Object.entries(CATEGORY_LABEL_KEYS)) {
+      assert.equal(labels.category[key], value === "Cozinha" ? "Alimentos" : value);
+    }
     for (const [value, key] of Object.entries(DAY_LABEL_KEYS)) assert.equal(labels.day[key], value);
   });
 
@@ -79,15 +81,22 @@ describe("origem do conteúdo", async () => {
 });
 
 describe("plano da consulta", async () => {
-  // providers.ts imports "./search" without an extension: load a copy that Node can run.
+  // Give the shared modules explicit extensions for Node's ESM loader.
   const { mkdtempSync, writeFileSync, rmSync } = await import("node:fs");
   const { tmpdir } = await import("node:os");
   const { join } = await import("node:path");
+  const { pathToFileURL } = await import("node:url");
   const dir = mkdtempSync(join(tmpdir(), "providers-"));
   const src = (name) => readFileSync(new URL(`../../packages/shared/src/${name}.ts`, import.meta.url), "utf8");
   writeFileSync(join(dir, "search.ts"), src("search"));
-  writeFileSync(join(dir, "providers.ts"), src("providers").replace('from "./search"', 'from "./search.ts"'));
-  const { planProviderSearch } = await import(join(dir, "providers.ts"));
+  writeFileSync(join(dir, "profile-options.ts"), src("profile-options"));
+  writeFileSync(join(dir, "labels.ts"), src("i18n/labels"));
+  writeFileSync(join(dir, "providers.ts"), src("providers")
+    .replace('from "./search"', 'from "./search.ts"')
+    .replace('from "./profile-options"', 'from "./profile-options.ts"'));
+  writeFileSync(join(dir, "search-synonyms.ts"), src("i18n/search-synonyms").replace('from "./labels"', 'from "./labels.ts"'));
+  const { planProviderSearch, pickSearchResults, prioritizeCompanies } = await import(pathToFileURL(join(dir, "providers.ts")));
+  const { buildSearchSynonyms } = await import(pathToFileURL(join(dir, "search-synonyms.ts")));
   rmSync(dir, { recursive: true, force: true });
 
   test("sem sinônimos, plano igual ao de antes", () => {
@@ -107,5 +116,25 @@ describe("plano da consulta", async () => {
     const plan = planProviderSearch("cake confeitaria", undefined, undefined, { cake: "bolo" });
     assert.equal(plan.anchor, toSearchStems("confeitaria")[0]);
     assert.equal(plan.anchorAny, undefined);
+  });
+
+  test("busca por Alimentos encontra a categoria gravada como Cozinha", () => {
+    const profile = { uid: "test", name: "Prestador", isProvider: true, category: "Cozinha", searchTokens: toSearchTokens("Cozinha") };
+    for (const [locale, term] of [["pt", "Alimentos"], ["en", "Food"], ["en", "Cooking"], ["es", "Alimentos"], ["es", "Cocina"]]) {
+      const labels = dict(locale).labels.category;
+      const synonyms = buildSearchSynonyms(locale, (category) => labels[CATEGORY_LABEL_KEYS[category]]);
+      const plan = planProviderSearch(term, undefined, "Cozinha", synonyms);
+      assert.equal(plan.category, "Cozinha");
+      assert.ok(plan.anchorAny.includes(toSearchStems("Cozinha")[0]));
+      assert.equal(pickSearchResults([profile], plan)[0]?.uid, profile.uid);
+    }
+  });
+
+  test("busca pelo nome do responsável prioriza a empresa sem perder anunciantes independentes", () => {
+    const name = "Joana Pereira";
+    const independent = { uid: "independent", name, isProvider: true, recommendationCount: 12, searchTokens: toSearchTokens(name) };
+    const company = { uid: "company", name, companyName: "Oficina Horizonte", isProvider: true, searchTokens: toSearchTokens(name, "Oficina Horizonte") };
+    const results = pickSearchResults([independent, company], planProviderSearch(name));
+    assert.deepEqual(prioritizeCompanies(results).map(({ uid }) => uid), ["company", "independent"]);
   });
 });

@@ -9,6 +9,7 @@ import {
   QueryConstraint,
   doc,
   getDoc,
+  onSnapshot,
   setDoc,
   updateDoc,
   arrayUnion,
@@ -468,29 +469,19 @@ export const UserService = {
     }
   },
 
-  async getCommunityRecommendation(
+  watchRecommendationCount(professionalId: string, onCount: (count: number) => void) {
+    return onSnapshot(doc(db, "public_profiles", professionalId), (snapshot) => {
+      onCount(snapshot.data()?.recommendationCount ?? 0);
+    }, () => {});
+  },
+
+  watchCommunityRecommendation(
     professionalId: string,
     recommenderId: string,
-  ): Promise<CommunityRecommendation | null> {
-    const path = `public_profiles/${professionalId}/recommendations/${recommenderId}`;
-    try {
-      const snapshot = await getDoc(
-        doc(
-          db,
-          "public_profiles",
-          professionalId,
-          "recommendations",
-          recommenderId,
-        ),
-      );
-      return snapshot.exists()
-        ? toPlainValue(snapshot.data() as CommunityRecommendation)
-        : null;
-    } catch (error) {
-      if (isPermissionDeniedError(error)) return null;
-      handleFirestoreError(error, OperationType.GET, path);
-      return null;
-    }
+    onRecommendation: (recommended: boolean) => void,
+  ) {
+    const vote = doc(db, "public_profiles", professionalId, "recommendations", recommenderId);
+    return onSnapshot(vote, (snapshot) => onRecommendation(snapshot.exists()), () => onRecommendation(false));
   },
 
   async getCommunityRecommendations(

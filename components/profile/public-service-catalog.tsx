@@ -11,7 +11,7 @@ import { localizedPath } from "@skillsy/shared/i18n/routing";
 import { AVAILABILITY_OPTIONS } from "@skillsy/shared/profile-options";
 import { Navbar } from "@/components/navbar";
 import { CompanyEditButton } from "@/components/profile/company-edit-button";
-import { ProfileRecommendationsDialog } from "@/components/profile/profile-recommendations-dialog";
+import { ProfileRecommendationCounter, ProfileRecommendationProvider, RecommendProfileButton } from "@/components/profile/profile-recommendations";
 import { PublicProductCard } from "@/components/profile/public-product-card";
 import { PublicShareButton } from "@/components/profile/public-share-button";
 import { ProfileToolbar } from "@/components/profile/profile-toolbar";
@@ -73,7 +73,6 @@ export async function PublicServiceCatalog({ id, companyPage }: { id: string; co
     : profile.photoURL;
   const cover = companyPage ? getCompanyCover(profile, id) : profile.bannerURL;
   const backLink = { href: `/profile/${id}`, label: t("products.back") };
-  const recommendationCount = profile.recommendationCount ?? 0;
   const companyMessages = companyPage ? await getMessages("profile", "products") : {};
 
   return (
@@ -100,93 +99,94 @@ export async function PublicServiceCatalog({ id, companyPage }: { id: string; co
             )}
           </div>
           <div className="container mx-auto flex flex-col px-4 lg:flex-row lg:items-center lg:gap-10">
-            <PageHeader
-              className="min-w-0 flex-1 py-5 md:flex-col md:items-start md:py-7"
-              title={
-                <span id="catalog-company" className="flex items-center gap-3 wrap-anywhere md:gap-4">
-                  {companyPage && (
-                    <Avatar className="size-20 rounded-none after:rounded-none md:size-28" aria-hidden="true">
-                      <AvatarImage
-                        src={logo}
-                        alt=""
-                        className={profile.companyLogoImageName ? "rounded-none object-contain" : "rounded-none"}
-                      />
-                      <AvatarFallback className="rounded-none bg-primary/10 text-primary">
-                        <Store className="size-8 md:size-10" />
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
-                  <span className="min-w-0">{name}</span>
-                </span>
-              }
-              description={(companyPage || category || serviceType || location || bio) && (
-                <span className="block space-y-3">
-                  {(category || serviceType || location) && (
-                    <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                      {category && <Badge variant="secondary">{category}</Badge>}
-                      {serviceType && <span className="wrap-anywhere">{serviceType}</span>}
-                      {location && (
-                        <span className="inline-flex items-center gap-1.5">
-                          <MapPin className="size-4 shrink-0" aria-hidden="true" />
-                          {location}
-                        </span>
-                      )}
-                    </span>
-                  )}
-                  {bio && <span className="block whitespace-pre-wrap wrap-anywhere">{bio}</span>}
-                  {companyPage && (
-                    <span className="flex flex-wrap items-center gap-2.5">
-                      <Link
-                        href={`/profile/${id}`}
-                        className={cn(
-                          buttonVariants({ variant: "outline" }),
-                          "h-auto min-h-11 max-w-full justify-start gap-2.5 border-border-subtle bg-card px-3 py-2 whitespace-normal text-text-main hover:border-primary/40 hover:bg-primary/5",
-                        )}
-                      >
-                        <Avatar size="sm" aria-hidden="true">
-                          <AvatarImage src={profile.photoURL} alt="" />
-                          <AvatarFallback>{profile.name.trim().charAt(0).toUpperCase()}</AvatarFallback>
+            <I18nProvider messages={companyMessages}>
+              <ProfileRecommendationProvider profileId={companyPage ? id : undefined} initialCount={profile.recommendationCount ?? 0}>
+                <PageHeader
+                  className="min-w-0 flex-1 py-5 md:flex-col md:items-start md:py-7"
+                  title={
+                    <span id="catalog-company" className="flex items-center gap-3 wrap-anywhere md:gap-4">
+                      {companyPage && (
+                        <Avatar className="size-20 rounded-none after:hidden md:size-28" aria-hidden="true">
+                          <AvatarImage
+                            src={logo}
+                            alt=""
+                            className={profile.companyLogoImageName ? "rounded-none object-contain" : "rounded-none"}
+                          />
+                          <AvatarFallback className="rounded-none bg-primary/10 text-primary">
+                            <Store className="size-8 md:size-10" />
+                          </AvatarFallback>
                         </Avatar>
-                        <span className="min-w-0 wrap-anywhere">
-                          <span className="block text-xs leading-snug text-text-muted">{t("products.companyOwner")}</span>
-                          <span className="block text-sm font-semibold leading-snug">{profile.name}</span>
+                      )}
+                      <span className="min-w-0">{name}</span>
+                    </span>
+                  }
+                  description={(companyPage || category || serviceType || location || bio) && (
+                    <span className="block space-y-3">
+                      {(category || serviceType || location) && (
+                        <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                          {category && <Badge variant="secondary">{category}</Badge>}
+                          {serviceType && <span className="wrap-anywhere">{serviceType}</span>}
+                          {location && (
+                            <span className="inline-flex items-center gap-1.5">
+                              <MapPin className="size-4 shrink-0" aria-hidden="true" />
+                              {location}
+                            </span>
+                          )}
                         </span>
-                        <ArrowUpRight className="size-4 text-text-muted" aria-hidden="true" />
-                      </Link>
-                      {recommendationCount > 0 && (
-                        <I18nProvider messages={companyMessages}>
-                          <ProfileRecommendationsDialog profileId={id} count={recommendationCount} />
-                        </I18nProvider>
+                      )}
+                      {bio && <span className="block whitespace-pre-wrap wrap-anywhere">{bio}</span>}
+                      {companyPage && (
+                        <span className="flex flex-wrap items-center gap-2.5">
+                          <Link
+                            href={`/profile/${id}`}
+                            className={cn(
+                              buttonVariants({ variant: "outline" }),
+                              "h-auto min-h-11 max-w-full justify-start gap-2.5 border-border-subtle bg-card px-3 py-2 whitespace-normal text-text-main hover:border-primary/40 hover:bg-primary/5",
+                            )}
+                          >
+                            <Avatar size="sm" aria-hidden="true">
+                              <AvatarImage src={profile.photoURL} alt="" />
+                              <AvatarFallback>{profile.name.trim().charAt(0).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <span className="min-w-0 wrap-anywhere">
+                              <span className="block text-xs leading-snug text-text-muted">{t("products.companyOwner")}</span>
+                              <span className="block text-sm font-semibold leading-snug">{profile.name}</span>
+                            </span>
+                            <ArrowUpRight className="size-4 text-text-muted" aria-hidden="true" />
+                          </Link>
+                          <ProfileRecommendationCounter hideWhenEmpty />
+                        </span>
                       )}
                     </span>
                   )}
-                </span>
-              )}
-              action={(companyPage || contactHref) && (
-                <div className="flex flex-wrap items-center gap-2">
-                  {companyPage && (
-                    <I18nProvider messages={companyMessages}>
-                      <PublicShareButton name={name} href={publicCatalogPath(id, true)} kind="company" />
-                    </I18nProvider>
+                  action={(companyPage || contactHref) && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      {companyPage && (
+                        <>
+                          <RecommendProfileButton />
+                          <PublicShareButton name={name} href={publicCatalogPath(id, true)} kind="company" />
+                        </>
+                      )}
+                      {contactHref && (
+                        <a
+                          href={contactHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={buttonVariants({
+                            size: companyPage ? "lg" : "default",
+                            className: "gap-2 bg-success text-success-foreground hover:bg-success/90",
+                          })}
+                        >
+                          <FaWhatsapp aria-hidden="true" />
+                          {t("profile.whatsapp")}
+                        </a>
+                      )}
+                      {companyPage && <CompanyEditButton ownerId={id} label={t("products.edit")} />}
+                    </div>
                   )}
-                  {contactHref && (
-                    <a
-                      href={contactHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={buttonVariants({
-                        size: companyPage ? "lg" : "default",
-                        className: "gap-2 bg-success text-success-foreground hover:bg-success/90",
-                      })}
-                    >
-                      <FaWhatsapp aria-hidden="true" />
-                      {t("profile.whatsapp")}
-                    </a>
-                  )}
-                  {companyPage && <CompanyEditButton ownerId={id} label={t("products.edit")} />}
-                </div>
-              )}
-            />
+                />
+              </ProfileRecommendationProvider>
+            </I18nProvider>
             {(days.length > 0 || hours) && (
               <Card className="mb-5 gap-3 border border-border-subtle bg-surface ring-0 lg:my-5 lg:w-full lg:max-w-md">
                 <CardHeader>

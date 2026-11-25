@@ -17,7 +17,7 @@ import {
   type QueryConstraint,
 } from 'firebase/firestore';
 
-import { db } from './firebase';
+import { db, usingEmulators } from './firebase';
 
 export type ProviderSearch = {
   term: string;
@@ -52,6 +52,15 @@ export async function searchProviders({ term, state, category, synonyms, languag
     ),
     { language }
   );
+}
+
+export function companyLogoUrl(provider: UserProfile) {
+  if (!provider.companyLogoImageName) return undefined;
+  const origin = usingEmulators
+    ? `http://${process.env.EXPO_PUBLIC_EMULATOR_HOST || '127.0.0.1'}:9199`
+    : 'https://firebasestorage.googleapis.com';
+  const path = encodeURIComponent(`users/${provider.uid}/company-logo/${provider.companyLogoImageName}`);
+  return `${origin}/v0/b/${db.app.options.storageBucket}/o/${path}?alt=media`;
 }
 
 export async function getPublicProfile(uid: string) {

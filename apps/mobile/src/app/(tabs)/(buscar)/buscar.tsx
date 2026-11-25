@@ -1,4 +1,5 @@
 import { PROVIDER_CATEGORIES } from '@skillsy/shared/profile-options';
+import { getProviderCompanyName, prioritizeCompanies } from '@skillsy/shared/providers';
 import type { UserProfile } from '@skillsy/shared/types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -18,8 +19,9 @@ import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import { categoryIcon } from '@/lib/category-icons';
 import { STATE_OPTIONS, useCategoryOptions } from '@/lib/filters';
-import { searchProviders } from '@/lib/providers';
+import { companyLogoUrl, searchProviders } from '@/lib/providers';
 import { RECOMMENDED_SERVICES } from '@/lib/service-catalog';
+import { openSite } from '@/lib/site';
 import { buildSearchSynonyms } from '@skillsy/shared/i18n/search-synonyms';
 import { useLabels, useLocale, useT } from '@/lib/i18n';
 
@@ -50,6 +52,7 @@ export default function BuscarScreen() {
         synonyms: buildSearchSynonyms(locale, labels.category),
         language: locale,
       }),
+    select: prioritizeCompanies,
     enabled: filtered,
   });
 
@@ -110,9 +113,18 @@ export default function BuscarScreen() {
         <FlatList
           data={isPending ? [] : data}
           keyExtractor={(provider) => provider.uid}
-          renderItem={({ item }) => (
-            <ProviderCard provider={item} onPress={() => openProfile(item)} />
-          )}
+          renderItem={({ item }) => {
+            const companyName = getProviderCompanyName(item);
+            return (
+              <ProviderCard
+                provider={item}
+                company={companyName ? { name: companyName, logo: companyLogoUrl(item) } : undefined}
+                onPress={() => companyName
+                  ? void openSite(`/empresa/${encodeURIComponent(item.uid)}`)
+                  : openProfile(item)}
+              />
+            );
+          }}
           contentContainerClassName="gap-card p-4"
           onRefresh={refetch}
           refreshing={isRefetching}

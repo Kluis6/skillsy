@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PublicShareButton } from "@/components/profile/public-share-button";
-import { ProfileRecommendationsDialog } from "@/components/profile/profile-recommendations-dialog";
+import { ProfileRecommendationCounter, ProfileRecommendationProvider, RecommendProfileButton } from "@/components/profile/profile-recommendations";
 import { useLocale, useT, useValidationMessage } from "@/lib/i18n/provider";
 import { useLabels } from "@/lib/i18n/labels";
 import { DATE_FNS_LOCALE } from "@/lib/i18n/date-fns";
@@ -66,7 +66,6 @@ import {
   FaPhone,
   FaWhatsapp,
 } from "react-icons/fa";
-import { BsHandThumbsUp, BsHandThumbsUpFill } from "react-icons/bs";
 import { AVAILABILITY_OPTIONS } from "@/lib/profile-form";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -105,15 +104,6 @@ export function ProfileDetailClient({
   const [ratingComment, setRatingComment] = useState("");
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [submittingRating, setSubmittingRating] = useState(false);
-  const [recommendedState, setIsRecommended] = useState(false);
-  const [recommendationLoading, setRecommendationLoading] = useState(false);
-  // Recommendations only apply to providers (and never to your own profile);
-  // derive that here instead of resetting state inside the effects below.
-  const isRecommended =
-    Boolean(user?.uid) &&
-    Boolean(targetProfile?.isProvider) &&
-    user?.uid !== targetProfile?.uid &&
-    recommendedState;
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
@@ -187,27 +177,6 @@ export function ProfileDetailClient({
     fetchRatings();
   }, [targetProfile?.uid, targetProfile?.isProvider, t]);
 
-  useEffect(() => {
-    if (
-      !user?.uid ||
-      !targetProfile?.isProvider ||
-      user.uid === targetProfile.uid
-    ) {
-      return;
-    }
-
-    let active = true;
-    UserService.getCommunityRecommendation(targetProfile.uid, user.uid).then(
-      (recommendation) => {
-        if (active) setIsRecommended(Boolean(recommendation));
-      },
-      () => {
-        if (active) setIsRecommended(false);
-      },
-    );
-    return () => { active = false; };
-  }, [targetProfile?.uid, targetProfile?.isProvider, user?.uid]);
-
   // The ward is only for signed-in members, so the server leaves it out of the
   // page; load it once the visitor is signed in.
   const [ward, setWard] = useState<string | undefined>();
@@ -242,59 +211,6 @@ export function ProfileDetailClient({
       );
     } catch (error) {
       toast.error(t("profile.contactsError"));
-    }
-  };
-
-  const handleToggleRecommendation = async () => {
-    if (!user) {
-      toast.error(t("profile.loginToRecommend"), {
-        description: t("profile.loginToRecommendText"),
-        action: { label: t("common.signIn"), onClick: () => setAuthModalOpen(true) },
-      });
-      return;
-    }
-    if (!targetProfile?.isProvider || user.uid === targetProfile.uid) return;
-
-    setRecommendationLoading(true);
-    try {
-      const added = await UserService.toggleCommunityRecommendation(
-        user.uid,
-        targetProfile.uid,
-        {
-          name:
-            currentUserProfile?.name ||
-            profile?.name ||
-            user.displayName ||
-            "Membro Skillsy",
-          photoURL:
-            currentUserProfile?.photoURL ||
-            profile?.photoURL ||
-            user.photoURL ||
-            "",
-        },
-      );
-      setIsRecommended(added);
-      setTargetProfile((current) =>
-        current
-          ? {
-              ...current,
-              recommendationCount: Math.max(
-                0,
-                (current.recommendationCount || 0) + (added ? 1 : -1),
-              ),
-            }
-          : current,
-      );
-      toast.success(added ? t("profile.recommendationAdded") : t("profile.recommendationRemoved"), {
-        description: added
-          ? t("profile.recommendationAddedText")
-          : t("profile.recommendationRemovedText"),
-      });
-    } catch (error) {
-      console.error("Error toggling recommendation:", error);
-      toast.error(t("profile.recommendationError"));
-    } finally {
-      setRecommendationLoading(false);
     }
   };
 
@@ -638,7 +554,6 @@ export function ProfileDetailClient({
     labels.category(targetProfile.category) ||
     t("profile.communityMember");
   const companyName = targetProfile.companyName?.trim();
-  const recommendationCount = targetProfile.recommendationCount || 0;
   const comments = ratings.filter((rating) => rating.comment?.trim());
   const editProfileLabel = t("profile.editProfile");
   const editProfileAction = (
@@ -657,30 +572,12 @@ export function ProfileDetailClient({
       <TooltipContent>{editProfileLabel}</TooltipContent>
     </Tooltip>
   );
-  const RecommendIcon = isRecommended ? BsHandThumbsUpFill : BsHandThumbsUp;
-  const recommendationAction = targetProfile.isProvider && user?.uid !== targetProfile.uid ? (
-    <Tooltip>
-      <TooltipTrigger
-        render={
-          <Button
-            variant="secondary"
-            size="icon-lg"
-            aria-label={t("profile.recommend")}
-            aria-pressed={isRecommended}
-            disabled={recommendationLoading}
-            onClick={handleToggleRecommendation}
-          />
-        }
-      >
-        <RecommendIcon aria-hidden="true" className={isRecommended ? "text-primary" : undefined} />
-      </TooltipTrigger>
-      <TooltipContent>
-        {t(isRecommended ? "profile.removeRecommendation" : "profile.recommend")}
-      </TooltipContent>
-    </Tooltip>
-  ) : null;
   return (
-    <>
+    <ProfileRecommendationProvider
+      profileId={targetProfile.isProvider ? targetProfile.uid : undefined}
+      initialCount={targetProfile.recommendationCount ?? 0}
+      onSignIn={() => setAuthModalOpen(true)}
+    >
       <Navbar user={user} profile={profile} logout={logout} />
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
 
@@ -714,7 +611,7 @@ export function ProfileDetailClient({
                 <div className="flex min-h-12 items-center justify-end py-2 md:py-4">
                   <div className="hidden gap-2 md:flex">
                     <PublicShareButton name={targetProfile.name} href={`/profile/${targetProfile.uid}`} />
-                    {recommendationAction}
+                    <RecommendProfileButton />
                     {renderReportButton("size-10")}
                     {user?.uid === targetProfile.uid ? (
                       editProfileAction
@@ -823,17 +720,12 @@ export function ProfileDetailClient({
                     )}
                   </div>
 
-                  {targetProfile.isProvider && (
-                    <ProfileRecommendationsDialog
-                      profileId={targetProfile.uid}
-                      count={recommendationCount}
-                    />
-                  )}
+                  <ProfileRecommendationCounter />
                 </div>
                 <div className="mt-4 w-full space-y-2 md:hidden">
                   <div className="flex flex-wrap justify-end gap-2">
                     <PublicShareButton name={targetProfile.name} href={`/profile/${targetProfile.uid}`} />
-                    {recommendationAction}
+                    <RecommendProfileButton />
                     {renderReportButton("size-9")}
                     {user?.uid === targetProfile.uid ? (
                       editProfileAction
@@ -1338,6 +1230,6 @@ export function ProfileDetailClient({
           </Button>
         </div>
       ) : null}
-    </>
+    </ProfileRecommendationProvider>
   );
 }

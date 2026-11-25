@@ -4,14 +4,15 @@ import { MapPin, Star, ThumbsUp } from '@/lib/icons';
 import { Pressable, View } from 'react-native';
 
 import { ProfileAvatar } from '@/components/profile-avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { WhatsAppButton } from '@/components/whatsapp-button';
 import { useFormat, useT } from '@/lib/i18n';
 
-type ProviderCardProps = { provider: UserProfile; onPress?: () => void };
+type ProviderCardProps = { provider: UserProfile; onPress?: () => void; company?: { name: string; logo?: string } };
 
-export function ProviderCard({ provider, onPress }: ProviderCardProps) {
+export function ProviderCard({ provider, onPress, company }: ProviderCardProps) {
   const t = useT();
   const format = useFormat();
   const reviewCount = provider.reviewCount || 0;
@@ -26,18 +27,22 @@ export function ProviderCard({ provider, onPress }: ProviderCardProps) {
       <Pressable
         onPress={onPress}
         accessibilityRole="link"
-        accessibilityHint={t("app.providerCard.openHint")}
+        accessibilityHint={t(company ? "products.viewCompany" : "app.providerCard.openHint")}
         className="gap-3 p-4 active:bg-accent">
         <View className="flex-row items-center gap-3">
-          <ProfileAvatar
-            uri={provider.photoURL}
-            name={provider.name}
-            className="size-12"
-            iconSize={24}
-          />
+          {company ? (
+            <Avatar alt={company.name} className="size-12 rounded-none">
+              {company.logo && <AvatarImage source={{ uri: company.logo }} resizeMode="contain" />}
+              <AvatarFallback className="rounded-none bg-primary">
+                <Text className="font-semibold text-primary-foreground">{company.name.charAt(0).toUpperCase()}</Text>
+              </AvatarFallback>
+            </Avatar>
+          ) : (
+            <ProfileAvatar uri={provider.photoURL} name={provider.name} className="size-12" iconSize={24} />
+          )}
           <View className="flex-1">
             <Text className="text-lg font-bold leading-tight" numberOfLines={1}>
-              {provider.companyName || provider.name}
+              {company?.name || provider.companyName || provider.name}
             </Text>
             <Text className="text-sm text-muted-foreground" numberOfLines={1}>
               {format.role(provider)}
@@ -46,7 +51,7 @@ export function ProviderCard({ provider, onPress }: ProviderCardProps) {
         </View>
 
         <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1">
-          {reviewCount > 0 ? (
+          {!company && reviewCount > 0 ? (
             <View className="flex-row items-center gap-1">
               <Star size={14} className="text-highlight" fill="currentColor" />
               <Text className="text-sm font-semibold">{format.rating(provider.rating)}</Text>
@@ -63,7 +68,7 @@ export function ProviderCard({ provider, onPress }: ProviderCardProps) {
               </Text>
             </View>
           ) : null}
-          {reviewCount === 0 && recommendationCount === 0 ? (
+          {!company && reviewCount === 0 && recommendationCount === 0 ? (
             <Text className="text-sm text-muted-foreground">{t("app.providerCard.newMember")}</Text>
           ) : null}
           {place ? (

@@ -5,6 +5,7 @@ import { UserService } from "@/services/user-service";
 import { UserProfile } from "@/models/types";
 import { getLocale, getMessages, getSearchSynonyms, getT } from "@/lib/i18n/server";
 import { byOrigin } from "@skillsy/shared/i18n/origin";
+import { prioritizeCompanies } from "@skillsy/shared/providers";
 import { I18nProvider } from "@/lib/i18n/provider";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -39,18 +40,16 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const [locale, synonyms] = await Promise.all([getLocale(), getSearchSynonyms()]);
   // Professionals from the visitor's country, in the page's language first.
   const origin = { language: locale };
-  const results = byOrigin(
+  const results = prioritizeCompanies(byOrigin(
     await UserService.searchProviders(query, location, category || undefined, synonyms),
     origin,
-  );
+  ));
 
   let suggestions: UserProfile[] = [];
 
-  if (results.length === 0 && location) {
-    const suggestedData = await UserService.searchProviders("", location, category || undefined);
-    suggestions = byOrigin(suggestedData, origin).slice(0, 3);
-  } else if (results.length === 0) {
-    suggestions = byOrigin(await UserService.getProviders(3), origin);
+  if (results.length === 0 && (query || (!location && category))) {
+    const suggestedData = await UserService.searchProviders("", location, location ? category || undefined : undefined);
+    suggestions = prioritizeCompanies(byOrigin(suggestedData, origin)).slice(0, 3);
   }
 
   return (

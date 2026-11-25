@@ -8,12 +8,15 @@ import { RecommendationCount } from "@/components/profile/recommendation-summary
 import { useLocale, useT } from "@/lib/i18n/provider";
 import { formatRating } from "@skillsy/shared/i18n/format";
 import { INTL_LOCALE } from "@skillsy/shared/i18n/locales";
+import { getProviderCompanyName } from "@skillsy/shared/providers";
 import type { TranslateFn } from "@skillsy/shared/i18n/keys";
 import { useLabels } from "@/lib/i18n/labels";
 import { MembershipMark } from "@/components/ui/trust-signals";
 import { LanguageBadge } from "@/components/language-badge";
 import { UserProfile } from "@/models/types";
 import { cn } from "@/lib/utils";
+import { companyProfilePath } from "@/lib/company-profile";
+import { storageImageUrl } from "@/lib/storage-images";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -89,19 +92,26 @@ export function ProviderProfileCard({
   ) : null;
 
   if (variant === "list") {
+    const companyName = getProviderCompanyName(provider);
+    const companyLogo = companyName && provider.companyLogoImageName
+      ? storageImageUrl(provider.uid, "company-logo", provider.companyLogoImageName)
+      : undefined;
+    const name = companyName || provider.name;
+    const description = (companyName && provider.companyBio?.trim()) || getBioPreview(provider, t);
+
     return (
       <Link
-        href={`/profile/${provider.uid}`}
+        href={companyName ? companyProfilePath(provider.uid) : `/profile/${provider.uid}`}
         className={cn("group block border border-border-subtle bg-card shadow-xs transition-shadow hover:shadow-md", className)}
       >
         <article className="grid p-4 md:grid-cols-[auto_1fr_auto] md:p-6">
           <div className="flex flex-col space-y-2">
             <div className="flex items-start gap-2">
               <div className="flex items-center">
-                <Avatar className="size-12">
-                  <AvatarImage src={provider.photoURL} />
-                  <AvatarFallback className="bg-primary font-bold text-primary-foreground text-base">
-                    {initial}
+                <Avatar className={cn("size-12", companyName && "rounded-none after:rounded-none")}>
+                  <AvatarImage src={companyName ? companyLogo : provider.photoURL} alt="" className={cn(companyName && "rounded-none object-contain")} />
+                  <AvatarFallback className={cn("bg-primary font-bold text-primary-foreground text-base", companyName && "rounded-none")}>
+                    {getInitial(name)}
                   </AvatarFallback>
                 </Avatar>
               </div>
@@ -110,16 +120,14 @@ export function ProviderProfileCard({
                 <div className="flex flex-col">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-heading text-lg font-bold leading-tight wrap-anywhere text-text-main">
-                      {provider.name}
+                      {name}
                     </h3>
-                    <MembershipMark profile={provider} />
+                    {!companyName && <MembershipMark profile={provider} />}
                     <LanguageBadge item={provider} />
                   </div>
 
                   <p className="line-clamp-1 text-sm font-normal text-text-muted">
-                    {provider.companyName
-                      ? t("card.roleAt", { role: roleLabel, company: provider.companyName })
-                      : roleLabel}
+                    {roleLabel}
                   </p>
                 </div>
               </div>
@@ -127,11 +135,11 @@ export function ProviderProfileCard({
             </div>
             <div className="">
               <p className="line-clamp-2 max-w-3xl text-sm leading-relaxed text-text-muted">
-                {getBioPreview(provider, t)}
+                {description}
               </p>
 
               <div className="flex flex-wrap items-center gap-2 pt-1">
-                {secondarySignal}
+                {!companyName && secondarySignal}
                 {location ? (
                   <span className="inline-flex items-center px-3 py-1 text-xs font-medium">
                     <MapPin className="mr-1 size-3.5" />

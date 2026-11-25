@@ -10,6 +10,7 @@ const normalize = (value: string) =>
 /** Common service words people type, beyond the category names. */
 const SERVICE_WORDS: Record<"en" | "es", Record<string, string>> = {
   en: {
+    cooking: "cozinha",
     electrician: "eletricista", electrical: "eletrica", plumber: "encanador", plumbing: "encanamento",
     painter: "pintor", painting: "pintura", carpenter: "marceneiro", joiner: "marceneiro",
     cleaner: "limpeza", housekeeper: "diarista", maid: "diarista", nanny: "baba", babysitter: "baba",
@@ -27,6 +28,7 @@ const SERVICE_WORDS: Record<"en" | "es", Record<string, string>> = {
     architect: "arquiteto", consultant: "consultor", seller: "vendedor",
   },
   es: {
+    cocina: "cozinha",
     electricista: "eletricista", plomero: "encanador", fontanero: "encanador", plomeria: "encanamento",
     pintor: "pintor", pintura: "pintura", carpintero: "marceneiro", carpinteria: "marcenaria",
     limpieza: "limpeza", empleada: "diarista", ninera: "baba", abogado: "advogado", contador: "contador",
@@ -49,7 +51,7 @@ const SERVICE_WORDS: Record<"en" | "es", Record<string, string>> = {
 const GENERIC_WORDS = new Set(["services", "service", "servicio", "servicios", "support", "care", "cuidado", "and", "del"]);
 
 /**
- * Synonyms for the page's language; empty for Portuguese. `categoryLabel`
+ * Synonyms for the page's language. `categoryLabel`
  * gives the label of a saved category in that language (from the dictionary
  * on the server, from useLabels on the client), so the client doesn't load
  * every dictionary.
@@ -58,7 +60,8 @@ export function buildSearchSynonyms(
   locale: Locale,
   categoryLabel: (category: string) => string,
 ): Record<string, string> {
-  if (locale === "pt") return {};
+  // Keep matching existing category tokens after changing the displayed label.
+  if (locale === "pt") return { alimento: "cozinha", alimentos: "cozinha" };
   const synonyms: Record<string, string> = {};
   for (const category of Object.keys(CATEGORY_LABEL_KEYS)) {
     for (const word of normalize(categoryLabel(category)).split(/[^a-z0-9]+/)) {
