@@ -422,6 +422,37 @@ describe("catálogo de produtos", () => {
   });
 });
 
+test("denúncias de empresas vinculam o nome ao responsável e preservam o acesso administrativo", async () => {
+  const companyName = "Empresa de teste";
+  await env.withSecurityRulesDisabled(async (context) => {
+    await updateDoc(doc(context.firestore(), "public_profiles", PROVIDER), { companyName });
+  });
+  const report = {
+    reportedUserId: PROVIDER,
+    reportedCompanyName: companyName,
+    reporterId: RATER,
+    reporterEmail: `${RATER}@example.com`,
+    reason: "informacao_falsa",
+    status: "new",
+  };
+  const db = dbAs(RATER);
+  const companyReport = doc(db, "reports", "company");
+  await assertSucceeds(setDoc(companyReport, report));
+  await assertFails(getDoc(companyReport));
+  await assertFails(getDoc(doc(dbAs(PROVIDER), "reports", "company")));
+  const adminReport = doc(dbAs(ADMIN), "reports", "company");
+  await assertSucceeds(getDoc(adminReport));
+  await assertSucceeds(updateDoc(adminReport, { status: "in_review" }));
+  await assertFails(updateDoc(adminReport, { reportedCompanyName: "Outra empresa" }));
+  await assertFails(setDoc(doc(db, "reports", "wrong-company"), { ...report, reportedCompanyName: "Outra empresa" }));
+  await assertFails(setDoc(doc(db, "reports", "wrong-owner"), { ...report, reportedUserId: LEGACY_PROVIDER }));
+  await assertFails(setDoc(doc(dbAs(PROVIDER), "reports", "self"), {
+    ...report, reporterId: PROVIDER, reporterEmail: `${PROVIDER}@example.com`,
+  }));
+  const { reportedCompanyName, ...profileReport } = report;
+  await assertSucceeds(setDoc(doc(db, "reports", "profile"), profileReport));
+});
+
 describe("admin", () => {
   beforeEach(async () => {
     await env.withSecurityRulesDisabled(async (context) => {

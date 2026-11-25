@@ -793,14 +793,28 @@ service cloud.firestore {
              (!('read' in data) || data.read is bool);
     }
 
+    function isValidReportedCompany(ownerId, companyName) {
+      let company = get(publicProfilePath(ownerId)).data;
+      return company.get('isProvider', false) == true &&
+             company.get('isBlocked', false) == false &&
+             company.get('isDeleted', false) == false &&
+             company.get('companyName', null) == companyName;
+    }
+
     function isValidReport(data) {
-      let allowed = ['reportedUserId', 'reportedUserName', 'reporterId', 'reporterEmail', 'reason', 'details', 'status', 'createdAt'];
+      let allowed = ['reportedUserId', 'reportedUserName', 'reportedCompanyName', 'reporterId', 'reporterEmail', 'reason', 'details', 'status', 'createdAt'];
       return data.keys().hasAll(['reportedUserId', 'reporterId', 'reporterEmail', 'reason', 'status']) &&
              data.keys().hasOnly(allowed) &&
              data.reportedUserId is string &&
              data.reportedUserId.size() > 0 &&
              data.reportedUserId != request.auth.uid &&
              (!('reportedUserName' in data) || data.reportedUserName == null || (data.reportedUserName is string && data.reportedUserName.size() <= 100)) &&
+             (!('reportedCompanyName' in data) ||
+               (data.reportedUserId.matches('^[^/]{1,128}$') &&
+                data.reportedCompanyName is string &&
+                data.reportedCompanyName.size() <= 100 &&
+                data.reportedCompanyName.matches('(?s).*[^[:space:]].*') &&
+                isValidReportedCompany(data.reportedUserId, data.reportedCompanyName))) &&
              data.reporterId is string &&
              data.reporterId == request.auth.uid &&
              isValidEmail(data.reporterEmail) &&
