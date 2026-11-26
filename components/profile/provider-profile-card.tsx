@@ -104,13 +104,13 @@ export function ProviderProfileCard({
         href={companyName ? companyProfilePath(provider.uid) : `/profile/${provider.uid}`}
         className={cn("group block border border-border-subtle bg-card shadow-xs transition-shadow hover:shadow-md", className)}
       >
-        <article className="grid p-4 md:grid-cols-[auto_1fr_auto] md:p-6">
+        <article className="p-4 md:p-6">
           <div className="flex flex-col space-y-2">
             <div className="flex items-start gap-2">
               <div className="flex items-center">
-                <Avatar className={cn("size-12", companyName && "rounded-none after:rounded-none")}>
-                  <AvatarImage src={companyName ? companyLogo : provider.photoURL} alt="" className={cn(companyName && "rounded-none object-contain")} />
-                  <AvatarFallback className={cn("bg-primary font-bold text-primary-foreground text-base", companyName && "rounded-none")}>
+                <Avatar className={cn("size-12", companyName && "overflow-hidden bg-card after:hidden")}>
+                  <AvatarImage src={companyName ? companyLogo : provider.photoURL} alt="" className={cn(companyName && "object-contain")} />
+                  <AvatarFallback className="bg-primary text-base font-bold text-primary-foreground">
                     {getInitial(name)}
                   </AvatarFallback>
                 </Avatar>
