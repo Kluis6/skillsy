@@ -1,4 +1,3 @@
-import { ArrowUpRight, Store } from "lucide-react";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
@@ -6,16 +5,14 @@ import { whatsappUrl } from "@skillsy/shared/contact";
 import { DEFAULT_LOCALE } from "@skillsy/shared/i18n/locales";
 import { localizedPath } from "@skillsy/shared/i18n/routing";
 import { Navbar } from "@/components/navbar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import Link from "@/lib/i18n/navigation";
 import { I18nProvider } from "@/lib/i18n/provider";
 import { getLocale, getMessages, getT } from "@/lib/i18n/server";
 import { companyCatalogPath, formatProductPrice, productImageUrl, productRatingTotals, publicCatalogPath, publicProductPath } from "@/lib/product-catalog";
 import { getPublicCatalogItem } from "@/lib/public-catalog";
 import { createPublicMetadata } from "@/lib/public-metadata";
-import { storageImageUrl, USE_STORAGE_EMULATOR } from "@/lib/storage-images";
+import { USE_STORAGE_EMULATOR } from "@/lib/storage-images";
 import { cn } from "@/lib/utils";
 import { ProductRating } from "./product-rating";
 import { ProductWhatsAppLink } from "./product-whatsapp-link";
@@ -55,10 +52,6 @@ export async function PublicProductDetails({
   if (!companyPage && companyName) redirect(localizedPath(productHref, locale, DEFAULT_LOCALE));
 
   const catalogHref = companyPage ? companyCatalogPath(id) : publicCatalogPath(id, false);
-  const sellerName = companyName || profile.name;
-  const sellerImage = companyPage && profile.companyLogoImageName
-    ? storageImageUrl(id, "company-logo", profile.companyLogoImageName)
-    : profile.photoURL;
   const contactHref = profile.whatsapp ? whatsappUrl(profile.whatsapp) : null;
   const messages = await getMessages("profile", "products");
 
@@ -88,19 +81,6 @@ export async function PublicProductDetails({
             )}
             <CardContent className="min-w-0 space-y-5 p-5 sm:p-8 lg:p-10">
               <header className="space-y-4">
-                <Link
-                  href={catalogHref}
-                  className="inline-flex max-w-full items-center gap-2 text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring"
-                >
-                  <Avatar size="sm" className={cn("shrink-0", companyPage && "rounded-none after:rounded-none")} aria-hidden="true">
-                    <AvatarImage src={sellerImage} alt="" className={cn(companyPage && "rounded-none object-contain")} />
-                    <AvatarFallback className={cn("bg-primary/10 text-primary", companyPage && "rounded-none")}>
-                      {companyPage ? <Store className="size-3.5" /> : sellerName.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="min-w-0 wrap-anywhere">{sellerName}</span>
-                  <ArrowUpRight className="size-3.5 shrink-0" aria-hidden="true" />
-                </Link>
                 <h1 id="product-name" className="font-heading text-3xl leading-tight font-semibold wrap-anywhere text-text-main lg:text-4xl">
                   {product.name}
                 </h1>
