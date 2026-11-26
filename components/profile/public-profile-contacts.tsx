@@ -4,6 +4,7 @@ import { whatsappUrl } from "@skillsy/shared/contact";
 import type { TranslateFn } from "@skillsy/shared/i18n/keys";
 import type { UserProfile } from "@skillsy/shared/types";
 import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type PublicContacts = Pick<UserProfile, "whatsapp" | "phone" | "instagram" | "facebook" | "linkedin" | "website">;
 
@@ -20,7 +21,7 @@ function webLink(value?: string) {
   }
 }
 
-export function PublicProfileContacts({ profile, t }: { profile: PublicContacts; t: TranslateFn }) {
+export function PublicProfileContacts({ profile, t, className }: { profile: PublicContacts; t: TranslateFn; className?: string }) {
   const whatsapp = profile.whatsapp?.trim();
   const phone = profile.phone?.trim();
   const phoneDigits = phone?.replace(/\D/g, "");
@@ -54,7 +55,7 @@ export function PublicProfileContacts({ profile, t }: { profile: PublicContacts;
   if (contacts.length === 0) return null;
 
   return (
-    <section aria-labelledby="public-profile-contacts" className="border-y border-border-subtle bg-card">
+    <section aria-labelledby="public-profile-contacts" className={cn("border-y border-border-subtle bg-card", className)}>
       <div className="container mx-auto space-y-4 p-4">
         <h2 id="public-profile-contacts" className="text-base font-semibold text-text-main md:text-xl">
           {t("profile.contactAndSocial")}

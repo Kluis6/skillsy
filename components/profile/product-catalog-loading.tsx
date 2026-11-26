@@ -7,7 +7,7 @@ export function ProductGridLoading() {
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true">
       {[1, 2, 3].map((item) => (
         <Card key={item} className="border border-border-subtle pt-0 ring-0">
-          <Skeleton className="h-30 w-full" />
+          <Skeleton className="h-36 w-full" />
           <CardHeader className="gap-2">
             <Skeleton className="h-5 w-2/3" />
             <Skeleton className="h-4 w-1/4" />
@@ -35,7 +35,6 @@ export function CompanyCatalogLoading() {
       <CatalogNavbarLoading />
       <PublicProfileHeader
         avatar={<Skeleton className="size-full rounded-full" />}
-        avatarBadge={<Skeleton className="h-5 w-16 rounded-full" />}
         identity={
           <>
             <Skeleton className="h-7 w-48 max-w-full md:h-9 md:w-72" />

@@ -21,10 +21,10 @@ export function CompanyOpeningStatus({
   timeZone,
   labels,
 }: {
-  hours: { opens: number; closes: number } | null;
+  hours: { opens: number; closes: number };
   days: readonly string[];
   timeZone: string;
-  labels: { open: string; closed: string; unavailable: string };
+  labels: { open: string; closed: string };
 }) {
   const clock = useMemo(() => new Intl.DateTimeFormat("en-US", {
     timeZone,
@@ -35,18 +35,21 @@ export function CompanyOpeningStatus({
   }), [timeZone]);
   const isOpen = useSyncExternalStore(
     subscribe,
-    () => hours && days.length ? isCompanyOpen(hours, days, clock, new Date()) : null,
+    () => isCompanyOpen(hours, days, clock, new Date()),
     () => null,
   );
 
-  if (isOpen === null && hours && days.length) return <Skeleton className="h-5 w-16 rounded-full" />;
+  if (isOpen === null) return <Skeleton className="h-5 w-16 rounded-full" />;
 
   return (
     <Badge
       variant="secondary"
-      className={cn("min-w-0 shrink rounded-full", isOpen && "bg-success text-success-foreground")}
+      className={cn(
+        "min-w-0 shrink rounded-full",
+        isOpen ? "bg-success text-success-foreground" : "bg-destructive text-white dark:text-black",
+      )}
     >
-      <span className="truncate">{isOpen === null ? labels.unavailable : isOpen ? labels.open : labels.closed}</span>
+      <span className="truncate">{isOpen ? labels.open : labels.closed}</span>
     </Badge>
   );
 }

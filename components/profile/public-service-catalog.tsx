@@ -84,6 +84,9 @@ export async function PublicServiceCatalog({ id, companyPage, allProducts = fals
   const { serviceType, category, bio, location } = getCatalogDetails(profile, t);
   const days = AVAILABILITY_OPTIONS.filter((day) => profile.availability?.includes(day));
   const hours = profile.serviceHours?.trim();
+  const openingHours = companyPage && days.length > 0 && hours && (profile.country ?? "BR") === "BR"
+    ? parseServiceHours(hours)
+    : null;
   const contactHref = profile.whatsapp ? whatsappUrl(profile.whatsapp) : null;
   const logo = getCompanyLogo(profile);
   const cover = companyPage ? getCompanyCover(profile, id) : profile.bannerURL;
@@ -167,18 +170,17 @@ export async function PublicServiceCatalog({ id, companyPage, allProducts = fals
                 </AvatarFallback>
               </Avatar>
             }
-            avatarBadge={
+            avatarBadge={openingHours && (
               <CompanyOpeningStatus
-                hours={hours && (profile.country ?? "BR") === "BR" ? parseServiceHours(hours) : null}
+                hours={openingHours}
                 days={days}
                 timeZone={companyTimeZone(profile.publicState, profile.publicCity)}
                 labels={{
                   open: t("products.companyOpen"),
                   closed: t("products.companyClosed"),
-                  unavailable: t("products.companyStatusUnavailable"),
                 }}
               />
-            }
+            )}
             identity={
               <>
                 <h1 className="text-xl font-bold leading-tight wrap-anywhere text-text-main md:text-3xl">

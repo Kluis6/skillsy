@@ -24,7 +24,7 @@ export function ProductCard({
 }) {
   return (
     <Card className={cn("h-full min-w-0 border border-border-subtle pt-0 ring-0", preview && "relative")}>
-      <div className="relative h-30 shrink-0 bg-radial-[at_25%_25%] from-primary/70 to-primary">
+      <div className="relative h-36 shrink-0 bg-radial-[at_25%_25%] from-primary/70 to-primary">
         {product.imageName && (
           <Image
             src={productImageUrl(uid, product.imageName)}

@@ -387,8 +387,6 @@ export function ProfileDetailClient({
               </p>
             </div>
           </section>
-          {children}
-
           {!hasCompanyPage && targetProfile.isProvider && (
             <ProfileReviewsClient
               key={targetProfile.uid}
@@ -398,7 +396,10 @@ export function ProfileDetailClient({
             />
           )}
 
-          <PublicProfileContacts profile={targetProfile} t={t} />
+          <div className="container mx-auto grid grid-cols-12 gap-2 empty:hidden">
+            {children}
+            <PublicProfileContacts profile={targetProfile} t={t} className="col-span-12 min-w-0 md:col-span-6 md:only:col-span-12" />
+          </div>
 
           {!hasCompanyPage && (
             <PublicProfileGallery ownerId={targetProfile.uid} photos={targetProfile.gallery} />
